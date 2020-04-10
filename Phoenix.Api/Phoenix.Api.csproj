@@ -10,5 +10,9 @@
     <Folder Include="Models\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Phoenix.DataHandle\Phoenix.DataHandle.csproj" />
+  </ItemGroup>
+
 
 </Project>
