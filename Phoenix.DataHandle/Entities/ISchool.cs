@@ -5,9 +5,9 @@ namespace Phoenix.DataHandle.Entities
 {
     public interface ISchool
     {
-        string Name { get; set; }
-        string City { get; set; }
-        string AddressLine { get; set; }
-        IPerson Owner { get; set; }
+        string name { get; set; }
+        string city { get; set; }
+        string addressLine { get; set; }
+        //IPerson Owner { get; set; }
     }
 }

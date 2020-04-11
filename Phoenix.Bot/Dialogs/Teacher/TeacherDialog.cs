@@ -1,31 +1,33 @@
-﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Choices;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Choices;
+using Phoenix.Bot.Dialogs.Student;
 
-namespace Phoenix.Bot.Dialogs.Student
+namespace Phoenix.Bot.Dialogs.Teacher
 {
     public class TeacherDialog : ComponentDialog
     {
         public TeacherDialog()
             : base(nameof(TeacherDialog))
         {
-            AddDialog(new ExerciseDialog());
+            this.AddDialog(new ExerciseDialog());
             //AddDialog(new ExamsDialog());
             //AddDialog(new GradationDialog());
             //AddDialog(new ScheduleDialog());
-            AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new WaterfallDialog(nameof(TeacherDialog) + "_" + nameof(WaterfallDialog),
+            this.AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            this.AddDialog(new WaterfallDialog(nameof(TeacherDialog) + "_" + nameof(WaterfallDialog),
                 new WaterfallStep[]
                 {
-                    MenuStepAsync,
-                    TaskStepAsync,
-                    LoopStepAsync
+                    this.MenuStepAsync,
+                    this.TaskStepAsync,
+                    this.LoopStepAsync
                 }));
 
-            InitialDialogId = nameof(TeacherDialog) + "_" + nameof(WaterfallDialog);
+            this.InitialDialogId = nameof(TeacherDialog) + "_" + nameof(WaterfallDialog);
         }
 
         private async Task<DialogTurnResult> MenuStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)

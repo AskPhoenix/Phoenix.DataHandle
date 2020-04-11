@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
 using Phoenix.Api.App_Plugins;
+using Phoenix.DataHandle.Models;
 using Talagozis.AspNetCore.Services.TokenAuthentication;
 
 namespace Phoenix.Api
@@ -25,6 +27,8 @@ namespace Phoenix.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<PhoenixContext>(options => options.UseSqlServer(this._configuration.GetConnectionString("PhoenixConnection")));
+            
             services.AddTokenAuthentication<UserManagementService>(this._configuration);
 
             services.AddCors();
