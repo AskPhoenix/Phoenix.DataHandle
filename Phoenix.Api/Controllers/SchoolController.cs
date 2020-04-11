@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Phoenix.DataHandle.Entities;
+using Phoenix.DataHandle.Models;
 
 namespace Phoenix.Api.Controllers
 {
@@ -11,26 +14,28 @@ namespace Phoenix.Api.Controllers
     public class SchoolController : BaseController
     {
         private readonly ILogger<SchoolController> _logger;
+        private readonly PhoenixContext _phoenixContext;
 
-        public SchoolController(ILogger<SchoolController> logger)
+        public SchoolController(ILogger<SchoolController> logger, PhoenixContext phoenixContext)
         {
             this._logger = logger;
+            this._phoenixContext = phoenixContext;
         }
 
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IEnumerable<ISchool>> Get()
         {
             this._logger.LogInformation("Api -> School -> Get");
 
-            return new string[] { "School1", "School2" };
+            return await this._phoenixContext.School.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ISchool> Get(int id)
         {
             this._logger.LogInformation($"Api -> School -> Get{id}");
 
-            return "School3";
+            return await this._phoenixContext.School.SingleAsync(a => a.id == id);
         }
 
         [HttpPost]
