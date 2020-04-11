@@ -28,7 +28,7 @@ namespace Phoenix.Api.Controllers
         [HttpGet("{id}")]
         public string Get(int id)
         {
-            this._logger.LogInformation("Api -> School -> Get{id}");
+            this._logger.LogInformation($"Api -> School -> Get{id}");
 
             return "School3";
         }
@@ -48,7 +48,7 @@ namespace Phoenix.Api.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id) 
         { 
-            this._logger.LogInformation("Api -> School -> Delete" + id);
+            this._logger.LogInformation($"Api -> School -> Get{id}");
         }
     }
 }

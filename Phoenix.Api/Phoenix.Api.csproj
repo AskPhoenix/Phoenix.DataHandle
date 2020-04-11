@@ -7,17 +7,11 @@
 
     <UserSecretsId>cff01104-35a5-49ac-9054-6b2410cbb76d</UserSecretsId>
   </PropertyGroup>
+
   <PropertyGroup>
     <Version>0.20.4.11</Version>
     <Authors>AskPhoenix</Authors>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Models\**" />
-    <Content Remove="Models\**" />
-    <EmbeddedResource Remove="Models\**" />
-    <None Remove="Models\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.3" />

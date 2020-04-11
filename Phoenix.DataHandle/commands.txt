@@ -1,0 +1,1 @@
+﻿Scaffold-DbContext "Data Source=.;Initial Catalog=BellyDance;Persist Security Info=True;User ID=sa;Password=root" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -UseDatabaseNames -Force
