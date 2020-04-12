@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Phoenix.DataHandle;
 using Phoenix.DataHandle.Entities;
 using Phoenix.DataHandle.Models;
 
@@ -14,12 +15,12 @@ namespace Phoenix.Api.Controllers
     public class SchoolController : BaseController
     {
         private readonly ILogger<SchoolController> _logger;
-        private readonly PhoenixContext _phoenixContext;
+        private readonly Repository<School> _schoolRepository;
 
         public SchoolController(ILogger<SchoolController> logger, PhoenixContext phoenixContext)
         {
             this._logger = logger;
-            this._phoenixContext = phoenixContext;
+            this._schoolRepository = new Repository<School>(phoenixContext);
         }
 
         [HttpGet]
@@ -27,7 +28,7 @@ namespace Phoenix.Api.Controllers
         {
             this._logger.LogInformation("Api -> School -> Get");
 
-            return await this._phoenixContext.School.ToListAsync();
+            return await this._schoolRepository.find().ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -35,7 +36,7 @@ namespace Phoenix.Api.Controllers
         {
             this._logger.LogInformation($"Api -> School -> Get{id}");
 
-            return await this._phoenixContext.School.SingleAsync(a => a.id == id);
+            return this._schoolRepository.find(id);
         }
 
         [HttpPost]
