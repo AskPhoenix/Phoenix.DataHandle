@@ -11,9 +11,9 @@ namespace Phoenix.DataHandle.Entities
         SuperAdmin = 1,
         Admin = 2,
         SchoolOwner = 3,
-        Teacher = 3,
+        Teacher = 4,
         Parent = 5,
-        Student = 4,
+        Student = 6,
     }
 
     public static class RoleExtensions
