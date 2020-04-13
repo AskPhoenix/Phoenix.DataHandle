@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using static Phoenix.Bot.Extensions.DialogExtensions;
 
 namespace Phoenix.Bot.Dialogs.Student
 {
@@ -15,7 +16,7 @@ namespace Phoenix.Bot.Dialogs.Student
         public ScheduleDialog()
             : base(nameof(ScheduleDialog))
         {
-            AddDialog(new ChoicePrompt(nameof(ChoicePrompt), DialogExtensions.UseExtraValidations));
+            AddDialog(new ChoicePrompt(nameof(ChoicePrompt), UseExtraValidations));
             AddDialog(new WaterfallDialog(nameof(ScheduleDialog) + "_" + nameof(WaterfallDialog),
                 new WaterfallStep[]
                 {
