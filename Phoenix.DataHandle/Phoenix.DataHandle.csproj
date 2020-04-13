@@ -7,8 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Dao\" />
-    <Folder Include="Repositories\" />
+    <Compile Remove="Dao\**" />
+    <Compile Remove="Repositories\**" />
+    <EmbeddedResource Remove="Dao\**" />
+    <EmbeddedResource Remove="Repositories\**" />
+    <None Remove="Dao\**" />
+    <None Remove="Repositories\**" />
   </ItemGroup>
 
   <ItemGroup>
