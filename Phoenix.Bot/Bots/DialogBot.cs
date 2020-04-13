@@ -1,9 +1,7 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Phoenix.Bot.Extensions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,7 +33,9 @@ namespace Phoenix.Bot.Bots
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.Text == "--persistent-greeting--" || turnContext.Activity.Text == "--persistent-home--")
+            string mess = turnContext.Activity.Text;
+
+            if (mess == "--persistent-get-started--" || mess == "--persistent-home--" || mess.ContainsSynonyms(SynonymsExtensions.Topics.Greetings))
                 await ConversationState.DeleteAsync(turnContext, cancellationToken);
 
             //await turnContext.SendActivityAsync(new Activity(type: ActivityTypes.Typing));
