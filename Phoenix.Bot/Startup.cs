@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Phoenix.Bot.Bots;
 using Phoenix.Bot.Dialogs;
+using Phoenix.DataHandle.Bot.Storage;
 using Phoenix.DataHandle.Models;
 
 namespace Phoenix.Bot
@@ -25,31 +26,22 @@ namespace Phoenix.Bot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
-            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
-            services.AddSingleton<IStorage, MemoryStorage>(); //(new EntityFrameworkStorage(Configuration.GetConnectionString("PhoenixDB")));
+            services.AddSingleton<IStorage>(new EntityFrameworkStorage(Configuration.GetConnectionString("LocalConnection")));
+            services.AddSingleton(new EntityFrameworkTranscriptStore(Configuration.GetConnectionString("LocalConnection")));
 
-            // Create the User state. (Used in this bot's Dialog implementation.)
             services.AddSingleton<UserState>();
-
-            // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();
 
-            // The Dialog that will be run by the bot.
             services.AddSingleton<MainDialog>();
-
-            // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, DialogBot<MainDialog>>();
+            
             services.AddApplicationInsightsTelemetry();
-
             services.AddControllers();
-
             services.AddHttpsRedirection(options => options.HttpsPort = 443);
 
             services.AddDbContext<PhoenixContext>(options => options.UseSqlServer(Configuration.GetConnectionString("PhoenixConnection")));
-
             services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<PhoenixContext>().AddDefaultTokenProviders();
         }
 
@@ -59,7 +51,7 @@ namespace Phoenix.Bot
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
             else
-                app.UseHsts();  
+                app.UseHsts();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();

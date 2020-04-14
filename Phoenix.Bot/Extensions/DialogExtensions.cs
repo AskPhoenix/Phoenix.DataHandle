@@ -28,9 +28,9 @@ namespace Phoenix.Bot.Extensions
                 (Math.Ceiling(Math.Log10(promptContext.Recognized.Value)) == 12 && promptContext.Recognized.Value / 100000000 == 3069));
         }
 
-        public static Task<bool> PinPromptValidator(PromptValidatorContext<int> promptContext, CancellationToken cancellationToken)
+        public static Task<bool> PinPromptValidator(PromptValidatorContext<long> promptContext, CancellationToken cancellationToken)
         {
-            int pin = (int)promptContext.Options.Validations;
+            long pin = (long)promptContext.Options.Validations;
             string mess = promptContext.Context.Activity.Text.ToLower();
 
             return Task.FromResult(

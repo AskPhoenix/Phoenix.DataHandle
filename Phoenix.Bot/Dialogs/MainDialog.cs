@@ -12,21 +12,28 @@ using Phoenix.Bot.Extensions;
 using Phoenix.DataHandle;
 using Phoenix.DataHandle.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Phoenix.Bot.Dialogs
 {
     public class MainDialog : ComponentDialog
     {
-        public IConfiguration Configuration { get; }
-        public PhoenixContext DBContext { get; }
+        private readonly IConfiguration _configuration;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        public MainDialog(IConfiguration configuration, PhoenixContext phoenixContext)
+        public MainDialog(IConfiguration configuration, IServiceScopeFactory scopeFactory)
             : base(nameof(MainDialog))
         {
-            Configuration = configuration;
-            DBContext = phoenixContext;
+            _configuration = configuration;
+            _scopeFactory = scopeFactory;
 
-            AddDialog(new AuthDialog(DBContext));
+            using (var scope = scopeFactory.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<PhoenixContext>();
+            }
+
+            AddDialog(new AuthDialog());
             AddDialog(new WelcomeDialog());
             AddDialog(new StudentDialog());
             AddDialog(new TeacherDialog());
@@ -44,12 +51,15 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> FirstTimeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+
+
             if (true) //TODO: if is not authenticated
                 return await stepContext.BeginDialogAsync(nameof(AuthDialog), null, cancellationToken);
         }
 
         private async Task<DialogTurnResult> GreetingStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            //TODO: Register user's FB ID to DB and mark them as authenticated
             if (!(stepContext.Result as bool? ?? false))
                 return await stepContext.EndDialogAsync();
 
@@ -60,7 +70,7 @@ namespace Phoenix.Bot.Dialogs
             if (!mess.ContainsSynonyms(SynonymsExtensions.Topics.Greetings))
                 return await stepContext.NextAsync(null, cancellationToken);
 
-            var reply = MessageFactory.ContentUrl(url: await ReceiveGifAsync("g", "hi", 10, new Random().Next(10), Configuration["GiphyKey"]),
+            var reply = MessageFactory.ContentUrl(url: await ReceiveGifAsync("g", "hi", 10, new Random().Next(10), _configuration["GiphyKey"]),
                 contentType: "image/gif");
             await stepContext.Context.SendActivityAsync(reply);
 

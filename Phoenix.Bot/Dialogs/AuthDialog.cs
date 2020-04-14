@@ -13,15 +13,11 @@ namespace Phoenix.Bot.Dialogs
 {
     public class AuthDialog : ComponentDialog
     {
-        public PhoenixContext DBContext { get; }
-
-        public AuthDialog(PhoenixContext phoenixContext)
+        public AuthDialog()
             : base(nameof(AuthDialog))
         {
-            DBContext = phoenixContext;
-
             AddDialog(new NumberPrompt<long>("PhoneNumberPrompt", PhoneNumberPromptValidator));
-            AddDialog(new NumberPrompt<int>("PinPrompt", PinPromptValidator));
+            AddDialog(new NumberPrompt<long>("PinPrompt", PinPromptValidator));
             AddDialog(new WaterfallDialog(nameof(AuthDialog) + "_" + nameof(WaterfallDialog),
                 new WaterfallStep[]
                 {
@@ -78,7 +74,7 @@ namespace Phoenix.Bot.Dialogs
             if (phoneFound)
             {
                 //TODO: Generate pin and send it to user's phone
-                int pin = 1111;
+                long pin = 1111;
 
                 var reply = (Activity) MessageFactory.SuggestedActions( new string[] { "Αποστολή ξανά", "Αλλαγή αριθμού" },
                     text: "Τέλεια! Μόλις σου έστειλα ένα μοναδικό pin με SMS. Παρακαλώ πληκτρολόγησέ το, ώστε να ολοκληρωθεί η επαλήθευση:");
@@ -120,7 +116,6 @@ namespace Phoenix.Bot.Dialogs
             else if (mess == "αλλαγή αριθμού")
                 return await stepContext.ReplaceDialogAsync(this.InitialDialogId, "new_phone", cancellationToken);
 
-            //TODO: Register user's FB ID to DB and mark them as authenticated
             return await stepContext.EndDialogAsync(true);
         }
     }
