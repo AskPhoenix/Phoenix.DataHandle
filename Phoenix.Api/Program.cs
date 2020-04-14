@@ -26,8 +26,10 @@ namespace Phoenix.Api
                     webBuilder.ConfigureKestrel((context, options) => options.AddServerHeader = false);
                 })
                 .ConfigureServices(serviceCollection => { serviceCollection.AddLoggerBackgroundService(); })
-                .ConfigureLogging(loggingBuilder =>
+                .ConfigureLogging((hostingContext, loggingBuilder) =>
                 {
+                    loggingBuilder.ClearProviders();
+                    loggingBuilder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     loggingBuilder.SetMinimumLevel(LogLevel.Trace);
 
                     loggingBuilder.AddFile(a =>
@@ -46,39 +48,8 @@ namespace Phoenix.Api
                             logLevel = LogLevel.Critical
                         });
                     });
-#if DEBUG
-                    loggingBuilder.AddColoredConsole(a =>
-                    {
-                        a.Add(new ColoredConsoleLoggerConfiguration
-                        {
-                            color = ConsoleColor.Red,
-                            logLevel = LogLevel.Error,
-                        });
-                        a.Add(new ColoredConsoleLoggerConfiguration
-                        {
-                            color = ConsoleColor.Yellow,
-                            logLevel = LogLevel.Warning,
-                        });
-                        a.Add(new ColoredConsoleLoggerConfiguration
-                        {
-                            namespacePrefix = "Phoenix",
-                            color = ConsoleColor.Green,
-                            logLevel = LogLevel.Information,
-                        });
-                        a.Add(new ColoredConsoleLoggerConfiguration
-                        {
-                            namespacePrefix = "Phoenix",
-                            color = ConsoleColor.DarkCyan,
-                            logLevel = LogLevel.Debug,
-                        });
-                        a.Add(new ColoredConsoleLoggerConfiguration
-                        {
-                            namespacePrefix = "Phoenix",
-                            color = ConsoleColor.White,
-                            logLevel = LogLevel.Trace,
-                        });
-                    });
-#endif
+                    loggingBuilder.AddColoredConsole(hostingContext.Configuration.GetSection("Logging:ColoredConsole"));
+
                 });
     }
 }

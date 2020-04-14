@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;netstandard2.0</TargetFrameworks>
     <Authors>AskPhoenix</Authors>
-    <Version>0.20.4.11</Version>
+    <Version>0.20.4.14</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,8 +19,14 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.8.0" />
+    <PackageReference Include="Talagozis.AspNetCore" Version="1.20.4.141" />
   </ItemGroup>
 
+
+  <!--netstandard2.0-->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <DefineConstants>NETCORE;NETSTANDARD;NETSTANDARD2_0</DefineConstants>
+  </PropertyGroup>
 
   <!--netstandard2.0-->
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
@@ -34,6 +40,11 @@
     </PackageReference>
   </ItemGroup>
 
+
+  <!--netcoreapp3.1-->
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1'">
+    <DefineConstants>NETCOREAPP;NETCOREAPP3_1</DefineConstants>
+  </PropertyGroup>
 
   <!--netcoreapp3.1-->
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
