@@ -1,6 +1,5 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using Phoenix.DataHandle.Models;
 using static Phoenix.Bot.Extensions.DialogExtensions;
 using System.Collections.Generic;
 using System.Threading;
@@ -8,9 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using System;
-using System.Linq;
 using Phoenix.DataHandle.Identity;
-using Microsoft.AspNetCore.Identity;
 
 namespace Phoenix.Bot.Dialogs
 {
@@ -148,9 +145,12 @@ namespace Phoenix.Bot.Dialogs
             //Identity
             //bool phoneFound = _appContext.Users.Any(user => user.PhoneNumber == phone.ToString());
             bool phoneFound = phone == 6912345678;
-            if (phoneFound)
+            if (phoneFound) 
+            {
+                await _conversationState.CreateProperty<string>("CheckedPhone").SetAsync(stepContext.Context, phone.ToString());
                 return await stepContext.BeginDialogAsync(WaterfallNames.SendPin, phone, cancellationToken);
-            
+            }
+
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
