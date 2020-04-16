@@ -30,12 +30,8 @@ namespace Phoenix.Bot.Extensions
 
         public static Task<bool> PinPromptValidator(PromptValidatorContext<long> promptContext, CancellationToken cancellationToken)
         {
-            long pin = (long)promptContext.Options.Validations;
-            string mess = promptContext.Context.Activity.Text.ToLower();
-
-            return Task.FromResult(
-                (promptContext.Recognized.Succeeded && promptContext.Recognized.Value == pin) ||
-                (!promptContext.Recognized.Succeeded && (mess == "αποστολή ξανά" || mess == "αλλαγή αριθμού")));
+            long digits = (long)promptContext.Options.Validations;
+            return Task.FromResult(promptContext.Recognized.Succeeded && (long)Math.Ceiling(Math.Log10(promptContext.Recognized.Value)) == digits);
         }
 
         public static async Task<string> ReceiveGifAsync(string rating, string query, int limit, int? offset, string key)

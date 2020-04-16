@@ -36,7 +36,7 @@ namespace Phoenix.Bot.Bots
             string mess = turnContext.Activity.Text;
 
             if (mess == "--persistent-get-started--" || mess == "--persistent-home--" || mess.ContainsSynonyms(SynonymsExtensions.Topics.Greetings))
-                await ConversationState.DeleteAsync(turnContext, cancellationToken);
+                await ConversationState.ClearStateAsync(turnContext, cancellationToken);
 
             //await turnContext.SendActivityAsync(new Activity(type: ActivityTypes.Typing));
             await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>(nameof(DialogState)), cancellationToken);

@@ -69,7 +69,8 @@ namespace Phoenix.Bot.Extensions
                 public string ImageAspectRatio 
                 {
                     get => imageAspectRatio;
-                    set => imageAspectRatio = value == "horizontal" || value == "square" ? value : throw new FacebookException();
+                    set => imageAspectRatio = value == "horizontal" || value == "square" ? value :
+                        throw new FacebookException("image_aspect_ratio value must either horizontal or square.");
                 }
 
                 /// <summary>
@@ -83,7 +84,7 @@ namespace Phoenix.Bot.Extensions
 
                 public GenericTemplate() { }
 
-                public GenericTemplate(string imageAspectRatio, GenericElement[] elements)
+                public GenericTemplate(GenericElement[] elements, string imageAspectRatio = "horizontal")
                 {
                     this.ImageAspectRatio = imageAspectRatio;
                     this.Elements = elements;
@@ -138,6 +139,9 @@ namespace Phoenix.Bot.Extensions
                     this.ImageUrl = imageUrl;
                     this.DefaultAction = defaultAction;
                     this.Buttons = buttons;
+
+                    if (this.DefaultAction != null)
+                        this.DefaultAction.Title = null;
                 }
             }
 
@@ -173,13 +177,15 @@ namespace Phoenix.Bot.Extensions
 
                 /// <summary>
                 /// Optional. Height of the Webview.
-                /// Valid values: compact, tall, full. Defaults to full.
+                /// Valid values: compact, tall, full.
+                /// Defaults to full.
                 /// </summary>
                 [JsonProperty("webview_height_ratio")]
                 public string WebviewHeightRatio
                 {
                     get => webviewHeightRatio;
-                    set => webviewHeightRatio = value == "compact" || value == "tall" || value == "full" ? value : throw new FacebookException();
+                    set => webviewHeightRatio = value == "compact" || value == "tall" || value == "full" ? value : 
+                        throw new FacebookException("Valid values for webview_height_ratio in Url Button are compact, tall, full");
                 }
 
                 /// <summary>
@@ -204,17 +210,20 @@ namespace Phoenix.Bot.Extensions
                 public string WebviewShareButton 
                 { 
                     get => webviewShareButton; 
-                    set => webviewShareButton = value == null || value == "hide" ? value : throw new FacebookException(); 
+                    set => webviewShareButton = value == null || value == "hide" ? value :
+                        throw new FacebookException("webview_share_button value of Url Button must be hide if set."); 
                 }
 
                 public UrlButton() { }
 
-                public UrlButton(string url,
-                    string webviewHeightRatio = null,
+                public UrlButton(string title,
+                    string url,
+                    string webviewHeightRatio = "full",
                     bool messengerExtensions = false,
                     string fallback_Url = null,
                     string webviewShareButton = null)
                 {
+                    this.Title = title;
                     this.Url = url;
                     this.WebviewHeightRatio = webviewHeightRatio;
                     this.MessengerExtensions = messengerExtensions;
@@ -238,8 +247,11 @@ namespace Phoenix.Bot.Extensions
 
                 public PostbackButton() { }
 
-                public PostbackButton(string payload) 
+                public PostbackButton(
+                    string title,
+                    string payload) 
                 {
+                    this.Title = title;
                     this.Payload = payload;
                 }
             }

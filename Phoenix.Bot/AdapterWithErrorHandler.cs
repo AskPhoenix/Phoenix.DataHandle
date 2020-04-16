@@ -15,7 +15,12 @@ namespace Phoenix.Bot
         {
             OnTurnError = async (turnContext, exception) =>
             {
-                await transcriptStore.LogActivityAsync(turnContext.Activity);
+                if (turnContext.Activity.ChannelId != "emulator")
+                {
+                    var act = turnContext.Activity;
+                    act.Value = exception.Message;
+                    await transcriptStore.LogActivityAsync(act);
+                }
 
                 // Log any leaked exception from the application.
                 logger.LogError(exception, $"[OnTurnError] unhandled error : {exception.Message}");

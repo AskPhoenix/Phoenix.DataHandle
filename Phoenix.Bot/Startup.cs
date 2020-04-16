@@ -9,7 +9,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Phoenix.Bot.Bots;
 using Phoenix.Bot.Dialogs;
+using Phoenix.Bot.Dialogs.Student;
+using Phoenix.Bot.Dialogs.Teacher;
 using Phoenix.DataHandle.Bot.Storage;
+using Phoenix.DataHandle.Identity;
 using Phoenix.DataHandle.Models;
 
 namespace Phoenix.Bot
@@ -23,29 +26,33 @@ namespace Phoenix.Bot
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
-            services.AddSingleton<IStorage>(new EntityFrameworkStorage(Configuration.GetConnectionString("LocalConnection")));
-            services.AddSingleton(new EntityFrameworkTranscriptStore(Configuration.GetConnectionString("LocalConnection")));
+            services.AddSingleton<IStorage>(new EntityFrameworkStorage(Configuration.GetConnectionString("PhoenixConnection")));
+            services.AddSingleton(new EntityFrameworkTranscriptStore(Configuration.GetConnectionString("PhoenixConnection")));
 
             services.AddSingleton<UserState>();
             services.AddSingleton<ConversationState>();
 
-            services.AddSingleton<MainDialog>();
+            services.AddScoped<MainDialog>();
+            services.AddScoped<AuthDialog>();
+            services.AddScoped<WelcomeDialog>();
+            services.AddScoped<StudentDialog>();
+            services.AddScoped<TeacherDialog>();
+
             services.AddTransient<IBot, DialogBot<MainDialog>>();
-            
+
             services.AddApplicationInsightsTelemetry();
             services.AddControllers();
             services.AddHttpsRedirection(options => options.HttpsPort = 443);
 
             services.AddDbContext<PhoenixContext>(options => options.UseSqlServer(Configuration.GetConnectionString("PhoenixConnection")));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("PhoenixConnection")));
             services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<PhoenixContext>().AddDefaultTokenProviders();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public static void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
             if (env.IsDevelopment())

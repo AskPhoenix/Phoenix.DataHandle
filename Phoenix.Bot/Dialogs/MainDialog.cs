@@ -20,23 +20,24 @@ namespace Phoenix.Bot.Dialogs
     public class MainDialog : ComponentDialog
     {
         private readonly IConfiguration _configuration;
-        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly PhoenixContext _phoenixDb;
+        protected readonly BotState _conversationState;
+        protected readonly BotState _userState;
 
-        public MainDialog(IConfiguration configuration, IServiceScopeFactory scopeFactory)
+        public MainDialog(IConfiguration configuration, PhoenixContext phoenixDb, ConversationState conversationState, UserState userState,
+            AuthDialog authDialog, WelcomeDialog welcomeDialog, StudentDialog studentDialog, TeacherDialog teacherDialog)
             : base(nameof(MainDialog))
         {
             _configuration = configuration;
-            _scopeFactory = scopeFactory;
+            _phoenixDb = phoenixDb;
+            _conversationState = conversationState;
+            _userState = userState;
 
-            using (var scope = scopeFactory.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<PhoenixContext>();
-            }
+            AddDialog(authDialog);
+            AddDialog(welcomeDialog);
+            AddDialog(studentDialog);
+            AddDialog(teacherDialog);
 
-            AddDialog(new AuthDialog());
-            AddDialog(new WelcomeDialog());
-            AddDialog(new StudentDialog());
-            AddDialog(new TeacherDialog());
             AddDialog(new WaterfallDialog(nameof(MainDialog) + "_" + nameof(WaterfallDialog),
                 new WaterfallStep[]
                 {
@@ -51,10 +52,12 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> FirstTimeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            bool isAuthenticated = await _userState.CreateProperty<bool>("isAuthenticated").GetAsync(stepContext.Context);
 
-
-            if (true) //TODO: if is not authenticated
+            if (!isAuthenticated)
                 return await stepContext.BeginDialogAsync(nameof(AuthDialog), null, cancellationToken);
+
+            return await stepContext.NextAsync();
         }
 
         private async Task<DialogTurnResult> GreetingStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
