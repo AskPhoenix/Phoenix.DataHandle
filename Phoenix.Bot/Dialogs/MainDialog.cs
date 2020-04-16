@@ -76,14 +76,19 @@ namespace Phoenix.Bot.Dialogs
             //var user = await _appContext.Users.SingleAsync(u => u.PhoneNumber == checkedPhone);
             //user.FacebookId = stepContext.Context.Activity.From.Id;
 
+            stepContext.Values.Add("needsWelcome", true);
+
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
         private async Task<DialogTurnResult> GreetingStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             string mess = stepContext.Context.Activity.Text;
-            if (mess == "--persistent-get-started--")
+            if ((stepContext.Values.TryGetValue("needsWelcome", out object needsWelcome) && (bool)needsWelcome) || mess == "--persistent-get-started--")
+            {
+                stepContext.Values.Remove("needsWelcome");
                 return await stepContext.BeginDialogAsync(nameof(WelcomeDialog), null, cancellationToken);
+            }
 
             if (!mess.ContainsSynonyms(SynonymsExtensions.Topics.Greetings))
                 return await stepContext.NextAsync(null, cancellationToken);
