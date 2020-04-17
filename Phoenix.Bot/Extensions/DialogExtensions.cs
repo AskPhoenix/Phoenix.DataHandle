@@ -49,16 +49,17 @@ namespace Phoenix.Bot.Extensions
 
         public static string GreekNameCall(string name)
         {
-            string tore;
+            if (!name.EndsWith('ς'))
+                return name;
 
-            tore = name.Replace("ος", "ε");
-            tore = tore.Replace("ός", "έ");
-            tore = tore.Replace("ης", "η");
-            tore = tore.Replace("ής", "ή");
-            tore = tore.Replace("ας", "α");
-            tore = tore.Replace("άς", "ά");
+            char letter = name.Substring(name.Length - 2, 1).ToCharArray()[0];
 
-            return tore;
+            if (letter == 'ο')
+                letter = 'ε';
+            else if (letter == 'ό')
+                letter = 'έ';
+
+            return name.Substring(0, name.Length - 2) + letter;
         }
 
         public static class Persistent
