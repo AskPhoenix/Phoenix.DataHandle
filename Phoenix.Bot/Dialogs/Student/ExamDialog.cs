@@ -10,13 +10,13 @@ using static Phoenix.Bot.Extensions.DialogExtensions;
 
 namespace Phoenix.Bot.Dialogs.Student
 {
-    public class ExamsDialog : ComponentDialog
+    public class ExamDialog : ComponentDialog
     {
-        public ExamsDialog()
-            : base(nameof(ExamsDialog))
+        public ExamDialog()
+            : base(nameof(ExamDialog))
         {
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt), UseExtraValidations));
-            AddDialog(new WaterfallDialog(nameof(ExamsDialog) + "_" + nameof(WaterfallDialog),
+            AddDialog(new WaterfallDialog(nameof(ExamDialog) + "_" + nameof(WaterfallDialog),
                 new WaterfallStep[]
                 {
                     CourseSelectStepAsync,
@@ -25,7 +25,7 @@ namespace Phoenix.Bot.Dialogs.Student
                     FinalStepAsync
                 }));
 
-            InitialDialogId = nameof(ExamsDialog) + "_" + nameof(WaterfallDialog);
+            InitialDialogId = nameof(ExamDialog) + "_" + nameof(WaterfallDialog);
         }
 
         private string[] DummyCourses = { "Αγγλικά", "Γαλλικά" };
@@ -82,7 +82,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 return (stepContext.Result as FoundChoice).Index switch
                 {
                     0 => await stepContext.EndDialogAsync(null, cancellationToken),
-                    1 => await stepContext.ReplaceDialogAsync(nameof(ExamsDialog) + "_" + nameof(WaterfallDialog)),
+                    1 => await stepContext.ReplaceDialogAsync(nameof(ExamDialog) + "_" + nameof(WaterfallDialog)),
                     _ => new DialogTurnResult(DialogTurnStatus.Cancelled)
                 };
             }
@@ -147,8 +147,8 @@ namespace Phoenix.Bot.Dialogs.Student
                 return (stepContext.Result as FoundChoice).Index switch
                 {
                     0 => await stepContext.EndDialogAsync(null, cancellationToken),
-                    1 => await stepContext.ReplaceDialogAsync(nameof(ExamsDialog) + "_" + nameof(WaterfallDialog)),
-                    2 => await stepContext.ReplaceDialogAsync(nameof(ExamsDialog) + "_" + nameof(WaterfallDialog),
+                    1 => await stepContext.ReplaceDialogAsync(nameof(ExamDialog) + "_" + nameof(WaterfallDialog)),
+                    2 => await stepContext.ReplaceDialogAsync(nameof(ExamDialog) + "_" + nameof(WaterfallDialog),
                             new Dictionary<string, int> { { "Course", (int)stepContext.Values["Course"] } }),
                     _ => new DialogTurnResult(DialogTurnStatus.Cancelled)
                 };

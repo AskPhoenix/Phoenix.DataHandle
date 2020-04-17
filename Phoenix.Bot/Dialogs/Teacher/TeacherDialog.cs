@@ -15,7 +15,7 @@ namespace Phoenix.Bot.Dialogs.Teacher
             : base(nameof(TeacherDialog))
         {
             this.AddDialog(new ExerciseDialog());
-            //AddDialog(new ExamsDialog());
+            //AddDialog(new ExamDialog());
             //AddDialog(new GradationDialog());
             //AddDialog(new ScheduleDialog());
             this.AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
@@ -48,7 +48,7 @@ namespace Phoenix.Bot.Dialogs.Teacher
             return (stepContext.Result as FoundChoice).Index switch
             {
                 0 => await stepContext.BeginDialogAsync(nameof(ExerciseDialog), null, cancellationToken),
-                //1 => await stepContext.BeginDialogAsync(nameof(ExamsDialog), null, cancellationToken),
+                //1 => await stepContext.BeginDialogAsync(nameof(ExamDialog), null, cancellationToken),
                 //2 => await stepContext.BeginDialogAsync(nameof(GradationDialog), null, cancellationToken),
                 //3 => await stepContext.BeginDialogAsync(nameof(ScheduleDialog), null, cancellationToken),
                 _ => new DialogTurnResult(DialogTurnStatus.Cancelled)

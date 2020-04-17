@@ -19,10 +19,10 @@ namespace Phoenix.Bot.Dialogs
 
         private static class WaterfallNames
         {
-            public const string Main = "Main_WaterfallDialog";
-            public const string Phone = "Phone_WaterfallDialog";
-            public const string SendPin = "SendPin_WaterfallDialog";
-            public const string CheckPin = "CheckPin_WaterfallDialog";
+            public const string Main        = "Main_WaterfallDialog";
+            public const string Phone       = "Phone_WaterfallDialog";
+            public const string SendPin     = "SendPin_WaterfallDialog";
+            public const string CheckPin    = "CheckPin_WaterfallDialog";
         }
 
         private static class PromptNames

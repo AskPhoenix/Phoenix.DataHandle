@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Phoenix.Bot.Dialogs.Student
 {
-    internal class ExerciseDialog : ComponentDialog
+    public class ExerciseDialog : ComponentDialog
     {
         public ExerciseDialog() :
             base(nameof(ExerciseDialog))

@@ -1,9 +1,7 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using static Phoenix.Bot.Extensions.DialogExtensions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,7 +11,8 @@ namespace Phoenix.Bot.Dialogs
     {
         private static class WaterfallNames
         {
-            public const string Tutorial = "Tutorial_WaterfallDialog";
+            public const string AskForTutorial  = "AskForTutorial_WaterfallDialog";
+            public const string Tutorial        = "Tutorial_WaterfallDialog";
         }
 
         public WelcomeDialog()
@@ -21,19 +20,40 @@ namespace Phoenix.Bot.Dialogs
         {
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
 
-            AddDialog(new WaterfallDialog(WaterfallNames.Tutorial,
+            AddDialog(new WaterfallDialog(WaterfallNames.AskForTutorial,
                 new WaterfallStep[]
                 {
                     AskStepAsync,
                     ReplyStepAsync,
+                }));
+
+            AddDialog(new WaterfallDialog(WaterfallNames.Tutorial,
+                new WaterfallStep[]
+                {
                     StartTutorialStepAsync,
                     FinalStepAsync
                 }));
-
-            InitialDialogId = WaterfallNames.Tutorial;
         }
 
-        #region Tutorial Waterfall Dialog
+        protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default)
+        {
+            string mess = innerDc.Context.Activity.Text;
+            Persistent.TryGetCommand(mess, out Persistent.Command cmd);
+
+            InitialDialogId = WaterfallNames.AskForTutorial;
+
+            if (cmd == Persistent.Command.Tutorial)
+            {
+                await innerDc.Context.SendActivityAsync(MessageFactory.Text("Ας κάνουμε μια σύντομη περιήγηση!"));
+                InitialDialogId = WaterfallNames.Tutorial;
+            }
+            else if (cmd == Persistent.Command.GetStarted)
+                await innerDc.Context.SendActivityAsync(MessageFactory.Text("Καλωσόρισες στο Phoenix! 😁"));
+
+            return await base.OnBeginDialogAsync(innerDc, options, cancellationToken);
+        }
+
+        #region Ask for Tutorial Waterfall Dialog
 
         private async Task<DialogTurnResult> AskStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -51,7 +71,10 @@ namespace Phoenix.Bot.Dialogs
         {
             var foundChoice = stepContext.Result as FoundChoice;
             if (foundChoice.Index == 0)
-                return await stepContext.NextAsync(null, cancellationToken);
+            {
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Τέλεια! 😁"));
+                return await stepContext.BeginDialogAsync(WaterfallNames.Tutorial, null, cancellationToken);
+            }
 
             var reply = MessageFactory.Text("Έγινε, κανένα πρόβλημα! Ας ξεκινήσουμε λοιπόν!");
             await stepContext.Context.SendActivityAsync(reply);
@@ -59,14 +82,14 @@ namespace Phoenix.Bot.Dialogs
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
+        #endregion
+
+        #region Tutorial Waterfall Dialog
+
         private async Task<DialogTurnResult> StartTutorialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var reply = MessageFactory.Text("Τέλεια! 😁");
-            await stepContext.Context.SendActivityAsync(reply);
-
             //TODO: Create Tutorial
-            reply.Text = "<Tutorial>";
-            await stepContext.Context.SendActivityAsync(reply);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("<Tutorial> ..."));
 
             return await stepContext.NextAsync(null, cancellationToken);
         }

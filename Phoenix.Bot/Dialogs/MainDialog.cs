@@ -16,8 +16,13 @@ namespace Phoenix.Bot.Dialogs
     {
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _appContext;
-        protected readonly BotState _conversationState;
-        protected readonly BotState _userState;
+        private readonly BotState _conversationState;
+        private readonly BotState _userState;
+
+        private static class WaterfallNames
+        {
+            public const string Main = "Main_WaterfallDialog";
+        }
 
         public MainDialog(IConfiguration configuration, ApplicationDbContext appContext, ConversationState conversationState, UserState userState,
             AuthDialog authDialog, WelcomeDialog welcomeDialog, StudentDialog studentDialog, TeacherDialog teacherDialog)
@@ -33,7 +38,7 @@ namespace Phoenix.Bot.Dialogs
             AddDialog(studentDialog);
             AddDialog(teacherDialog);
 
-            AddDialog(new WaterfallDialog(nameof(MainDialog) + "_" + nameof(WaterfallDialog),
+            AddDialog(new WaterfallDialog(WaterfallNames.Main,
                 new WaterfallStep[]
                 {
                     FirstTimeStepAsync,
@@ -43,7 +48,7 @@ namespace Phoenix.Bot.Dialogs
                     LoopStepAsync
                 }));
 
-            InitialDialogId = nameof(MainDialog) + "_" + nameof(WaterfallDialog);
+            InitialDialogId = WaterfallNames.Main;
         }
 
         private async Task<DialogTurnResult> FirstTimeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -84,7 +89,8 @@ namespace Phoenix.Bot.Dialogs
         private async Task<DialogTurnResult> GreetingStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             string mess = stepContext.Context.Activity.Text;
-            if ((stepContext.Values.TryGetValue("needsWelcome", out object needsWelcome) && (bool)needsWelcome) || mess == "--persistent-get-started--")
+            if ((stepContext.Values.TryGetValue("needsWelcome", out object needsWelcome) && (bool)needsWelcome) ||
+                (Persistent.TryGetCommand(mess, out Persistent.Command cmd) && (cmd == Persistent.Command.GetStarted || cmd == Persistent.Command.Tutorial)))
             {
                 stepContext.Values.Remove("needsWelcome");
                 return await stepContext.BeginDialogAsync(nameof(WelcomeDialog), null, cancellationToken);

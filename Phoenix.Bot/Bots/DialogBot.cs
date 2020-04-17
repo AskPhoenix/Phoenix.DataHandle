@@ -4,6 +4,7 @@ using Microsoft.Bot.Schema;
 using Phoenix.Bot.Extensions;
 using System.Threading;
 using System.Threading.Tasks;
+using static Phoenix.Bot.Extensions.DialogExtensions;
 
 namespace Phoenix.Bot.Bots
 {
@@ -35,7 +36,7 @@ namespace Phoenix.Bot.Bots
         {
             string mess = turnContext.Activity.Text;
 
-            if (mess == "--persistent-get-started--" || mess == "--persistent-home--" || mess.ContainsSynonyms(SynonymsExtensions.Topics.Greetings))
+            if (Persistent.IsCommand(mess) || mess.ContainsSynonyms(SynonymsExtensions.Topics.Greetings))
                 await ConversationState.ClearStateAsync(turnContext, cancellationToken);
 
             //await turnContext.SendActivityAsync(new Activity(type: ActivityTypes.Typing));
