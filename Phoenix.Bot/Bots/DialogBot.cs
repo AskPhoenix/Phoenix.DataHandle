@@ -35,9 +35,17 @@ namespace Phoenix.Bot.Bots
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             string mess = turnContext.Activity.Text;
+            
+            bool resetConversation = false;
+            resetConversation |= Persistent.IsCommand(mess);
+            resetConversation |= mess.ContainsSynonyms(SynonymsExtensions.Topics.Greetings);
+            resetConversation |= mess.ContainsSynonyms(SynonymsExtensions.Topics.Help) 
+                && await UserState.CreateProperty<bool>("IsAuthenticated").GetAsync(turnContext);
 
-            if (Persistent.IsCommand(mess) || mess.ContainsSynonyms(SynonymsExtensions.Topics.Greetings))
+            if (resetConversation)
                 await ConversationState.ClearStateAsync(turnContext, cancellationToken);
+
+            var kati = await ConversationState.CreateProperty<DialogState>(nameof(DialogState)).GetAsync(turnContext);
 
             //await turnContext.SendActivityAsync(new Activity(type: ActivityTypes.Typing));
             await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>(nameof(DialogState)), cancellationToken);

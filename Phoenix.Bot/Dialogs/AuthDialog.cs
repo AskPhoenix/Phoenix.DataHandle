@@ -117,25 +117,20 @@ namespace Phoenix.Bot.Dialogs
         }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            var res = (bool?)stepContext.Result ?? false;
-            return await stepContext.EndDialogAsync(res);
-        }
+            => await stepContext.EndDialogAsync((bool?)stepContext.Result ?? false);
 
         #endregion
 
         #region Phone Waterfall Dialog
 
         private async Task<DialogTurnResult> AskPhoneStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            return await stepContext.PromptAsync(
+            => await stepContext.PromptAsync(
                 PromptNames.Phone,
                 new PromptOptions
                 {
-                    Prompt = MessageFactory.Text("Παρακαλώ πληκτρολόγησέ τον αριθμό παρακάτω:"),
+                    Prompt = MessageFactory.Text("Παρακαλώ πληκτρολόγησε τον αριθμό παρακάτω:"),
                     RetryPrompt = MessageFactory.Text("Ο αριθμός τηλεφώνου πρέπει να είναι στη μορφή 69xxxxxxxx. Παρακαλώ πληκτρολόγησέ τον ξανά:")
                 });
-        }
 
         private async Task<DialogTurnResult> CheckPhoneStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -221,7 +216,7 @@ namespace Phoenix.Bot.Dialogs
             reply.Text = "Παρακαλώ επικοινώνησε με τους καθηγητές σου για να συνεχίσεις.";
             await stepContext.Context.SendActivityAsync(reply);
 
-            return new DialogTurnResult(DialogTurnStatus.Complete);
+            return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
         private async Task<DialogTurnResult> SendPinStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -236,7 +231,7 @@ namespace Phoenix.Bot.Dialogs
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Τέλεια! Μόλις σου έστειλα ένα SMS με ένα μοναδικό pin. Το έλαβες;"),
-                    RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
+                    RetryPrompt = MessageFactory.Text("Έλαβες το SMS με το pin; Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
                     Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι") }
                 });
         }
@@ -263,7 +258,7 @@ namespace Phoenix.Bot.Dialogs
                 {
                     Prompt = MessageFactory.Text("Αν δεν έχει έρθει ακόμη, μπορώ να προσπαθήσω να σου ξαναστείλω. " +
                     "Αλλιώς, πάτησε \"Το έλαβα\" για να συνεχίσουμε:"),
-                    RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε ή πληκτρολόγησε μία από τις παρακάτω απαντήσεις:"),
+                    RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε ή πληκτρολόγησε μία από τις παρακάτω απαντήσεις για να συνεχίσουμε:"),
                     Choices = new Choice[] { new Choice("Το έλαβα"), new Choice("Στείλε ξανά") }
                 });
         }
@@ -285,16 +280,14 @@ namespace Phoenix.Bot.Dialogs
         #region Check Pin Waterfall Dialog
 
         private async Task<DialogTurnResult> AskPinStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            return await stepContext.PromptAsync(
+            => await stepContext.PromptAsync(
                 PromptNames.Pin,
                 new PromptOptions
                 {
-                    Prompt = MessageFactory.Text("Παρακαλώ πληκτρολόγησέ το pin που έλαβες παρακάτω:"),
+                    Prompt = MessageFactory.Text("Παρακαλώ πληκτρολόγησε το pin που έλαβες παρακάτω:"),
                     RetryPrompt = MessageFactory.Text("Η μορφή του pin που πληκτρολόγησες δεν είναι έγκυρη. Παρακαλώ πληκτρολόγησέ το ξανά:"),
                     Validations = (long)Math.Ceiling(Math.Log10((long)stepContext.Options))
                 });
-        }
 
         private async Task<DialogTurnResult> CheckPinStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {

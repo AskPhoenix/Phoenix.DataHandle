@@ -19,31 +19,28 @@ namespace Phoenix.Bot.Extensions
         {
             var synonyms = typeof(SynonymsExtensions).GetField(topic.ToString()).GetValue(null) as string[];
             
-            return str.ToLower().RemovePunctuation().Split(' ').Any(w => synonyms.Contains(w));
+            return str.ToLower().RemoveAccents().Split(' ').Any(w => synonyms.Contains(w));
         }
 
-        public static string RemovePunctuation(this string str)
+        public static string RemoveAccents(this string str)
         {
             var chars = str.ToCharArray();
             for (int i = 0; i < chars.Length; i++)
             {
-                if (char.IsPunctuation(chars[i]))
+                chars[i] = chars[i] switch
                 {
-                    chars[i] = chars[i] switch
-                    {
-                        'ά' => 'α',
-                        'έ' => 'ε',
-                        'ή' => 'η',
-                        'ό' => 'ο',
-                        'ώ' => 'ω',
-                        var c when c == 'ί' || c == 'ϊ' || c == 'ΐ' => 'ι',
-                        var c when c == 'ύ' || c == 'ϋ' || c == 'ΰ' => 'υ',
-                        _   => chars[i]
-                    };
-                }
+                    'ά' => 'α',
+                    'έ' => 'ε',
+                    'ή' => 'η',
+                    'ό' => 'ο',
+                    'ώ' => 'ω',
+                    var c when c == 'ί' || c == 'ϊ' || c == 'ΐ' => 'ι',
+                    var c when c == 'ύ' || c == 'ϋ' || c == 'ΰ' => 'υ',
+                    _   => chars[i]
+                };
             }
 
-            return chars.ToString();
+            return new string(chars);
         }
     }
 }

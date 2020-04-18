@@ -247,6 +247,12 @@ namespace Phoenix.Bot.Extensions
 
                 public PostbackButton() { }
 
+                public PostbackButton(string title)
+                {
+                    this.Title = title;
+                    this.Payload = title;
+                }
+
                 public PostbackButton(
                     string title,
                     string payload) 
