@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 
-namespace Phoenix.Bot.Extensions
+namespace Phoenix.Bot.Helpers
 {
-    public static class SynonymsExtensions
+    public static class SynonymHelper
     {
         //Synonyms arrays with no punctuation
         public static readonly string[] Greetings = new string[] { "hi", "hello", "γεια", "καλημερα", "καλησπερα" };
@@ -17,7 +17,7 @@ namespace Phoenix.Bot.Extensions
 
         public static bool ContainsSynonyms(this string str, Topics topic)
         {
-            var synonyms = typeof(SynonymsExtensions).GetField(topic.ToString()).GetValue(null) as string[];
+            var synonyms = typeof(SynonymHelper).GetField(topic.ToString()).GetValue(null) as string[];
             
             return str.ToLower().RemoveAccents().Split(' ').Any(w => synonyms.Contains(w));
         }

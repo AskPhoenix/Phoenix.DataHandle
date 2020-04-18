@@ -1,10 +1,10 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using Phoenix.Bot.Extensions;
+using Phoenix.Bot.Helpers;
 using System.Threading;
 using System.Threading.Tasks;
-using static Phoenix.Bot.Extensions.DialogExtensions;
+using static Phoenix.Bot.Helpers.DialogHelper;
 
 namespace Phoenix.Bot.Bots
 {
@@ -38,8 +38,8 @@ namespace Phoenix.Bot.Bots
             
             bool resetConversation = false;
             resetConversation |= Persistent.IsCommand(mess);
-            resetConversation |= mess.ContainsSynonyms(SynonymsExtensions.Topics.Greetings);
-            resetConversation |= mess.ContainsSynonyms(SynonymsExtensions.Topics.Help) 
+            resetConversation |= mess.ContainsSynonyms(SynonymHelper.Topics.Greetings);
+            resetConversation |= mess.ContainsSynonyms(SynonymHelper.Topics.Help) 
                 && await UserState.CreateProperty<bool>("IsAuthenticated").GetAsync(turnContext);
 
             if (resetConversation)

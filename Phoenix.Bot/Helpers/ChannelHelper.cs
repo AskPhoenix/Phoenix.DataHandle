@@ -3,9 +3,9 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Phoenix.Bot.Extensions
+namespace Phoenix.Bot.Helpers
 {
-    public static class ChannelExtensions
+    public static class ChannelHelper
     {
         public static class Facebook
         {

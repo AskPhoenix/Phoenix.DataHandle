@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using static Phoenix.Bot.Extensions.DialogExtensions;
+using static Phoenix.Bot.Helpers.DialogHelper;
 
 namespace Phoenix.Bot.Dialogs.Student
 {

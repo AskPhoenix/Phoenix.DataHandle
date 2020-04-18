@@ -7,9 +7,9 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Phoenix.Bot.Extensions
+namespace Phoenix.Bot.Helpers
 {
-    public static class DialogExtensions
+    public static class DialogHelper
     {
         public static Task<bool> UseExtraValidations(PromptValidatorContext<FoundChoice> promptContext, CancellationToken cancellationToken)
         {

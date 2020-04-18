@@ -6,8 +6,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Phoenix.Bot.Dialogs.Teacher;
-using static Phoenix.Bot.Extensions.DialogExtensions;
-using Phoenix.Bot.Extensions;
+using static Phoenix.Bot.Helpers.DialogHelper;
+using Phoenix.Bot.Helpers;
 using Phoenix.DataHandle.Identity;
 
 namespace Phoenix.Bot.Dialogs
@@ -96,7 +96,7 @@ namespace Phoenix.Bot.Dialogs
                 return await stepContext.BeginDialogAsync(nameof(WelcomeDialog), null, cancellationToken);
             }
 
-            if (!mess.ContainsSynonyms(SynonymsExtensions.Topics.Greetings))
+            if (!mess.ContainsSynonyms(SynonymHelper.Topics.Greetings))
                 return await stepContext.NextAsync(null, cancellationToken);
 
             var reply = MessageFactory.ContentUrl(

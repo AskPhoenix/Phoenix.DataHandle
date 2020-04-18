@@ -2,9 +2,9 @@
 using Newtonsoft.Json.Linq;
 using System.Linq;
 
-namespace Phoenix.Bot.Extensions
+namespace Phoenix.Bot.Helpers
 {
-    public static class NlpExtensions
+    public static class NlpHelper
     {
         public static class Wit
         {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using static Phoenix.Bot.Extensions.DialogExtensions;
+using static Phoenix.Bot.Helpers.DialogHelper;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

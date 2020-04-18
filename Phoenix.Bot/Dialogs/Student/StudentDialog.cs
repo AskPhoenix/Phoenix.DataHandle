@@ -2,10 +2,10 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
-using Phoenix.Bot.Extensions;
+using Phoenix.Bot.Helpers;
 using System.Threading;
 using System.Threading.Tasks;
-using static Phoenix.Bot.Extensions.ChannelExtensions.Facebook;
+using static Phoenix.Bot.Helpers.ChannelHelper.Facebook;
 
 namespace Phoenix.Bot.Dialogs.Student
 {
@@ -47,7 +47,7 @@ namespace Phoenix.Bot.Dialogs.Student
         protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default)
         {
             string mess = innerDc.Context.Activity.Text;
-            InitialDialogId = mess.ContainsSynonyms(SynonymsExtensions.Topics.Help) ? WaterfallNames.Help : WaterfallNames.Menu;
+            InitialDialogId = mess.ContainsSynonyms(SynonymHelper.Topics.Help) ? WaterfallNames.Help : WaterfallNames.Menu;
 
             return await base.OnBeginDialogAsync(innerDc, options, cancellationToken);
         }
