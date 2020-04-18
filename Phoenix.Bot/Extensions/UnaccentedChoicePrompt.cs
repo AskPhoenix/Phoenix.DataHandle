@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Phoenix.Bot.Helpers
+namespace Phoenix.Bot.Extensions
 {
     public class UnaccentedChoicePrompt : ChoicePrompt
     {

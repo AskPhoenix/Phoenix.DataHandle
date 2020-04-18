@@ -2,13 +2,12 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
-using Phoenix.Bot.Helpers;
+using Phoenix.Bot.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using static Phoenix.Bot.Helpers.DialogHelper;
 
 namespace Phoenix.Bot.Dialogs.Student
 {

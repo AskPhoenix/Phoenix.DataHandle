@@ -2,7 +2,7 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
-using Phoenix.Bot.Helpers;
+using Phoenix.Bot.Extensions;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

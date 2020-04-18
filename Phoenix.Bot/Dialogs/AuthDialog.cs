@@ -8,7 +8,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using System;
 using Phoenix.DataHandle.Identity;
-using Phoenix.Bot.Helpers;
+using Phoenix.Bot.Extensions;
 
 namespace Phoenix.Bot.Dialogs
 {

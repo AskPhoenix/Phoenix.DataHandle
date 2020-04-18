@@ -4,7 +4,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using static Phoenix.Bot.Helpers.DialogHelper;
 using System.Threading;
 using System.Threading.Tasks;
-using Phoenix.Bot.Helpers;
+using Phoenix.Bot.Extensions;
 
 namespace Phoenix.Bot.Dialogs
 {

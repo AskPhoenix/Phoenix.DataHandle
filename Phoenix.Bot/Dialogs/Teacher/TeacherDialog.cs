@@ -6,7 +6,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Phoenix.Bot.Dialogs.Student;
-using Phoenix.Bot.Helpers;
+using Phoenix.Bot.Extensions;
 
 namespace Phoenix.Bot.Dialogs.Teacher
 {
