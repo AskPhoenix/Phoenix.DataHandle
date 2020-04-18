@@ -6,6 +6,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Phoenix.Bot.Dialogs.Student;
+using Phoenix.Bot.Helpers;
 
 namespace Phoenix.Bot.Dialogs.Teacher
 {
@@ -18,7 +19,7 @@ namespace Phoenix.Bot.Dialogs.Teacher
             //AddDialog(new ExamDialog());
             //AddDialog(new GradationDialog());
             //AddDialog(new ScheduleDialog());
-            this.AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            this.AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
             this.AddDialog(new WaterfallDialog(nameof(TeacherDialog) + "_" + nameof(WaterfallDialog),
                 new WaterfallStep[]
                 {
@@ -33,7 +34,7 @@ namespace Phoenix.Bot.Dialogs.Teacher
         private async Task<DialogTurnResult> MenuStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             return await stepContext.PromptAsync(
-                nameof(ChoicePrompt),
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Πώς θα μπορούσα να σε βοηθήσω;"),

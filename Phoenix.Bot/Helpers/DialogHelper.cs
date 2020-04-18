@@ -1,8 +1,6 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Choices;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,14 +9,6 @@ namespace Phoenix.Bot.Helpers
 {
     public static class DialogHelper
     {
-        public static Task<bool> UseExtraValidations(PromptValidatorContext<FoundChoice> promptContext, CancellationToken cancellationToken)
-        {
-            return Task.FromResult
-                (promptContext.Recognized.Succeeded ||
-                (promptContext.Options.Validations is IList<string> &&
-                (promptContext.Options.Validations as IList<string>).Contains(promptContext.Context.Activity.Text)));
-        }
-
         public static Task<bool> PhoneNumberPromptValidator(PromptValidatorContext<long> promptContext, CancellationToken cancellationToken)
         {
             return Task.FromResult(

@@ -2,6 +2,7 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using Phoenix.Bot.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -16,7 +17,7 @@ namespace Phoenix.Bot.Dialogs.Student
         public ScheduleDialog()
             : base(nameof(ScheduleDialog))
         {
-            AddDialog(new ChoicePrompt(nameof(ChoicePrompt), UseExtraValidations));
+            AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
             AddDialog(new WaterfallDialog(nameof(ScheduleDialog) + "_" + nameof(WaterfallDialog),
                 new WaterfallStep[]
                 {
@@ -66,7 +67,8 @@ namespace Phoenix.Bot.Dialogs.Student
                 }
             };
 
-            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+            return await stepContext.PromptAsync(
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = (Activity)MessageFactory.Attachment(card.ToAttachment()),
@@ -88,7 +90,8 @@ namespace Phoenix.Bot.Dialogs.Student
             }
             else if (stepContext.Context.Activity.Text == "Άλλη μέρα")
             {
-                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                return await stepContext.PromptAsync(
+                    nameof(UnaccentedChoicePrompt),
                     new PromptOptions
                     {
                         Prompt = MessageFactory.Text("Για ποια μέρα θα ήθελες να δεις το πρόγραμμά σου;"),
@@ -139,7 +142,8 @@ namespace Phoenix.Bot.Dialogs.Student
                 }.ToAttachment());
             }
 
-            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+            return await stepContext.PromptAsync(
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = (Activity)MessageFactory.Carousel(cards),

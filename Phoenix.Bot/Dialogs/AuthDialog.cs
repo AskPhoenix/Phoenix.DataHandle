@@ -8,6 +8,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using System;
 using Phoenix.DataHandle.Identity;
+using Phoenix.Bot.Helpers;
 
 namespace Phoenix.Bot.Dialogs
 {
@@ -38,7 +39,7 @@ namespace Phoenix.Bot.Dialogs
             _conversationState = conversationState;
             _userState = userState;
 
-            AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
             AddDialog(new NumberPrompt<long>(PromptNames.Phone, PhoneNumberPromptValidator));
             AddDialog(new NumberPrompt<long>(PromptNames.Pin, PinPromptValidator));
 
@@ -98,7 +99,7 @@ namespace Phoenix.Bot.Dialogs
 
             var reply = (Activity)MessageFactory.Attachment(card.ToAttachment());
             return await stepContext.PromptAsync(
-                nameof(ChoicePrompt),
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = reply,
@@ -155,7 +156,7 @@ namespace Phoenix.Bot.Dialogs
                 return await stepContext.EndDialogAsync(stepContext.Result, cancellationToken);
 
             return await stepContext.PromptAsync(
-                nameof(ChoicePrompt),
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Το κινητό τηλέφωνο που έγραψες δε βρέθηκε. " +
@@ -227,7 +228,7 @@ namespace Phoenix.Bot.Dialogs
             long phone = (long)stepContext.Options;
 
             return await stepContext.PromptAsync(
-                nameof(ChoicePrompt),
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Τέλεια! Μόλις σου έστειλα ένα SMS με ένα μοναδικό pin. Το έλαβες;"),
@@ -253,7 +254,7 @@ namespace Phoenix.Bot.Dialogs
             await stepContext.Context.SendActivityAsync(reply);
 
             return await stepContext.PromptAsync(
-                nameof(ChoicePrompt),
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Αν δεν έχει έρθει ακόμη, μπορώ να προσπαθήσω να σου ξαναστείλω. " +

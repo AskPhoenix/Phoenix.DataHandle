@@ -20,7 +20,7 @@ namespace Phoenix.Bot.Dialogs.Student
         public StudentDialog(ExerciseDialog exerciseDialog, ExamDialog examDialog, ScheduleDialog scheduleDialog)
             : base(nameof(StudentDialog))
         {
-            AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
 
             AddDialog(exerciseDialog);
             AddDialog(examDialog);
@@ -67,7 +67,7 @@ namespace Phoenix.Bot.Dialogs.Student
                     cancellationToken);
 
             return await stepContext.PromptAsync(
-                nameof(ChoicePrompt),
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Πώς θα μπορούσα να σε βοηθήσω;"),
@@ -133,7 +133,7 @@ namespace Phoenix.Bot.Dialogs.Student
             await stepContext.Context.SendActivityAsync(reply);
 
             return await stepContext.PromptAsync(
-                nameof(ChoicePrompt),
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Style = ListStyle.None,
@@ -284,7 +284,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 text: "Παρακαλώ επίλεξε αν χρειάζεσαι βοήθεια σε κάποιο άλλο θέμα, ή όχι για να επιστρέψεις στο αρχικό μενού:");
 
             return await stepContext.PromptAsync(
-                nameof(ChoicePrompt),
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = promptReply,

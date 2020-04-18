@@ -4,6 +4,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using static Phoenix.Bot.Helpers.DialogHelper;
 using System.Threading;
 using System.Threading.Tasks;
+using Phoenix.Bot.Helpers;
 
 namespace Phoenix.Bot.Dialogs
 {
@@ -18,7 +19,7 @@ namespace Phoenix.Bot.Dialogs
         public WelcomeDialog()
             : base(nameof(WelcomeDialog))
         {
-            AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
 
             AddDialog(new WaterfallDialog(WaterfallNames.AskForTutorial,
                 new WaterfallStep[]
@@ -58,7 +59,7 @@ namespace Phoenix.Bot.Dialogs
         private async Task<DialogTurnResult> AskStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             return await stepContext.PromptAsync(
-                nameof(ChoicePrompt),
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Προτού ξεκινήσουμε, θα ήθελες να σου δείξω τι μπορώ να κάνω με μια σύντομη περιήγηση;"),

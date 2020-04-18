@@ -2,11 +2,11 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using Phoenix.Bot.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using static Phoenix.Bot.Helpers.DialogHelper;
 
 namespace Phoenix.Bot.Dialogs.Student
 {
@@ -15,7 +15,7 @@ namespace Phoenix.Bot.Dialogs.Student
         public ExamDialog()
             : base(nameof(ExamDialog))
         {
-            AddDialog(new ChoicePrompt(nameof(ChoicePrompt), UseExtraValidations));
+            AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
             AddDialog(new WaterfallDialog(nameof(ExamDialog) + "_" + nameof(WaterfallDialog),
                 new WaterfallStep[]
                 {
@@ -36,7 +36,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 return await stepContext.NextAsync(courseId, cancellationToken);
 
             return await stepContext.PromptAsync(
-                nameof(ChoicePrompt),
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Επίλεξε το μάθημα που σε ενδιαφέρει:"),
@@ -64,7 +64,8 @@ namespace Phoenix.Bot.Dialogs.Student
                 }
             };
 
-            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+            return await stepContext.PromptAsync(
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = (Activity)MessageFactory.Attachment(card.ToAttachment()),
@@ -103,7 +104,8 @@ namespace Phoenix.Bot.Dialogs.Student
                     }.ToAttachment());
                 }
                 
-                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                return await stepContext.PromptAsync(
+                    nameof(UnaccentedChoicePrompt),
                     new PromptOptions
                     {
                         Prompt = (Activity)MessageFactory.Carousel(cards),
@@ -128,7 +130,8 @@ namespace Phoenix.Bot.Dialogs.Student
                     }.ToAttachment());
                 }
 
-                return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                return await stepContext.PromptAsync(
+                    nameof(UnaccentedChoicePrompt),
                     new PromptOptions
                     {
                         Prompt = (Activity)MessageFactory.Carousel(cards),

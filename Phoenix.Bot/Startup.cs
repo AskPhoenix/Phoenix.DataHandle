@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

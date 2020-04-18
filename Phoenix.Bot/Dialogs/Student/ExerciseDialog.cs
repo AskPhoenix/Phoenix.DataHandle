@@ -2,6 +2,7 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using Phoenix.Bot.Helpers;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace Phoenix.Bot.Dialogs.Student
         public ExerciseDialog() :
             base(nameof(ExerciseDialog))
         {
-            AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
             AddDialog(new WaterfallDialog(nameof(ExerciseDialog) + "_" + nameof(WaterfallDialog),
                 new WaterfallStep[]
                 {
@@ -28,7 +29,7 @@ namespace Phoenix.Bot.Dialogs.Student
         private async Task<DialogTurnResult> CourseSelectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             return await stepContext.PromptAsync(
-                nameof(ChoicePrompt),
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Επίλεξε το μάθημα που σε ενδιαφέρει:"),
@@ -54,7 +55,7 @@ namespace Phoenix.Bot.Dialogs.Student
             };
 
             return await stepContext.PromptAsync(
-                nameof(ChoicePrompt),
+                nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = (Activity)MessageFactory.Attachment(card.ToAttachment()),
