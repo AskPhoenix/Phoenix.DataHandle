@@ -106,21 +106,21 @@ namespace Phoenix.Bot.Dialogs.Student
                     {
                         Title = "Εργασίες",
                         Subtitle = "Μάθε πώς μπορείς να διαχειριστείς τις εργασίες για το σπίτι.",
-                        ImageUrl = "https://www.bot.askphoenix.gr/icons/exercise_bg.png",
+                        ImageUrl = "https://www.bot.askphoenix.gr/assets/exercise_bg.png",
                         Buttons = new Button[] { new PostbackButton("Περισσότερα", "Περισσότερα για τις εργασίες") }
                     },
                     new GenericElement()
                     {
                         Title = "Διαγωνίσματα",
                         Subtitle = "Μάθε πώς μπορείς να διαχειριστείς τα διαγωνίσματά σου.",
-                        ImageUrl = "https://www.bot.askphoenix.gr/icons/exam_bg.png",
+                        ImageUrl = "https://www.bot.askphoenix.gr/assets/exam_bg.png",
                         Buttons = new Button[] { new PostbackButton("Περισσότερα", "Περισσότερα για τα διαγωνίσματα") }
                     },
                     new GenericElement()
                     {
                         Title = "Πρόγραμμα",
                         Subtitle = "Μάθε πώς μπορείς να δεις το πρόγραμμα των μαθημάτων σου.",
-                        ImageUrl = "https://www.bot.askphoenix.gr/icons/schedule_bg.png",
+                        ImageUrl = "https://www.bot.askphoenix.gr/assets/schedule_bg.png",
                         Buttons = new Button[] { new PostbackButton("Περισσότερα", "Περισσότερα για το πρόγραμμα") }
                     }
                 }
