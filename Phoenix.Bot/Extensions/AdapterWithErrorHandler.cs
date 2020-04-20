@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Phoenix.DataHandle.Bot.Storage;
 
-namespace Phoenix.Bot
+namespace Phoenix.Bot.Extensions
 {
     public class AdapterWithErrorHandler : BotFrameworkHttpAdapter
     {
