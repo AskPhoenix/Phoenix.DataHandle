@@ -61,8 +61,7 @@ namespace Phoenix.Bot.Dialogs
         #region Ask for Tutorial Waterfall Dialog
 
         private async Task<DialogTurnResult> AskStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            return await stepContext.PromptAsync(
+            => await stepContext.PromptAsync(
                 nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
@@ -70,7 +69,6 @@ namespace Phoenix.Bot.Dialogs
                     RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
                     Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι") }
                 });
-        }
 
         private async Task<DialogTurnResult> ReplyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -146,8 +144,7 @@ namespace Phoenix.Bot.Dialogs
         }
 
         private async Task<DialogTurnResult> TopicRedirectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            return (stepContext.Result as FoundChoice).Index switch
+            => (stepContext.Result as FoundChoice).Index switch
             {
                 0 => await PersistentMenuTutorialStepAsync(stepContext, cancellationToken),
                 1 => await HomeTutorialStepAsync(stepContext, cancellationToken),
@@ -155,7 +152,6 @@ namespace Phoenix.Bot.Dialogs
                 3 => await FinalStepAsync(stepContext, cancellationToken),
                 _ => await stepContext.EndDialogAsync(null, cancellationToken)
             };
-        }
 
         private async Task<DialogTurnResult> PersistentMenuTutorialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -268,8 +264,7 @@ namespace Phoenix.Bot.Dialogs
         }
 
         private async Task<DialogTurnResult> AfterTopicStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            return await stepContext.PromptAsync(
+            => await stepContext.PromptAsync(
                 nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
@@ -279,7 +274,6 @@ namespace Phoenix.Bot.Dialogs
                     Style = ListStyle.SuggestedAction
                 },
                 cancellationToken);
-        }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
