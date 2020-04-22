@@ -7,10 +7,7 @@ namespace Phoenix.DataHandle.Models
     {
         public AspNetUsers()
         {
-            AspNetUserClaims = new HashSet<AspNetUserClaims>();
-            AspNetUserLogins = new HashSet<AspNetUserLogins>();
             AspNetUserRoles = new HashSet<AspNetUserRoles>();
-            AspNetUserTokens = new HashSet<AspNetUserTokens>();
         }
 
         public int Id { get; set; }
@@ -33,9 +30,6 @@ namespace Phoenix.DataHandle.Models
         public int created_applicationType { get; set; }
 
         public virtual User User { get; set; }
-        public virtual ICollection<AspNetUserClaims> AspNetUserClaims { get; set; }
-        public virtual ICollection<AspNetUserLogins> AspNetUserLogins { get; set; }
         public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
-        public virtual ICollection<AspNetUserTokens> AspNetUserTokens { get; set; }
     }
 }
