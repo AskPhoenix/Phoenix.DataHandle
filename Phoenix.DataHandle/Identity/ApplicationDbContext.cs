@@ -32,8 +32,8 @@ namespace Phoenix.DataHandle.Identity
             {
                 entity.HasKey(e => e.AspNetUserId);
                 entity.Property(e => e.AspNetUserId).ValueGeneratedNever();
-                entity.Property(e => e.Forename).HasMaxLength(255);
-                entity.Property(e => e.Surname).HasMaxLength(255);
+                entity.Property(e => e.LastName).HasMaxLength(255);
+                entity.Property(e => e.FirstName).HasMaxLength(255);
             });
 
         }
@@ -47,6 +47,7 @@ namespace Phoenix.DataHandle.Identity
 
         IUser IAspNetUser.User => this.User;
         public User User { get; set; }
+        public string FacebookId { get; set; }
 
         public ApplicationUser() { }
 

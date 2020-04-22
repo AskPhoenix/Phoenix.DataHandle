@@ -8,6 +8,10 @@ namespace Phoenix.DataHandle.Entities
         string Name { get; set; }
         string City { get; set; }
         string AddressLine { get; set; }
+        string Endpoint { get; set; }
+        string FacebookPageId { get; set; }
+
+
         //IPerson Owner { get; set; }
     }
 }

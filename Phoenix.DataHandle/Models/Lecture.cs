@@ -8,7 +8,6 @@ namespace Phoenix.DataHandle.Models
         public int Id { get; set; }
         public int CourseId { get; set; }
         public int ClassroomId { get; set; }
-        public string Name { get; set; }
         public DateTime StartDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
         public int Status { get; set; }

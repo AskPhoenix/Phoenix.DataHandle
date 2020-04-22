@@ -1,4 +1,5 @@
 ﻿dotnet ef dbcontext scaffold "ConnectionString" Microsoft.EntityFrameworkCore.SqlServer ^
+--context PhoenixContext ^
 --output-dir Models ^
 --use-database-names ^
 --force ^

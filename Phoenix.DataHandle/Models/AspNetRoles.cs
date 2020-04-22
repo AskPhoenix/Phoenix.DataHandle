@@ -11,6 +11,7 @@ namespace Phoenix.DataHandle.Models
         }
 
         public int Id { get; set; }
+        public int Type { get; set; }
         public string Name { get; set; }
         public string NormalizedName { get; set; }
         public string ConcurrencyStamp { get; set; }

@@ -7,7 +7,6 @@ namespace Phoenix.DataHandle.Entities
     {
         ICourse Course { get; }
         //ITeacher Teacher { get; set; }
-
         //string Classroom { get; set; }
         DateTime StartDateTime { get; set; }
         DateTime EndDateTime { get; set; }

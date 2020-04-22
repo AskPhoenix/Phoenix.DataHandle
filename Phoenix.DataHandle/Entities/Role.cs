@@ -18,7 +18,7 @@ namespace Phoenix.DataHandle.Entities
 
     public static class RoleExtensions
     {
-        public static IEnumerable<Role> getAll()
+        public static IEnumerable<Role> GetAll()
         {
             return Enum.GetValues(typeof(Role)).Cast<Role>();
         }
@@ -28,16 +28,16 @@ namespace Phoenix.DataHandle.Entities
             return me.ToString();
         }
 
-        public static string toStringNormalize(this Role me)
+        public static string ToStringNormalize(this Role me)
         {
             return me.ToString().ToUpper();
         }
 
-        public static Role toRole(this string me)
+        public static Role ToRole(this string me)
         {
             try
             {
-                return getAll().SingleOrDefault(a => string.Equals(a.ToString(), me, StringComparison.CurrentCultureIgnoreCase));
+                return GetAll().SingleOrDefault(a => string.Equals(a.ToString(), me, StringComparison.CurrentCultureIgnoreCase));
             }
             catch
             {

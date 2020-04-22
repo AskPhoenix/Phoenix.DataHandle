@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Phoenix.DataHandle.Models
 {
-    public partial class PhoenixDBContext : DbContext
+    public partial class PhoenixContext : DbContext
     {
-        public PhoenixDBContext()
+        public PhoenixContext()
         {
         }
 
-        public PhoenixDBContext(DbContextOptions<PhoenixDBContext> options)
+        public PhoenixContext(DbContextOptions<PhoenixContext> options)
             : base(options)
         {
         }
@@ -28,8 +28,7 @@ namespace Phoenix.DataHandle.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=tcp:askphoenix.database.windows.net,1433;Initial Catalog=PhoenixDB;Persist Security Info=False;User ID=phoenix;Password=20Ph0eniX20!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+                throw new Exception("Connection string not specified for PhoenixContext.");
             }
         }
 
@@ -76,6 +75,11 @@ namespace Phoenix.DataHandle.Models
 
                 entity.Property(e => e.Email).HasMaxLength(256);
 
+                entity.Property(e => e.FacebookId)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
@@ -102,8 +106,7 @@ namespace Phoenix.DataHandle.Models
                 entity.HasOne(d => d.School)
                     .WithMany(p => p.Classroom)
                     .HasForeignKey(d => d.SchoolId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Classroom__schoo__66603565");
+                    .OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<Course>(entity =>
@@ -131,8 +134,7 @@ namespace Phoenix.DataHandle.Models
                 entity.HasOne(d => d.School)
                     .WithMany(p => p.Course)
                     .HasForeignKey(d => d.SchoolId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Course__schoolId__6754599E");
+                    .OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<Lecture>(entity =>
@@ -141,10 +143,6 @@ namespace Phoenix.DataHandle.Models
 
                 entity.Property(e => e.EndDateTime).HasColumnType("datetime2(0)");
 
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(255);
-
                 entity.Property(e => e.StartDateTime).HasColumnType("datetime2(0)");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
@@ -152,14 +150,12 @@ namespace Phoenix.DataHandle.Models
                 entity.HasOne(d => d.Classroom)
                     .WithMany(p => p.Lecture)
                     .HasForeignKey(d => d.ClassroomId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Lecture__classro__693CA210");
+                    .OnDelete(DeleteBehavior.ClientSetNull);
 
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Lecture)
                     .HasForeignKey(d => d.CourseId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Lecture__courseI__68487DD7");
+                    .OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<School>(entity =>
@@ -178,6 +174,16 @@ namespace Phoenix.DataHandle.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
 
+                entity.Property(e => e.Endpoint)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.FacebookPageId)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
@@ -195,9 +201,9 @@ namespace Phoenix.DataHandle.Models
 
                 entity.Property(e => e.AspNetUserId).ValueGeneratedNever();
 
-                entity.Property(e => e.Surname).HasMaxLength(255);
+                entity.Property(e => e.FirstName).HasMaxLength(255);
 
-                entity.Property(e => e.Forename).HasMaxLength(255);
+                entity.Property(e => e.LastName).HasMaxLength(255);
 
                 entity.HasOne(d => d.AspNetUser)
                     .WithOne(p => p.User)

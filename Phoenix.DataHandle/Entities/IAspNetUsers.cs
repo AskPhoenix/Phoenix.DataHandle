@@ -11,6 +11,7 @@ namespace Phoenix.DataHandle.Entities
         bool EmailConfirmed { get; set; }
         string PhoneNumber { get; set; }
         bool PhoneNumberConfirmed { get; set; }
+        string FacebookId { get; set; }
         DateTime CreatedAt { get; set; }
         DateTime? UpdatedAt { get; set; }
 

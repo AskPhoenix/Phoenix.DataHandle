@@ -12,11 +12,13 @@ namespace Phoenix.DataHandle.Models
         }
 
         public int Id { get; set; }
-        public string Slug { get; set; }
         public string Name { get; set; }
+        public string Slug { get; set; }
         public string City { get; set; }
         public string AddressLine { get; set; }
         public string Info { get; set; }
+        public string Endpoint { get; set; }
+        public string FacebookPageId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
