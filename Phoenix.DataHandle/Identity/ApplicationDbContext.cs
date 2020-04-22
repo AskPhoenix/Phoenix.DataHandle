@@ -25,15 +25,15 @@ namespace Phoenix.DataHandle.Identity
             modelBuilder.Entity<ApplicationUser>()
                 .HasOne(a => a.User)
                 .WithOne()
-                .HasForeignKey<User>(b => b.aspNetUserId);
+                .HasForeignKey<User>(b => b.AspNetUserId);
 
             modelBuilder.Ignore<AspNetUsers>();
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasKey(e => e.aspNetUserId);
-                entity.Property(e => e.aspNetUserId).ValueGeneratedNever();
-                entity.Property(e => e.forename).HasMaxLength(255);
-                entity.Property(e => e.surname).HasMaxLength(255);
+                entity.HasKey(e => e.AspNetUserId);
+                entity.Property(e => e.AspNetUserId).ValueGeneratedNever();
+                entity.Property(e => e.Forename).HasMaxLength(255);
+                entity.Property(e => e.Surname).HasMaxLength(255);
             });
 
         }
@@ -42,8 +42,8 @@ namespace Phoenix.DataHandle.Identity
 
     public sealed class ApplicationUser : IdentityUser<int>, IAspNetUser
     {
-        public DateTime created_at { get; set; }
-        public DateTime? updated_at { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         IUser IAspNetUser.User => this.User;
         public User User { get; set; }

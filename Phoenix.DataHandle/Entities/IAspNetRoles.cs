@@ -5,6 +5,6 @@ namespace Phoenix.DataHandle.Entities
     {
         string Name { get; set; }
         string NormalizedName { get; set; }
-        Role role { get; }
+        Role Role { get; }
     }
 }

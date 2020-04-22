@@ -5,11 +5,10 @@ namespace Phoenix.DataHandle.Models
 {
     public partial class User
     {
-        public int id { get => aspNetUserId; }
-        public int aspNetUserId { get; set; }
-        public string surname { get; set; }
-        public string forename { get; set; }
+        public int AspNetUserId { get; set; }
+        public string Surname { get; set; }
+        public string Forename { get; set; }
 
-        public virtual AspNetUsers aspNetUser { get; set; }
+        public virtual AspNetUsers AspNetUser { get; set; }
     }
 }

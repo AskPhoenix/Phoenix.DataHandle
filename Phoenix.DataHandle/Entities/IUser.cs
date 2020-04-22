@@ -4,7 +4,7 @@ namespace Phoenix.DataHandle.Entities
 {
     public interface IUser
     {
-        string surname { get; set; }
-        string forename { get; set; }
+        string Surname { get; set; }
+        string Forename { get; set; }
     }
 }

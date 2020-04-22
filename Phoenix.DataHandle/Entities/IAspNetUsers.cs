@@ -11,8 +11,8 @@ namespace Phoenix.DataHandle.Entities
         bool EmailConfirmed { get; set; }
         string PhoneNumber { get; set; }
         bool PhoneNumberConfirmed { get; set; }
-        DateTime created_at { get; set; }
-        DateTime? updated_at { get; set; }
+        DateTime CreatedAt { get; set; }
+        DateTime? UpdatedAt { get; set; }
 
         IUser User { get; }
     }

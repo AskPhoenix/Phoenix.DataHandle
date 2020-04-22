@@ -25,9 +25,9 @@ namespace Phoenix.DataHandle.Models
         public DateTimeOffset? LockoutEnd { get; set; }
         public bool LockoutEnabled { get; set; }
         public int AccessFailedCount { get; set; }
-        public DateTime created_at { get; set; }
-        public DateTime? updated_at { get; set; }
-        public int created_applicationType { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public int CreatedApplicationType { get; set; }
 
         public virtual User User { get; set; }
         public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }

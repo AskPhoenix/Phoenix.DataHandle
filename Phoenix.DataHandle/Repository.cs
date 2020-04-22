@@ -21,7 +21,7 @@ namespace Phoenix.DataHandle
 
         public virtual TModel find(int id)
         {
-            return dbContext.Set<TModel>().Single(a => a.id == id);
+            return dbContext.Set<TModel>().Single(a => a.Id == id);
         }
 
         public virtual TModel create(TModel tModel)
@@ -42,7 +42,7 @@ namespace Phoenix.DataHandle
 
         public virtual bool delete(int id)
         {
-            dbContext.Set<TModel>().Remove(dbContext.Set<TModel>().Single(a => a.id == id));
+            dbContext.Set<TModel>().Remove(dbContext.Set<TModel>().Single(a => a.Id == id));
             dbContext.SaveChanges();
 
             return true;

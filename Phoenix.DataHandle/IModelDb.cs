@@ -5,6 +5,6 @@ namespace Phoenix.DataHandle
 {
     public interface IModelDb
     {
-        int id { get; }
+        int Id { get; }
     }
 }

@@ -17,7 +17,7 @@ namespace Phoenix.DataHandle.Identity
 
         public override Task<IdentityResult> CreateAsync(ApplicationUser user)
         {
-            user.created_at = DateTime.Now;
+            user.CreatedAt = DateTime.Now;
             if (user.User == null)
                 user.User = new User();
 
@@ -28,7 +28,7 @@ namespace Phoenix.DataHandle.Identity
         {
             ApplicationUser applicationUser = user as ApplicationUser ?? new ApplicationUser(user);
 
-            applicationUser.created_at = DateTime.Now;
+            applicationUser.CreatedAt = DateTime.Now;
             if (applicationUser.User == null)
                 applicationUser.User = new User();
 

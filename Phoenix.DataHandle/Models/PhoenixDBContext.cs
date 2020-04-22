@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Phoenix.DataHandle.Models
 {
-    public partial class PhoenixContext : DbContext
+    public partial class PhoenixDBContext : DbContext
     {
-        public PhoenixContext()
+        public PhoenixDBContext()
         {
         }
 
-        public PhoenixContext(DbContextOptions<PhoenixContext> options)
+        public PhoenixDBContext(DbContextOptions<PhoenixDBContext> options)
             : base(options)
         {
         }
@@ -29,7 +29,7 @@ namespace Phoenix.DataHandle.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=Phoenix;Persist Security Info=True;User ID=sa;Password=root");
+                optionsBuilder.UseSqlServer("Server=tcp:askphoenix.database.windows.net,1433;Initial Catalog=PhoenixDB;Persist Security Info=False;User ID=phoenix;Password=20Ph0eniX20!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
         }
 
@@ -72,137 +72,137 @@ namespace Phoenix.DataHandle.Models
                     .IsUnique()
                     .HasFilter("([NormalizedUserName] IS NOT NULL)");
 
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
+
                 entity.Property(e => e.Email).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
 
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
+
                 entity.Property(e => e.UserName).HasMaxLength(256);
-
-                entity.Property(e => e.created_at).HasColumnType("datetime2(0)");
-
-                entity.Property(e => e.updated_at).HasColumnType("datetime2(0)");
             });
 
             modelBuilder.Entity<Classroom>(entity =>
             {
-                entity.HasIndex(e => new { e.schoolId, e.name })
-                    .HasName("UQ__Classroo__A5B5856984D1F366")
+                entity.HasIndex(e => new { e.SchoolId, e.Name })
+                    .HasName("UQ__Classroo__A5B5856930D0EBE6")
                     .IsUnique();
 
-                entity.Property(e => e.created_at).HasColumnType("datetime2(0)");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
 
-                entity.Property(e => e.name)
+                entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
 
-                entity.Property(e => e.updated_at).HasColumnType("datetime2(0)");
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
 
-                entity.HasOne(d => d.school)
+                entity.HasOne(d => d.School)
                     .WithMany(p => p.Classroom)
-                    .HasForeignKey(d => d.schoolId)
+                    .HasForeignKey(d => d.SchoolId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Classroom__schoo__2F10007B");
+                    .HasConstraintName("FK__Classroom__schoo__66603565");
             });
 
             modelBuilder.Entity<Course>(entity =>
             {
-                entity.HasIndex(e => new { e.schoolId, e.level })
-                    .HasName("UQ__Course__BE9836D87A0F4518")
+                entity.HasIndex(e => new { e.SchoolId, e.Level })
+                    .HasName("UQ__Course__BE9836D8D4139A41")
                     .IsUnique();
 
-                entity.Property(e => e.created_at).HasColumnType("datetime2(0)");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
 
-                entity.Property(e => e.group)
+                entity.Property(e => e.Group)
                     .IsRequired()
                     .HasMaxLength(255);
 
-                entity.Property(e => e.level)
+                entity.Property(e => e.Level)
                     .IsRequired()
                     .HasMaxLength(255);
 
-                entity.Property(e => e.name)
+                entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
 
-                entity.Property(e => e.updated_at).HasColumnType("datetime2(0)");
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
 
-                entity.HasOne(d => d.school)
+                entity.HasOne(d => d.School)
                     .WithMany(p => p.Course)
-                    .HasForeignKey(d => d.schoolId)
+                    .HasForeignKey(d => d.SchoolId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Course__schoolId__2B3F6F97");
+                    .HasConstraintName("FK__Course__schoolId__6754599E");
             });
 
             modelBuilder.Entity<Lecture>(entity =>
             {
-                entity.Property(e => e.created_at).HasColumnType("datetime2(0)");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
 
-                entity.Property(e => e.endDateTime).HasColumnType("datetime2(0)");
+                entity.Property(e => e.EndDateTime).HasColumnType("datetime2(0)");
 
-                entity.Property(e => e.name)
+                entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
 
-                entity.Property(e => e.startDateTime).HasColumnType("datetime2(0)");
+                entity.Property(e => e.StartDateTime).HasColumnType("datetime2(0)");
 
-                entity.Property(e => e.updated_at).HasColumnType("datetime2(0)");
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
 
-                entity.HasOne(d => d.classroom)
+                entity.HasOne(d => d.Classroom)
                     .WithMany(p => p.Lecture)
-                    .HasForeignKey(d => d.classroomId)
+                    .HasForeignKey(d => d.ClassroomId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Lecture__classro__398D8EEE");
+                    .HasConstraintName("FK__Lecture__classro__693CA210");
 
-                entity.HasOne(d => d.course)
+                entity.HasOne(d => d.Course)
                     .WithMany(p => p.Lecture)
-                    .HasForeignKey(d => d.courseId)
+                    .HasForeignKey(d => d.CourseId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Lecture__courseI__38996AB5");
+                    .HasConstraintName("FK__Lecture__courseI__68487DD7");
             });
 
             modelBuilder.Entity<School>(entity =>
             {
-                entity.HasIndex(e => e.slug)
+                entity.HasIndex(e => e.Slug)
                     .HasName("SchoolSlugIndex")
                     .IsUnique();
 
-                entity.Property(e => e.addressLine)
+                entity.Property(e => e.AddressLine)
                     .IsRequired()
                     .HasMaxLength(255);
 
-                entity.Property(e => e.city)
+                entity.Property(e => e.City)
                     .IsRequired()
                     .HasMaxLength(255);
 
-                entity.Property(e => e.created_at).HasColumnType("datetime2(0)");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
 
-                entity.Property(e => e.name)
+                entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
 
-                entity.Property(e => e.slug)
+                entity.Property(e => e.Slug)
                     .IsRequired()
                     .HasMaxLength(64);
 
-                entity.Property(e => e.updated_at).HasColumnType("datetime2(0)");
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
             });
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasKey(e => e.aspNetUserId);
+                entity.HasKey(e => e.AspNetUserId);
 
-                entity.Property(e => e.aspNetUserId).ValueGeneratedNever();
+                entity.Property(e => e.AspNetUserId).ValueGeneratedNever();
 
-                entity.Property(e => e.forename).HasMaxLength(255);
+                entity.Property(e => e.Surname).HasMaxLength(255);
 
-                entity.Property(e => e.surname).HasMaxLength(255);
+                entity.Property(e => e.Forename).HasMaxLength(255);
 
-                entity.HasOne(d => d.aspNetUser)
+                entity.HasOne(d => d.AspNetUser)
                     .WithOne(p => p.User)
-                    .HasForeignKey<User>(d => d.aspNetUserId)
-                    .HasConstraintName("FK__User__aspNetUser__276EDEB3");
+                    .HasForeignKey<User>(d => d.AspNetUserId)
+                    .HasConstraintName("FK__User__aspNetUser__6A30C649");
             });
 
             OnModelCreatingPartial(modelBuilder);

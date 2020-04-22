@@ -6,10 +6,10 @@ namespace Phoenix.DataHandle.Entities
     public interface ICourse
     {
         ISchool School { get; }
-        string name { get; set; }
+        string Name { get; set; }
         IEnumerable<ILecture> Lectures { get;  }
         //IEnumerable<IStudent_Course> Student_Course { get; set; }
-        string level { get; set; }
-        string group { get; set; }
+        string Level { get; set; }
+        string Group { get; set; }
     }
 }

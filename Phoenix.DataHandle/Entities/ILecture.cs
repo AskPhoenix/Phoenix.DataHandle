@@ -9,9 +9,9 @@ namespace Phoenix.DataHandle.Entities
         //ITeacher Teacher { get; set; }
 
         //string Classroom { get; set; }
-        DateTime startDateTime { get; set; }
-        DateTime endDateTime { get; set; }
-        int status { get; set; }
+        DateTime StartDateTime { get; set; }
+        DateTime EndDateTime { get; set; }
+        int Status { get; set; }
         //IEnumerable<IHomework> Homeworks { get; set; }
     }
 }
