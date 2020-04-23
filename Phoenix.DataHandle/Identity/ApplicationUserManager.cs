@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Phoenix.DataHandle.Models;
+using Phoenix.DataHandle.Main.Models;
 using Talagozis.AspNetCore.Models;
 
 namespace Phoenix.DataHandle.Identity

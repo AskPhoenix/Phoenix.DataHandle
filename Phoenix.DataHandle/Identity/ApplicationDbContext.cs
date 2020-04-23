@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Phoenix.DataHandle.Entities;
-using Phoenix.DataHandle.Models;
+using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Main.Relationships;
 
 namespace Phoenix.DataHandle.Identity
 {
@@ -40,14 +41,16 @@ namespace Phoenix.DataHandle.Identity
 
     }
 
-    public sealed class ApplicationUser : IdentityUser<int>, IAspNetUser
+    public sealed class ApplicationUser : IdentityUser<int>, IAspNetUsers
     {
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        IUser IAspNetUser.User => this.User;
+        IUser IAspNetUsers.User => this.User;
         public User User { get; set; }
         public string FacebookId { get; set; }
+
+        public IEnumerable<IAspNetUserRoles> Roles { get; }
 
         public ApplicationUser() { }
 

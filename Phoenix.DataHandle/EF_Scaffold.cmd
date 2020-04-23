@@ -1,13 +1,24 @@
 ﻿dotnet ef dbcontext scaffold "ConnectionString" Microsoft.EntityFrameworkCore.SqlServer ^
 --context PhoenixContext ^
---output-dir Models ^
+--output-dir "Main\Models" ^
 --use-database-names ^
 --force ^
 --table "dbo.AspNetRoles" ^
 --table "dbo.AspNetUserRoles" ^
 --table "dbo.AspNetUsers" ^
+--table "dbo.Attendance" ^
+--table "dbo.Book" ^
 --table "dbo.Classroom" ^
 --table "dbo.Course" ^
+--table "dbo.CourseBook" ^
+--table "dbo.Exam" ^
+--table "dbo.Exercise" ^
+--table "dbo.Homework" ^
 --table "dbo.Lecture" ^
+--table "dbo.Material" ^
 --table "dbo.School" ^
+--table "dbo.StudentCourse" ^
+--table "dbo.StudentExam" ^
+--table "dbo.StudentExercise" ^
+--table "dbo.TeacherCourse" ^
 --table "dbo.User"
