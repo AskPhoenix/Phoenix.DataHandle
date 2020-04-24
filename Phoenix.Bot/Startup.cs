@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.EntityFrameworkCore;
@@ -12,8 +12,8 @@ using Phoenix.Bot.Dialogs.Student;
 using Phoenix.Bot.Dialogs.Teacher;
 using Phoenix.Bot.Extensions;
 using Phoenix.DataHandle.Bot.Storage;
-using Phoenix.DataHandle.Identity;
 using Phoenix.DataHandle.Main.Models;
+using System.Globalization;
 
 namespace Phoenix.Bot
 {
@@ -54,8 +54,6 @@ namespace Phoenix.Bot
             services.AddHttpsRedirection(options => options.HttpsPort = 443);
 
             services.AddDbContext<PhoenixContext>(options => options.UseSqlServer(Configuration.GetConnectionString("PhoenixConnection")));
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("PhoenixConnection")));
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<PhoenixContext>().AddDefaultTokenProviders();
         }
 
         public static void Configure(IApplicationBuilder app, IHostEnvironment env)
@@ -70,12 +68,12 @@ namespace Phoenix.Bot
             app.UseWebSockets();
             app.UseRouting();
 
-            app.UseAuthentication();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("el-GR");
         }
     }
 }

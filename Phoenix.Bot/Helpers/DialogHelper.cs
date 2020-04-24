@@ -77,5 +77,8 @@ namespace Phoenix.Bot.Helpers
                 Tutorial
             }
         }
+
+        public static DateTime GreeceLocalTime()
+               => TimeZoneInfo.ConvertTimeFromUtc(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time"));
     }
 }
