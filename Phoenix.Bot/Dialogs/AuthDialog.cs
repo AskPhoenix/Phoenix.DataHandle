@@ -14,16 +14,15 @@ namespace Phoenix.Bot.Dialogs
 {
     public class AuthDialog : ComponentDialog
     {
-        private readonly ApplicationDbContext _appContext;
         private readonly BotState _conversationState;
         private readonly BotState _userState;
 
         private static class WaterfallNames
         {
-            public const string Main        = "Main_WaterfallDialog";
-            public const string Phone       = "Phone_WaterfallDialog";
-            public const string SendPin     = "SendPin_WaterfallDialog";
-            public const string CheckPin    = "CheckPin_WaterfallDialog";
+            public const string Main        = "AuthMain_WaterfallDialog";
+            public const string Phone       = "AuthPhone_WaterfallDialog";
+            public const string SendPin     = "AuthSendPin_WaterfallDialog";
+            public const string CheckPin    = "AuthCheckPin_WaterfallDialog";
         }
 
         private static class PromptNames
@@ -32,10 +31,9 @@ namespace Phoenix.Bot.Dialogs
             public const string Pin = "Pin_Prompt";
         }
 
-        public AuthDialog(ApplicationDbContext appContext, ConversationState conversationState, UserState userState)
+        public AuthDialog(ConversationState conversationState, UserState userState)
             : base(nameof(AuthDialog))
         {
-            _appContext = appContext;
             _conversationState = conversationState;
             _userState = userState;
 

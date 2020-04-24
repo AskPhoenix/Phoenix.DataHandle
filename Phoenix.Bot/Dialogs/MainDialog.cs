@@ -15,7 +15,6 @@ namespace Phoenix.Bot.Dialogs
     public class MainDialog : ComponentDialog
     {
         private readonly IConfiguration _configuration;
-        private readonly ApplicationDbContext _appContext;
         private readonly BotState _conversationState;
         private readonly BotState _userState;
 
@@ -24,12 +23,11 @@ namespace Phoenix.Bot.Dialogs
             public const string Main = "Main_WaterfallDialog";
         }
 
-        public MainDialog(IConfiguration configuration, ApplicationDbContext appContext, ConversationState conversationState, UserState userState,
+        public MainDialog(IConfiguration configuration, ConversationState conversationState, UserState userState,
             AuthDialog authDialog, WelcomeDialog welcomeDialog, StudentDialog studentDialog, TeacherDialog teacherDialog)
             : base(nameof(MainDialog))
         {
             _configuration = configuration;
-            _appContext = appContext;
             _conversationState = conversationState;
             _userState = userState;
 

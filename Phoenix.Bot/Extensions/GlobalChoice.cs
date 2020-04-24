@@ -21,7 +21,7 @@ namespace Phoenix.Bot.Extensions
             : base(value)
         {
             this.StepIndex = stepIndex;
-            this.IsActive = IsActive;
+            this.IsActive = isActive;
         }
     }
 }

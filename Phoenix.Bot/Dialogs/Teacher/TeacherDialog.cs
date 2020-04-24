@@ -15,20 +15,20 @@ namespace Phoenix.Bot.Dialogs.Teacher
         public TeacherDialog()
             : base(nameof(TeacherDialog))
         {
-            this.AddDialog(new ExerciseDialog());
+            //AddDialog(new ExerciseDialog());
             //AddDialog(new ExamDialog());
             //AddDialog(new GradationDialog());
             //AddDialog(new ScheduleDialog());
-            this.AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
-            this.AddDialog(new WaterfallDialog(nameof(TeacherDialog) + "_" + nameof(WaterfallDialog),
+            AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
+            AddDialog(new WaterfallDialog(nameof(TeacherDialog) + "_" + nameof(WaterfallDialog),
                 new WaterfallStep[]
                 {
-                    this.MenuStepAsync,
-                    this.TaskStepAsync,
-                    this.LoopStepAsync
+                    MenuStepAsync,
+                    TaskStepAsync,
+                    LoopStepAsync
                 }));
 
-            this.InitialDialogId = nameof(TeacherDialog) + "_" + nameof(WaterfallDialog);
+            InitialDialogId = nameof(TeacherDialog) + "_" + nameof(WaterfallDialog);
         }
 
         private async Task<DialogTurnResult> MenuStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)

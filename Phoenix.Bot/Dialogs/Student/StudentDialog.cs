@@ -4,6 +4,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Phoenix.Bot.Extensions;
 using Phoenix.Bot.Helpers;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using static Phoenix.Bot.Helpers.ChannelHelper.Facebook;
@@ -14,8 +15,8 @@ namespace Phoenix.Bot.Dialogs.Student
     {
         private static class WaterfallNames
         {
-            public const string Menu = "StudentMenu_WaterfallDialog";
-            public const string Help = "StudentHelp_WaterfallDialog";
+            public const string Menu = "Student_Menu_WaterfallDialog";
+            public const string Help = "Student_Help_WaterfallDialog";
         }
 
         public StudentDialog(ExerciseDialog exerciseDialog, ExamDialog examDialog, ScheduleDialog scheduleDialog)
@@ -290,7 +291,14 @@ namespace Phoenix.Bot.Dialogs.Student
                 {
                     Prompt = promptReply,
                     RetryPrompt = rePromptReply,
-                    Choices = ChoiceFactory.ToChoices(new string[] { "Ναι", "Όχι, ευχαριστώ", "Άνοιγμα εργασιών", "Άνοιγμα διαγωνισμάτων", "Άνοιγμα προγράμματος" }),
+                    Choices = new Choice[] 
+                        {
+                            new Choice("Ναι"),
+                            new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } },
+                            new Choice("Άνοιγμα εργασιών") { Synonyms = new List<string> { "Άνοιγμα" } },
+                            new Choice("Άνοιγμα διαγωνισμάτων"),
+                            new Choice("Άνοιγμα προγράμματος")
+                        },
                     Style = ListStyle.None
                 },
                 cancellationToken);
