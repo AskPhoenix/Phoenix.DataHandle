@@ -1,4 +1,7 @@
-﻿dotnet ef dbcontext scaffold "ConnectionString" Microsoft.EntityFrameworkCore.SqlServer ^
+@echo off
+set /p cs="Enter PhoenixDB Connection String: "
+
+dotnet ef dbcontext scaffold "%cs%" Microsoft.EntityFrameworkCore.SqlServer ^
 --context PhoenixContext ^
 --output-dir "Main\Models" ^
 --use-database-names ^
@@ -22,3 +25,5 @@
 --table "dbo.StudentExercise" ^
 --table "dbo.TeacherCourse" ^
 --table "dbo.User"
+
+Pause

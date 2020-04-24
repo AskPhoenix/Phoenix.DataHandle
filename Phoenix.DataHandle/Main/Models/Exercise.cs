@@ -15,6 +15,7 @@ namespace Phoenix.DataHandle.Main.Models
         public int BookId { get; set; }
         public short Page { get; set; }
         public string Name { get; set; }
+        public string Info { get; set; }
 
         public virtual Book Book { get; set; }
         public virtual ICollection<Homework> Homework { get; set; }

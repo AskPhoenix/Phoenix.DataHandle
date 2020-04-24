@@ -183,7 +183,8 @@ namespace Phoenix.DataHandle.Bot.Storage
                 // Filter on continuationToken if present
                 if (!string.IsNullOrEmpty(continuationToken))
                 {
-                    // TODO: what if two activities have the same timestamp??? is that possible???
+                    // what if two activities have the same timestamp??? is that possible???
+                    // Try ThenBy after OrderBy below
                     items = items.Where(i => i.Timestamp > continuationDate);
                 }
 
