@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Phoenix.DataHandle.Main.Entities;
-using Phoenix.DataHandle.Main;
+using Phoenix.DataHandle.Main.Models.Extensions;
 using Phoenix.DataHandle.Main.Relationships;
 
 namespace Phoenix.DataHandle.Main.Models
@@ -21,7 +21,7 @@ namespace Phoenix.DataHandle.Main.Models
     {
         IUser IAspNetUsers.User => this.User;
 
-        public IEnumerable<IAspNetUserRoles> Roles => this.AspNetUserRoles;
+        IEnumerable<IAspNetUserRoles> IAspNetUsers.Roles => this.AspNetUserRoles;
     }
 
     public partial class Attendance : IAttendance
@@ -32,28 +32,28 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class Book : IBook, IModelEntity
     {
-        public IEnumerable<ICourseBook> CourseBooks => this.CourseBook;
-        public IEnumerable<IExercise> Exercises => this.Exercise;
-        public IEnumerable<IMaterial> Materials => this.Material;
+        IEnumerable<ICourseBook> IBook.CourseBooks => this.CourseBook;
+        IEnumerable<IExercise> IBook.Exercises => this.Exercise;
+        IEnumerable<IMaterial> IBook.Materials => this.Material;
     }
 
     public partial class Classroom : IClassroom, IModelEntity
     {
         ISchool IClassroom.School => this.School;
 
-        public IEnumerable<IExam> Exams => this.Exam;
-        public IEnumerable<ILecture> Lectures => this.Lecture;
+        IEnumerable<IExam> IClassroom.Exams => this.Exam;
+        IEnumerable<ILecture> IClassroom.Lectures => this.Lecture;
     }
 
     public partial class Course : ICourse, IModelEntity
     {
         ISchool ICourse.School => this.School;
 
-        public IEnumerable<ICourseBook> CourseBooks => this.CourseBook;
-        public IEnumerable<IExam> Exams => this.Exam;
-        public IEnumerable<ILecture> Lectures => this.Lecture;
-        public IEnumerable<IStudentCourse> StudentCourses => this.StudentCourse;
-        public IEnumerable<ITeacherCourse> TeacherCourses => this.TeacherCourse;
+        IEnumerable<ICourseBook> ICourse.CourseBooks => this.CourseBook;
+        IEnumerable<IExam> ICourse.Exams => this.Exam;
+        IEnumerable<ILecture> ICourse.Lectures => this.Lecture;
+        IEnumerable<IStudentCourse> ICourse.StudentCourses => this.StudentCourse;
+        IEnumerable<ITeacherCourse> ICourse.TeacherCourses => this.TeacherCourse;
     }
 
     public partial class CourseBook : ICourseBook
@@ -67,16 +67,16 @@ namespace Phoenix.DataHandle.Main.Models
         ICourse IExam.Course => this.Course;
         IClassroom IExam.Classroom => this.Classroom;
 
-        public IEnumerable<IMaterial> Materials => this.Material;
-        public IEnumerable<IStudentExam> StudentExams => this.StudentExam;
+        IEnumerable<IMaterial> IExam.Materials => this.Material;
+        IEnumerable<IStudentExam> IExam.StudentExams => this.StudentExam;
     }
 
     public partial class Exercise : IExercise, IModelEntity
     {
         IBook IExercise.Book => this.Book;
 
-        public IEnumerable<IHomework> Homeworks => this.Homework;
-        public IEnumerable<IStudentExercise> StudentExercises => this.StudentExercise;
+        IEnumerable<IHomework> IExercise.Homeworks => this.Homework;
+        IEnumerable<IStudentExercise> IExercise.StudentExercises => this.StudentExercise;
     }
 
     public partial class Homework : IHomework
@@ -90,8 +90,8 @@ namespace Phoenix.DataHandle.Main.Models
         ICourse ILecture.Course => this.Course;
         IClassroom ILecture.Classroom => this.Classroom;
 
-        public IEnumerable<IAttendance> Attendances => this.Attendance;
-        public IEnumerable<IHomework> Homeworks => this.Homework;
+        IEnumerable<IAttendance> ILecture.Attendances => this.Attendance;
+        IEnumerable<IHomework> ILecture.Homeworks => this.Homework;
     }
 
     public partial class Material : IMaterial, IModelEntity
@@ -102,8 +102,8 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class School : ISchool, IModelEntity
     {
-        public IEnumerable<IClassroom> Classrooms => this.Classroom;
-        public IEnumerable<ICourse> Courses => this.Course;
+        IEnumerable<IClassroom> ISchool.Classrooms => this.Classroom;
+        IEnumerable<ICourse> ISchool.Courses => this.Course;
     }
 
     public partial class StudentCourse : IStudentCourse
@@ -132,13 +132,13 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class User : IUser, IModelEntity
     {
-        public int Id => AspNetUserId;
+        int IModelEntity.Id => AspNetUserId;
         IAspNetUsers IUser.AspNetUser => this.AspNetUser;
 
-        public IEnumerable<IAttendance> Attendances => this.Attendance;
-        public IEnumerable<IStudentCourse> StudentCourses => this.StudentCourse;
-        public IEnumerable<IStudentExam> StudentExams => this.StudentExam;
-        public IEnumerable<IStudentExercise> StudentExercises => this.StudentExercise;
-        public IEnumerable<ITeacherCourse> TeacherCourses => this.TeacherCourse;
+        IEnumerable<IAttendance> IUser.Attendances => this.Attendance;
+        IEnumerable<IStudentCourse> IUser.StudentCourses => this.StudentCourse;
+        IEnumerable<IStudentExam> IUser.StudentExams => this.StudentExam;
+        IEnumerable<IStudentExercise> IUser.StudentExercises => this.StudentExercise;
+        IEnumerable<ITeacherCourse> IUser.TeacherCourses => this.TeacherCourse;
     }
 }

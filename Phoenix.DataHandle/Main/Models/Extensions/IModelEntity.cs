@@ -1,4 +1,6 @@
-﻿namespace Phoenix.DataHandle.Main.Models
+﻿using System;
+
+namespace Phoenix.DataHandle.Main.Models.Extensions
 {
     public interface IModelEntity
     {

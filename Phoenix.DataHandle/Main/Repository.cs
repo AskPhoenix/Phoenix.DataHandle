@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models;
 using System.Linq;
+using System.Threading.Tasks;
+using Phoenix.DataHandle.Main.Models.Extensions;
 
 namespace Phoenix.DataHandle.Main
 {
@@ -18,9 +20,9 @@ namespace Phoenix.DataHandle.Main
             return dbContext.Set<TModel>();
         }
 
-        public virtual TModel find(int id)
+        public virtual Task<TModel> find(int id)
         {
-            return dbContext.Set<TModel>().Single(a => a.Id == id);
+            return dbContext.Set<TModel>().SingleAsync(a => a.Id == id);
         }
 
         public virtual TModel create(TModel tModel)

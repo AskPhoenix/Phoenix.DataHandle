@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Phoenix.DataHandle;
-using Phoenix.DataHandle.Entities;
-using Phoenix.DataHandle.Models;
+using Phoenix.DataHandle.Main;
+using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.Api.Controllers
 {
@@ -36,7 +36,7 @@ namespace Phoenix.Api.Controllers
         {
             this._logger.LogInformation($"Api -> School -> Get{id}");
 
-            return this._schoolRepository.find(id);
+            return await this._schoolRepository.find(id);
         }
 
         [HttpPost]

@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
 using Phoenix.Api.App_Plugins;
-using Phoenix.DataHandle.Models;
+using Phoenix.DataHandle.Main.Models;
 using Talagozis.AspNetCore.Services.TokenAuthentication;
 
 namespace Phoenix.Api

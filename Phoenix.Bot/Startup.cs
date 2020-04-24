@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
@@ -14,7 +13,7 @@ using Phoenix.Bot.Dialogs.Teacher;
 using Phoenix.Bot.Extensions;
 using Phoenix.DataHandle.Bot.Storage;
 using Phoenix.DataHandle.Identity;
-using Phoenix.DataHandle.Models;
+using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.Bot
 {
