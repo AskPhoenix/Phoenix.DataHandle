@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Phoenix.DataHandle.Main.Models
 {
@@ -19,6 +20,7 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<Attendance> Attendance { get; set; }
         public virtual DbSet<Book> Book { get; set; }
+        public virtual DbSet<BotFeedback> BotFeedback { get; set; }
         public virtual DbSet<Classroom> Classroom { get; set; }
         public virtual DbSet<Course> Course { get; set; }
         public virtual DbSet<CourseBook> CourseBook { get; set; }
@@ -38,7 +40,8 @@ namespace Phoenix.DataHandle.Main.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                throw new Exception("Connection string not specified for PhoenixContext.");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=tcp:askphoenix.database.windows.net,1433;Initial Catalog=PhoenixDB;Persist Security Info=False;User ID=phoenix;Password=20Ph0eniX20!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
         }
 
@@ -125,6 +128,21 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<BotFeedback>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Comments).IsRequired();
+
+                entity.Property(e => e.Topic).HasMaxLength(256);
+
+                entity.HasOne(d => d.Author)
+                    .WithMany(p => p.BotFeedback)
+                    .HasForeignKey(d => d.AuthorId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_BotFeedback_User");
             });
 
             modelBuilder.Entity<Classroom>(entity =>
