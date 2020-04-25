@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Talagozis.AspNetCore.Services.Logger;
 using Talagozis.AspNetCore.Services.Logger.ColoredConsole;
 using Talagozis.AspNetCore.Services.Logger.File;
 
-namespace Phoenix.Api
+namespace Phoenix.Service.Puller
 {
     public class Program
     {
@@ -20,12 +21,14 @@ namespace Phoenix.Api
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
+                .ConfigureServices((hostBuilderContext, serviceCollection) =>
                 {
-                    webBuilder.UseStartup<Startup>();
-                    webBuilder.ConfigureKestrel((context, options) => options.AddServerHeader = false);
+                    serviceCollection.AddLoggerBackgroundService();
+
+                    serviceCollection.TryAddSingleton<PullerBackgroundQueue>();
+                    serviceCollection.AddHostedService<PullerBackgroundService>();
+                    serviceCollection.AddHostedService<PullerWorker>();
                 })
-                .ConfigureServices(serviceCollection => { serviceCollection.AddLoggerBackgroundService(); })
                 .ConfigureLogging((hostBuilderContext, loggingBuilder) =>
                 {
                     loggingBuilder.ClearProviders();
@@ -34,7 +37,7 @@ namespace Phoenix.Api
 
                     loggingBuilder.AddFile(a =>
                     {
-                        a.folderPath = Path.Combine(Directory.GetCurrentDirectory(), "../logs/api/");
+                        a.folderPath = Path.Combine(Directory.GetCurrentDirectory(), "../logs/puller/");
                         a.Add(new FileLoggerConfiguration
                         {
                             logLevel = LogLevel.Warning
@@ -49,7 +52,6 @@ namespace Phoenix.Api
                         });
                     });
                     loggingBuilder.AddColoredConsole(hostBuilderContext.Configuration.GetSection("Logging:ColoredConsole"));
-
                 });
     }
 }

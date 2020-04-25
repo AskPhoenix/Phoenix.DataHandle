@@ -20,7 +20,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.8.0" />
-    <PackageReference Include="Talagozis.AspNetCore" Version="1.20.4.141" />
+    <PackageReference Include="Talagozis.AspNetCore" Version="1.20.4.251" />
   </ItemGroup>
 
 
