@@ -85,13 +85,10 @@ namespace Phoenix.Bot.Dialogs.Student
             if (Courses == null || Courses.Length == 0)
             {
                 await innerDc.Context.SendActivityAsync("Απ' ό,τι φαίνεται δεν έχεις εγγραφεί σε κάποιο μάθημα προς το παρόν.");
-                await innerDc.Context.SendActivityAsync("Παρακαλώ επικοινώνησε με τους καθηγητές σου για την επίλυση του προβλήματος.");
-
                 return await innerDc.EndDialogAsync(null, cancellationToken);
             }
 
             InitialDialogId = Courses.Length == 1 ? InitialDialogId = WaterfallNames.Lecture : WaterfallNames.Course;
-
 
             return await base.OnBeginDialogAsync(innerDc, options, cancellationToken);
         }

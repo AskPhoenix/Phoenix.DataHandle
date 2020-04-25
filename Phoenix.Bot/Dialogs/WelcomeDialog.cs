@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Phoenix.Bot.Extensions;
 using static Phoenix.Bot.Helpers.ChannelHelper.Facebook;
 using Microsoft.Bot.Schema;
+using System.Collections.Generic;
 
 namespace Phoenix.Bot.Dialogs
 {
@@ -67,7 +68,7 @@ namespace Phoenix.Bot.Dialogs
                 {
                     Prompt = MessageFactory.Text("Προτού ξεκινήσουμε, θα ήθελες να σου δείξω τι μπορώ να κάνω με μια σύντομη περιήγηση;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
-                    Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι") }
+                    Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
                 });
 
         private async Task<DialogTurnResult> ReplyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
