@@ -24,7 +24,7 @@ namespace Phoenix.Bot.Dialogs
         }
 
         public MainDialog(IConfiguration configuration, ConversationState conversationState, UserState userState,
-            AuthDialog authDialog, WelcomeDialog welcomeDialog, StudentDialog studentDialog, TeacherDialog teacherDialog)
+            AuthDialog authDialog, WelcomeDialog welcomeDialog, FeedbackDialog feedbackDialog, StudentDialog studentDialog, TeacherDialog teacherDialog)
             : base(nameof(MainDialog))
         {
             _configuration = configuration;
@@ -33,6 +33,7 @@ namespace Phoenix.Bot.Dialogs
 
             AddDialog(authDialog);
             AddDialog(welcomeDialog);
+            AddDialog(feedbackDialog);
             AddDialog(studentDialog);
             AddDialog(teacherDialog);
 
@@ -41,6 +42,7 @@ namespace Phoenix.Bot.Dialogs
                 {
                     FirstTimeStepAsync,
                     UserRegisterStepAsync,
+                    CommandHandleStepAsync,
                     GreetingStepAsync,
                     ForwardStepAsync,
                     LoopStepAsync
@@ -48,6 +50,8 @@ namespace Phoenix.Bot.Dialogs
 
             InitialDialogId = WaterfallNames.Main;
         }
+
+        #region Main Waterfall Dialog
 
         private async Task<DialogTurnResult> FirstTimeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -79,21 +83,27 @@ namespace Phoenix.Bot.Dialogs
             //var user = await _appContext.Users.SingleAsync(u => u.PhoneNumber == checkedPhone);
             //user.FacebookId = stepContext.Context.Activity.From.Id;
 
-            stepContext.Values.Add("needsWelcome", true);
+            return await stepContext.BeginDialogAsync(nameof(WelcomeDialog), null, cancellationToken);
+        }
 
-            return await stepContext.NextAsync(null, cancellationToken);
+        private async Task<DialogTurnResult> CommandHandleStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            Persistent.TryGetCommand(stepContext.Context.Activity.Text, out Persistent.Command cmd);
+            switch (cmd)
+            {
+                case Persistent.Command.GetStarted:
+                case Persistent.Command.Tutorial:
+                    return await stepContext.BeginDialogAsync(nameof(WelcomeDialog), null, cancellationToken);
+                case Persistent.Command.Feedback:
+                    return await stepContext.BeginDialogAsync(nameof(FeedbackDialog), null, cancellationToken);
+                default:
+                    return await stepContext.NextAsync(null, cancellationToken);
+            }
         }
 
         private async Task<DialogTurnResult> GreetingStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             string mess = stepContext.Context.Activity.Text;
-            if ((stepContext.Values.TryGetValue("needsWelcome", out object needsWelcome) && (bool)needsWelcome) ||
-                (Persistent.TryGetCommand(mess, out Persistent.Command cmd) && (cmd == Persistent.Command.GetStarted || cmd == Persistent.Command.Tutorial)))
-            {
-                stepContext.Values.Remove("needsWelcome");
-                return await stepContext.BeginDialogAsync(nameof(WelcomeDialog), null, cancellationToken);
-            }
-
             if (!mess.ContainsSynonyms(SynonymHelper.Topics.Greetings))
                 return await stepContext.NextAsync(null, cancellationToken);
 
@@ -124,5 +134,7 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> LoopStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
             => await stepContext.ReplaceDialogAsync(stepContext.ActiveDialog.Id, stepContext.Options, cancellationToken);
+
+        #endregion
     }
 }

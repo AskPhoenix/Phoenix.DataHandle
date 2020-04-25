@@ -61,6 +61,7 @@ namespace Phoenix.Bot.Helpers
                     "--persistent-get-started--"    => Command.GetStarted,
                     "--persistent-home--"           => Command.Home,
                     "--persistent-tutorial--"       => Command.Tutorial,
+                    "--persistent-feedback--"       => Command.Feedback,
                     _                               => Command.NoCommand
                 };
 
@@ -74,7 +75,8 @@ namespace Phoenix.Bot.Helpers
                 NoCommand = -1,
                 GetStarted,
                 Home,
-                Tutorial
+                Tutorial,
+                Feedback
             }
         }
 

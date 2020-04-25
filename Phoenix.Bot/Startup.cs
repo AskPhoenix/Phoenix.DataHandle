@@ -39,6 +39,7 @@ namespace Phoenix.Bot
             services.AddScoped<MainDialog>();
             services.AddScoped<AuthDialog>();
             services.AddScoped<WelcomeDialog>();
+            services.AddScoped<FeedbackDialog>();
 
             services.AddScoped<StudentDialog>();
             services.AddScoped<ExerciseDialog>();
