@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using WordPressPCL;
+using WordPressPCL.Models;
 
 namespace Phoenix.Service.Puller
 {
@@ -21,29 +24,27 @@ namespace Phoenix.Service.Puller
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Random random = new Random();
-            int c = 0;
-
             while (!stoppingToken.IsCancellationRequested)
             {
-                c++;
-                int c1 = c;
-                int t = random.Next(50, 900);
-
                 this._pullerBackgroundQueue.QueueSubmission(data: new PullerStream
                 {
                     action = async cancellationToken =>
                     {
-                        await Task.Delay(600, stoppingToken);
+                        string baseUrl = "https://www.lingualab.dev-arts.com/wp-json/";
 
-                        this._logger.LogInformation($"{c1} Worker running at: {DateTimeOffset.Now} in {t}");
+                        var client = new WordPressClient(baseUrl);
+                        client.AuthMethod = AuthMethod.JWT;
+                        await client.RequestJWToken("theofilos", "MnfbiCmFOvnCsu^bCP9hIm14");
 
-                        //return Task.CompletedTask;
+                        var isValidToken = await client.IsValidJWToken();
+                        var response = await client.Users.GetAll();
+
+                        this._logger.LogTrace(response.Count().ToString());
                     }
                 });
 
-                this._logger.LogDebug($"Added Work: {c1}");
-                await Task.Delay(t, stoppingToken);
+                this._logger.LogDebug($"Added Work: ");
+                await Task.Delay(100000, stoppingToken);
             }
         }
     }
