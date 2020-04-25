@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Phoenix.DataHandle.Bot.Entities
+namespace Phoenix.DataHandle.Bot.Models
 {
     /// <summary>
     /// BotData representing one bot data record.

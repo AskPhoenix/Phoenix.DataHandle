@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Phoenix.DataHandle.Bot.Entities;
+using Phoenix.DataHandle.Bot.Models;
 
 namespace Phoenix.DataHandle.Bot.Storage
 {
@@ -56,7 +56,7 @@ namespace Phoenix.DataHandle.Bot.Storage
         /// <summary>
         /// Get a BotDataContext will by default use the connection string provided during EntityFrameworkStorage construction.
         /// </summary>
-        public virtual BotDataContext GetBotDataContext => new BotDataContext(_storageOptions.ConnectionString);
+        public virtual BotStateContext GetBotDataContext => new BotStateContext(_storageOptions.ConnectionString);
 
         /// <summary>
         /// Deletes storage items from storage.

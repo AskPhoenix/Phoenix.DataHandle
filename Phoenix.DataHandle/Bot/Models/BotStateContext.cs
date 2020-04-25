@@ -1,21 +1,20 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
-using Phoenix.DataHandle.Bot.Entities;
 
-namespace Phoenix.DataHandle.Bot
+namespace Phoenix.DataHandle.Bot.Models
 {
     /// <summary>
     /// DbContext for TranscriptEntitys
     /// </summary>
-    public class BotTranscriptContext : DbContext
+    public class BotStateContext : DbContext
     {
         private string _connectionString;
 
         /// <summary>
-        /// Constructor for TranscriptContext receiving connectionString
+        /// Constructor for PhoenixBotContext receiving connectionString
         /// </summary>
         /// <param name="connectionString">Connection string to use when configuring the options during <see cref="OnConfiguring"/></param>
-        public BotTranscriptContext(string connectionString)
+        public BotStateContext(string connectionString)
             : base()
         {
             if (string.IsNullOrEmpty(connectionString))
@@ -27,9 +26,22 @@ namespace Phoenix.DataHandle.Bot
         }
 
         /// <summary>
+        /// Constructor for PhoenixBotContext receiving DBContextOptions
+        /// </summary>
+        /// <param name="options">Options to use for configuration.</param>
+        public BotStateContext(DbContextOptions<BotStateContext> options)
+            : base(options)
+        { }
+
+        /// <summary>
         /// BotTranscript records
         /// </summary>
         public virtual DbSet<BotTranscript> Transcript { get; set; }
+
+        /// <summary>
+        /// BotData records
+        /// </summary>
+        public virtual DbSet<BotData> BotData { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -43,6 +55,13 @@ namespace Phoenix.DataHandle.Bot
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<BotData>(entity =>
+            {
+                entity.ToTable(nameof(BotData));
+                entity.HasIndex(e => e.RealId);
+                entity.HasKey(e => e.Id);
+            });
+
             builder.Entity<BotTranscript>(entity =>
             {
                 entity.ToTable(nameof(BotTranscript));

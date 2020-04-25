@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Phoenix.DataHandle.Bot.Entities;
+using Phoenix.DataHandle.Bot.Models;
 
 #pragma warning disable CS1998
 
@@ -59,7 +59,7 @@ namespace Phoenix.DataHandle.Bot.Storage
         /// <summary>
         /// Get a TranscriptContext will by default use the connection string provided during EntityFrameworkTranscriptStore construction.
         /// </summary>
-        public virtual BotTranscriptContext GetTranscriptContext => new BotTranscriptContext(_options.ConnectionString);
+        public virtual BotStateContext GetTranscriptContext => new BotStateContext(_options.ConnectionString);
 
         /// <summary>
         /// Log an activity to the transcript.
