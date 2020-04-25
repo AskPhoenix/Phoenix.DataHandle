@@ -29,13 +29,28 @@ namespace Phoenix.Bot.Extensions
             //Adds the unaccented version of every choice as its synonym
             for (int i = 0; i < options.Choices.Count; i++)
             {
-                string unaccented = new string(options.Choices[i].Value.Normalize(NormalizationForm.FormD).
+                if (options.Choices[i].Synonyms != null)
+                {
+                    int startLength = options.Choices[i].Synonyms.Count;
+                    var unaccentedSynonyms = new List<string>(startLength);
+
+                    for (int j = 0; j < startLength; j++)
+                    {
+                        string unaccentedSynonym = new string(options.Choices[i].Synonyms[j].Normalize(NormalizationForm.FormD).
+                            Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray());
+                        unaccentedSynonyms.Add(unaccentedSynonym);
+                    }
+
+                    options.Choices[i].Synonyms.AddRange(unaccentedSynonyms);
+                }
+
+                string unaccentedChoice = new string(options.Choices[i].Value.Normalize(NormalizationForm.FormD).
                     Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray());
 
                 if (options.Choices[i].Synonyms == null)
-                    options.Choices[i].Synonyms = new List<string> { unaccented };
-                else if (!options.Choices[i].Synonyms.Contains(unaccented))
-                    options.Choices[i].Synonyms.Add(unaccented);
+                    options.Choices[i].Synonyms = new List<string> { unaccentedChoice };
+                else if (!options.Choices[i].Synonyms.Contains(unaccentedChoice))
+                    options.Choices[i].Synonyms.Add(unaccentedChoice);
             }
 
             return base.OnRecognizeAsync(turnContext, state, options, cancellationToken);
