@@ -52,6 +52,7 @@ namespace Phoenix.Service.Puller
                         });
                     });
                     loggingBuilder.AddColoredConsole(hostBuilderContext.Configuration.GetSection("Logging:ColoredConsole"));
-                });
+                })
+                .UseWindowsService();
     }
 }
