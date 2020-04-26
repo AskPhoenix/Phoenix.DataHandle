@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Talagozis.AspNetCore;
+﻿using Talagozis.AspNetCore;
 
-namespace Phoenix.Service.Puller
+namespace Phoenix.WordPress.Puller
 {
     public class PullerBackgroundQueue : BackgroundQueue<PullerStream>
     {

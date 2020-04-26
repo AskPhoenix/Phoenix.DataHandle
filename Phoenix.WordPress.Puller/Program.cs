@@ -2,15 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Phoenix.DataHandle.Main.Models;
 using Talagozis.AspNetCore.Services.Logger;
 using Talagozis.AspNetCore.Services.Logger.ColoredConsole;
 using Talagozis.AspNetCore.Services.Logger.File;
 
-namespace Phoenix.Service.Puller
+namespace Phoenix.WordPress.Puller
 {
     public class Program
     {
@@ -28,6 +31,9 @@ namespace Phoenix.Service.Puller
                     serviceCollection.TryAddSingleton<PullerBackgroundQueue>();
                     serviceCollection.AddHostedService<PullerBackgroundService>();
                     serviceCollection.AddHostedService<PullerWorker>();
+
+                    serviceCollection.AddDbContext<PhoenixContext>(options 
+                        => options.UseSqlServer(hostBuilderContext.Configuration.GetConnectionString("PhoenixConnection")));
                 })
                 .ConfigureLogging((hostBuilderContext, loggingBuilder) =>
                 {

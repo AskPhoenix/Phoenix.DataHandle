@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace Phoenix.Service.Puller
+namespace Phoenix.WordPress.Puller
 {
     public class PullerBackgroundService : BackgroundService
     {
