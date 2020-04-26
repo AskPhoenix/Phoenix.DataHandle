@@ -7,6 +7,7 @@ namespace Phoenix.DataHandle.Main.Models
     {
         public int Id { get; set; }
         public int AuthorId { get; set; }
+        public string Category { get; set; }
         public string Topic { get; set; }
         public byte? Rating { get; set; }
         public string Comments { get; set; }
