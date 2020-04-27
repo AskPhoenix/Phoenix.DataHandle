@@ -133,13 +133,11 @@ namespace Phoenix.DataHandle.Main.Models
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.Category)
+                entity.Property(e => e.Category).HasMaxLength(50);
+
+                entity.Property(e => e.Occasion)
                     .IsRequired()
                     .HasMaxLength(50);
-
-                entity.Property(e => e.Comments).IsRequired();
-
-                entity.Property(e => e.Topic).HasMaxLength(256);
 
                 entity.HasOne(d => d.Author)
                     .WithMany(p => p.BotFeedback)
