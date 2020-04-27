@@ -244,7 +244,7 @@ namespace Phoenix.Bot.Dialogs.Student
 
         private async Task<DialogTurnResult> OtherLectureStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (stepContext.Options is DateTimeResolution[])
+            if (stepContext.Options is IList<DateTimeResolution>)
                 return await stepContext.NextAsync(stepContext.Options, cancellationToken);
 
             var foundChoice = (stepContext.Result ?? stepContext.Options) as FoundChoice;
@@ -266,7 +266,7 @@ namespace Phoenix.Bot.Dialogs.Student
 
         private async Task<DialogTurnResult> OtherLectureSelectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var selDate = DateTime.Parse((stepContext.Result as DateTimeResolution[]).First().Value);
+            var selDate = DateTime.Parse((stepContext.Result as IList<DateTimeResolution>).First().Value);
             var lec = _phoenixContext.Lecture.FirstOrDefault(l => l.CourseId == Courses[SelCourse].Id && l.StartDateTime.Date == selDate.Date);
 
             if (lec == null)

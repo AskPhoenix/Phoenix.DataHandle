@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Phoenix.Bot.Dialogs.Teacher;
 using static Phoenix.Bot.Helpers.DialogHelper;
 using Phoenix.Bot.Helpers;
-using Phoenix.DataHandle.Identity;
 
 namespace Phoenix.Bot.Dialogs
 {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Phoenix.Bot.Helpers
 {
-    public static class DialogHelper
+    public static partial class DialogHelper
     {
         public static Task<bool> PhoneNumberPromptValidator(PromptValidatorContext<long> promptContext, CancellationToken cancellationToken)
         {
@@ -50,34 +50,6 @@ namespace Phoenix.Bot.Helpers
                 letter = 'έ';
 
             return name.Substring(0, name.Length - 2) + letter;
-        }
-
-        public static class Persistent
-        {
-            public static bool TryGetCommand(string text, out Command command)
-            {
-                command = text switch
-                {
-                    "--persistent-get-started--"    => Command.GetStarted,
-                    "--persistent-home--"           => Command.Home,
-                    "--persistent-tutorial--"       => Command.Tutorial,
-                    "--persistent-feedback--"       => Command.Feedback,
-                    _                               => Command.NoCommand
-                };
-
-                return command >= 0;
-            }
-
-            public static bool IsCommand(string text) => text.StartsWith("--persistent-") && text.EndsWith("--");
-
-            public enum Command
-            {
-                NoCommand = -1,
-                GetStarted,
-                Home,
-                Tutorial,
-                Feedback
-            }
         }
 
         public static DateTime GreeceLocalTime()

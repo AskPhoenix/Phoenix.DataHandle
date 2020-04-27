@@ -56,7 +56,6 @@ namespace Phoenix.Bot
             services.AddHttpsRedirection(options => options.HttpsPort = 443);
 
             services.AddDbContext<PhoenixContext>(options => options.UseSqlServer(Configuration.GetConnectionString("PhoenixConnection")));
-            services.AddDbContext<PhoenixBotContext>(options => options.UseSqlServer(Configuration.GetConnectionString("PhoenixConnection")));
         }
 
         public static void Configure(IApplicationBuilder app, IHostEnvironment env)

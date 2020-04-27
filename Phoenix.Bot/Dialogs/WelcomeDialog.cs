@@ -1,13 +1,13 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using static Phoenix.Bot.Helpers.DialogHelper;
 using System.Threading;
 using System.Threading.Tasks;
 using Phoenix.Bot.Extensions;
 using static Phoenix.Bot.Helpers.ChannelHelper.Facebook;
 using Microsoft.Bot.Schema;
 using System.Collections.Generic;
+using Phoenix.Bot.Helpers;
 
 namespace Phoenix.Bot.Dialogs
 {
