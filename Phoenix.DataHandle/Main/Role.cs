@@ -3,12 +3,13 @@
     public enum Role
     {
         Undefined = -1,
-        None = 0,
-        SuperAdmin = 1,
-        Admin = 2,
-        SchoolOwner = 3,
-        Teacher = 4,
-        Parent = 5,
-        Student = 6,
+        None,
+        Student,
+        Teacher,
+        Secretary,
+        Parent,
+        Admin,
+        SchoolOwner,
+        SuperAdmin,
     }
 }

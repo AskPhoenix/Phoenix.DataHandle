@@ -1,17 +1,21 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using WordPressPCL.Models;
 
 namespace Phoenix.WordPress.Puller.Models
 {
-    internal class AcfUser : User
+    internal class CustomUser : User
     {
         [JsonProperty("acf")]
         public UserAcf Acf { get; set; }
     }
 
-    public class UserAcf
+    internal class UserAcf
     {
         [JsonProperty("role")]
-        public int? Role { get; set; }
+        public int Role { get; set; }
+
+        [JsonProperty("courses")]
+        public List<int> CourseWpIds { get; set; }
     }
 }
