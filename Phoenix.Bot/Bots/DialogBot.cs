@@ -36,11 +36,10 @@ namespace Phoenix.Bot.Bots
         {
             string mess = turnContext.Activity.Text;
             
-            bool resetConversation = false;
-            resetConversation |= Persistent.IsCommand(mess);
-            resetConversation |= mess.ContainsSynonyms(SynonymHelper.Topics.Greetings);
-            resetConversation |= mess.ContainsSynonyms(SynonymHelper.Topics.Help) 
-                && await UserState.CreateProperty<bool>("IsAuthenticated").GetAsync(turnContext);
+            bool resetConversation = Persistent.IsCommand(mess) 
+                || mess.ContainsSynonyms(SynonymHelper.Topics.Greetings)
+                || (mess.ContainsSynonyms(SynonymHelper.Topics.Help) 
+                    && await UserState.CreateProperty<bool>("IsAuthenticated").GetAsync(turnContext));
 
             if (resetConversation)
                 await ConversationState.ClearStateAsync(turnContext, cancellationToken);

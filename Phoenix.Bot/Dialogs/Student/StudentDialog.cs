@@ -19,11 +19,12 @@ namespace Phoenix.Bot.Dialogs.Student
             public const string Help = "Student_Help_WaterfallDialog";
         }
 
-        public StudentDialog(ExerciseDialog exerciseDialog, ExamDialog examDialog, ScheduleDialog scheduleDialog)
+        public StudentDialog(FeedbackDialog feedbackDialog, ExerciseDialog exerciseDialog, ExamDialog examDialog, ScheduleDialog scheduleDialog)
             : base(nameof(StudentDialog))
         {
             AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
 
+            AddDialog(feedbackDialog);
             AddDialog(exerciseDialog);
             AddDialog(examDialog);
             AddDialog(scheduleDialog);
@@ -33,6 +34,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 {
                     MenuStepAsync,
                     TaskStepAsync,
+                    FeedbackStepAsync,
                     LoopStepAsync
                 }));
 
@@ -80,7 +82,11 @@ namespace Phoenix.Bot.Dialogs.Student
         }
 
         private async Task<DialogTurnResult> TaskStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-            => (stepContext.Result as FoundChoice).Index switch
+        {
+            var foundChoice = stepContext.Result as FoundChoice;
+            stepContext.Values.Add("selTaskInd", foundChoice.Index);
+
+            return foundChoice.Index switch
             {
                 0 => await stepContext.BeginDialogAsync(nameof(ExerciseDialog), null, cancellationToken),
                 1 => await stepContext.BeginDialogAsync(nameof(ExamDialog), null, cancellationToken),
@@ -88,6 +94,10 @@ namespace Phoenix.Bot.Dialogs.Student
                 3 => await stepContext.BeginDialogAsync(WaterfallNames.Help, null, cancellationToken),      //Never called from here
                 _ => await stepContext.NextAsync(null, cancellationToken)
             };
+        }
+
+        private async Task<DialogTurnResult> FeedbackStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+            => await stepContext.BeginDialogAsync(nameof(FeedbackDialog), (Feedback.Occasion)stepContext.Values["selTaskInd"], cancellationToken);
 
         private async Task<DialogTurnResult> LoopStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
             => await stepContext.ReplaceDialogAsync(stepContext.ActiveDialog.Id, stepContext.Options, cancellationToken);
