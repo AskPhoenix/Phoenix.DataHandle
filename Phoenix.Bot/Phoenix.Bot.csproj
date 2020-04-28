@@ -7,6 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Scripts\Graph_GetStarted.sh" />
+    <None Remove="Scripts\Graph_Greeting.sh" />
+    <None Remove="Scripts\Graph_PersistentMenu.sh" />
+    <None Remove="Scripts\Graph_WhitelistedDomains.sh" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Scripts\Graph_WhitelistedDomains.sh" />
+    <Compile Include="Scripts\Graph_PersistentMenu.sh" />
+    <Compile Include="Scripts\Graph_Greeting.sh" />
+    <Compile Include="Scripts\Graph_GetStarted.sh" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AdaptiveCards" Version="1.2.4" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.1" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.8.0" />
