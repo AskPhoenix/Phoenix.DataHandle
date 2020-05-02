@@ -98,6 +98,10 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
 
+                entity.Property(e => e.OneTimeCode)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
 
                 entity.Property(e => e.UserName).HasMaxLength(256);
