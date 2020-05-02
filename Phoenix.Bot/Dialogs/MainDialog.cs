@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using Phoenix.Bot.Dialogs.Teacher;
 using static Phoenix.Bot.Helpers.DialogHelper;
 using Phoenix.Bot.Helpers;
+using Phoenix.DataHandle.Main.Models;
+using System.Linq;
+using Phoenix.DataHandle.Main;
 
 namespace Phoenix.Bot.Dialogs
 {
@@ -16,19 +19,21 @@ namespace Phoenix.Bot.Dialogs
         private readonly IConfiguration _configuration;
         private readonly BotState _conversationState;
         private readonly BotState _userState;
+        private readonly PhoenixContext _phoenixContext;
 
         private static class WaterfallNames
         {
             public const string Main = "Main_WaterfallDialog";
         }
 
-        public MainDialog(IConfiguration configuration, ConversationState conversationState, UserState userState,
+        public MainDialog(IConfiguration configuration, ConversationState conversationState, UserState userState, PhoenixContext phoenixContext,
             AuthDialog authDialog, WelcomeDialog welcomeDialog, FeedbackDialog feedbackDialog, StudentDialog studentDialog, TeacherDialog teacherDialog)
             : base(nameof(MainDialog))
         {
             _configuration = configuration;
             _conversationState = conversationState;
             _userState = userState;
+            _phoenixContext = phoenixContext;
 
             AddDialog(authDialog);
             AddDialog(welcomeDialog);
@@ -74,13 +79,20 @@ namespace Phoenix.Bot.Dialogs
 
             await isAuthAcsr.SetAsync(stepContext.Context, true);
 
-            var checkedPhoneAcsr = _conversationState.CreateProperty<string>("CheckedPhone");
-            string checkedPhone = await checkedPhoneAcsr.GetAsync(stepContext.Context);
-            await checkedPhoneAcsr.DeleteAsync(stepContext.Context);
+            var phoneAcsr = _conversationState.CreateProperty<string>("Phone");
+            string phone = await phoneAcsr.GetAsync(stepContext.Context);
+            await phoneAcsr.DeleteAsync(stepContext.Context);
 
-            //TODO: Register user's FB ID to DB
-            //var user = await _appContext.Users.SingleAsync(u => u.PhoneNumber == checkedPhone);
-            //user.FacebookId = stepContext.Context.Activity.From.Id;
+            //This is for the students and their parents who have registered with the same phone number
+            var codeAcsr = _conversationState.CreateProperty<string>("OneTimeCode");
+            string code = await codeAcsr.GetAsync(stepContext.Context);
+            await phoneAcsr.DeleteAsync(stepContext.Context);
+
+            var user = _phoenixContext.AspNetUsers.SingleOrDefault(u => u.PhoneNumber == phone && u.OneTimeCode == code);
+            user.FacebookId = stepContext.Context.Activity.From.Id;
+            if (!string.IsNullOrEmpty(code))
+                user.OneTimeCodeUsed = true;
+            await _phoenixContext.SaveChangesAsync();
 
             return await stepContext.BeginDialogAsync(nameof(WelcomeDialog), null, cancellationToken);
         }
@@ -111,8 +123,8 @@ namespace Phoenix.Bot.Dialogs
                 contentType: "image/gif");
             await stepContext.Context.SendActivityAsync(reply);
 
-            //TODO: Use DB User name
-            reply = MessageFactory.Text($"Γεια σου {GreekNameCall(stepContext.Context.Activity.From.Name.Split(' ')[0])}! 😊");
+            var name = _phoenixContext.User.Single(u => u.AspNetUser.FacebookId == stepContext.Context.Activity.From.Id).FirstName;
+            reply = MessageFactory.Text($"Γεια σου {GreekNameCall(name)}! 😊");
             await stepContext.Context.SendActivityAsync(reply);
 
             return await stepContext.NextAsync(null, cancellationToken);
@@ -120,13 +132,12 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> ForwardStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            //TODO: Find user role
-            string userType = "student";
+            Role userRole = (Role)_phoenixContext.AspNetUserRoles.Single(ur => ur.User.FacebookId == stepContext.Context.Activity.Id).Role.Type;
 
-            return userType switch
+            return userRole switch
             {
-                "student" => await stepContext.BeginDialogAsync(nameof(StudentDialog), null, cancellationToken),
-                "teacher" => await stepContext.BeginDialogAsync(nameof(TeacherDialog), null, cancellationToken),
+                Role.Student => await stepContext.BeginDialogAsync(nameof(StudentDialog), null, cancellationToken),
+                Role.Teacher => await stepContext.BeginDialogAsync(nameof(TeacherDialog), null, cancellationToken),
                 _ => await stepContext.CancelAllDialogsAsync(cancellationToken)
             };
         }

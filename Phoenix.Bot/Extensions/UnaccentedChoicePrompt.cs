@@ -1,6 +1,7 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Phoenix.Bot.Helpers;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -36,16 +37,14 @@ namespace Phoenix.Bot.Extensions
 
                     for (int j = 0; j < startLength; j++)
                     {
-                        string unaccentedSynonym = new string(options.Choices[i].Synonyms[j].Normalize(NormalizationForm.FormD).
-                            Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray());
+                        string unaccentedSynonym = options.Choices[i].Synonyms[j].ToUnaccented();
                         unaccentedSynonyms.Add(unaccentedSynonym);
                     }
 
                     options.Choices[i].Synonyms.AddRange(unaccentedSynonyms);
                 }
 
-                string unaccentedChoice = new string(options.Choices[i].Value.Normalize(NormalizationForm.FormD).
-                    Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray());
+                string unaccentedChoice = options.Choices[i].Value.ToUnaccented();
 
                 if (options.Choices[i].Synonyms == null)
                     options.Choices[i].Synonyms = new List<string> { unaccentedChoice };

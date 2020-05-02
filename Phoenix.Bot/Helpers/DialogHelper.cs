@@ -1,7 +1,10 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Globalization;
+using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -54,5 +57,8 @@ namespace Phoenix.Bot.Helpers
 
         public static DateTime GreeceLocalTime()
                => TimeZoneInfo.ConvertTimeFromUtc(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time"));
+
+        public static string ToUnaccented(this string str) => new string(str.Normalize(NormalizationForm.FormD).
+            Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray());
     }
 }

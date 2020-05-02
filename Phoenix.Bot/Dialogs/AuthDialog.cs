@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using System;
-using Phoenix.DataHandle.Identity;
 using Phoenix.Bot.Extensions;
+using Phoenix.DataHandle.Main.Models;
+using System.Linq;
 
 namespace Phoenix.Bot.Dialogs
 {
@@ -16,11 +17,13 @@ namespace Phoenix.Bot.Dialogs
     {
         private readonly BotState _conversationState;
         private readonly BotState _userState;
+        private readonly PhoenixContext _phoenixContext;
 
         private static class WaterfallNames
         {
             public const string Main        = "AuthMain_WaterfallDialog";
             public const string Phone       = "AuthPhone_WaterfallDialog";
+            public const string Code        = "AuthCode_WaterfallDialog";
             public const string SendPin     = "AuthSendPin_WaterfallDialog";
             public const string CheckPin    = "AuthCheckPin_WaterfallDialog";
         }
@@ -31,13 +34,15 @@ namespace Phoenix.Bot.Dialogs
             public const string Pin = "Pin_Prompt";
         }
 
-        public AuthDialog(ConversationState conversationState, UserState userState)
+        public AuthDialog(ConversationState conversationState, UserState userState, PhoenixContext phoenixContext)
             : base(nameof(AuthDialog))
         {
             _conversationState = conversationState;
             _userState = userState;
+            _phoenixContext = phoenixContext;
 
             AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
+            AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new NumberPrompt<long>(PromptNames.Phone, PhoneNumberPromptValidator));
             AddDialog(new NumberPrompt<long>(PromptNames.Pin, PinPromptValidator));
 
@@ -57,6 +62,16 @@ namespace Phoenix.Bot.Dialogs
 
                     PhoneNotFoundStepAsync,
                     PhoneRedirectStepAsync
+                }));
+
+            AddDialog(new WaterfallDialog(WaterfallNames.Code,
+                new WaterfallStep[]
+                {
+                    AskCodeStepAsync,
+                    CheckCodeStepAsync,
+
+                    CodeNotFoundStepAsync,
+                    CodeRedirectStepAsync
                 }));
 
             AddDialog(new WaterfallDialog(WaterfallNames.SendPin,
@@ -109,8 +124,7 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> SignInStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var reply = MessageFactory.Text("Αρχικά, θα χρειαστώ το κινητό τηλέφωνο επικοινωνίας που έχεις δώσει για την επαλήθευση.");
-            await stepContext.Context.SendActivityAsync(reply);
+            await stepContext.Context.SendActivityAsync("Αρχικά, θα χρειαστώ το κινητό τηλέφωνο επικοινωνίας που έχεις δώσει για την επαλήθευση.");
 
             return await stepContext.BeginDialogAsync(WaterfallNames.Phone, null, cancellationToken);
         }
@@ -136,16 +150,16 @@ namespace Phoenix.Bot.Dialogs
             long phone = (long)stepContext.Result;
             stepContext.Values.Add("phone", phone);
 
-            //Identity
-            //bool phoneFound = _appContext.Users.Any(user => user.PhoneNumber == phone.ToString());
-            bool phoneFound = phone == 6912345678;
-            if (phoneFound) 
-            {
-                await _conversationState.CreateProperty<string>("CheckedPhone").SetAsync(stepContext.Context, phone.ToString());
-                return await stepContext.BeginDialogAsync(WaterfallNames.SendPin, phone, cancellationToken);
-            }
+            //If a student has their parent's phone registered, then they must be differentiated by a unique code given by the school.
+            var usersWithThatPhone = _phoenixContext.AspNetUsers.Where(u => u.PhoneNumber == phone.ToString());
+            if (!usersWithThatPhone.Any())
+                return await stepContext.NextAsync(null, cancellationToken);
 
-            return await stepContext.NextAsync(null, cancellationToken);
+            await _conversationState.CreateProperty<string>("Phone").SetAsync(stepContext.Context, phone.ToString());
+            if (usersWithThatPhone.Count() == 1) 
+                return await stepContext.BeginDialogAsync(WaterfallNames.SendPin, phone, cancellationToken);
+        
+            return await stepContext.BeginDialogAsync(WaterfallNames.Code, phone, cancellationToken);
         }
 
         private async Task<DialogTurnResult> PhoneNotFoundStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -166,30 +180,89 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> PhoneRedirectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var reply = MessageFactory.Text("");
             var foundChoice = stepContext.Result as FoundChoice;
             if (foundChoice.Index == 0)
             {
-                reply.Text = "Για να χρησιμοποιήσεις το Phoenix, θα πρέπει το φροντιστήριό σου να έχει πρώτα κάνει εγγραφή.";
-                await stepContext.Context.SendActivityAsync(reply, cancellationToken);
-
-                reply.Text = "Εάν πιστεύεις ότι κάτι είναι λάθος, μπορείς να επικοινωνήσεις με τους καθηγητές σου.";
-                await stepContext.Context.SendActivityAsync(reply, cancellationToken);
-
-                reply.Text = "Φυσικά, μπορείς να μάθεις περισσότερα για το Phoenix πατώντας τον παρακάτω σύνδεσμο: https://www.askphoenix.gr/";
-                await stepContext.Context.SendActivityAsync(reply, cancellationToken);
-
-                reply.Text = "Ελπίζω να τα ξαναπούμε σύντομα! Εις το επανιδείν! 😊";
-                await stepContext.Context.SendActivityAsync(reply, cancellationToken);
+                await stepContext.Context.SendActivityAsync("Για να χρησιμοποιήσεις το Phoenix, " +
+                    "θα πρέπει το φροντιστήριό σου να έχει πρώτα κάνει εγγραφή.");
+                await stepContext.Context.SendActivityAsync("Εάν πιστεύεις ότι κάτι είναι λάθος, μπορείς να επικοινωνήσεις με το φροντιστήριο.");
+                await stepContext.Context.SendActivityAsync("Φυσικά, μπορείς να μάθεις περισσότερα για το Phoenix " +
+                    "πατώντας τον παρακάτω σύνδεσμο: https://www.askphoenix.gr/");
+                await stepContext.Context.SendActivityAsync("Ελπίζω να τα ξαναπούμε σύντομα! Εις το επανιδείν! 😊");
 
                 return await stepContext.EndDialogAsync(false, cancellationToken);
             }
 
-            reply.Text = "Μην ανησυχείς, κανένα πρόβλημα!";
-            await stepContext.Context.SendActivityAsync(reply, cancellationToken);
+            await stepContext.Context.SendActivityAsync("Μην ανησυχείς, κανένα πρόβλημα!");
+            await stepContext.Context.SendActivityAsync("Ας προσπαθήσουμε ξανά, πιο προσεκτικά!");
 
-            reply.Text = "Ας προσπαθήσουμε ξανά, πιο προσεκτικά!";
-            await stepContext.Context.SendActivityAsync(reply, cancellationToken);
+            return await stepContext.ReplaceDialogAsync(stepContext.ActiveDialog.Id, stepContext.Options, cancellationToken);
+        }
+
+        #endregion
+
+        #region Code Waterfall Dialog
+
+        private async Task<DialogTurnResult> AskCodeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var reply = MessageFactory.SuggestedActions(
+                new CardAction[] { new CardAction(ActionTypes.ImBack, "Δεν έχω κωδικό") },
+                text: "Παρακαλώ πληκτρολόγησε τον κωδικό που σου έδωσαν από το φροντιστήριο:");
+
+            return await stepContext.PromptAsync(
+                nameof(TextPrompt),
+                new PromptOptions { Prompt = (Activity)reply });
+        }
+
+        private async Task<DialogTurnResult> CheckCodeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var result = stepContext.Result as string;
+            if (result.ToLower().ToUnaccented() == "δεν εχω κωδικο")
+            {
+                await stepContext.Context.SendActivityAsync("Απ' ό,τι βλέπω το τηλέφωνό σου έχει καταχωρηθεί πολλαπλές φορές.");
+                await stepContext.Context.SendActivityAsync("Επικοινώνησε με το φροντιστήριό σου, ώστε να λάβεις έναν μοναδικό κωδικό " +
+                    "και προσπάθησε ξανά.");
+                
+                return await stepContext.EndDialogAsync(false, cancellationToken);
+            }
+
+            bool codeOk = _phoenixContext.AspNetUsers.Any(u => u.OneTimeCode == result);
+            if (!codeOk)
+                return await stepContext.NextAsync(null, cancellationToken);
+
+            await _conversationState.CreateProperty<string>("OneTimeCode").SetAsync(stepContext.Context, result);
+            
+            return await stepContext.BeginDialogAsync(WaterfallNames.SendPin, stepContext.Options, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> CodeNotFoundStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            if (stepContext.Result != null)
+                return await stepContext.EndDialogAsync(stepContext.Result, cancellationToken);
+
+            return await stepContext.PromptAsync(
+                nameof(UnaccentedChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Ο κωδικός που πληκτρολόγησες δε βρέθηκε."),
+                    RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε μία από τις παρακάτω απαντήσεις:"),
+                    Choices = new Choice[] { new Choice("Προσπάθησε ξανά"), new Choice("Ακύρωση") }
+                });
+        }
+
+        private async Task<DialogTurnResult> CodeRedirectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var foundChoice = stepContext.Result as FoundChoice;
+            if (foundChoice.Index == 1)
+            {
+                await stepContext.Context.SendActivityAsync("Επικοινώνησε με το φροντιστήριό σου, ώστε να λάβεις έναν έγκυρο μοναδικό κωδικό " +
+                   "και προσπάθησε ξανά.");
+                await stepContext.Context.SendActivityAsync("Ελπίζω να τα ξαναπούμε σύντομα! Εις το επανιδείν! 😊");
+
+                return await stepContext.EndDialogAsync(false, cancellationToken);
+            }
+
+            await stepContext.Context.SendActivityAsync("Ας προσπαθήσουμε ξανά, πιο προσεκτικά!");
 
             return await stepContext.ReplaceDialogAsync(stepContext.ActiveDialog.Id, stepContext.Options, cancellationToken);
         }
@@ -209,11 +282,8 @@ namespace Phoenix.Bot.Dialogs
                 return await stepContext.NextAsync(null, cancellationToken);
             }
 
-            var reply = MessageFactory.Text("Δυστυχώς έχεις υπερβεί το όριο μηνυμάτων επαλήθευσης.");
-            await stepContext.Context.SendActivityAsync(reply);
-
-            reply.Text = "Παρακαλώ επικοινώνησε με τους καθηγητές σου για να συνεχίσεις.";
-            await stepContext.Context.SendActivityAsync(reply);
+            await stepContext.Context.SendActivityAsync("Δυστυχώς έχεις υπερβεί το όριο μηνυμάτων επαλήθευσης.");
+            await stepContext.Context.SendActivityAsync("Παρακαλώ επικοινώνησε με τους καθηγητές σου για να συνεχίσεις.");
 
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
@@ -237,19 +307,15 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> PinReceivedReplyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var reply = MessageFactory.Text("");
-
             var foundChoice = stepContext.Result as FoundChoice;
             if (foundChoice.Index == 0)
             {
-                reply.Text = "Ωραία! Για να ολοκληρωθεί η σύνδεση, θα χρειαστεί να γράψεις το pin που μόλις έλαβες.";
-                await stepContext.Context.SendActivityAsync(reply);
+                await stepContext.Context.SendActivityAsync("Ωραία! Για να ολοκληρωθεί η σύνδεση, θα χρειαστεί να γράψεις το pin που μόλις έλαβες.");
 
                 return await stepContext.BeginDialogAsync(WaterfallNames.CheckPin, stepContext.Values["pin"], cancellationToken);
             }
 
-            reply.Text = "ΟΚ, μην ανησυχείς! Επειδή καμιά φορά αργεί να έρθει το μήνυμα, περίμενε μερικά λεπτά ακόμα.";
-            await stepContext.Context.SendActivityAsync(reply);
+            await stepContext.Context.SendActivityAsync("ΟΚ, μην ανησυχείς! Επειδή καμιά φορά αργεί να έρθει το μήνυμα, περίμενε μερικά λεπτά ακόμα.");
 
             return await stepContext.PromptAsync(
                 nameof(UnaccentedChoicePrompt),
@@ -291,21 +357,19 @@ namespace Phoenix.Bot.Dialogs
         private async Task<DialogTurnResult> CheckPinStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             long pinTyped = (long)stepContext.Result;
-            var reply = MessageFactory.Text("");
 
             //TODO: Check with real pin
             //bool pinOk = pinTyped == (long)stepContext.Options;
             bool pinOk = pinTyped == 1111;
             if (pinOk)
             {
-                reply.Text = "Πολύ ωραία! Η σύνδεση ολοκληρώθηκε επιτυχώς! 😁";
-                await stepContext.Context.SendActivityAsync(reply);
+                await stepContext.Context.SendActivityAsync("Πολύ ωραία! Η σύνδεση ολοκληρώθηκε επιτυχώς! 😁");
 
                 return await stepContext.EndDialogAsync(true, cancellationToken);
             }
 
-            reply.Text = "Το pin που έγραψες δεν είναι ίδιο με αυτό που σου έστειλα. Δες ξανά και προσεκτικά το SMS και προσπάθησε πάλι.";
-            await stepContext.Context.SendActivityAsync(reply);
+            await stepContext.Context.SendActivityAsync("Το pin που έγραψες δεν είναι ίδιο με αυτό που σου έστειλα. " +
+                "Δες ξανά και προσεκτικά το SMS και προσπάθησε πάλι.");
 
             return await stepContext.ReplaceDialogAsync(stepContext.ActiveDialog.Id, stepContext.Options, cancellationToken);
         }
