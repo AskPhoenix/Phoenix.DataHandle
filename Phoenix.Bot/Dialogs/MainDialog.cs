@@ -132,7 +132,9 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> ForwardStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            Role userRole = (Role)_phoenixContext.AspNetUserRoles.Single(ur => ur.User.FacebookId == stepContext.Context.Activity.Id).Role.Type;
+            //TODO: Allow to choose between roles if has multiple
+            var userRole = (Role)_phoenixContext.AspNetRoles.
+                First(r => r.AspNetUserRoles.Single(ur => ur.User.FacebookId == stepContext.Context.Activity.From.Id).RoleId == r.Id).Type;
 
             return userRole switch
             {
