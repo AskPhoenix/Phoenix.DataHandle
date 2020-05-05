@@ -1,7 +1,6 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.EntityFrameworkCore;
 using Phoenix.Bot.Extensions;
 using Phoenix.Bot.Helpers;
 using Phoenix.DataHandle.Main.Models;
@@ -17,8 +16,9 @@ namespace Phoenix.Bot.Dialogs
     public class FeedbackDialog : ComponentDialog
     {
         private readonly PhoenixContext _phoenixContext;
+        private readonly BotState _conversationState;
 
-        private BotFeedback BotFeedback { get; set; }
+        private readonly IStatePropertyAccessor<BotFeedback> _botFeedbackAcsr;
 
         private static class WaterfallNames
         {
@@ -28,10 +28,12 @@ namespace Phoenix.Bot.Dialogs
             public const string Rating      = "FeedbackRating_WaterfallDialog";
         }
 
-        public FeedbackDialog(PhoenixContext phoenixContext)
+        public FeedbackDialog(PhoenixContext phoenixContext, ConversationState conversationState)
             : base(nameof(FeedbackDialog))
         {
             _phoenixContext = phoenixContext;
+            _conversationState = conversationState;
+            _botFeedbackAcsr = _conversationState.CreateProperty<BotFeedback>("BotFeedback");
 
             AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
             AddDialog(new TextPrompt(nameof(TextPrompt)));
@@ -67,33 +69,38 @@ namespace Phoenix.Bot.Dialogs
 
         protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default)
         {
-            BotFeedback = new BotFeedback()
+            var botFeedback = new BotFeedback()
             {
                 AuthorId = _phoenixContext.AspNetUsers.Single(u => u.FacebookId == innerDc.Context.Activity.From.Id).Id
             };
 
             if (Persistent.TryGetCommand(innerDc.Context.Activity.Text, out Persistent.Command cmd) && cmd == Persistent.Command.Feedback)
             {
-                BotFeedback.Occasion = Feedback.Occasion.Persistent_Menu.ToString();
+                botFeedback.Occasion = Feedback.Occasion.Persistent_Menu.ToString();
                 InitialDialogId = WaterfallNames.Spontaneous;
             }
             else
             {
-                BotFeedback.Occasion = ((Feedback.Occasion)options).ToString();
+                botFeedback.Occasion = ((Feedback.Occasion)options).ToString();
                 InitialDialogId = WaterfallNames.Triggered;
             }
+
+            await _botFeedbackAcsr.SetAsync(innerDc.Context, botFeedback);
 
             return await base.OnBeginDialogAsync(innerDc, options, cancellationToken);
         }
 
         protected override Task OnEndDialogAsync(ITurnContext context, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
-            try
+            var botFeedback = _botFeedbackAcsr.GetAsync(context).Result;
+
+            if (botFeedback.Comment != null || botFeedback.Rating != null)
             {
-                _phoenixContext.Add(BotFeedback);
+                _phoenixContext.Add(botFeedback);
                 _phoenixContext.SaveChanges();
-            } 
-            catch (DbUpdateException) { }
+            }
+
+            _botFeedbackAcsr.DeleteAsync(context).Wait();
 
             return base.OnEndDialogAsync(context, instance, reason, cancellationToken);
         }
@@ -116,7 +123,10 @@ namespace Phoenix.Bot.Dialogs
         private async Task<DialogTurnResult> RedirectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var selCat = (Feedback.Category)(stepContext.Result as FoundChoice).Index;
-            BotFeedback.Category = selCat.ToString();
+
+            var botFeedback = await _botFeedbackAcsr.GetAsync(stepContext.Context);
+            botFeedback.Category = selCat.ToString();
+            await _botFeedbackAcsr.SetAsync(stepContext.Context, botFeedback);
 
             if (selCat == Feedback.Category.Rating)
                 return await stepContext.BeginDialogAsync(WaterfallNames.Rating, null, cancellationToken);
@@ -168,7 +178,9 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> RatingReplyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            BotFeedback.Rating = (byte)(5 - (stepContext.Result as FoundChoice).Index);
+            var botFeedback = await _botFeedbackAcsr.GetAsync(stepContext.Context);
+            botFeedback.Rating = (byte)(5 - (stepContext.Result as FoundChoice).Index);
+            await _botFeedbackAcsr.SetAsync(stepContext.Context, botFeedback);
 
             await stepContext.Context.SendActivityAsync("Σ' ευχαριστώ πολύ για τη βαθμολογία σου! 😊");
             return await stepContext.EndDialogAsync(null, cancellationToken);
@@ -199,7 +211,9 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> CommentReplyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            BotFeedback.Comment = (string)stepContext.Result;
+            var botFeedback = await _botFeedbackAcsr.GetAsync(stepContext.Context);
+            botFeedback.Comment = (string)stepContext.Result;
+            await _botFeedbackAcsr.SetAsync(stepContext.Context, botFeedback);
 
             await stepContext.Context.SendActivityAsync("Σ' ευχαριστώ πολύ για το σχόλιό σου! 😊");
             return await stepContext.EndDialogAsync(null, cancellationToken);
