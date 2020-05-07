@@ -4,6 +4,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Phoenix.Bot.Extensions;
 using Phoenix.Bot.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -97,7 +98,16 @@ namespace Phoenix.Bot.Dialogs.Student
         }
 
         private async Task<DialogTurnResult> FeedbackStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-            => await stepContext.BeginDialogAsync(nameof(FeedbackDialog), (Feedback.Occasion)stepContext.Values["selTaskInd"], cancellationToken);
+        {
+            // 1/3 possibility to ask for Feedback
+            if (new Random().Next(3) == 0)
+            {
+                var feedbackOccasion = (Feedback.Occasion)(long)stepContext.Values["selTaskInd"];
+                return await stepContext.BeginDialogAsync(nameof(FeedbackDialog), feedbackOccasion, cancellationToken);
+            }
+
+            return await stepContext.NextAsync(null, cancellationToken);
+        }
 
         private async Task<DialogTurnResult> LoopStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
             => await stepContext.ReplaceDialogAsync(stepContext.ActiveDialog.Id, stepContext.Options, cancellationToken);

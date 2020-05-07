@@ -42,13 +42,13 @@ namespace Phoenix.Bot.Helpers
                         new AdaptiveTextRun()
                         {
                             Color = AdaptiveTextColor.Light,
-                            Size = AdaptiveTextSize.Medium,
+                            Size = AdaptiveTextSize.Large,
                             Weight = AdaptiveTextWeight.Bolder
                         },
                         new AdaptiveTextRun()
                         {
                             Color = AdaptiveTextColor.Light,
-                            Size = AdaptiveTextSize.Medium,
+                            Size = AdaptiveTextSize.Large,
                             Weight = AdaptiveTextWeight.Lighter
                         }
                     };
@@ -62,14 +62,14 @@ namespace Phoenix.Bot.Helpers
                         {
                             Text = fact,
                             Color = AdaptiveTextColor.Light,
-                            Size = AdaptiveTextSize.Medium,
+                            Size = AdaptiveTextSize.Large,
                             Weight = AdaptiveTextWeight.Bolder
                         },
                         new AdaptiveTextRun()
                         {
                             Text = value,
                             Color = AdaptiveTextColor.Light,
-                            Size = AdaptiveTextSize.Medium,
+                            Size = AdaptiveTextSize.Large,
                             Weight = AdaptiveTextWeight.Lighter
                         }
                     };

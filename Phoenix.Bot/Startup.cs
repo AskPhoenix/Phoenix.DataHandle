@@ -11,7 +11,6 @@ using Phoenix.Bot.Dialogs;
 using Phoenix.Bot.Dialogs.Student;
 using Phoenix.Bot.Dialogs.Teacher;
 using Phoenix.Bot.Extensions;
-using Phoenix.DataHandle.Bot.Models;
 using Phoenix.DataHandle.Bot.Storage;
 using Phoenix.DataHandle.Main.Models;
 using System.Globalization;

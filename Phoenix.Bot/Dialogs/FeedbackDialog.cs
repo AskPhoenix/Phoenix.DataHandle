@@ -18,7 +18,7 @@ namespace Phoenix.Bot.Dialogs
         private readonly PhoenixContext _phoenixContext;
         private readonly BotState _conversationState;
 
-        private readonly IStatePropertyAccessor<BotFeedback> _botFeedbackAcsr;
+        private readonly IStatePropertyAccessor<BotFeedback> _botFeedback;
 
         private static class WaterfallNames
         {
@@ -33,7 +33,7 @@ namespace Phoenix.Bot.Dialogs
         {
             _phoenixContext = phoenixContext;
             _conversationState = conversationState;
-            _botFeedbackAcsr = _conversationState.CreateProperty<BotFeedback>("BotFeedback");
+            _botFeedback = _conversationState.CreateProperty<BotFeedback>("BotFeedback");
 
             AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
             AddDialog(new TextPrompt(nameof(TextPrompt)));
@@ -85,22 +85,25 @@ namespace Phoenix.Bot.Dialogs
                 InitialDialogId = WaterfallNames.Triggered;
             }
 
-            await _botFeedbackAcsr.SetAsync(innerDc.Context, botFeedback);
+            await _botFeedback.SetAsync(innerDc.Context, botFeedback);
 
             return await base.OnBeginDialogAsync(innerDc, options, cancellationToken);
         }
 
         protected override Task OnEndDialogAsync(ITurnContext context, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
-            var botFeedback = _botFeedbackAcsr.GetAsync(context).Result;
+            var botFeedback = Task.Run<BotFeedback>(async () => 
+            {
+                var botFeedback = await _botFeedback.GetAsync(context);
+                await _botFeedback.DeleteAsync(context);
+                return botFeedback;
+            }).Result;
 
             if (botFeedback.Comment != null || botFeedback.Rating != null)
             {
                 _phoenixContext.Add(botFeedback);
                 _phoenixContext.SaveChanges();
             }
-
-            _botFeedbackAcsr.DeleteAsync(context).Wait();
 
             return base.OnEndDialogAsync(context, instance, reason, cancellationToken);
         }
@@ -124,9 +127,9 @@ namespace Phoenix.Bot.Dialogs
         {
             var selCat = (Feedback.Category)(stepContext.Result as FoundChoice).Index;
 
-            var botFeedback = await _botFeedbackAcsr.GetAsync(stepContext.Context);
+            var botFeedback = await _botFeedback.GetAsync(stepContext.Context);
             botFeedback.Category = selCat.ToString();
-            await _botFeedbackAcsr.SetAsync(stepContext.Context, botFeedback);
+            await _botFeedback.SetAsync(stepContext.Context, botFeedback);
 
             if (selCat == Feedback.Category.Rating)
                 return await stepContext.BeginDialogAsync(WaterfallNames.Rating, null, cancellationToken);
@@ -178,9 +181,9 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> RatingReplyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var botFeedback = await _botFeedbackAcsr.GetAsync(stepContext.Context);
+            var botFeedback = await _botFeedback.GetAsync(stepContext.Context);
             botFeedback.Rating = (byte)(5 - (stepContext.Result as FoundChoice).Index);
-            await _botFeedbackAcsr.SetAsync(stepContext.Context, botFeedback);
+            await _botFeedback.SetAsync(stepContext.Context, botFeedback);
 
             await stepContext.Context.SendActivityAsync("Σ' ευχαριστώ πολύ για τη βαθμολογία σου! 😊");
             return await stepContext.EndDialogAsync(null, cancellationToken);
@@ -192,6 +195,7 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> CommentPromptStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            //TODO: Provide suggested replies for comments
             var reply = (Feedback.Category)stepContext.Options switch
             {
                 Feedback.Category.Comment => MessageFactory.Text("Ωραία! Σε ακούω:"),
@@ -211,9 +215,9 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> CommentReplyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var botFeedback = await _botFeedbackAcsr.GetAsync(stepContext.Context);
+            var botFeedback = await _botFeedback.GetAsync(stepContext.Context);
             botFeedback.Comment = (string)stepContext.Result;
-            await _botFeedbackAcsr.SetAsync(stepContext.Context, botFeedback);
+            await _botFeedback.SetAsync(stepContext.Context, botFeedback);
 
             await stepContext.Context.SendActivityAsync("Σ' ευχαριστώ πολύ για το σχόλιό σου! 😊");
             return await stepContext.EndDialogAsync(null, cancellationToken);
