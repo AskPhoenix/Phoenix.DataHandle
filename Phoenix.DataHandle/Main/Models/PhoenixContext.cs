@@ -126,8 +126,6 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Book>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
@@ -135,8 +133,6 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<BotFeedback>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Category).HasMaxLength(50);
 
                 entity.Property(e => e.Occasion)
@@ -219,8 +215,6 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Exam>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.StartsAt).HasColumnType("datetime2(0)");
 
                 entity.HasOne(d => d.Classroom)
@@ -238,8 +232,6 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Exercise>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(256);
@@ -293,8 +285,6 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Material>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Chapter).HasMaxLength(50);
 
                 entity.Property(e => e.Section).HasMaxLength(50);
