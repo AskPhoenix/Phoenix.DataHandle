@@ -5,6 +5,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using Phoenix.Bot.Dialogs.Student.Common;
 using Phoenix.Bot.Extensions;
 using Phoenix.Bot.Helpers;
 using Phoenix.DataHandle.Main.Models;
@@ -22,12 +23,10 @@ namespace Phoenix.Bot.Dialogs.Student
         private readonly PhoenixContext _phoenixContext;
         private readonly BotState _conversationState;
 
-        private readonly IStatePropertyAccessor<Course[]> _courses;
-        private readonly IStatePropertyAccessor<int> _selCourse;
+        private readonly IStatePropertyAccessor<int> _selCourseId;
 
         private static class WaterfallNames
         {
-            public const string Course          = "StudentExercise_Course_WaterfallDialog";
             public const string Lecture         = "StudentExercise_Lecture_WaterfallDialog";
             public const string LecturePast     = "StudentExercise_LecturePast_WaterfallDialog";
             public const string LectureOther    = "StudentExercise_LectureOther_WaterfallDialog";
@@ -40,22 +39,16 @@ namespace Phoenix.Bot.Dialogs.Student
             _phoenixContext = phoenixContext;
             _conversationState = conversationState;
 
-            _courses = _conversationState.CreateProperty<Course[]>("Courses");
-            _selCourse = _conversationState.CreateProperty<int>("SelCourse");
+            _selCourseId = _conversationState.CreateProperty<int>("SelCourseId");
 
+            AddDialog(new CourseDialog());
             AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
             AddDialog(new DateTimePrompt(nameof(DateTimePrompt), null, "fr-fr"));
-
-            AddDialog(new WaterfallDialog(WaterfallNames.Course,
-                new WaterfallStep[]
-                {
-                    CourseStepAsync,
-                    CourseSelectStepAsync
-                }));
 
             AddDialog(new WaterfallDialog(WaterfallNames.Lecture,
                 new WaterfallStep[]
                 {
+                    CourseStepAsync,
                     LectureStepAsync
                 }));
 
@@ -83,64 +76,46 @@ namespace Phoenix.Bot.Dialogs.Student
                     HomeworkPageStepAsync,
                     HomeworkOtherStepAsync
                 }));
-        }
 
-        protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default)
-        {
-            string FbId = innerDc.Context.Activity.From.Id;
-            var courses = _phoenixContext.Course.Where(c => c.StudentCourse.
-                Any(sc => sc.CourseId == c.Id && sc.Student.AspNetUser.FacebookId == FbId)).ToArray();
-            await _courses.SetAsync(innerDc.Context, courses);
-            
-            if (courses == null || courses.Length == 0)
-            {
-                await innerDc.Context.SendActivityAsync("Απ' ό,τι φαίνεται δεν έχεις εγγραφεί σε κάποιο μάθημα προς το παρόν.");
-                return await innerDc.EndDialogAsync(null, cancellationToken);
-            }
-
-            InitialDialogId = courses.Length == 1 ? InitialDialogId = WaterfallNames.Lecture : WaterfallNames.Course;
-
-            return await base.OnBeginDialogAsync(innerDc, options, cancellationToken);
+            InitialDialogId = WaterfallNames.Lecture;
         }
 
         protected override Task OnEndDialogAsync(ITurnContext context, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
-            Task.Run(async () => 
-            {
-                await _courses.DeleteAsync(context);
-                await _selCourse.DeleteAsync(context);
-            });
+            Task.Run(async () => await _selCourseId.DeleteAsync(context));
 
             return base.OnEndDialogAsync(context, instance, reason, cancellationToken);
         }
 
-        #region Course Waterfall Dialog
+        #region Lecture Waterfall Dialog
 
         private async Task<DialogTurnResult> CourseStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-            => await stepContext.PromptAsync(
-                nameof(UnaccentedChoicePrompt),
-                new PromptOptions
-                {
-                    Prompt = MessageFactory.Text("Για ποιο μάθημα θα ήθελες να δεις τις εργασίες σου;"),
-                    RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε ή πληκτρολόγησε ένα από τα παρακάτω μαθήματα:"),
-                    Choices = ChoiceFactory.ToChoices((await _courses.GetAsync(stepContext.Context)).Select(c => c.Name).ToList())
-                });
+        {
+            string FbId = stepContext.Context.Activity.From.Id;
+            var coursesIdName = _phoenixContext.Course.
+                Where(c => c.StudentCourse.Any(sc => sc.CourseId == c.Id && sc.Student.AspNetUser.FacebookId == FbId)).
+                Select(c => Tuple.Create(c.Id, c.Name)).
+                ToArray();
 
-        private async Task<DialogTurnResult> CourseSelectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-            => await stepContext.BeginDialogAsync(WaterfallNames.Lecture, (stepContext.Result as FoundChoice)?.Index, cancellationToken);
+            if (coursesIdName.Length == 0)
+            {
+                await stepContext.Context.SendActivityAsync("Απ' ό,τι φαίνεται δεν έχεις εγγραφεί σε κάποιο μάθημα προς το παρόν.");
+                return await stepContext.EndDialogAsync(null, cancellationToken);
+            }
 
-        #endregion
+            if (coursesIdName.Length == 1)
+                return await stepContext.NextAsync(coursesIdName[0].Item1, cancellationToken);
 
-        #region Lecture Waterfall Dialog
+            return await stepContext.BeginDialogAsync(nameof(CourseDialog), coursesIdName, cancellationToken);
+        }
 
         private async Task<DialogTurnResult> LectureStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            await _selCourse.SetAsync(stepContext.Context, stepContext.Options is int ? (int)stepContext.Options : 0);
-            var courses = await _courses.GetAsync(stepContext.Context);
-            var selCourse = await _selCourse.GetAsync(stepContext.Context);
+            int selCourseId = Convert.ToInt32(stepContext.Result);
+            await _selCourseId.SetAsync(stepContext.Context, selCourseId);
 
             var lecWithHw = _phoenixContext.Lecture.
-                Where(l => l.CourseId == courses[selCourse].Id && l.Homework.Count > 0);
+                Where(l => l.CourseId == selCourseId && l.Homework.Count > 0);
             if (lecWithHw.Count() == 0)
             {
                 await stepContext.Context.SendActivityAsync("Δεν υπάρχουν ακόμα εργασίες για αυτό το μάθημα.");
@@ -188,8 +163,7 @@ namespace Phoenix.Bot.Dialogs.Student
 
         private async Task<DialogTurnResult> PastLectureStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var courses = await _courses.GetAsync(stepContext.Context);
-            var selCourse = await _selCourse.GetAsync(stepContext.Context);
+            var selCourseId = await _selCourseId.GetAsync(stepContext.Context);
 
             if ((stepContext.Result as FoundChoice).Index == 1)
             {
@@ -200,7 +174,7 @@ namespace Phoenix.Bot.Dialogs.Student
             var grNow = DialogHelper.GreeceLocalTime();
 
             var pLecDates = _phoenixContext.Lecture.
-                Where(l => l.CourseId == courses[selCourse].Id && l.StartDateTime < grNow && l.Homework.Count > 0).
+                Where(l => l.CourseId == selCourseId && l.StartDateTime < grNow && l.Homework.Count > 0).
                 OrderByDescending(h => h.StartDateTime).
                 Take(5).
                 Select(l => $"{l.StartDateTime.Day}/{l.StartDateTime.Month}").
@@ -330,12 +304,11 @@ namespace Phoenix.Bot.Dialogs.Student
                 return await stepContext.EndDialogAsync(null, cancellationToken);
             }
 
-            var courses = await _courses.GetAsync(stepContext.Context);
-            var selCourse = await _selCourse.GetAsync(stepContext.Context);
+            var selCourseId = await _selCourseId.GetAsync(stepContext.Context);
 
             var grNow = DialogHelper.GreeceLocalTime();
             var lecDates = _phoenixContext.Lecture.
-                    Where(l => l.CourseId == courses[selCourse].Id && l.Homework.Count > 0).
+                    Where(l => l.CourseId == selCourseId && l.Homework.Count > 0).
                     Select(l => l.StartDateTime).
                     Take(5).
                     OrderByDescending(d => d).
@@ -358,18 +331,17 @@ namespace Phoenix.Bot.Dialogs.Student
 
         private async Task<DialogTurnResult> OtherLectureSelectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var courses = await _courses.GetAsync(stepContext.Context);
-            var selCourse = await _selCourse.GetAsync(stepContext.Context);
+            var selCourseId = await _selCourseId.GetAsync(stepContext.Context);
 
             var selDate = DialogHelper.ResolveDateTime(stepContext.Result as IList<DateTimeResolution>);
             var lec = _phoenixContext.Lecture.
                 Include(l => l.Homework).
-                FirstOrDefault(l => l.CourseId == courses[selCourse].Id && l.StartDateTime.Date == selDate.Date);
+                FirstOrDefault(l => l.CourseId == selCourseId && l.StartDateTime.Date == selDate.Date);
 
             if (lec == null)
             {
                 lec = _phoenixContext.Lecture.
-                    Where(l => l.CourseId == courses[selCourse].Id && l.Homework.Count > 0).
+                    Where(l => l.CourseId == selCourseId && l.Homework.Count > 0).
                     ToList().
                     Aggregate((l, cl) => Math.Abs((l.StartDateTime - selDate).Days) < Math.Abs((cl.StartDateTime - selDate).Days) ? l : cl);
 
