@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Phoenix.Api.Models.Api;
 using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
@@ -28,7 +29,30 @@ namespace Phoenix.Api.Controllers
         {
             this._logger.LogInformation("Api -> Lecture -> Get");
 
-            return await this._lectureRepository.find().ToListAsync();
+            IQueryable<Lecture> lectures = this._lectureRepository.find();
+
+            return await lectures.Select(lecture => new LectureApi
+            {
+                id = lecture.Id,
+                Status = lecture.Status,
+                StartDateTime = lecture.StartDateTime,
+                EndDateTime = lecture.EndDateTime,
+                Info = lecture.Info,
+                Course = new CourseApi
+                {
+                    id = lecture.Course.Id,
+                    Name = lecture.Course.Name,
+                    Level = lecture.Course.Level,
+                    Group = lecture.Course.Group,
+                    Info = lecture.Course.Info
+                },
+                Classroom = new ClassroomApi
+                {
+                    id = lecture.Classroom.Id,
+                    Name = lecture.Course.Name,
+                    Info = lecture.Classroom.Info
+                },
+            }).ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -36,7 +60,30 @@ namespace Phoenix.Api.Controllers
         {
             this._logger.LogInformation($"Api -> Lecture -> Get{id}");
 
-            return await this._lectureRepository.find(id);
+            Lecture lecture = await this._lectureRepository.find(id);
+
+            return new LectureApi
+            {
+                id = lecture.Id,
+                Status = lecture.Status,
+                StartDateTime = lecture.StartDateTime,
+                EndDateTime = lecture.EndDateTime,
+                Info = lecture.Info,
+                Course = new CourseApi
+                {
+                    id = lecture.Course.Id,
+                    Name = lecture.Course.Name,
+                    Level = lecture.Course.Level,
+                    Group = lecture.Course.Group,
+                    Info = lecture.Course.Info
+                },
+                Classroom = new ClassroomApi
+                {
+                    id = lecture.Classroom.Id,
+                    Name = lecture.Course.Name,
+                    Info = lecture.Classroom.Info
+                },
+            };
         }
 
 

@@ -20,6 +20,8 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class AspNetUsers : IAspNetUsers, IModelEntity
     {
+        public DateTime RegisteredAt => this.CreatedAt;
+
         IUser IAspNetUsers.User => this.User;
 
         IEnumerable<IAspNetUserRoles> IAspNetUsers.Roles => this.AspNetUserRoles;
@@ -138,6 +140,8 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class User : IUser, IModelEntity
     {
+        public string FullName => (this.LastName + " " + this.FirstName).Trim();
+
         int IModelEntity.Id => AspNetUserId;
         IAspNetUsers IUser.AspNetUser => this.AspNetUser;
 
@@ -156,6 +160,7 @@ namespace Phoenix.DataHandle.Main.Models
         public DateTime startAt { get; set; }
         public DateTime endAt { get; set; }
         public ICourse Course { get; }
+        public IClassroom Classroom { get; }
     }
 
 }

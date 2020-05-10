@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Phoenix.Api.Models.Api;
 using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
@@ -28,7 +29,29 @@ namespace Phoenix.Api.Controllers
         {
             this._logger.LogInformation("Api -> Schedule -> Get");
 
-            return await this._scheduleRepository.find().ToListAsync();
+            IQueryable<Schedule> schedules = this._scheduleRepository.find();
+
+            return await schedules.Select(schedule => new ScheduleApi
+            {
+                id = schedule.Id,
+                dayOfWeek = schedule.dayOfWeek,
+                startAt = schedule.startAt,
+                endAt = schedule.endAt,
+                Course = new CourseApi
+                {
+                    //id = schedule.Course.Id,
+                    Name = schedule.Course.Name,
+                    Level = schedule.Course.Level,
+                    Group = schedule.Course.Group,
+                    Info = schedule.Course.Info
+                },
+                Classroom = new ClassroomApi
+                {
+                    //id = schedule.Classroom.Id,
+                    Name = schedule.Course.Name,
+                    Info = schedule.Classroom.Info
+                },
+            }).ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -36,7 +59,29 @@ namespace Phoenix.Api.Controllers
         {
             this._logger.LogInformation($"Api -> Schedule -> Get{id}");
 
-            return await this._scheduleRepository.find(id);
+            Schedule schedule = await this._scheduleRepository.find(id);
+
+            return new ScheduleApi
+            {
+                id = schedule.Id,
+                dayOfWeek = schedule.dayOfWeek,
+                startAt = schedule.startAt,
+                endAt = schedule.endAt,
+                Course = new CourseApi
+                {
+                    //id = schedule.Course.Id,
+                    Name = schedule.Course.Name,
+                    Level = schedule.Course.Level,
+                    Group = schedule.Course.Group,
+                    Info = schedule.Course.Info
+                },
+                Classroom = new ClassroomApi
+                {
+                    //id = schedule.Classroom.Id,
+                    Name = schedule.Course.Name,
+                    Info = schedule.Classroom.Info
+                },
+            };
         }
 
     }

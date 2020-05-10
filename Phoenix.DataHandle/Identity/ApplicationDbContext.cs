@@ -45,6 +45,7 @@ namespace Phoenix.DataHandle.Identity
     {
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public DateTime RegisteredAt => this.CreatedAt;
 
         IUser IAspNetUsers.User => this.User;
         public User User { get; set; }

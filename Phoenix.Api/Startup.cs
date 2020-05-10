@@ -26,7 +26,7 @@ namespace Phoenix.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<PhoenixContext>(options => options.UseSqlServer(this._configuration.GetConnectionString("PhoenixConnection")));
+            services.AddDbContext<PhoenixContext>(options => options.UseLazyLoadingProxies().UseSqlServer(this._configuration.GetConnectionString("PhoenixConnection")));
             
             services.AddTokenAuthentication<UserManagementService>(this._configuration);
 

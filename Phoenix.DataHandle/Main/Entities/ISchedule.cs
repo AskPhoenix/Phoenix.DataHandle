@@ -9,5 +9,6 @@ namespace Phoenix.DataHandle.Main.Entities
         DateTime endAt { get; set; }
 
         ICourse Course { get; }
+        IClassroom Classroom { get; }
     }
 }

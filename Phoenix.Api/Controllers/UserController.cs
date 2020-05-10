@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Phoenix.Api.Models.Api;
 using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
@@ -28,7 +29,24 @@ namespace Phoenix.Api.Controllers
         {
             this._logger.LogInformation("Api -> User -> Get");
 
-            return await this._userRepository.find().ToListAsync();
+            IQueryable<User> users = this._userRepository.find();
+
+            return await users.Select(user => new UserApi
+            {
+                id = user.AspNetUserId,
+                LastName = user.LastName,
+                FirstName = user.FirstName,
+                FullName = user.FullName,
+                AspNetUser = new AspNetUserApi
+                {
+                    id = user.AspNetUser.Id,
+                    UserName = user.AspNetUser.UserName,
+                    Email = user.AspNetUser.Email,
+                    PhoneNumber = user.AspNetUser.PhoneNumber,
+                    FacebookId = user.AspNetUser.FacebookId,
+                    RegisteredAt = user.AspNetUser.RegisteredAt
+                }
+            }).ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -36,7 +54,24 @@ namespace Phoenix.Api.Controllers
         {
             this._logger.LogInformation($"Api -> User -> Get{id}");
 
-            return await this._userRepository.find(id);
+            User user = await this._userRepository.find(id);
+
+            return new UserApi
+            {
+                id = user.AspNetUserId,
+                LastName = user.LastName,
+                FirstName = user.FirstName,
+                FullName = user.FullName,
+                AspNetUser = new AspNetUserApi
+                {
+                    id = user.AspNetUser.Id,
+                    UserName = user.AspNetUser.UserName,
+                    Email = user.AspNetUser.Email,
+                    PhoneNumber = user.AspNetUser.PhoneNumber,
+                    FacebookId = user.AspNetUser.FacebookId,
+                    RegisteredAt = user.AspNetUser.RegisteredAt
+                }
+            };
         }
 
 

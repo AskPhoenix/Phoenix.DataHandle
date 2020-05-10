@@ -8,6 +8,7 @@ namespace Phoenix.DataHandle.Main.Entities
         IAspNetUsers AspNetUser { get; }
         string FirstName { get; set; }
         string LastName { get; set; }
+        string FullName { get; }
 
         IEnumerable<IAttendance> Attendances { get; }
         IEnumerable<IStudentCourse> StudentCourses { get; }
