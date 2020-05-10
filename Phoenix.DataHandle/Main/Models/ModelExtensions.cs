@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models.Extensions;
 using Phoenix.DataHandle.Main.Relationships;
@@ -146,4 +147,15 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IStudentExercise> IUser.StudentExercises => this.StudentExercise;
         IEnumerable<ITeacherCourse> IUser.TeacherCourses => this.TeacherCourse;
     }
+
+    // TODO: to be created in database
+    public partial class Schedule : ISchedule, IModelEntity
+    {
+        public int Id { get; }
+        public DayOfWeek dayOfWeek { get; set; }
+        public DateTime startAt { get; set; }
+        public DateTime endAt { get; set; }
+        public ICourse Course { get; }
+    }
+
 }

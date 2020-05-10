@@ -17,7 +17,7 @@ namespace Phoenix.Api.Controllers
         private readonly ILogger<SchoolController> _logger;
         private readonly Repository<School> _schoolRepository;
 
-        public SchoolController(ILogger<SchoolController> logger, PhoenixContext phoenixContext)
+        public SchoolController(PhoenixContext phoenixContext, ILogger<SchoolController> logger)
         {
             this._logger = logger;
             this._schoolRepository = new Repository<School>(phoenixContext);

@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json.Serialization;
 using Phoenix.Api.App_Plugins;
 using Phoenix.DataHandle.Main.Models;
 using Talagozis.AspNetCore.Services.TokenAuthentication;
@@ -38,10 +37,10 @@ namespace Phoenix.Api
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
-                    options.SerializerSettings.ContractResolver = new DefaultContractResolver
-                    {
-                        NamingStrategy = new DefaultNamingStrategy()
-                    };
+                    //options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver
+                    //{
+                    //    NamingStrategy = new Newtonsoft.Json.Serialization.DefaultNamingStrategy()
+                    //};
                 });
         }
 
