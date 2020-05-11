@@ -96,36 +96,28 @@ namespace Phoenix.Api.Controllers
             }).ToListAsync();
         }
 
-        //[HttpGet("{id}/Schedule")]
-        //public async Task<IEnumerable<ScheduleApi>> GetSchedules(int id)
-        //{
-        //    this._logger.LogInformation($"Api -> Course -> Get{id} -> Schedule");
+        [HttpGet("{id}/Schedule")]
+        public async Task<IEnumerable<ScheduleApi>> GetSchedules(int id)
+        {
+            this._logger.LogInformation($"Api -> Course -> Get{id} -> Schedule");
 
-        //    IQueryable<Schedule> schedules = this._scheduleRepository.find().Where(a => a.CourseId == id);
+            IQueryable<Schedule> schedules = this._scheduleRepository.find().Where(a => a.CourseId == id);
 
-        //    return await schedules.Select(schedule => new ScheduleApi
-        //    {
-        //        id = schedule.Id,
-        //        Status = schedule.Status,
-        //        StartDateTime = schedule.StartDateTime,
-        //        EndDateTime = schedule.EndDateTime,
-        //        Info = schedule.Info,
-        //        Course = new CourseApi
-        //        {
-        //            id = schedule.Course.Id,
-        //            Name = schedule.Course.Name,
-        //            Level = schedule.Course.Level,
-        //            Group = schedule.Course.Group,
-        //            Info = schedule.Course.Info
-        //        },
-        //        Classroom = new ClassroomApi
-        //        {
-        //            id = schedule.Classroom.Id,
-        //            Name = schedule.Course.Name,
-        //            Info = schedule.Classroom.Info
-        //        },
-        //    }).ToListAsync();
-        //}
+            return await schedules.Select(schedule => new ScheduleApi
+            {
+                id = schedule.Id,
+                DayOfWeek = schedule.DayOfWeek,
+                StartTime = schedule.StartTime,
+                EndTime = schedule.EndTime,
+                Info = schedule.Info,
+                Classroom = new ClassroomApi
+                {
+                    id = schedule.Classroom.Id,
+                    Name = schedule.Course.Name,
+                    Info = schedule.Classroom.Info
+                },
+            }).ToListAsync();
+        }
 
 
     }
