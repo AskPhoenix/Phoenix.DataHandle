@@ -34,12 +34,12 @@ namespace Phoenix.Api.Controllers
             return await schedules.Select(schedule => new ScheduleApi
             {
                 id = schedule.Id,
-                dayOfWeek = schedule.dayOfWeek,
-                startAt = schedule.startAt,
-                endAt = schedule.endAt,
+                DayOfWeek = schedule.DayOfWeek,
+                StartTime = schedule.StartTime,
+                EndTime = schedule.EndTime,
                 Course = new CourseApi
                 {
-                    //id = schedule.Course.Id,
+                    id = schedule.Course.Id,
                     Name = schedule.Course.Name,
                     Level = schedule.Course.Level,
                     Group = schedule.Course.Group,
@@ -47,7 +47,7 @@ namespace Phoenix.Api.Controllers
                 },
                 Classroom = new ClassroomApi
                 {
-                    //id = schedule.Classroom.Id,
+                    id = schedule.Classroom.Id,
                     Name = schedule.Course.Name,
                     Info = schedule.Classroom.Info
                 },
@@ -64,12 +64,12 @@ namespace Phoenix.Api.Controllers
             return new ScheduleApi
             {
                 id = schedule.Id,
-                dayOfWeek = schedule.dayOfWeek,
-                startAt = schedule.startAt,
-                endAt = schedule.endAt,
+                DayOfWeek = schedule.DayOfWeek,
+                StartTime = schedule.StartTime,
+                EndTime = schedule.EndTime,
                 Course = new CourseApi
                 {
-                    //id = schedule.Course.Id,
+                    id = schedule.Course.Id,
                     Name = schedule.Course.Name,
                     Level = schedule.Course.Level,
                     Group = schedule.Course.Group,
@@ -77,7 +77,7 @@ namespace Phoenix.Api.Controllers
                 },
                 Classroom = new ClassroomApi
                 {
-                    //id = schedule.Classroom.Id,
+                    id = schedule.Classroom.Id,
                     Name = schedule.Course.Name,
                     Info = schedule.Classroom.Info
                 },
