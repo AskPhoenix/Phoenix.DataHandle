@@ -16,11 +16,15 @@ namespace Phoenix.Api.Controllers
     {
         private readonly ILogger<CourseController> _logger;
         private readonly Repository<Course> _courseRepository;
+        private readonly Repository<Lecture> _lectureRepository;
+        private readonly Repository<Schedule> _scheduleRepository;
 
         public CourseController(PhoenixContext phoenixContext, ILogger<CourseController> logger)
         {
             this._logger = logger;
             this._courseRepository = new Repository<Course>(phoenixContext);
+            this._lectureRepository = new Repository<Lecture>(phoenixContext);
+            this._scheduleRepository = new Repository<Schedule>(phoenixContext);
         }
 
         [HttpGet]
@@ -68,6 +72,61 @@ namespace Phoenix.Api.Controllers
                 }
             };
         }
+
+        [HttpGet("{id}/Lecture")]
+        public async Task<IEnumerable<LectureApi>> GetLectures(int id)
+        {
+            this._logger.LogInformation($"Api -> Course -> Get{id} -> Lecture");
+
+            IQueryable<Lecture> lectures = this._lectureRepository.find().Where(a => a.CourseId == id);
+
+            return await lectures.Select(lecture => new LectureApi
+            {
+                id = lecture.Id,
+                Status = lecture.Status,
+                StartDateTime = lecture.StartDateTime,
+                EndDateTime = lecture.EndDateTime,
+                Info = lecture.Info,
+                Classroom = new ClassroomApi
+                {
+                    id = lecture.Classroom.Id,
+                    Name = lecture.Course.Name,
+                    Info = lecture.Classroom.Info
+                },
+            }).ToListAsync();
+        }
+
+        //[HttpGet("{id}/Schedule")]
+        //public async Task<IEnumerable<ScheduleApi>> GetSchedules(int id)
+        //{
+        //    this._logger.LogInformation($"Api -> Course -> Get{id} -> Schedule");
+
+        //    IQueryable<Schedule> schedules = this._scheduleRepository.find().Where(a => a.CourseId == id);
+
+        //    return await schedules.Select(schedule => new ScheduleApi
+        //    {
+        //        id = schedule.Id,
+        //        Status = schedule.Status,
+        //        StartDateTime = schedule.StartDateTime,
+        //        EndDateTime = schedule.EndDateTime,
+        //        Info = schedule.Info,
+        //        Course = new CourseApi
+        //        {
+        //            id = schedule.Course.Id,
+        //            Name = schedule.Course.Name,
+        //            Level = schedule.Course.Level,
+        //            Group = schedule.Course.Group,
+        //            Info = schedule.Course.Info
+        //        },
+        //        Classroom = new ClassroomApi
+        //        {
+        //            id = schedule.Classroom.Id,
+        //            Name = schedule.Course.Name,
+        //            Info = schedule.Classroom.Info
+        //        },
+        //    }).ToListAsync();
+        //}
+
 
     }
 }
