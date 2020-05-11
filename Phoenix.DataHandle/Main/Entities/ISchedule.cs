@@ -4,9 +4,10 @@ namespace Phoenix.DataHandle.Main.Entities
 {
     public interface ISchedule
     {
-        DayOfWeek dayOfWeek { get; set; }
-        DateTime startAt { get; set; }
-        DateTime endAt { get; set; }
+        DayOfWeek DayOfWeek { get; set; }
+        DateTime StartTime { get; set; }
+        DateTime EndTime { get; set; }
+        string Info { get; set; }
 
         ICourse Course { get; }
         IClassroom Classroom { get; }

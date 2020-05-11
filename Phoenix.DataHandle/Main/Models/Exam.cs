@@ -13,7 +13,7 @@ namespace Phoenix.DataHandle.Main.Models
 
         public int Id { get; set; }
         public int CourseId { get; set; }
-        public int ClassroomId { get; set; }
+        public int? ClassroomId { get; set; }
         public DateTime StartsAt { get; set; }
         public DateTime EndsAt { get; set; }
         public string Comments { get; set; }

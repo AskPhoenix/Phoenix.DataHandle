@@ -29,6 +29,7 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<Homework> Homework { get; set; }
         public virtual DbSet<Lecture> Lecture { get; set; }
         public virtual DbSet<Material> Material { get; set; }
+        public virtual DbSet<Schedule> Schedule { get; set; }
         public virtual DbSet<School> School { get; set; }
         public virtual DbSet<StudentCourse> StudentCourse { get; set; }
         public virtual DbSet<StudentExam> StudentExam { get; set; }
@@ -149,7 +150,7 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<Classroom>(entity =>
             {
                 entity.HasIndex(e => new { e.SchoolId, e.Name })
-                    .HasName("UQ__Classroo__A5B5856930D0EBE6")
+                    .HasName("UQ__Classroo__5A933F15591BC6D2")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
@@ -170,7 +171,7 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<Course>(entity =>
             {
                 entity.HasIndex(e => new { e.SchoolId, e.Level })
-                    .HasName("UQ__Course__BE9836D8D4139A41")
+                    .HasName("UQ__Course__170BEECC5014A339")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
@@ -220,7 +221,6 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Classroom)
                     .WithMany(p => p.Exam)
                     .HasForeignKey(d => d.ClassroomId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Exam_Classroom");
 
                 entity.HasOne(d => d.Course)
@@ -269,18 +269,6 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.StartDateTime).HasColumnType("datetime2(0)");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
-
-                entity.HasOne(d => d.Classroom)
-                    .WithMany(p => p.Lecture)
-                    .HasForeignKey(d => d.ClassroomId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Lecture_Classroom");
-
-                entity.HasOne(d => d.Course)
-                    .WithMany(p => p.Lecture)
-                    .HasForeignKey(d => d.CourseId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Lecture_Course");
             });
 
             modelBuilder.Entity<Material>(entity =>
@@ -299,6 +287,29 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasForeignKey(d => d.ExamId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Material_Exam");
+            });
+
+            modelBuilder.Entity<Schedule>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
+
+                entity.Property(e => e.EndTime).HasColumnType("datetime2(0)");
+
+                entity.Property(e => e.StartTime).HasColumnType("datetime2(0)");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
+
+                entity.HasOne(d => d.Classroom)
+                    .WithMany(p => p.Schedule)
+                    .HasForeignKey(d => d.ClassroomId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Lecture_Classroom");
+
+                entity.HasOne(d => d.Course)
+                    .WithMany(p => p.Schedule)
+                    .HasForeignKey(d => d.CourseId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Lecture_Course");
             });
 
             modelBuilder.Entity<School>(entity =>

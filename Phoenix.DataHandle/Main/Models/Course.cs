@@ -9,6 +9,7 @@ namespace Phoenix.DataHandle.Main.Models
         {
             CourseBook = new HashSet<CourseBook>();
             Exam = new HashSet<Exam>();
+            Schedule = new HashSet<Schedule>();
             Lecture = new HashSet<Lecture>();
             StudentCourse = new HashSet<StudentCourse>();
             TeacherCourse = new HashSet<TeacherCourse>();
@@ -26,6 +27,7 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual School School { get; set; }
         public virtual ICollection<CourseBook> CourseBook { get; set; }
         public virtual ICollection<Exam> Exam { get; set; }
+        public virtual ICollection<Schedule> Schedule { get; set; }
         public virtual ICollection<Lecture> Lecture { get; set; }
         public virtual ICollection<StudentCourse> StudentCourse { get; set; }
         public virtual ICollection<TeacherCourse> TeacherCourse { get; set; }

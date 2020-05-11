@@ -155,12 +155,8 @@ namespace Phoenix.DataHandle.Main.Models
     // TODO: to be created in database
     public partial class Schedule : ISchedule, IModelEntity
     {
-        public int Id { get; }
-        public DayOfWeek dayOfWeek { get; set; }
-        public DateTime startAt { get; set; }
-        public DateTime endAt { get; set; }
-        public ICourse Course { get; }
-        public IClassroom Classroom { get; }
+        ICourse ISchedule.Course => this.Course;
+        IClassroom ISchedule.Classroom => this.Classroom;
     }
 
 }
