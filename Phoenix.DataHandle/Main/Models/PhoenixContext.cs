@@ -269,6 +269,18 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.StartDateTime).HasColumnType("datetime2(0)");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
+
+                entity.HasOne(d => d.Classroom)
+                    .WithMany(p => p.Lecture)
+                    .HasForeignKey(d => d.ClassroomId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Lecture_Classroom");
+
+                entity.HasOne(d => d.Course)
+                    .WithMany(p => p.Lecture)
+                    .HasForeignKey(d => d.CourseId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Lecture_Course");
             });
 
             modelBuilder.Entity<Material>(entity =>
@@ -303,13 +315,13 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.Schedule)
                     .HasForeignKey(d => d.ClassroomId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Lecture_Classroom");
+                    .HasConstraintName("FK_Schedule_Classroom");
 
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Schedule)
                     .HasForeignKey(d => d.CourseId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Lecture_Course");
+                    .HasConstraintName("FK_Schedule_Course");
             });
 
             modelBuilder.Entity<School>(entity =>

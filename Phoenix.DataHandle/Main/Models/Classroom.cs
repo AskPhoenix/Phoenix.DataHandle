@@ -8,8 +8,8 @@ namespace Phoenix.DataHandle.Main.Models
         public Classroom()
         {
             Exam = new HashSet<Exam>();
-            Schedule = new HashSet<Schedule>();
             Lecture = new HashSet<Lecture>();
+            Schedule = new HashSet<Schedule>();
         }
 
         public int Id { get; set; }
@@ -21,7 +21,7 @@ namespace Phoenix.DataHandle.Main.Models
 
         public virtual School School { get; set; }
         public virtual ICollection<Exam> Exam { get; set; }
-        public virtual ICollection<Schedule> Schedule { get; set; }
         public virtual ICollection<Lecture> Lecture { get; set; }
+        public virtual ICollection<Schedule> Schedule { get; set; }
     }
 }
