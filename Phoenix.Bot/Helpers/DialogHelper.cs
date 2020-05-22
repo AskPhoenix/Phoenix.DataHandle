@@ -59,6 +59,26 @@ namespace Phoenix.Bot.Helpers
         public static DateTime GreeceLocalTime()
                => TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time"));
 
+        public static string GreekDayArticle(DayOfWeek day, bool accusative = true)
+        {
+            if (accusative)
+            {
+                if (day == DayOfWeek.Monday)
+                    return "τη";
+                else if (day == DayOfWeek.Saturday)
+                    return "το";
+                else
+                    return "την";
+            }
+            else
+            {
+                if (day == DayOfWeek.Saturday)
+                    return "το";
+                else
+                    return "η";
+            }
+        }
+
         public static string ToUnaccented(this string str) => new string(str.Normalize(NormalizationForm.FormD).
             Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray());
 

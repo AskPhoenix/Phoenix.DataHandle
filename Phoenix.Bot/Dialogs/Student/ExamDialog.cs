@@ -1,163 +1,359 @@
-﻿using Microsoft.Bot.Builder;
+﻿using AdaptiveCards;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
+using Phoenix.Bot.Dialogs.Student.Common;
 using Phoenix.Bot.Extensions;
+using Phoenix.Bot.Helpers;
+using Phoenix.DataHandle.Main.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using static Phoenix.Bot.Helpers.CardHelper;
 
 namespace Phoenix.Bot.Dialogs.Student
 {
     public class ExamDialog : ComponentDialog
     {
-        public ExamDialog()
+        private readonly PhoenixContext _phoenixContext;
+        private readonly BotState _conversationState;
+
+        private readonly IStatePropertyAccessor<int> _selCourseId;
+
+        private static class WaterfallNames
+        {
+            public const string Main        = "StudentExam_Main_WaterfallDialog";
+            public const string FutureExam  = "StudentExam_FutureExam_WaterfallDialog";
+            public const string Material    = "StudentExam_Material_WaterfallDialog";
+            public const string PastExam    = "StudentExam_PastExam_WaterfallDialog";
+            public const string Grade       = "StudentExam_Grade_WaterfallDialog";
+        }
+
+        public ExamDialog(PhoenixContext phoenixContext, ConversationState conversationState)
             : base(nameof(ExamDialog))
         {
+            _phoenixContext = phoenixContext;
+            _conversationState = conversationState;
+
+            _selCourseId = _conversationState.CreateProperty<int>("SelCourseId");
+
+            AddDialog(new CourseDialog());
             AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
-            AddDialog(new WaterfallDialog(nameof(ExamDialog) + "_" + nameof(WaterfallDialog),
+            AddDialog(new DateTimePrompt(nameof(DateTimePrompt), null, "fr-fr"));
+
+            AddDialog(new WaterfallDialog(WaterfallNames.Main,
                 new WaterfallStep[]
                 {
-                    CourseSelectStepAsync,
-                    LastExamsStepAsync,
-                    NextExamsContentStepAsync,
-                    FinalStepAsync
+                    CourseStepAsync,
+                    ExamStepAsync,
+                    RedirectStepAsync,
+                    OtherStepAsync
                 }));
 
-            InitialDialogId = nameof(ExamDialog) + "_" + nameof(WaterfallDialog);
+            AddDialog(new WaterfallDialog(WaterfallNames.FutureExam,
+                new WaterfallStep[]
+                {
+                    FollowingExamStepAsync,
+                    NoFutureExamsStepAsync
+                }));
+
+            AddDialog(new WaterfallDialog(WaterfallNames.Material,
+                new WaterfallStep[]
+                {
+                    MaterialStepAsync,
+                    MaterialPageStepAsync,
+                    MaterialOtherStepAsync,
+                    MaterialOtherSelectStepAsync
+                }));
+
+            AddDialog(new WaterfallDialog(WaterfallNames.PastExam,
+                new WaterfallStep[]
+                {
+                    //PreviousExamStepAsync,
+                    //NoGradedExamsStepAsync
+                }));
+
+            AddDialog(new WaterfallDialog(WaterfallNames.Grade,
+                new WaterfallStep[]
+                {
+                    //GradeStepAsync,
+                    //GradePageStepAsync,
+                    //GradeOtherStepAsync,
+                    //GradeOtherSelectStepAsync
+                }));
+
+            InitialDialogId = WaterfallNames.Main;
         }
 
-        private string[] DummyCourses = { "Αγγλικά", "Γαλλικά" };
-
-        private async Task<DialogTurnResult> CourseSelectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        protected override Task OnEndDialogAsync(ITurnContext context, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
-            if (stepContext.Options is Dictionary<string, int> && (stepContext.Options as Dictionary<string, int>).TryGetValue("Course", out int courseId))
-                return await stepContext.NextAsync(courseId, cancellationToken);
+            Task.Run(async () => await _selCourseId.DeleteAsync(context));
+
+            return base.OnEndDialogAsync(context, instance, reason, cancellationToken);
+        }
+
+        #region Main Waterfall Dialog
+
+        private async Task<DialogTurnResult> CourseStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            string FbId = stepContext.Context.Activity.From.Id;
+            var coursesIdName = _phoenixContext.Course.
+                Where(c => c.StudentCourse.Any(sc => sc.CourseId == c.Id && sc.Student.AspNetUser.FacebookId == FbId)).
+                Select(c => Tuple.Create(c.Id, c.Name)).
+                ToArray();
+
+            if (coursesIdName.Length == 0)
+            {
+                await stepContext.Context.SendActivityAsync("Απ' ό,τι φαίνεται δεν έχεις εγγραφεί σε κάποιο μάθημα προς το παρόν.");
+                return await stepContext.EndDialogAsync(null, cancellationToken);
+            }
+
+            if (coursesIdName.Length == 1)
+                return await stepContext.NextAsync(coursesIdName[0].Item1, cancellationToken);
+
+            return await stepContext.BeginDialogAsync(nameof(CourseDialog), coursesIdName, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> ExamStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            int selCourseId = Convert.ToInt32(stepContext.Result);
+            await _selCourseId.SetAsync(stepContext.Context, selCourseId);
+            string fbId = stepContext.Context.Activity.From.Id;
+
+            var exams = _phoenixContext.Exam.Where(e => e.CourseId == selCourseId);
+            if (!exams.Any())
+            {
+                await stepContext.Context.SendActivityAsync("Δεν υπάρχουν ακόμα διαγωνίσματα για αυτό το μάθημα.");
+                await stepContext.Context.SendActivityAsync("Απόλαυσε τον ελέυθερο χρόνο σου! 😎");
+
+                return await stepContext.EndDialogAsync(null, cancellationToken);
+            }
+            else if (!exams.Any(e => e.EndsAt >= DialogHelper.GreeceLocalTime())
+                && !exams.Any(e => e.StudentExam.Any(se => se.Student.AspNetUser.FacebookId == fbId && se.Exam.Id == e.Id && se.Grade != null)))
+            {
+                await stepContext.Context.SendActivityAsync("Δεν υπάρχουν προγραμματισμένα διαγωνίσματα, ούτε έχουν βγει βαθμοί για αυτό το μάθημα.");
+
+                return await stepContext.EndDialogAsync(null, cancellationToken);
+            }
 
             return await stepContext.PromptAsync(
                 nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
-                    Prompt = MessageFactory.Text("Επίλεξε το μάθημα που σε ενδιαφέρει:"),
-                    RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε ή πληκτρολόγησε μία από τις παρακάτω απαντήσεις:"),
-                    Choices = ChoiceFactory.ToChoices(DummyCourses)
+                    Prompt = MessageFactory.Text("Θα ήθελες να δεις την ύλη για επόμενα διαγωνίσματα ή τους βαθμούς για παλαιότερα;"),
+                    RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε ή πληκρολόγησε μία από τις παρακάτω επιλογές:"),
+                    Choices = new Choice[] { new Choice("Ύλη"), new Choice("Βαθμοί") }
                 });
         }
 
-        private async Task<DialogTurnResult> LastExamsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> RedirectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+            => (stepContext.Result as FoundChoice).Index == 0 ? 
+                await stepContext.BeginDialogAsync(WaterfallNames.FutureExam, null, cancellationToken) :
+                await stepContext.BeginDialogAsync(WaterfallNames.PastExam, null, cancellationToken);
+
+        private async Task<DialogTurnResult> OtherStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var courseId = stepContext.Result is int ? (int)stepContext.Result : (stepContext.Result as FoundChoice).Index;
-            stepContext.Values.Add("Course", courseId);
-            var lastDate = "27/1/2020";
-
-            var card = new HeroCard
-            {
-                Title = $"Διαγωνίσματα στα {DummyCourses[courseId]}",
-                Text = $"Στο τελευταίο διαγώνισμα στις {lastDate} πήρες 20! Συνέχισε έτσι! :D",
-                Tap = new CardAction(ActionTypes.OpenUrl,
-                    value: $"https://nuage.azurewebsites.net/extensions/student/exams?course={courseId}"),
-                Buttons = new List<CardAction>
-                {
-                    new CardAction(ActionTypes.ImBack, title: "Ύλη για το επόμενο", value: "Ύλη"),
-                    new CardAction(ActionTypes.ImBack, title: "Ιστορικό", value: "Ιστορικό")
-                }
-            };
-
-            return await stepContext.PromptAsync(
-                nameof(UnaccentedChoicePrompt),
-                new PromptOptions
-                {
-                    Prompt = (Activity)MessageFactory.Attachment(card.ToAttachment()),
-                    RetryPrompt = MessageFactory.Text("Παρακαλώ χρησιμοποίησε τα κουμπιά στην προηγούμενη κάρτα ή μία από τις παρακάτω επιλογές:"),
-                    Choices = ChoiceFactory.ToChoices(new string[] { "Αρχικό μενού", "Άλλο μάθημα" }),
-                    Validations = new string[] { "Ύλη", "Ιστορικό" }
-                });
-        }
-
-
-        private async Task<DialogTurnResult> NextExamsContentStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            if (stepContext.Result is FoundChoice)
-            {
-                return (stepContext.Result as FoundChoice).Index switch
-                {
-                    0 => await stepContext.EndDialogAsync(null, cancellationToken),
-                    1 => await stepContext.ReplaceDialogAsync(nameof(ExamDialog) + "_" + nameof(WaterfallDialog)),
-                    _ => new DialogTurnResult(DialogTurnStatus.Cancelled)
-                };
-            }
-            else if (stepContext.Context.Activity.Text == "Ύλη")
-            {
-                var reply = MessageFactory.Text("Το επόμενο διαγώνισμα είναι προγραμματισμένο για τις 01/03/2020.");
-                await stepContext.Context.SendActivityAsync(reply);
-
-                var cards = new List<Attachment>(2);
-                for (int i = 1; i <= 2; i++)
-                {
-                    cards.Add( new HeroCard
-                    {
-                        Title = i == 1 ? "Student's Book" : "Companion Book",
-                        Text = i == 1 ? "- Pages 27-30" : "- Chapters 8 - 9",
-                        Tap = new CardAction(ActionTypes.OpenUrl,
-                            value: $"https://nuage.azurewebsites.net/extensions/student/exams?course={stepContext.Values["Course"]}&req=content")
-                    }.ToAttachment());
-                }
-                
-                return await stepContext.PromptAsync(
-                    nameof(UnaccentedChoicePrompt),
-                    new PromptOptions
-                    {
-                        Prompt = (Activity)MessageFactory.Carousel(cards),
-                        RetryPrompt = MessageFactory.Text("Παρακαλώ χρησιμοποίησε μία από τις παρακάτω επιλογές:"),
-                        Choices = ChoiceFactory.ToChoices(new string[] { "Αρχικό μενού", "Άλλο μάθημα", "Πίσω" })
-                    });
-            }
-            else if (stepContext.Context.Activity.Text == "Ιστορικό")
-            {
-                //TODO: Pagination
-                var cards = new List<Attachment>(3);
-                for (int i = 1; i <= 3; i++)
-                {
-                    int grade = new Random().Next(10, 21);
-
-                    cards.Add(new HeroCard
-                    {
-                        Title = $"Διαγώνισμα {i}ο",
-                        Text = grade.ToString() + " " + (grade >= 18 ? "Άριστα!" : grade >= 15 ? "Πολύ καλά!" : "Καλά!"),
-                        Tap = new CardAction(ActionTypes.OpenUrl,
-                            value: $"https://nuage.azurewebsites.net/extensions/student/exams?course={stepContext.Values["Course"]}&req=history")
-                    }.ToAttachment());
-                }
-
-                return await stepContext.PromptAsync(
-                    nameof(UnaccentedChoicePrompt),
-                    new PromptOptions
-                    {
-                        Prompt = (Activity)MessageFactory.Carousel(cards),
-                        RetryPrompt = MessageFactory.Text("Παρακαλώ χρησιμοποίησε μία από τις παρακάτω επιλογές:"),
-                        Choices = ChoiceFactory.ToChoices(new string[] { "Αρχικό μενού", "Άλλο μάθημα", "Πίσω" })
-                    });
-            }
-
-            return new DialogTurnResult(DialogTurnStatus.Cancelled);
-        }
-
-        private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            if (stepContext.Result is FoundChoice)
-            {
-                return (stepContext.Result as FoundChoice).Index switch
-                {
-                    0 => await stepContext.EndDialogAsync(null, cancellationToken),
-                    1 => await stepContext.ReplaceDialogAsync(nameof(ExamDialog) + "_" + nameof(WaterfallDialog)),
-                    2 => await stepContext.ReplaceDialogAsync(nameof(ExamDialog) + "_" + nameof(WaterfallDialog),
-                            new Dictionary<string, int> { { "Course", (int)stepContext.Values["Course"] } }),
-                    _ => new DialogTurnResult(DialogTurnStatus.Cancelled)
-                };
-            }
+            if (stepContext.Result is FoundChoice foundChoice && foundChoice.Index == 0)
+                return await stepContext.ReplaceDialogAsync(WaterfallNames.Main, null, cancellationToken);
 
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
+
+        #endregion
+
+        #region Future Exam Waterfall Dialog
+
+        private async Task<DialogTurnResult> FollowingExamStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            int selCourseId = await _selCourseId.GetAsync(stepContext.Context);
+            var exams = _phoenixContext.Exam.Where(e => e.CourseId == selCourseId);
+
+            var grNow = DialogHelper.GreeceLocalTime();
+            if (exams.Any(e => e.EndsAt >= grNow))
+            {
+                var nextExam = exams.
+                    Include(e => e.Classroom).
+                    Where(e => e.EndsAt >= grNow).
+                    ToList().
+                    Aggregate((e, ne) => e.StartsAt < ne.StartsAt ? e : ne);
+
+                await stepContext.Context.SendActivityAsync($"Το αμέσως επόμενο διαγώνισμα είναι την {nextExam.StartsAt.DayOfWeek} " +
+                    $"{nextExam.StartsAt:m} στις {nextExam.StartsAt:t}" + nextExam.ClassroomId != null ? $" στην αίθουσα {nextExam.Classroom.Name}." : ".");
+
+                return await stepContext.ReplaceDialogAsync(WaterfallNames.Material, nextExam.Id, cancellationToken);
+            }
+
+            await stepContext.Context.SendActivityAsync("Δεν υπάρχει κάποιο προγραμματισμένο διαγώνισμα για αυτό το μάθημα.");
+
+            return await stepContext.PromptAsync(
+                nameof(UnaccentedChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Θα ήθελες να δεις τους βαθμούς σου για παλαιότερα;"),
+                    RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
+                    Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
+                });
+        }
+
+        private async Task<DialogTurnResult> NoFutureExamsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            if ((stepContext.Result as FoundChoice).Index == 0)
+                return await stepContext.ReplaceDialogAsync(WaterfallNames.PastExam, null, cancellationToken);
+            
+            return await stepContext.EndDialogAsync(null, cancellationToken);
+        }
+
+        #endregion
+
+        #region Material Waterfall Dialog
+
+        //Shows Material only for upcoming exams
+        private async Task<DialogTurnResult> MaterialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            int examId = Convert.ToInt32(stepContext.Options);
+            var examDate = (await _phoenixContext.Exam.FindAsync(examId)).StartsAt;
+            var courseName = (await _phoenixContext.Course.FindAsync(await _selCourseId.GetAsync(stepContext.Context))).Name;
+
+            var pageAcsr = _conversationState.CreateProperty<int>("MaterialPage");
+            int page = await pageAcsr.GetAsync(stepContext.Context);
+            const int pageSize = 3;
+
+            var paginatedMat = _phoenixContext.Material.
+                Include(m => m.Book).
+                ToList().
+                Where(m => m.ExamId == examId).
+                Where((_, i) => i >= pageSize * page && i < pageSize * (page + 1));
+
+            int matShownCount = page * pageSize;
+            foreach (var mat in paginatedMat)
+            {
+                await stepContext.Context.SendActivityAsync(new Activity(type: ActivityTypes.Typing));
+
+                var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 2));
+                card.BackgroundImage = new AdaptiveBackgroundImage("https://www.bot.askphoenix.gr/assets/4f5d75_sq.png");
+                card.Body.Add(new AdaptiveTextBlockHeaderLight($"Ύλη {++matShownCount} - Διαγώνισμα {courseName} - {examDate:m}"));
+                card.Body.Add(new AdaptiveRichFactSetLight("Βιβλίο ", mat.Book.Name));
+                card.Body.Add(new AdaptiveRichFactSetLight("Κεφάλαιο ", mat.Chapter, separator: true));
+                card.Body.Add(new AdaptiveRichFactSetLight("Ενότητα ", mat.Section, separator: true));
+                card.Body.Add(new AdaptiveRichFactSetLight("Σχόλια ", string.IsNullOrEmpty(mat.Comments) ? "-" : mat.Comments, separator: true));
+
+                await stepContext.Context.SendActivityAsync(
+                    MessageFactory.Attachment(new Attachment(contentType: AdaptiveCard.ContentType, content: JObject.FromObject(card))));
+            }
+
+            int matCount = _phoenixContext.Material.Count(m => m.ExamId == examId);
+            if (matShownCount < matCount)
+            {
+                int matLeft = matCount - matShownCount;
+                int showMoreNum = matLeft <= pageSize ? matLeft : pageSize;
+                bool singular = matLeft == 1;
+
+                await pageAcsr.SetAsync(stepContext.Context, page + 1);
+
+                return await stepContext.PromptAsync(
+                    nameof(UnaccentedChoicePrompt),
+                    new PromptOptions
+                    {
+                        Prompt = MessageFactory.Text($"Υπάρχ{(singular ? "ει" : "ουν")} ακόμη {matLeft} σημεί{(singular ? "ο" : "α")} " +
+                            "που πρέπει να διαβάσεις."),
+                        RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε μία από τις παρακάτω απαντήσεις:"),
+                        Choices = new Choice[] { new Choice($"Εμφάνιση {showMoreNum} ακόμη"), new Choice("Ολοκλήρωση") }
+                    });
+            }
+
+            return await stepContext.NextAsync(null, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> MaterialPageStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            if (stepContext.Result is FoundChoice foundChoice && foundChoice.Index == 0)
+                return await stepContext.ReplaceDialogAsync(WaterfallNames.Material, stepContext.Options, cancellationToken);
+
+            await _conversationState.CreateProperty<int>("MaterialPage").DeleteAsync(stepContext.Context);
+
+            int selCourseId = await _selCourseId.GetAsync(stepContext.Context);
+            string fbId = stepContext.Context.Activity.From.Id;
+
+            if (_phoenixContext.Exam.Count(e => e.CourseId == selCourseId) == 1)
+                return await stepContext.EndDialogAsync(null, cancellationToken);
+            if (_phoenixContext.Exam.Count(e => e.CourseId == selCourseId && e.EndsAt >= DialogHelper.GreeceLocalTime()) == 1)
+                return await stepContext.EndDialogAsync(true, cancellationToken);
+
+            return await stepContext.PromptAsync(
+                nameof(UnaccentedChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Θα ήθελες να δεις την ύλη για άλλο διαγώνισμα;"),
+                    RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
+                    Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
+                });
+        }
+
+        private async Task<DialogTurnResult> MaterialOtherStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            if ((stepContext.Result as FoundChoice).Index == 1)
+                return await stepContext.EndDialogAsync(null, cancellationToken);
+
+            var selCourseId = await _selCourseId.GetAsync(stepContext.Context);
+
+            var examDates = _phoenixContext.Exam.
+                Where(e => e.CourseId == selCourseId && e.EndsAt >= DialogHelper.GreeceLocalTime()).
+                Select(e => e.StartsAt).
+                OrderByDescending(d => d).
+                Take(5).
+                Select(d => $"{d.Day}/{d.Month}").
+                ToList();
+
+            var prompt = ChoiceFactory.SuggestedAction(ChoiceFactory.ToChoices(examDates),
+                text: "Επίλεξε μία από τις παρακάτω ημερομηνίες ή γράψε μια άλλη:");
+            var reprompt = ChoiceFactory.SuggestedAction(ChoiceFactory.ToChoices(examDates),
+                text: "Η επιθυμητή ημερομηνία θα πρέπει να είναι στη μορφή ημέρα/μήνας (π.χ. 24/4)):");
+
+            return await stepContext.PromptAsync(
+                nameof(DateTimePrompt),
+                new PromptOptions
+                {
+                    Prompt = (Activity)prompt,
+                    RetryPrompt = (Activity)reprompt
+                });
+        }
+
+        private async Task<DialogTurnResult> MaterialOtherSelectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var selCourseId = await _selCourseId.GetAsync(stepContext.Context);
+
+            var selDate = DialogHelper.ResolveDateTime(stepContext.Result as IList<DateTimeResolution>);
+            var exam = _phoenixContext.Exam.
+                Include(e => e.Classroom).
+                FirstOrDefault(e => e.CourseId == selCourseId && e.StartsAt.Date == selDate.Date);
+
+            if (exam == null)
+            {
+                exam = _phoenixContext.Exam.
+                    Include(e => e.Classroom).
+                    Where(e => e.CourseId == selCourseId && e.EndsAt > DialogHelper.GreeceLocalTime()).
+                    ToList().
+                    Aggregate((e, fe) => Math.Abs((e.StartsAt - selDate).Days) < Math.Abs((fe.StartsAt - selDate).Days) ? e : fe);
+
+                await stepContext.Context.SendActivityAsync($"Δεν υπάρχει διαγώνισμα για αυτό το μάθημα στις {selDate:m}.");
+                await stepContext.Context.SendActivityAsync($"Βρήκα όμως το πιο κοντινό του στις {exam.StartsAt:m}:");
+
+                return await stepContext.ReplaceDialogAsync(WaterfallNames.Material, exam.Id, cancellationToken);
+            }
+
+            string dayArticle = DialogHelper.GreekDayArticle(exam.StartsAt.DayOfWeek);
+            await stepContext.Context.SendActivityAsync($"Για το διαγώνισμα {dayArticle} {exam.StartsAt.DayOfWeek} " +
+                    $"{exam.StartsAt:m} στις {exam.StartsAt:t}" 
+                    + exam.ClassroomId != null ? $" στην αίθουσα {exam.Classroom.Name} " : " "
+                    + "έχεις να διαβάσεις τα παρακάτω:");
+            return await stepContext.ReplaceDialogAsync(WaterfallNames.Material, exam.Id, cancellationToken);
+        }
+
+        #endregion
     }
 }
