@@ -30,6 +30,7 @@ namespace Phoenix.Bot.Helpers
             {
                 this.Size = AdaptiveTextSize.ExtraLarge;
                 this.Weight = AdaptiveTextWeight.Bolder;
+                this.Wrap = true;
             }
         }
 

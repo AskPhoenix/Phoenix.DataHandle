@@ -261,7 +261,7 @@ namespace Phoenix.Bot.Dialogs.Student
                     new PromptOptions
                     {
                         Prompt = MessageFactory.Text($"Υπάρχ{(singular ? "ει" : "ουν")} ακόμη {hwLeft} εργασί{(singular ? "α" : "ες")} " +
-                            "για τις {lecDate:m}."),
+                            $"για τις {lecDate:m}."),
                         RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε μία από τις παρακάτω απαντήσεις:"),
                         Choices = new Choice[] { new Choice($"Εμφάνιση {showMoreNum} ακόμη"), new Choice("Ολοκλήρωση")}
                     });

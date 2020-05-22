@@ -58,8 +58,7 @@ namespace Phoenix.Bot.Dialogs.Student
             AddDialog(new WaterfallDialog(WaterfallNames.FutureExam,
                 new WaterfallStep[]
                 {
-                    FollowingExamStepAsync,
-                    NoFutureExamsStepAsync
+                    FollowingExamStepAsync
                 }));
 
             AddDialog(new WaterfallDialog(WaterfallNames.Material,
@@ -74,8 +73,7 @@ namespace Phoenix.Bot.Dialogs.Student
             AddDialog(new WaterfallDialog(WaterfallNames.PastExam,
                 new WaterfallStep[]
                 {
-                    //PreviousExamStepAsync,
-                    //NoGradedExamsStepAsync
+                    //PreviousExamStepAsync
                 }));
 
             AddDialog(new WaterfallDialog(WaterfallNames.Grade,
@@ -124,22 +122,31 @@ namespace Phoenix.Bot.Dialogs.Student
             int selCourseId = Convert.ToInt32(stepContext.Result);
             await _selCourseId.SetAsync(stepContext.Context, selCourseId);
             string fbId = stepContext.Context.Activity.From.Id;
-
             var exams = _phoenixContext.Exam.Where(e => e.CourseId == selCourseId);
-            if (!exams.Any())
+
+            bool anyExams = exams.Any();
+            bool anyFutureExams = exams.Any(e => e.EndsAt >= DialogHelper.GreeceLocalTime());
+            bool anyGradedExams = exams.Any(e => e.StudentExam.Any(se => se.Student.AspNetUser.FacebookId == fbId && se.Exam.Id == e.Id && se.Grade != null));
+
+            if (!anyExams)
             {
                 await stepContext.Context.SendActivityAsync("Δεν υπάρχουν ακόμα διαγωνίσματα για αυτό το μάθημα.");
                 await stepContext.Context.SendActivityAsync("Απόλαυσε τον ελέυθερο χρόνο σου! 😎");
 
                 return await stepContext.EndDialogAsync(null, cancellationToken);
             }
-            else if (!exams.Any(e => e.EndsAt >= DialogHelper.GreeceLocalTime())
-                && !exams.Any(e => e.StudentExam.Any(se => se.Student.AspNetUser.FacebookId == fbId && se.Exam.Id == e.Id && se.Grade != null)))
+
+            if (!anyFutureExams && !anyGradedExams)
             {
                 await stepContext.Context.SendActivityAsync("Δεν υπάρχουν προγραμματισμένα διαγωνίσματα, ούτε έχουν βγει βαθμοί για αυτό το μάθημα.");
 
                 return await stepContext.EndDialogAsync(null, cancellationToken);
             }
+
+            if (!anyGradedExams)
+                return await stepContext.NextAsync(0, cancellationToken);
+            if (!anyFutureExams)
+                return await stepContext.NextAsync(1, cancellationToken);
 
             return await stepContext.PromptAsync(
                 nameof(UnaccentedChoicePrompt),
@@ -152,9 +159,13 @@ namespace Phoenix.Bot.Dialogs.Student
         }
 
         private async Task<DialogTurnResult> RedirectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-            => (stepContext.Result as FoundChoice).Index == 0 ? 
-                await stepContext.BeginDialogAsync(WaterfallNames.FutureExam, null, cancellationToken) :
-                await stepContext.BeginDialogAsync(WaterfallNames.PastExam, null, cancellationToken);
+        {
+            int choice = stepContext.Result is int res ? res : (stepContext.Result as FoundChoice).Index;
+
+            return choice == 0 ? 
+               await stepContext.BeginDialogAsync(WaterfallNames.FutureExam, null, cancellationToken) :
+               await stepContext.BeginDialogAsync(WaterfallNames.PastExam, null, cancellationToken);
+        }
 
         private async Task<DialogTurnResult> OtherStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -171,41 +182,17 @@ namespace Phoenix.Bot.Dialogs.Student
         private async Task<DialogTurnResult> FollowingExamStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             int selCourseId = await _selCourseId.GetAsync(stepContext.Context);
-            var exams = _phoenixContext.Exam.Where(e => e.CourseId == selCourseId);
 
-            var grNow = DialogHelper.GreeceLocalTime();
-            if (exams.Any(e => e.EndsAt >= grNow))
-            {
-                var nextExam = exams.
-                    Include(e => e.Classroom).
-                    Where(e => e.EndsAt >= grNow).
-                    ToList().
-                    Aggregate((e, ne) => e.StartsAt < ne.StartsAt ? e : ne);
+            var nextExam = _phoenixContext.Exam.
+                Include(e => e.Classroom).
+                Where(e => e.CourseId == selCourseId && e.EndsAt >= DialogHelper.GreeceLocalTime()).
+                ToList().
+                Aggregate((e, ne) => e.StartsAt < ne.StartsAt ? e : ne);
 
-                await stepContext.Context.SendActivityAsync($"Το αμέσως επόμενο διαγώνισμα είναι την {nextExam.StartsAt.DayOfWeek} " +
-                    $"{nextExam.StartsAt:m} στις {nextExam.StartsAt:t}" + nextExam.ClassroomId != null ? $" στην αίθουσα {nextExam.Classroom.Name}." : ".");
+            await stepContext.Context.SendActivityAsync($"Το αμέσως επόμενο διαγώνισμα είναι την {nextExam.StartsAt:dddd} " +
+                $"{nextExam.StartsAt:m} στις {nextExam.StartsAt:t}" + (nextExam.ClassroomId != null ? $" στην αίθουσα {nextExam.Classroom.Name}." : "."));
 
-                return await stepContext.ReplaceDialogAsync(WaterfallNames.Material, nextExam.Id, cancellationToken);
-            }
-
-            await stepContext.Context.SendActivityAsync("Δεν υπάρχει κάποιο προγραμματισμένο διαγώνισμα για αυτό το μάθημα.");
-
-            return await stepContext.PromptAsync(
-                nameof(UnaccentedChoicePrompt),
-                new PromptOptions
-                {
-                    Prompt = MessageFactory.Text("Θα ήθελες να δεις τους βαθμούς σου για παλαιότερα;"),
-                    RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
-                    Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
-                });
-        }
-
-        private async Task<DialogTurnResult> NoFutureExamsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            if ((stepContext.Result as FoundChoice).Index == 0)
-                return await stepContext.ReplaceDialogAsync(WaterfallNames.PastExam, null, cancellationToken);
-            
-            return await stepContext.EndDialogAsync(null, cancellationToken);
+            return await stepContext.ReplaceDialogAsync(WaterfallNames.Material, nextExam.Id, cancellationToken);
         }
 
         #endregion
@@ -236,7 +223,7 @@ namespace Phoenix.Bot.Dialogs.Student
 
                 var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 2));
                 card.BackgroundImage = new AdaptiveBackgroundImage("https://www.bot.askphoenix.gr/assets/4f5d75_sq.png");
-                card.Body.Add(new AdaptiveTextBlockHeaderLight($"Ύλη {++matShownCount} - Διαγώνισμα {courseName} - {examDate:m}"));
+                card.Body.Add(new AdaptiveTextBlockHeaderLight($"Ύλη {++matShownCount} - {courseName} - {examDate:m}"));
                 card.Body.Add(new AdaptiveRichFactSetLight("Βιβλίο ", mat.Book.Name));
                 card.Body.Add(new AdaptiveRichFactSetLight("Κεφάλαιο ", mat.Chapter, separator: true));
                 card.Body.Add(new AdaptiveRichFactSetLight("Ενότητα ", mat.Section, separator: true));
@@ -280,9 +267,17 @@ namespace Phoenix.Bot.Dialogs.Student
             string fbId = stepContext.Context.Activity.From.Id;
 
             if (_phoenixContext.Exam.Count(e => e.CourseId == selCourseId) == 1)
+            {
+                await stepContext.Context.SendActivityAsync("Αυτό ήταν το μόνο διαγώνισμα που έχεις.");
+                
                 return await stepContext.EndDialogAsync(null, cancellationToken);
+            }
             if (_phoenixContext.Exam.Count(e => e.CourseId == selCourseId && e.EndsAt >= DialogHelper.GreeceLocalTime()) == 1)
+            {
+                await stepContext.Context.SendActivityAsync("Αυτό ήταν το μόνο προγραμματισμένο διαγώνισμα.");
+
                 return await stepContext.EndDialogAsync(true, cancellationToken);
+            }
 
             return await stepContext.PromptAsync(
                 nameof(UnaccentedChoicePrompt),
