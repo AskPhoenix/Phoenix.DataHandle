@@ -359,8 +359,10 @@ namespace Phoenix.Bot.Dialogs.Student
                 return await stepContext.NextAsync(null, cancellationToken);
             }
 
+            bool isPastLec = selDate < DialogHelper.GreeceLocalTime();
             bool singular = hwCount == 1;
-            await stepContext.Context.SendActivityAsync($"Για τις {selDate:m} έχεις τ{(singular ? "ην" : "ις")} παρακάτω εργασί{(singular ? "α" : "ες")}:");
+            await stepContext.Context.SendActivityAsync($"Για τις {selDate:m} {(isPastLec ? "είχες" : "έχεις")} τ{(singular ? "ην" : "ις")} " +
+                $"παρακάτω εργασί{(singular ? "α" : "ες")}:");
             return await stepContext.ReplaceDialogAsync(WaterfallNames.Homework, lec.Id, cancellationToken);
         }
 
