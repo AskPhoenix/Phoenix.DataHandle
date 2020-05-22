@@ -125,7 +125,7 @@ namespace Phoenix.Bot.Dialogs.Student
             }
 
             var grNow = DialogHelper.GreeceLocalTime();
-            if (lecWithHw.Any(l => l.StartDateTime >= grNow))
+            if (lecWithHw.Any(l => l.EndDateTime >= grNow))
             {
                 var nextLec = lecWithHw.
                     Include(l => l.Homework).
@@ -206,12 +206,13 @@ namespace Phoenix.Bot.Dialogs.Student
         private async Task<DialogTurnResult> HomeworkStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             int lecId = Convert.ToInt32(stepContext.Options);
+            var courseName = (await _phoenixContext.Course.FindAsync(await _selCourseId.GetAsync(stepContext.Context))).Name;
 
             var pageAcsr = _conversationState.CreateProperty<int>("HomeworkPage");
             int page = await pageAcsr.GetAsync(stepContext.Context);
 
             string fbId = stepContext.Context.Activity.From.Id;
-            var lecDate = _phoenixContext.Lecture.Find(lecId).StartDateTime;
+            var lecDate = (await _phoenixContext.Lecture.FindAsync(lecId)).StartDateTime;
             bool forPastLec = lecDate < DialogHelper.GreeceLocalTime();
             decimal? grade = null;
             const int pageSize = 3;
@@ -222,13 +223,14 @@ namespace Phoenix.Bot.Dialogs.Student
                 Where(h => h.ForLectureId == lecId).
                 Where((_, i) => i >= pageSize * page && i < pageSize * (page + 1));
 
+            int hwShownCount = page * pageSize;
             foreach (var hw in paginatedHw)
             {
                 await stepContext.Context.SendActivityAsync(new Activity(type: ActivityTypes.Typing));
 
                 var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 2));
                 card.BackgroundImage = new AdaptiveBackgroundImage("https://www.bot.askphoenix.gr/assets/4f5d75_sq.png");
-                card.Body.Add(new AdaptiveTextBlockHeaderLight(hw.Exercise.Name));
+                card.Body.Add(new AdaptiveTextBlockHeaderLight($"Εργασία {++hwShownCount} - {courseName} - {lecDate:m}"));
                 card.Body.Add(new AdaptiveRichFactSetLight("Βιβλίο ", hw.Exercise.Book.Name));
                 card.Body.Add(new AdaptiveRichFactSetLight("Σελίδα ", hw.Exercise.Page.ToString(), separator: true));
                 if (forPastLec)
@@ -238,6 +240,7 @@ namespace Phoenix.Bot.Dialogs.Student
                         Grade;
                     card.Body.Add(new AdaptiveRichFactSetLight("Βαθμός ", grade.ToString() ?? "-", separator: true));
                 }
+                card.Body.Add(new AdaptiveRichFactSetLight("Άσκηση ", hw.Exercise.Name, separator: true));
                 card.Body.Add(new AdaptiveRichFactSetLight("Σχόλια ", string.IsNullOrEmpty(hw.Exercise.Info) ? "-" : hw.Exercise.Info, separator: true));
 
                 await stepContext.Context.SendActivityAsync(
@@ -250,9 +253,6 @@ namespace Phoenix.Bot.Dialogs.Student
                 int hwLeft = hwCount - (pageSize * page + paginatedHw.Count());
                 int showMoreNum = hwLeft <= pageSize ? hwLeft : pageSize;
                 bool singular = hwLeft == 1;
-                string promptText = page == 0 ? 
-                    $"Αυτές ήταν οι {pageSize} πρώτες εργασίες που έχεις για τις {lecDate:m}." : 
-                    $"Υπάρχ{(singular ? "ει" : "ουν")} ακόμη {hwLeft} εργασί{(singular ? "α" : "ες")} για τις {lecDate:m}.";
 
                 await pageAcsr.SetAsync(stepContext.Context, page + 1);
 
@@ -260,7 +260,8 @@ namespace Phoenix.Bot.Dialogs.Student
                     nameof(UnaccentedChoicePrompt),
                     new PromptOptions
                     {
-                        Prompt = MessageFactory.Text(promptText),
+                        Prompt = MessageFactory.Text($"Υπάρχ{(singular ? "ει" : "ουν")} ακόμη {hwLeft} εργασί{(singular ? "α" : "ες")} " +
+                            "για τις {lecDate:m}."),
                         RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε μία από τις παρακάτω απαντήσεις:"),
                         Choices = new Choice[] { new Choice($"Εμφάνιση {showMoreNum} ακόμη"), new Choice("Ολοκλήρωση")}
                     });
@@ -310,8 +311,8 @@ namespace Phoenix.Bot.Dialogs.Student
             var lecDates = _phoenixContext.Lecture.
                     Where(l => l.CourseId == selCourseId && l.Homework.Count > 0).
                     Select(l => l.StartDateTime).
-                    Take(5).
                     OrderByDescending(d => d).
+                    Take(5).
                     Select(d => $"{d.Day}/{d.Month}").
                     ToList();
 
