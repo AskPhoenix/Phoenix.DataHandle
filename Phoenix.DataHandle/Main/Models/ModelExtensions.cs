@@ -155,6 +155,8 @@ namespace Phoenix.DataHandle.Main.Models
     // TODO: to be created in database
     public partial class Schedule : ISchedule, IModelEntity
     {
+        DayOfWeek ISchedule.DayOfWeek { get => (DayOfWeek)this.DayOfWeek; set => this.DayOfWeek = (int)value; }
+
         ICourse ISchedule.Course => this.Course;
         IClassroom ISchedule.Classroom => this.Classroom;
     }
