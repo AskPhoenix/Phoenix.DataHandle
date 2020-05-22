@@ -36,12 +36,14 @@ namespace Phoenix.Bot.Dialogs.Student.Common
         private async Task<DialogTurnResult> CourseStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var coursesIdName = stepContext.Options as Tuple<int, string>[];
+            var parentId = stepContext.Parent.Stack[1].Id;
+            string topic = parentId.StartsWith("StudentExercise") ? "τις εργασίες" : "τα διαγωνίσματά";
 
             return await stepContext.PromptAsync(
                 nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
-                    Prompt = MessageFactory.Text("Για ποιο μάθημα θα ήθελες να δεις τις εργασίες σου;"),
+                    Prompt = MessageFactory.Text($"Για ποιο μάθημα θα ήθελες να δεις {topic} σου;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε ή πληκτρολόγησε ένα από τα παρακάτω μαθήματα:"),
                     Choices = ChoiceFactory.ToChoices(coursesIdName.Select(t => t.Item2).ToList())
                 });
