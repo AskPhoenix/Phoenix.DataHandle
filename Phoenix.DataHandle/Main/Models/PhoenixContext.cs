@@ -150,7 +150,7 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<Classroom>(entity =>
             {
                 entity.HasIndex(e => new { e.SchoolId, e.Name })
-                    .HasName("UQ__Classroo__5A933F15591BC6D2")
+                    .HasName("UQ__Classroo__A5B5856930D0EBE6")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
@@ -171,7 +171,7 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<Course>(entity =>
             {
                 entity.HasIndex(e => new { e.SchoolId, e.Level })
-                    .HasName("UQ__Course__170BEECC5014A339")
+                    .HasName("UQ__Course__BE9836D8D4139A41")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
