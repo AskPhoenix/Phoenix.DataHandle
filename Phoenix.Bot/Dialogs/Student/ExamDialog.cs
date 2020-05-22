@@ -73,16 +73,15 @@ namespace Phoenix.Bot.Dialogs.Student
             AddDialog(new WaterfallDialog(WaterfallNames.PastExam,
                 new WaterfallStep[]
                 {
-                    //PreviousExamStepAsync
+                    PreviousExamStepAsync
                 }));
 
             AddDialog(new WaterfallDialog(WaterfallNames.Grade,
                 new WaterfallStep[]
                 {
-                    //GradeStepAsync,
-                    //GradePageStepAsync,
-                    //GradeOtherStepAsync,
-                    //GradeOtherSelectStepAsync
+                    GradeStepAsync,
+                    GradeOtherStepAsync,
+                    GradeOtherSelectStepAsync
                 }));
 
             InitialDialogId = WaterfallNames.Main;
@@ -299,7 +298,7 @@ namespace Phoenix.Bot.Dialogs.Student
             var examDates = _phoenixContext.Exam.
                 Where(e => e.CourseId == selCourseId && e.EndsAt >= DialogHelper.GreeceLocalTime()).
                 Select(e => e.StartsAt).
-                OrderByDescending(d => d).
+                OrderBy(d => d).
                 Take(5).
                 Select(d => $"{d.Day}/{d.Month}").
                 ToList();
@@ -347,6 +346,147 @@ namespace Phoenix.Bot.Dialogs.Student
                     + exam.ClassroomId != null ? $" στην αίθουσα {exam.Classroom.Name} " : " "
                     + "έχεις να διαβάσεις τα παρακάτω:");
             return await stepContext.ReplaceDialogAsync(WaterfallNames.Material, exam.Id, cancellationToken);
+        }
+
+        #endregion
+
+        #region Past Exam Waterfall Dialog
+
+        private async Task<DialogTurnResult> PreviousExamStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            int selCourseId = await _selCourseId.GetAsync(stepContext.Context);
+            string fbId = stepContext.Context.Activity.From.Id;
+
+            var lastGradedStudentExam = _phoenixContext.StudentExam.
+                Include(se => se.Exam).
+                Where(se => se.Exam.CourseId == selCourseId && se.Student.AspNetUser.FacebookId == fbId && se.Grade != null).
+                ToList().
+                Aggregate((se, lse) => se.Exam.StartsAt > lse.Exam.StartsAt ? se : lse);
+
+            await stepContext.Context.SendActivityAsync($"Το πιο πρόσφατο βαθμολογημένο διαγώνισμα ήταν αυτό στις {lastGradedStudentExam.Exam.StartsAt:m}.");
+            await stepContext.Context.SendActivityAsync("Ο βαθμός σου είναι:");
+
+            return await stepContext.ReplaceDialogAsync(WaterfallNames.Grade, lastGradedStudentExam.Grade.Value, cancellationToken);
+        }
+
+        #endregion
+
+        #region Grade Waterfall Dialog
+
+        private async Task<DialogTurnResult> GradeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            int selCourseId = await _selCourseId.GetAsync(stepContext.Context);
+            var grade = Convert.ToDecimal(stepContext.Options);
+
+            if (grade >= 0.0m)
+            {
+                await stepContext.Context.SendActivityAsync(new Activity(type: ActivityTypes.Typing));
+
+                var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 2));
+                card.BackgroundImage = new AdaptiveBackgroundImage("https://www.bot.askphoenix.gr/assets/4f5d75_sq.png");
+                card.Body.Add(new AdaptiveTextBlockHeaderLight($"--- {grade:G29} ---") { HorizontalAlignment = AdaptiveHorizontalAlignment.Center });
+                await stepContext.Context.SendActivityAsync(
+                    MessageFactory.Attachment(new Attachment(contentType: AdaptiveCard.ContentType, content: JObject.FromObject(card))));
+            }
+
+            if (_phoenixContext.Exam.Count(e => e.CourseId == selCourseId) == 1)
+            {
+                await stepContext.Context.SendActivityAsync("Αυτό ήταν το μόνο διαγώνισμα που είχες.");
+
+                return await stepContext.EndDialogAsync(null, cancellationToken);
+            }
+
+            var grNow = DialogHelper.GreeceLocalTime();
+            string fbId = stepContext.Context.Activity.From.Id;
+            if (_phoenixContext.StudentExam.Count(se => se.Student.AspNetUser.FacebookId == fbId && se.Exam.CourseId == selCourseId 
+                && se.Exam.EndsAt < grNow && se.Grade != null) == 1)
+            {
+                await stepContext.Context.SendActivityAsync("Αυτό ήταν το μόνο βαθμολογημένο διαγώνισμα.");
+
+                return await stepContext.EndDialogAsync(true, cancellationToken);
+            }
+
+            return await stepContext.PromptAsync(
+                nameof(UnaccentedChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Θα ήθελες να δεις τον βαθμό σου για άλλο διαγώνισμα;"),
+                    RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
+                    Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
+                });
+        }
+
+        private async Task<DialogTurnResult> GradeOtherStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            if ((stepContext.Result as FoundChoice).Index == 1)
+                return await stepContext.EndDialogAsync(null, cancellationToken);
+
+            var selCourseId = await _selCourseId.GetAsync(stepContext.Context);
+            var grNow = DialogHelper.GreeceLocalTime();
+            string fbId = stepContext.Context.Activity.From.Id;
+
+            var examDates = _phoenixContext.StudentExam.
+                Where(se => se.Student.AspNetUser.FacebookId == fbId && se.Exam.CourseId == selCourseId && se.Exam.EndsAt < grNow && se.Grade != null).
+                Select(se => se.Exam.StartsAt).
+                OrderByDescending(d => d).
+                Take(5).
+                Select(d => $"{d.Day}/{d.Month}").
+                ToList();
+
+            await stepContext.Context.SendActivityAsync("Εάν δε βλέπεις κάποια ημερομηνία που είχες διαγώνισμα, τότε δεν υπάρχει βαθμός ακόμα.");
+
+            var prompt = ChoiceFactory.SuggestedAction(ChoiceFactory.ToChoices(examDates),
+                text: "Επίλεξε μία από τις παρακάτω ημερομηνίες ή γράψε μια άλλη:");
+            var reprompt = ChoiceFactory.SuggestedAction(ChoiceFactory.ToChoices(examDates),
+                text: "Η επιθυμητή ημερομηνία θα πρέπει να είναι στη μορφή ημέρα/μήνας (π.χ. 24/4)):");
+
+            return await stepContext.PromptAsync(
+                nameof(DateTimePrompt),
+                new PromptOptions
+                {
+                    Prompt = (Activity)prompt,
+                    RetryPrompt = (Activity)reprompt
+                });
+        }
+
+        private async Task<DialogTurnResult> GradeOtherSelectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var selCourseId = await _selCourseId.GetAsync(stepContext.Context);
+            string fbId = stepContext.Context.Activity.From.Id;
+
+            var selDate = DialogHelper.ResolveDateTime(stepContext.Result as IList<DateTimeResolution>);
+            var gradedStudentExams = _phoenixContext.StudentExam.
+                Where(se => se.Exam.CourseId == selCourseId && se.Student.AspNetUser.FacebookId == fbId && se.Grade != null);
+
+            var studentExam = gradedStudentExams.
+                SingleOrDefault(se => se.Exam.StartsAt.Date == selDate.Date);
+            
+            if (studentExam == null)
+            {
+                if (_phoenixContext.Exam.Any(e => e.CourseId == selCourseId && e.StartsAt.Date == selDate.Date))
+                {
+                    await stepContext.Context.SendActivityAsync($"Το διαγώνισμα για τις {selDate:m} βρίσκεται ακόμα υπό βαθμολόγηση.");
+
+                    return await stepContext.ReplaceDialogAsync(WaterfallNames.Grade, -1.0m, cancellationToken);
+                }
+
+                studentExam = gradedStudentExams.
+                    Include(se => se.Exam).
+                    Where(se => se.Exam.EndsAt < DialogHelper.GreeceLocalTime()).
+                    ToList().
+                    Aggregate((se, pse) => Math.Abs((se.Exam.StartsAt - selDate).Days) < Math.Abs((pse.Exam.StartsAt - selDate).Days) ? se : pse);
+
+                
+                await stepContext.Context.SendActivityAsync($"Δεν υπάρχει διαγώνισμα για αυτό το μάθημα στις {selDate:m}.");
+                await stepContext.Context.SendActivityAsync($"Βρήκα όμως το πιο κοντινό του βαθμολογημένο διαγώνισμα στις {studentExam.Exam.StartsAt:m}.");
+                await stepContext.Context.SendActivityAsync("Ο βαθμός σου είναι:");
+
+                return await stepContext.ReplaceDialogAsync(WaterfallNames.Grade, studentExam.Grade.Value, cancellationToken);
+            }
+
+            await stepContext.Context.SendActivityAsync($"Ο βαθμός σου για το διαγώνισμα στις {selDate:m} είναι:");
+
+            return await stepContext.ReplaceDialogAsync(WaterfallNames.Grade, studentExam.Grade.Value, cancellationToken);
         }
 
         #endregion
