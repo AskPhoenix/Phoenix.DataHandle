@@ -16,7 +16,7 @@ namespace Phoenix.DataHandle.Main.Models
         public int ClassroomId { get; set; }
         public DateTime StartDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
-        public int Status { get; set; }
+        public LectureStatus Status { get; set; }
         public string Info { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

@@ -8,7 +8,7 @@ namespace Phoenix.DataHandle.Main.Models
         public int Id { get; set; }
         public int CourseId { get; set; }
         public int ClassroomId { get; set; }
-        public int DayOfWeek { get; set; }
+        public DayOfWeek DayOfWeek { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public string Info { get; set; }
