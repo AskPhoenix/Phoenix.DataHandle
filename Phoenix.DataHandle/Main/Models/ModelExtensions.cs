@@ -95,6 +95,8 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class Lecture : ILecture, IModelEntity
     {
+        LectureStatus ILecture.Status { get => (LectureStatus)this.Status; set => this.Status = (int)value; }
+
         ICourse ILecture.Course => this.Course;
         IClassroom ILecture.Classroom => this.Classroom;
 
@@ -152,7 +154,6 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ITeacherCourse> IUser.TeacherCourses => this.TeacherCourse;
     }
 
-    // TODO: to be created in database
     public partial class Schedule : ISchedule, IModelEntity
     {
         DayOfWeek ISchedule.DayOfWeek { get => (DayOfWeek)this.DayOfWeek; set => this.DayOfWeek = (int)value; }
