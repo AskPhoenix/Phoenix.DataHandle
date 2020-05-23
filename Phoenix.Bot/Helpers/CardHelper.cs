@@ -22,12 +22,15 @@ namespace Phoenix.Bot.Helpers
         {
             public AdaptiveTextBlockHeaderLight() : base()
             {
+                this.HorizontalAlignment = AdaptiveHorizontalAlignment.Center;
                 this.Size = AdaptiveTextSize.ExtraLarge;
                 this.Weight = AdaptiveTextWeight.Bolder;
+                this.Wrap = true;
             }
 
             public AdaptiveTextBlockHeaderLight(string text) : base(text)
             {
+                this.HorizontalAlignment = AdaptiveHorizontalAlignment.Center;
                 this.Size = AdaptiveTextSize.ExtraLarge;
                 this.Weight = AdaptiveTextWeight.Bolder;
                 this.Wrap = true;

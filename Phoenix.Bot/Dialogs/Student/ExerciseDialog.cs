@@ -152,13 +152,13 @@ namespace Phoenix.Bot.Dialogs.Student
             await stepContext.Context.SendActivityAsync("Δεν έχεις νέες εργασίες για αυτό το μάθημα!");
 
             return await stepContext.PromptAsync(
-            nameof(UnaccentedChoicePrompt),
-            new PromptOptions
-            {
-                Prompt = MessageFactory.Text("Θα ήθελες να δεις παλαιότερες εργασίες σου;"),
-                RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
-                Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
-            });
+                nameof(UnaccentedChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Θα ήθελες να δεις παλαιότερες εργασίες σου;"),
+                    RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
+                    Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
+                });
         }
 
         private async Task<DialogTurnResult> PastLectureStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -230,7 +230,8 @@ namespace Phoenix.Bot.Dialogs.Student
 
                 var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 2));
                 card.BackgroundImage = new AdaptiveBackgroundImage("https://www.bot.askphoenix.gr/assets/4f5d75_sq.png");
-                card.Body.Add(new AdaptiveTextBlockHeaderLight($"Εργασία {++hwShownCount} - {courseName} - {lecDate:m}"));
+                card.Body.Add(new AdaptiveTextBlockHeaderLight($"Εργασία {++hwShownCount} - {lecDate:dddd} {lecDate.Day}/{lecDate.Month}"));
+                card.Body.Add(new AdaptiveTextBlockHeaderLight(courseName));
                 card.Body.Add(new AdaptiveRichFactSetLight("Βιβλίο ", hw.Exercise.Book.Name));
                 card.Body.Add(new AdaptiveRichFactSetLight("Σελίδα ", hw.Exercise.Page.ToString(), separator: true));
                 if (forPastLec)
@@ -238,7 +239,7 @@ namespace Phoenix.Bot.Dialogs.Student
                     grade = _phoenixContext.StudentExercise.
                         SingleOrDefault(se => se.ExerciseId == hw.Exercise.Id && se.Student.AspNetUser.FacebookId == fbId)?.
                         Grade;
-                    card.Body.Add(new AdaptiveRichFactSetLight("Βαθμός ", grade.ToString() ?? "-", separator: true));
+                    card.Body.Add(new AdaptiveRichFactSetLight("Βαθμός ", grade == null ? "-" : grade.ToString(), separator: true));
                 }
                 card.Body.Add(new AdaptiveRichFactSetLight("Άσκηση ", hw.Exercise.Name, separator: true));
                 card.Body.Add(new AdaptiveRichFactSetLight("Σχόλια ", string.IsNullOrEmpty(hw.Exercise.Info) ? "-" : hw.Exercise.Info, separator: true));

@@ -51,8 +51,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 {
                     CourseStepAsync,
                     ExamStepAsync,
-                    RedirectStepAsync,
-                    OtherStepAsync
+                    RedirectStepAsync
                 }));
 
             AddDialog(new WaterfallDialog(WaterfallNames.FutureExam,
@@ -143,9 +142,18 @@ namespace Phoenix.Bot.Dialogs.Student
             }
 
             if (!anyGradedExams)
+            {
+                if (!exams.Any(e => e.EndsAt < DialogHelper.GreeceLocalTime()))
+                    await stepContext.Context.SendActivityAsync("Δεν έχουν βγει ακόμα βαθμοί για κάποιο διαγώνισμα.");
+
                 return await stepContext.NextAsync(0, cancellationToken);
+            }
             if (!anyFutureExams)
+            {
+                await stepContext.Context.SendActivityAsync("Δεν υπάρχει κάποιο προγραμματισμένο διαγώνισμα προς το παρόν.");
+
                 return await stepContext.NextAsync(1, cancellationToken);
+            }
 
             return await stepContext.PromptAsync(
                 nameof(UnaccentedChoicePrompt),
@@ -164,14 +172,6 @@ namespace Phoenix.Bot.Dialogs.Student
             return choice == 0 ? 
                await stepContext.BeginDialogAsync(WaterfallNames.FutureExam, null, cancellationToken) :
                await stepContext.BeginDialogAsync(WaterfallNames.PastExam, null, cancellationToken);
-        }
-
-        private async Task<DialogTurnResult> OtherStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            if (stepContext.Result is FoundChoice foundChoice && foundChoice.Index == 0)
-                return await stepContext.ReplaceDialogAsync(WaterfallNames.Main, null, cancellationToken);
-
-            return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
         #endregion
@@ -222,7 +222,8 @@ namespace Phoenix.Bot.Dialogs.Student
 
                 var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 2));
                 card.BackgroundImage = new AdaptiveBackgroundImage("https://www.bot.askphoenix.gr/assets/4f5d75_sq.png");
-                card.Body.Add(new AdaptiveTextBlockHeaderLight($"Ύλη {++matShownCount} - {courseName} - {examDate:m}"));
+                card.Body.Add(new AdaptiveTextBlockHeaderLight($"Ύλη {++matShownCount} - {examDate:dddd} {examDate.Day}/{examDate.Month}"));
+                card.Body.Add(new AdaptiveTextBlockHeaderLight(courseName));
                 card.Body.Add(new AdaptiveRichFactSetLight("Βιβλίο ", mat.Book.Name));
                 card.Body.Add(new AdaptiveRichFactSetLight("Κεφάλαιο ", mat.Chapter, separator: true));
                 card.Body.Add(new AdaptiveRichFactSetLight("Ενότητα ", mat.Section, separator: true));
