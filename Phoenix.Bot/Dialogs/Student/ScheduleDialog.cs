@@ -25,7 +25,6 @@ namespace Phoenix.Bot.Dialogs.Student
         private static class WaterfallNames
         {
             public const string Day = "StudentSchedule_Day_WaterfallDialog";
-            public const string Date = "StudentSchedule_Date_WaterfallDialog";
             public const string Week = "StudentSchedule_Week_WaterfallDialog";
         }
 
@@ -35,6 +34,7 @@ namespace Phoenix.Bot.Dialogs.Student
             _phoenixContext = phoenixContext;
 
             AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
+            AddDialog(new DateTimePrompt(nameof(DateTimePrompt)));
 
             AddDialog(new WaterfallDialog(WaterfallNames.Day,
                 new WaterfallStep[]
@@ -42,21 +42,16 @@ namespace Phoenix.Bot.Dialogs.Student
                     DayStepAsync,
                     DayOtherRedirectStepAsync,
                     DayOtherStepAsync,
-                    DayResolveStepAsync
-                }));
-
-            AddDialog(new WaterfallDialog(WaterfallNames.Date,
-                new WaterfallStep[]
-                {
-                    //SpecificDateStepAsync,
-                    //SpecificDateSelectStepAsync
+                    DayResolveStepAsync,
+                    SpecificDateStepAsync,
+                    SpecificDateSelectStepAsync
                 }));
 
             AddDialog(new WaterfallDialog(WaterfallNames.Week,
                 new WaterfallStep[]
                 {
-                    //WeekStepAsync
-                    //WeekDayMoreStepAsync
+                    WeekStepAsync,
+                    WeekDayMoreStepAsync
                 }));
 
             InitialDialogId = WaterfallNames.Day;
@@ -74,30 +69,47 @@ namespace Phoenix.Bot.Dialogs.Student
                 Where(l => l.StartDateTime.Date == date.Date).
                 OrderBy(l => l.StartDateTime);
 
-            await stepContext.Context.SendActivityAsync(new Activity(type: ActivityTypes.Typing));
-
-            var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 2));
-            card.BackgroundImage = new AdaptiveBackgroundImage("https://www.bot.askphoenix.gr/assets/4f5d75_sq.png");
-            card.Body.Add(new AdaptiveTextBlockHeaderLight($"Πρόγραμμα - {date:dddd} {date.Day}/{date.Month}"));
-
-            foreach (var lec in lecs)
+            if (lecs.Count() == 0)
             {
-                card.Body.Add(new AdaptiveTextBlockHeaderLight(lec.Course.Name));
-                card.Body.Add(new AdaptiveRichFactSetLight("Ώρες ", $"{lec.StartDateTime:t} - {lec.EndDateTime:t}"));
-                card.Body.Add(new AdaptiveRichFactSetLight("Αίθουσα ", lec.Classroom.Name, separator: true));
-                card.Body.Add(new AdaptiveRichFactSetLight("Κατάσταση ", lec.Status.ToGreekString(), separator: true));
-                card.Body.Add(new AdaptiveRichFactSetLight("Σχόλια ", string.IsNullOrEmpty(lec.Info) ? "-" : lec.Info, separator: true));
-            }
+                int dayOffset = (DialogHelper.GreeceLocalTime() - date).Days;
+                string dayName = dayOffset switch
+                {
+                    0 => "σήμερα",
+                    1 => "αύριο",
+                    2 => "μεθάυριο",
+                    var o when o >= 3 && o <= 7 => $"την επόμενη {date:dddd}",
+                    _ => $"τις {date.Day}/{date.Month}"
+                };
 
-            await stepContext.Context.SendActivityAsync(
-                    MessageFactory.Attachment(new Attachment(contentType: AdaptiveCard.ContentType, content: JObject.FromObject(card))));
+                await stepContext.Context.SendActivityAsync($"Δεν {(dayOffset >=0 ? "έχεις" : "είχες")} μαθήματα για {dayName}! 😎");
+            }
+            else
+            {
+                await stepContext.Context.SendActivityAsync(new Activity(type: ActivityTypes.Typing));
+
+                var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 2));
+                card.BackgroundImage = new AdaptiveBackgroundImage("https://www.bot.askphoenix.gr/assets/4f5d75_sq.png");
+                card.Body.Add(new AdaptiveTextBlockHeaderLight($"Πρόγραμμα - {date:dddd} {date.Day}/{date.Month}"));
+
+                foreach (var lec in lecs)
+                {
+                    card.Body.Add(new AdaptiveTextBlockHeaderLight(lec.Course.Name));
+                    card.Body.Add(new AdaptiveRichFactSetLight("Ώρες ", $"{lec.StartDateTime:t} - {lec.EndDateTime:t}"));
+                    card.Body.Add(new AdaptiveRichFactSetLight("Αίθουσα ", lec.Classroom.Name, separator: true));
+                    card.Body.Add(new AdaptiveRichFactSetLight("Κατάσταση ", lec.Status.ToGreekString(), separator: true));
+                    card.Body.Add(new AdaptiveRichFactSetLight("Σχόλια ", string.IsNullOrEmpty(lec.Info) ? "-" : lec.Info, separator: true));
+                }
+
+                await stepContext.Context.SendActivityAsync(
+                        MessageFactory.Attachment(new Attachment(contentType: AdaptiveCard.ContentType, content: JObject.FromObject(card))));
+            }
 
             return await stepContext.PromptAsync(
                 nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
                     Prompt = MessageFactory.Text("Θα ήθελες να δεις το πρόγραμμα για άλλη ημέρα ή για ολόκληρη την εβδομάδα;"),
-                    RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
+                    RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε μία από τις παρακάτω απαντήσεις:"),
                     Choices = new Choice[] { new Choice("Άλλη ημέρα"), new Choice("Εβδομαδιαίο"), new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
                 });
         }
@@ -140,11 +152,94 @@ namespace Phoenix.Bot.Dialogs.Student
         private async Task<DialogTurnResult> DayResolveStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             int foundChoiceIndex = (stepContext.Result as FoundChoice).Index;
-            if (foundChoiceIndex == 8)
-                return await stepContext.BeginDialogAsync(WaterfallNames.Date, null, cancellationToken);
+            if (foundChoiceIndex == 7)
+                return await stepContext.NextAsync(null, cancellationToken);
 
             DateTime date = DialogHelper.GreeceLocalTime().AddDays(foundChoiceIndex + 1);
             return await stepContext.ReplaceDialogAsync(WaterfallNames.Day, date, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> SpecificDateStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+            => await stepContext.PromptAsync(
+                nameof(DateTimePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Γράψε μια ημερομηνία στη μορφή ημέρα/μήνας, ώστε να δεις το πρόγραμμα για εκείνη τη μέρα:"),
+                    RetryPrompt = MessageFactory.Text("Η επιθυμητή ημερομηνία θα πρέπει να είναι στη μορφή ημέρα/μήνας (π.χ. 24/4)):")
+                });
+
+        private async Task<DialogTurnResult> SpecificDateSelectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var selDate = DialogHelper.ResolveDateTime(stepContext.Result as IList<DateTimeResolution>);
+            return await stepContext.ReplaceDialogAsync(WaterfallNames.Day, selDate, cancellationToken);
+        }
+
+        #endregion
+
+        #region Week Waterfall Dialog
+
+        private async Task<DialogTurnResult> WeekStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var grNow = DialogHelper.GreeceLocalTime();
+            var lecs = _phoenixContext.Lecture.
+                Include(l => l.Course).
+                Where(l => l.StartDateTime.Date > grNow.Date && l.StartDateTime.Date <= grNow.AddDays(7).Date).
+                OrderBy(l => l.StartDateTime).
+                ToList();
+
+            if (lecs.Count() == 0)
+            {
+                await stepContext.Context.SendActivityAsync($"Δεν έχεις μαθήματα για τις επόμενες 7 ημέρες! 😎");
+            }
+            else
+            {
+                await stepContext.Context.SendActivityAsync(new Activity(type: ActivityTypes.Typing));
+
+                var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 2));
+                card.BackgroundImage = new AdaptiveBackgroundImage("https://www.bot.askphoenix.gr/assets/4f5d75_sq.png");
+                card.Body.Add(new AdaptiveTextBlockHeaderLight("Εβδομαδιαίο Πρόγραμμα"));
+                card.Body.Add(new AdaptiveTextBlockHeaderLight($"{grNow.Day}/{grNow.Month} έως {grNow.AddDays(7).Day}/{grNow.AddDays(7).Month}"));
+             
+                for (int i = 1; i <= 7; i++)
+                {
+                    DateTime nextDay = grNow.AddDays(i);
+                    card.Body.Add(new AdaptiveTextBlockHeaderLight(nextDay.ToString("dddd")));
+                    if (lecs.Any(l => l.StartDateTime.DayOfWeek == nextDay.DayOfWeek))
+                    {
+                        var dayLecs = lecs.Where(l => l.StartDateTime.DayOfWeek == nextDay.DayOfWeek);
+                        foreach (var lec in dayLecs)
+                        {
+                            card.Body.Add(new AdaptiveRichFactSetLight("Μάθημα ", lec.Course.Name));
+                            card.Body.Add(new AdaptiveRichFactSetLight("Ώρες ", $"{lec.StartDateTime:t} - {lec.EndDateTime:t}", separator: true));
+                            card.Body.Add(new AdaptiveRichFactSetLight());
+                        }
+                    }
+                    else
+                        card.Body.Add(new AdaptiveTextBlockHeaderLight("-"));
+                }
+
+                await stepContext.Context.SendActivityAsync(
+                        MessageFactory.Attachment(new Attachment(contentType: AdaptiveCard.ContentType, content: JObject.FromObject(card))));
+            }
+
+            return await stepContext.PromptAsync(
+                nameof(UnaccentedChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Θα ήθελες να δεις το πρόγραμμα για άλλη ημέρα;"),
+                    RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
+                    Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
+                });
+        }
+
+        private async Task<DialogTurnResult> WeekDayMoreStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var foundChoice = stepContext.Result as FoundChoice;
+            if (foundChoice.Index == 0)
+                return await stepContext.EndDialogAsync(null, cancellationToken);
+
+            await stepContext.Context.SendActivityAsync("OK 😊");
+            return await stepContext.Parent.EndDialogAsync(null, cancellationToken);
         }
 
         #endregion
