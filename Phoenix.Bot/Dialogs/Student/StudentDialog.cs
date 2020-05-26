@@ -61,12 +61,12 @@ namespace Phoenix.Bot.Dialogs.Student
 
         private async Task<DialogTurnResult> MenuStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (stepContext.Options is int)
+            if (stepContext.Options is int index)
                 return await stepContext.NextAsync(
                     new FoundChoice() 
                     {
-                        Index = (int)stepContext.Options,
-                        Value = (int)stepContext.Options switch { 0 => "Εργασίες", 1 => "Διαγωνίσματα", 2 => "Πρόγραμμα", _ => string.Empty },
+                        Index = index,
+                        Value = index switch { 0 => "Εργασίες", 1 => "Διαγωνίσματα", 2 => "Πρόγραμμα", _ => string.Empty },
                         Score = 1.0f
                     },
                     cancellationToken);
