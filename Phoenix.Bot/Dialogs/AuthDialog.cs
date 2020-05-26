@@ -10,11 +10,16 @@ using System;
 using Phoenix.Bot.Extensions;
 using Phoenix.DataHandle.Main.Models;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
+using Phoenix.DataHandle.Sms;
+using Microsoft.AspNet.Identity;
+using Phoenix.Bot.Helpers;
 
 namespace Phoenix.Bot.Dialogs
 {
     public class AuthDialog : ComponentDialog
     {
+        private readonly IConfiguration _configuration;
         private readonly BotState _conversationState;
         private readonly BotState _userState;
         private readonly PhoenixContext _phoenixContext;
@@ -34,9 +39,10 @@ namespace Phoenix.Bot.Dialogs
             public const string Pin = "Pin_Prompt";
         }
 
-        public AuthDialog(ConversationState conversationState, UserState userState, PhoenixContext phoenixContext)
+        public AuthDialog(IConfiguration configuration, ConversationState conversationState, UserState userState, PhoenixContext phoenixContext)
             : base(nameof(AuthDialog))
         {
+            _configuration = configuration;
             _conversationState = conversationState;
             _userState = userState;
             _phoenixContext = phoenixContext;
@@ -44,7 +50,7 @@ namespace Phoenix.Bot.Dialogs
             AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new NumberPrompt<long>(PromptNames.Phone, PhoneNumberPromptValidator));
-            AddDialog(new NumberPrompt<long>(PromptNames.Pin, PinPromptValidator));
+            AddDialog(new NumberPrompt<int>(PromptNames.Pin, PinPromptValidator));
 
             AddDialog(new WaterfallDialog(WaterfallNames.Main,
                 new WaterfallStep[]
@@ -147,7 +153,7 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> CheckPhoneStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            long phone = (long)stepContext.Result;
+            long phone = Convert.ToInt64(stepContext.Result);
             stepContext.Values.Add("phone", phone);
 
             //If a student has their parent's phone registered, then they must be differentiated by a unique code given by the school.
@@ -290,10 +296,18 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> SendPinStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            //TODO: Send pin to user with SMS
-            long pin = new Random().Next(1000, 9999);
+            int pin = new Random().Next(1000, 9999);
             stepContext.Values.Add("pin", pin);
-            long phone = (long)stepContext.Options;
+            string phone = Convert.ToInt64(stepContext.Options).ToString();
+
+            string name = GreekNameCall(stepContext.Context.Activity.From.Name.Split(' ')[0]);
+            var sms = new SmsService(_configuration["NexmoSMS:ApiKey"], _configuration["NexmoSMS:ApiSecret"]);
+            await sms.SendAsync(new IdentityMessage() 
+            {
+                Destination = phone.ToString(),
+                Body = $"Γεια σου {name}! Ο μοναδικός κωδικός σου για το Phoenix είναι ο {pin}. " +
+                    "Όταν σου ζητηθεί, πληκτρολόγησέ τον στη συνομιλία μας στο Messenger."
+            });
 
             return await stepContext.PromptAsync(
                 nameof(UnaccentedChoicePrompt),
@@ -351,16 +365,14 @@ namespace Phoenix.Bot.Dialogs
                 {
                     Prompt = MessageFactory.Text("Παρακαλώ πληκτρολόγησε το pin που έλαβες παρακάτω:"),
                     RetryPrompt = MessageFactory.Text("Η μορφή του pin που πληκτρολόγησες δεν είναι έγκυρη. Παρακαλώ πληκτρολόγησέ το ξανά:"),
-                    Validations = (long)Math.Ceiling(Math.Log10((long)stepContext.Options))
+                    Validations = Math.Ceiling(Math.Log10(Convert.ToInt32(stepContext.Options)))
                 });
 
         private async Task<DialogTurnResult> CheckPinStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            long pinTyped = (long)stepContext.Result;
+            int pinTyped = Convert.ToInt32(stepContext.Result);
 
-            //TODO: Check with real pin
-            //bool pinOk = pinTyped == (long)stepContext.Options;
-            bool pinOk = pinTyped == 1111;
+            bool pinOk = pinTyped == Convert.ToInt32(stepContext.Options);
             if (pinOk)
             {
                 await stepContext.Context.SendActivityAsync("Πολύ ωραία! Η σύνδεση ολοκληρώθηκε επιτυχώς! 😁");
