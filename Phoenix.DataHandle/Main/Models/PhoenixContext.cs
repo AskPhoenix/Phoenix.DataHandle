@@ -176,6 +176,8 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
 
+                entity.Property(e => e.FirstDate).HasColumnType("datetime2(0)");
+
                 entity.Property(e => e.Group)
                     .IsRequired()
                     .HasMaxLength(255);

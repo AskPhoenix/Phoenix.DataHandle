@@ -21,6 +21,8 @@ namespace Phoenix.DataHandle.Main.Models
         public string Level { get; set; }
         public string Group { get; set; }
         public string Info { get; set; }
+        public DateTime FirstDate { get; set; }
+        public DateTime LastDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
