@@ -17,6 +17,6 @@ namespace Phoenix.Api.Models.Api
         public LectureStatus Status { get; set; }
         public string Info { get; set; }
         public IEnumerable<IAttendance> Attendances { get; }
-        public IEnumerable<IHomework> Homeworks { get; }
+        public IEnumerable<IExercise> Exercises { get; }
     }
 }

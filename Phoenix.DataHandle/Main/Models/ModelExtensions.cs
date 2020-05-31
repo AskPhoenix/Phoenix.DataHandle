@@ -49,7 +49,6 @@ namespace Phoenix.DataHandle.Main.Models
     {
         ISchool IClassroom.School => this.School;
 
-        IEnumerable<IExam> IClassroom.Exams => this.Exam;
         IEnumerable<ILecture> IClassroom.Lectures => this.Lecture;
     }
 
@@ -58,7 +57,6 @@ namespace Phoenix.DataHandle.Main.Models
         ISchool ICourse.School => this.School;
 
         IEnumerable<ICourseBook> ICourse.CourseBooks => this.CourseBook;
-        IEnumerable<IExam> ICourse.Exams => this.Exam;
         IEnumerable<ILecture> ICourse.Lectures => this.Lecture;
         IEnumerable<IStudentCourse> ICourse.StudentCourses => this.StudentCourse;
         IEnumerable<ITeacherCourse> ICourse.TeacherCourses => this.TeacherCourse;
@@ -72,8 +70,7 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class Exam : IExam, IModelEntity
     {
-        ICourse IExam.Course => this.Course;
-        IClassroom IExam.Classroom => this.Classroom;
+        ILecture IExam.Lecture => this.Lecture;
 
         IEnumerable<IMaterial> IExam.Materials => this.Material;
         IEnumerable<IStudentExam> IExam.StudentExams => this.StudentExam;
@@ -83,14 +80,8 @@ namespace Phoenix.DataHandle.Main.Models
     {
         IBook IExercise.Book => this.Book;
 
-        IEnumerable<IHomework> IExercise.Homeworks => this.Homework;
+        ILecture IExercise.Lecture => this.Lecture;
         IEnumerable<IStudentExercise> IExercise.StudentExercises => this.StudentExercise;
-    }
-
-    public partial class Homework : IHomework
-    {
-        ILecture IHomework.ForLecture => this.ForLecture;
-        IExercise IHomework.Exercise => this.Exercise;
     }
 
     public partial class Lecture : ILecture, IModelEntity
@@ -99,7 +90,7 @@ namespace Phoenix.DataHandle.Main.Models
         IClassroom ILecture.Classroom => this.Classroom;
 
         IEnumerable<IAttendance> ILecture.Attendances => this.Attendance;
-        IEnumerable<IHomework> ILecture.Homeworks => this.Homework;
+        IEnumerable<IExercise> ILecture.Exercises => this.Exercise;
     }
 
     public partial class Material : IMaterial, IModelEntity

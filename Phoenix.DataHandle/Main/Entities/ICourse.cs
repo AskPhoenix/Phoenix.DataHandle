@@ -12,7 +12,6 @@ namespace Phoenix.DataHandle.Main.Entities
         string Info { get; set; }
 
         IEnumerable<ICourseBook> CourseBooks { get; }
-        IEnumerable<IExam> Exams { get; }
         IEnumerable<ILecture> Lectures { get; }
         IEnumerable<IStudentCourse> StudentCourses { get; }
         IEnumerable<ITeacherCourse> TeacherCourses { get; }

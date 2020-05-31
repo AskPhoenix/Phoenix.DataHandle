@@ -12,14 +12,12 @@ namespace Phoenix.DataHandle.Main.Models
         }
 
         public int Id { get; set; }
-        public int CourseId { get; set; }
-        public int? ClassroomId { get; set; }
-        public DateTime StartsAt { get; set; }
-        public DateTime EndsAt { get; set; }
+        public int LectureId { get; set; }
         public string Comments { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
-        public virtual Classroom Classroom { get; set; }
-        public virtual Course Course { get; set; }
+        public virtual Lecture Lecture { get; set; }
         public virtual ICollection<Material> Material { get; set; }
         public virtual ICollection<StudentExam> StudentExam { get; set; }
     }

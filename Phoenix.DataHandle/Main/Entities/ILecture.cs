@@ -15,6 +15,6 @@ namespace Phoenix.DataHandle.Main.Entities
         string Info { get; set; }
 
         IEnumerable<IAttendance> Attendances { get; }
-        IEnumerable<IHomework> Homeworks { get; }
+        IEnumerable<IExercise> Exercises { get; }
     }
 }

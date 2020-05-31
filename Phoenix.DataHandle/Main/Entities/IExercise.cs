@@ -9,7 +9,7 @@ namespace Phoenix.DataHandle.Main.Entities
         short Page { get; set; }
         string Name { get; set; }
 
-        IEnumerable<IHomework> Homeworks { get; }
+        ILecture Lecture { get; }
         IEnumerable<IStudentExercise> StudentExercises { get; }
     }
 }
