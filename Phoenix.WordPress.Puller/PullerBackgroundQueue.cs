@@ -1,4 +1,4 @@
-﻿using Talagozis.AspNetCore;
+﻿using Talagozis.Logging;
 
 namespace Phoenix.WordPress.Puller
 {

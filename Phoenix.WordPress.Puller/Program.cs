@@ -9,9 +9,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Phoenix.DataHandle.Main.Models;
-using Talagozis.AspNetCore.Services.Logger;
-using Talagozis.AspNetCore.Services.Logger.ColoredConsole;
-using Talagozis.AspNetCore.Services.Logger.File;
+using Talagozis.Logging;
+using Talagozis.Logging.ColoredConsole;
+using Talagozis.Logging.File;
 
 namespace Phoenix.WordPress.Puller
 {
