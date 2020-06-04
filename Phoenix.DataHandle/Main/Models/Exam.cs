@@ -7,12 +7,13 @@ namespace Phoenix.DataHandle.Main.Models
     {
         public Exam()
         {
-            this.Material = new HashSet<Material>();
-            this.StudentExam = new HashSet<StudentExam>();
+            Material = new HashSet<Material>();
+            StudentExam = new HashSet<StudentExam>();
         }
 
         public int Id { get; set; }
         public int LectureId { get; set; }
+        public string Name { get; set; }
         public string Comments { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

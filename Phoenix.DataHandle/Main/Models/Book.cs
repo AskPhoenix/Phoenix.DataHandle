@@ -7,9 +7,9 @@ namespace Phoenix.DataHandle.Main.Models
     {
         public Book()
         {
-            this.CourseBook = new HashSet<CourseBook>();
-            this.Exercise = new HashSet<Exercise>();
-            this.Material = new HashSet<Material>();
+            CourseBook = new HashSet<CourseBook>();
+            Exercise = new HashSet<Exercise>();
+            Material = new HashSet<Material>();
         }
 
         public int Id { get; set; }

@@ -224,6 +224,10 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
 
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
 
                 entity.HasOne(d => d.Lecture)
@@ -238,6 +242,10 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
 
                 entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Page)
                     .IsRequired()
                     .HasMaxLength(256);
 
@@ -447,7 +455,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasConstraintName("FK_User_AspNetUsers");
             });
 
-            this.OnModelCreatingPartial(modelBuilder);
+            OnModelCreatingPartial(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

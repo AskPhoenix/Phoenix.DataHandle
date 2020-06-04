@@ -7,11 +7,11 @@ namespace Phoenix.DataHandle.Main.Models
     {
         public Course()
         {
-            this.CourseBook = new HashSet<CourseBook>();
-            this.Lecture = new HashSet<Lecture>();
-            this.Schedule = new HashSet<Schedule>();
-            this.StudentCourse = new HashSet<StudentCourse>();
-            this.TeacherCourse = new HashSet<TeacherCourse>();
+            CourseBook = new HashSet<CourseBook>();
+            Lecture = new HashSet<Lecture>();
+            Schedule = new HashSet<Schedule>();
+            StudentCourse = new HashSet<StudentCourse>();
+            TeacherCourse = new HashSet<TeacherCourse>();
         }
 
         public int Id { get; set; }

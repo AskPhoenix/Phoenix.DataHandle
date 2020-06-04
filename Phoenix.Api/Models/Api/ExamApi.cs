@@ -9,6 +9,7 @@ namespace Phoenix.Api.Models.Api
     public class ExamApi : IExam, IModelApi
     {
         public int id { get; set; }
+        public string Name { get; set; }
         public string Comments { get; set; }
 
         public LectureApi Lecture { get; set; }
