@@ -50,13 +50,22 @@ namespace Phoenix.Api.Controllers
                     Group = lecture.Course.Group,
                     Info = lecture.Course.Info
                 },
-                Classroom = new ClassroomApi
-                {
-                    id = lecture.Classroom.Id,
-                    Name = lecture.Classroom.Name,
-                    Info = lecture.Classroom.Info
-                },
-
+                Classroom = lecture.Classroom != null
+                    ? new ClassroomApi
+                    {
+                        id = lecture.Classroom.Id,
+                        Name = lecture.Classroom.Name,
+                        Info = lecture.Classroom.Info
+                    }
+                    : null,
+                Exam = lecture.Exam != null
+                    ? new ExamApi
+                    {
+                        id = lecture.Exam.Id,
+                        Name = lecture.Exam.Name,
+                        Comments = lecture.Exam.Comments,
+                    }
+                    : null,
             }).ToListAsync();
         }
 
@@ -82,12 +91,22 @@ namespace Phoenix.Api.Controllers
                     Group = lecture.Course.Group,
                     Info = lecture.Course.Info
                 },
-                Classroom = new ClassroomApi
-                {
-                    id = lecture.Classroom.Id,
-                    Name = lecture.Classroom.Name,
-                    Info = lecture.Classroom.Info
-                },
+                Classroom = lecture.Classroom != null
+                    ? new ClassroomApi
+                    {
+                        id = lecture.Classroom.Id,
+                        Name = lecture.Classroom.Name,
+                        Info = lecture.Classroom.Info
+                    }
+                    : null,
+                Exam = lecture.Exam != null
+                    ? new ExamApi
+                    {
+                        id = lecture.Exam.Id,
+                        Name = lecture.Exam.Name,
+                        Comments = lecture.Exam.Comments,
+                    }
+                    : null,
                 Exercises = lecture.Exercise.Select(a => new ExerciseApi
                 {
                     id = a.Id,
@@ -99,7 +118,7 @@ namespace Phoenix.Api.Controllers
         [HttpGet("{id}/Exercise")]
         public async Task<IEnumerable<ExerciseApi>> GetExercises(int id)
         {
-            this._logger.LogInformation($"Api -> Course -> Get{id} -> Exercise");
+            this._logger.LogInformation($"Api -> Lecture -> Get -> {id} -> Exercises");
 
             IQueryable<Exercise> exercises = this._exerciseRepository.find().Where(a => a.LectureId == id);
 
@@ -123,21 +142,35 @@ namespace Phoenix.Api.Controllers
         [HttpGet("{id}/Exam")]
         public async Task<IEnumerable<ExamApi>> GetExam(int id)
         {
-            this._logger.LogInformation($"Api -> Course -> Get{id} -> Exam");
+            this._logger.LogInformation($"Api -> Lecture -> Get -> {id} -> Exams");
 
             IQueryable<Exam> exams = this._examRepository.find().Where(a => a.LectureId == id);
 
             return await exams.Select(exam => new ExamApi
             {
                 id = exam.Id,
+                Name = exam.Name,
+                Comments = exam.Comments,
                 Lecture = new LectureApi
                 {
                     id = exam.Lecture.Id
                 },
-                Comments = exam.Comments
+                Materials = exam.Material.Select(material => new MaterialApi
+                {
+                    id = material.Id,
+                    Chapter = material.Chapter,
+                    Section = material.Section,
+                    Comments = material.Comments,
+                    Book = material.Book != null
+                        ? new BookApi
+                        {
+                            id = material.Book.Id,
+                            Name = material.Book.Name,
+                        }
+                        : null
+                }).ToList()
             }).ToListAsync();
         }
-
 
 
     }
