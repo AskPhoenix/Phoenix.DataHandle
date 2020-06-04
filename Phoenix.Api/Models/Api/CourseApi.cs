@@ -14,9 +14,11 @@ namespace Phoenix.Api.Models.Api
         public string Level { get; set; }
         public string Group { get; set; }
         public string Info { get; set; }
+
+        public ICollection<LectureApi> Lectures { get; set; }
+        IEnumerable<ILecture> ICourse.Lectures => this.Lectures;
+        
         public IEnumerable<ICourseBook> CourseBooks { get; }
-        public IEnumerable<IExam> Exams { get; }
-        public IEnumerable<ILecture> Lectures { get; }
         public IEnumerable<IStudentCourse> StudentCourses { get; }
         public IEnumerable<ITeacherCourse> TeacherCourses { get; }
     }

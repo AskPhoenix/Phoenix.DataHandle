@@ -21,11 +21,11 @@ namespace Phoenix.Api.Models.Api
         public ClassroomApi Classroom { get; set; }
         IClassroom ILecture.Classroom => this.Classroom;
 
+        public ExamApi Exam { get; set; }
+        IExam ILecture.Exam => this.Exam;
+
         public ICollection<ExerciseApi> Exercises { get; set; }
         IEnumerable<IExercise> ILecture.Exercises => this.Exercises;
-
-        //public ICollection<ClassroomApi> Exercises { get; set; }
-        //IEnumerable<IExercise> ILecture.Exercises => this.Exercises;
 
         public IEnumerable<IAttendance> Attendances { get; }
     }

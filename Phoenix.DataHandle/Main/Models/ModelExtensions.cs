@@ -88,6 +88,7 @@ namespace Phoenix.DataHandle.Main.Models
     {
         ICourse ILecture.Course => this.Course;
         IClassroom ILecture.Classroom => this.Classroom;
+        IExam ILecture.Exam => this.Exam;
 
         IEnumerable<IAttendance> ILecture.Attendances => this.Attendance;
         IEnumerable<IExercise> ILecture.Exercises => this.Exercise;

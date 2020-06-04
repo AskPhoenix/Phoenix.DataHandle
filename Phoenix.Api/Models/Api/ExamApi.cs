@@ -10,10 +10,13 @@ namespace Phoenix.Api.Models.Api
     {
         public int id { get; set; }
         public string Comments { get; set; }
-        public IEnumerable<IMaterial> Materials { get; }
-        public IEnumerable<IStudentExam> StudentExams { get; }
 
         public LectureApi Lecture { get; set; }
         ILecture IExam.Lecture => this.Lecture;
+
+        public ICollection<MaterialApi> Materials { get; set; }
+        IEnumerable<IMaterial> IExam.Materials => this.Materials;
+
+        public IEnumerable<IStudentExam> StudentExams { get; }
     }
 }
