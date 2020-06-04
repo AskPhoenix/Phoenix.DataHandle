@@ -301,7 +301,6 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Exam)
                     .WithMany(p => p.Material)
                     .HasForeignKey(d => d.ExamId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Material_Exam");
             });
 
