@@ -17,34 +17,34 @@ namespace Phoenix.DataHandle.Main
 
         public virtual IQueryable<TModel> find()
         {
-            return dbContext.Set<TModel>();
+            return this.dbContext.Set<TModel>();
         }
 
         public virtual Task<TModel> find(int id)
         {
-            return dbContext.Set<TModel>().SingleAsync(a => a.Id == id);
+            return this.dbContext.Set<TModel>().SingleAsync(a => a.Id == id);
         }
 
         public virtual TModel create(TModel tModel)
         {
-            dbContext.Set<TModel>().Add(tModel);
-            dbContext.SaveChanges();
+            this.dbContext.Set<TModel>().Add(tModel);
+            this.dbContext.SaveChanges();
 
             return tModel;
         }
 
         public virtual TModel update(TModel tModel)
         {
-            dbContext.Entry(tModel).State = EntityState.Modified;
-            dbContext.SaveChanges();
+            this.dbContext.Entry(tModel).State = EntityState.Modified;
+            this.dbContext.SaveChanges();
 
             return tModel;
         }
 
         public virtual bool delete(int id)
         {
-            dbContext.Set<TModel>().Remove(dbContext.Set<TModel>().Single(a => a.Id == id));
-            dbContext.SaveChanges();
+            this.dbContext.Set<TModel>().Remove(this.dbContext.Set<TModel>().Single(a => a.Id == id));
+            this.dbContext.SaveChanges();
 
             return true;
         }

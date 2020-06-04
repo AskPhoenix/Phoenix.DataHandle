@@ -53,13 +53,14 @@ namespace Phoenix.DataHandle.Bot.Storage
             {
                 throw new ArgumentNullException(nameof(options.ConnectionString) + " cannot be empty.");
             }
-            _options = options;
+
+            this._options = options;
         }
 
         /// <summary>
         /// Get a TranscriptContext will by default use the connection string provided during EntityFrameworkTranscriptStore construction.
         /// </summary>
-        public virtual BotStateContext GetTranscriptContext => new BotStateContext(_options.ConnectionString);
+        public virtual BotStateContext GetTranscriptContext => new BotStateContext(this._options.ConnectionString);
 
         /// <summary>
         /// Log an activity to the transcript.
@@ -70,7 +71,7 @@ namespace Phoenix.DataHandle.Bot.Storage
         {
             BotAssert.ActivityNotNull(activity);
 
-            using (var context = GetTranscriptContext)
+            using (var context = this.GetTranscriptContext)
             {
                 var transcript = new BotTranscript()
                 {
@@ -114,7 +115,7 @@ namespace Phoenix.DataHandle.Bot.Storage
 
             var pagedResult = new PagedResult<IActivity>();
 
-            using (var context = GetTranscriptContext)
+            using (var context = this.GetTranscriptContext)
             {
                 var query = context.Transcript.Where(t => t.Channel == channelId && t.Conversation == conversationId);
                 // Filter on startDate, if present
@@ -129,11 +130,11 @@ namespace Phoenix.DataHandle.Bot.Storage
                     query = query.Where(t => t.Id > continuationId);
                 }
 
-                var finalItems = query.OrderBy(i => i.Id).Take(_options.PageSize).Select(i => new { i.Id, i.Activity }).ToArray();
+                var finalItems = query.OrderBy(i => i.Id).Take(this._options.PageSize).Select(i => new { i.Id, i.Activity }).ToArray();
                 // Take only PageSize, and convert to Activities
                 pagedResult.Items = finalItems.Select(i => JsonConvert.DeserializeObject<Activity>(i.Activity)).ToArray();
 
-                if (pagedResult.Items.Length == _options.PageSize)
+                if (pagedResult.Items.Length == this._options.PageSize)
                 {
                     pagedResult.ContinuationToken = finalItems.Last().Id.ToString();
                 }
@@ -166,7 +167,7 @@ namespace Phoenix.DataHandle.Bot.Storage
             
             var pagedResult = new PagedResult<TranscriptInfo>();
 
-            using (var context = GetTranscriptContext)
+            using (var context = this.GetTranscriptContext)
             {
                 var query = context.Transcript.Where(t => t.Channel == channelId);
 
@@ -189,11 +190,11 @@ namespace Phoenix.DataHandle.Bot.Storage
                 }
 
                 // Take only PageSize, and convert to Transcript Info
-                var finalItems = items.OrderBy(i => i.Timestamp).Take(_options.PageSize);
+                var finalItems = items.OrderBy(i => i.Timestamp).Take(this._options.PageSize);
                 pagedResult.Items = finalItems.Select(i => new TranscriptInfo() { ChannelId = channelId, Id = i.Conversation, Created = i.Timestamp }).ToArray();
 
                 // Set ContinuationToken to last date 
-                if (pagedResult.Items.Length == _options.PageSize)
+                if (pagedResult.Items.Length == this._options.PageSize)
                 {
                     pagedResult.ContinuationToken = finalItems.OrderByDescending(i => i.Timestamp).First().Timestamp.ToString();
                 }
@@ -220,7 +221,7 @@ namespace Phoenix.DataHandle.Bot.Storage
                 throw new ArgumentNullException($"{nameof(conversationId)} should not be null");
             }
 
-            using (var context = GetTranscriptContext)
+            using (var context = this.GetTranscriptContext)
             {
                 context.RemoveRange(context.Transcript.Where(item => item.Conversation == conversationId && item.Channel == channelId));
                 await context.SaveChangesAsync();

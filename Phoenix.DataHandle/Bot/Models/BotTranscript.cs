@@ -18,7 +18,7 @@ namespace Phoenix.DataHandle.Bot.Models
         /// </remarks>
         public BotTranscript()
         {
-            Timestamp = DateTimeOffset.UtcNow;
+            this.Timestamp = DateTimeOffset.UtcNow;
         }
 
         /// <summary>

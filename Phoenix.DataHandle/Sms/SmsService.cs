@@ -12,9 +12,9 @@ namespace Phoenix.DataHandle.Sms
         private string apiSecret;
         private string from = "Phoenix";
 
-        public string ApiKey { set => apiKey = value; }
-        public string ApiSecret { set => apiSecret = value; }
-        public string From { set => from = value; }
+        public string ApiKey { set => this.apiKey = value; }
+        public string ApiSecret { set => this.apiSecret = value; }
+        public string From { set => this.from = value; }
 
         public SmsService(string apiKey, string apiSecret, string from = "Phoenix")
         {
@@ -25,7 +25,7 @@ namespace Phoenix.DataHandle.Sms
 
         public Task SendAsync(IdentityMessage message)
         {
-            if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(apiSecret))
+            if (string.IsNullOrEmpty(this.apiKey) || string.IsNullOrEmpty(this.apiSecret))
                 throw new Exception("SMS API credentials not defined.");
 
             string phone;

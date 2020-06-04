@@ -133,7 +133,7 @@ namespace Phoenix.DataHandle.Main.Models
     {
         public string FullName => (this.LastName + " " + this.FirstName).Trim();
 
-        int IModelEntity.Id => AspNetUserId;
+        int IModelEntity.Id => this.AspNetUserId;
         IAspNetUsers IUser.AspNetUser => this.AspNetUser;
 
         IEnumerable<IAttendance> IUser.Attendances => this.Attendance;

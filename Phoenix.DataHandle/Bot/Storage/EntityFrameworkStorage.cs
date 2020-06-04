@@ -50,13 +50,13 @@ namespace Phoenix.DataHandle.Bot.Storage
                 throw new ArgumentNullException(nameof(options.ConnectionString));
             }
 
-            _storageOptions = options;
+            this._storageOptions = options;
         }
 
         /// <summary>
         /// Get a BotDataContext will by default use the connection string provided during EntityFrameworkStorage construction.
         /// </summary>
-        public virtual BotStateContext GetBotDataContext => new BotStateContext(_storageOptions.ConnectionString);
+        public virtual BotStateContext GetBotDataContext => new BotStateContext(this._storageOptions.ConnectionString);
 
         /// <summary>
         /// Deletes storage items from storage.
@@ -80,9 +80,9 @@ namespace Phoenix.DataHandle.Bot.Storage
             }
 
             // Ensure Initialization has been run
-            await EnsureConnection().ConfigureAwait(false);
+            await this.EnsureConnection().ConfigureAwait(false);
 
-            using (var context = GetBotDataContext)
+            using (var context = this.GetBotDataContext)
             {
                 context.RemoveRange(context.BotData.Where(item => keys.Contains(item.RealId)));
                 await context.SaveChangesAsync();
@@ -114,11 +114,11 @@ namespace Phoenix.DataHandle.Bot.Storage
             }
 
             // Ensure we have checked for possible connection issues
-            await EnsureConnection().ConfigureAwait(false);
+            await this.EnsureConnection().ConfigureAwait(false);
 
             var storeItems = new Dictionary<string, object>(keys.Length);
 
-            using (var database = GetBotDataContext)
+            using (var database = this.GetBotDataContext)
             {
                 var query = (from item in database.BotData
                              where keys.Any(k => k == item.RealId)
@@ -156,12 +156,12 @@ namespace Phoenix.DataHandle.Bot.Storage
             }
 
             // Ensure Initialization has been run
-            await EnsureConnection().ConfigureAwait(false);
+            await this.EnsureConnection().ConfigureAwait(false);
             
-            using (var context = GetBotDataContext)
+            using (var context = this.GetBotDataContext)
             {
                 // Begin a transaction using the isolation level provided in Storage Options
-                var transaction = context.Database.BeginTransaction(_storageOptions.TransactionIsolationLevel);
+                var transaction = context.Database.BeginTransaction(this._storageOptions.TransactionIsolationLevel);
                 
                 var existingItems = context.BotData.Where(item => changes.Keys.Contains(item.RealId)).ToDictionary(d => (d as BotData).RealId);
 
@@ -201,14 +201,15 @@ namespace Phoenix.DataHandle.Bot.Storage
         private async Task EnsureConnection()
         {
             // In the steady-state case, we'll already have verified the database is setup.
-            if (!_checkedConnection)
+            if (!this._checkedConnection)
             {
-                using (var context = GetBotDataContext)
+                using (var context = this.GetBotDataContext)
                 {
                     if (!await context.Database.CanConnectAsync())
                         throw new ArgumentException("The sql database defined in the connection has not been created. See https://github.com/BotBuilderCommunity/botbuilder-community-dotnet/tree/master/libraries/Bot.Builder.Community.Storage.EntityFramework");
                 }
-                _checkedConnection = true;
+
+                this._checkedConnection = true;
             }
         }
     }

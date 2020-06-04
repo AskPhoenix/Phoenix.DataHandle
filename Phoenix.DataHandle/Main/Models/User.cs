@@ -7,12 +7,12 @@ namespace Phoenix.DataHandle.Main.Models
     {
         public User()
         {
-            Attendance = new HashSet<Attendance>();
-            BotFeedback = new HashSet<BotFeedback>();
-            StudentCourse = new HashSet<StudentCourse>();
-            StudentExam = new HashSet<StudentExam>();
-            StudentExercise = new HashSet<StudentExercise>();
-            TeacherCourse = new HashSet<TeacherCourse>();
+            this.Attendance = new HashSet<Attendance>();
+            this.BotFeedback = new HashSet<BotFeedback>();
+            this.StudentCourse = new HashSet<StudentCourse>();
+            this.StudentExam = new HashSet<StudentExam>();
+            this.StudentExercise = new HashSet<StudentExercise>();
+            this.TeacherCourse = new HashSet<TeacherCourse>();
         }
 
         public int AspNetUserId { get; set; }

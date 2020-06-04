@@ -6,8 +6,9 @@ namespace Phoenix.DataHandle.Main.Entities
     public interface IExercise
     {
         IBook Book { get; }
-        short Page { get; set; }
+        string Page { get; set; }
         string Name { get; set; }
+        string Info { get; set; }
 
         ILecture Lecture { get; }
         IEnumerable<IStudentExercise> StudentExercises { get; }

@@ -17,11 +17,15 @@ namespace Phoenix.Api.Controllers
     {
         private readonly ILogger<LectureController> _logger;
         private readonly Repository<Lecture> _lectureRepository;
+        private readonly Repository<Exercise> _exerciseRepository;
+        private readonly Repository<Exam> _examRepository;
 
         public LectureController(PhoenixContext phoenixContext, ILogger<LectureController> logger)
         {
             this._logger = logger;
             this._lectureRepository = new Repository<Lecture>(phoenixContext);
+            this._exerciseRepository = new Repository<Exercise>(phoenixContext);
+            this._examRepository = new Repository<Exam>(phoenixContext);
         }
 
         [HttpGet]
@@ -49,9 +53,10 @@ namespace Phoenix.Api.Controllers
                 Classroom = new ClassroomApi
                 {
                     id = lecture.Classroom.Id,
-                    Name = lecture.Course.Name,
+                    Name = lecture.Classroom.Name,
                     Info = lecture.Classroom.Info
                 },
+
             }).ToListAsync();
         }
 
@@ -80,10 +85,57 @@ namespace Phoenix.Api.Controllers
                 Classroom = new ClassroomApi
                 {
                     id = lecture.Classroom.Id,
-                    Name = lecture.Course.Name,
+                    Name = lecture.Classroom.Name,
                     Info = lecture.Classroom.Info
                 },
+                Exercises = lecture.Exercise.Select(a => new ExerciseApi
+                {
+                    id = a.Id,
+                    Name = a.Name,
+                }).ToList(),
             };
+        }
+
+        [HttpGet("{id}/Exercise")]
+        public async Task<IEnumerable<ExerciseApi>> GetExercises(int id)
+        {
+            this._logger.LogInformation($"Api -> Course -> Get{id} -> Exercise");
+
+            IQueryable<Exercise> exercises = this._exerciseRepository.find().Where(a => a.LectureId == id);
+
+            return await exercises.Select(exercise => new ExerciseApi
+            {
+                id = exercise.Id,
+                Lecture = new LectureApi
+                {
+                    id = exercise.Lecture.Id
+                },
+                Name = exercise.Name,
+                Page = exercise.Page,
+                Book = new BookApi
+                {
+                    id = exercise.Book.Id,
+                    Name = exercise.Book.Name,
+                },
+            }).ToListAsync();
+        }
+
+        [HttpGet("{id}/Exam")]
+        public async Task<IEnumerable<ExamApi>> GetExam(int id)
+        {
+            this._logger.LogInformation($"Api -> Course -> Get{id} -> Exam");
+
+            IQueryable<Exam> exams = this._examRepository.find().Where(a => a.LectureId == id);
+
+            return await exams.Select(exam => new ExamApi
+            {
+                id = exam.Id,
+                Lecture = new LectureApi
+                {
+                    id = exam.Lecture.Id
+                },
+                Comments = exam.Comments
+            }).ToListAsync();
         }
 
 

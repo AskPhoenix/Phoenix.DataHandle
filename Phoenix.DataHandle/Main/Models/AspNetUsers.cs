@@ -7,7 +7,7 @@ namespace Phoenix.DataHandle.Main.Models
     {
         public AspNetUsers()
         {
-            AspNetUserRoles = new HashSet<AspNetUserRoles>();
+            this.AspNetUserRoles = new HashSet<AspNetUserRoles>();
         }
 
         public int Id { get; set; }

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using Phoenix.Api.App_Plugins;
 using Phoenix.DataHandle.Main.Models;
 using Talagozis.AspNetCore.Services.TokenAuthentication;
@@ -30,13 +31,24 @@ namespace Phoenix.Api
             
             services.AddTokenAuthentication<UserManagementService>(this._configuration);
 
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("MyPolicy", builder =>
+                {
+                    builder.AllowAnyHeader();
+                    builder.AllowAnyMethod();
+                    builder.AllowAnyOrigin();
+                });
+            });
 
             services.AddHttpsRedirection(options => options.HttpsPort = 443);
             
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {
+                    options.SerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    
                     //options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver
                     //{
                     //    NamingStrategy = new Newtonsoft.Json.Serialization.DefaultNamingStrategy()
@@ -53,6 +65,8 @@ namespace Phoenix.Api
             }
             else
             {
+                app.UseDeveloperExceptionPage();
+
                 app.UseHsts();
             }
 

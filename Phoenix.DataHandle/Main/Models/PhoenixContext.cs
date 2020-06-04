@@ -447,7 +447,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasConstraintName("FK_User_AspNetUsers");
             });
 
-            OnModelCreatingPartial(modelBuilder);
+            this.OnModelCreatingPartial(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

@@ -7,8 +7,8 @@ namespace Phoenix.DataHandle.Main.Models
     {
         public School()
         {
-            Classroom = new HashSet<Classroom>();
-            Course = new HashSet<Course>();
+            this.Classroom = new HashSet<Classroom>();
+            this.Course = new HashSet<Course>();
         }
 
         public int Id { get; set; }
