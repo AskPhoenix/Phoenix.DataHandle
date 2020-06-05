@@ -22,6 +22,7 @@ namespace Phoenix.Api.Controllers
         {
             this._logger = logger;
             this._exerciseRepository = new Repository<Exercise>(phoenixContext);
+            this._exerciseRepository.include(a => a.Lecture);
         }
 
         [HttpGet("{id}")]

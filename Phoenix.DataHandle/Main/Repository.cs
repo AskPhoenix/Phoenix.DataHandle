@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Phoenix.DataHandle.Main.Models.Extensions;
 
@@ -9,6 +12,7 @@ namespace Phoenix.DataHandle.Main
     public class Repository<TModel> where TModel : class, IModelEntity
     {
         protected readonly DbContext dbContext;
+        protected readonly ICollection<Func<IQueryable<TModel>, IQueryable<TModel>>> includes = new List<Func<IQueryable<TModel>, IQueryable<TModel>>>();
 
         public Repository(DbContext dbContext)
         {
@@ -17,12 +21,24 @@ namespace Phoenix.DataHandle.Main
 
         public virtual IQueryable<TModel> find()
         {
-            return this.dbContext.Set<TModel>();
+            IQueryable<TModel> x = dbContext.Set<TModel>();
+
+            if (this.includes != null)
+                foreach (var include in this.includes)
+                    x = include(x);
+
+            return x;
         }
 
         public virtual Task<TModel> find(int id)
         {
-            return this.dbContext.Set<TModel>().SingleAsync(a => a.Id == id);
+            IQueryable<TModel> x = dbContext.Set<TModel>();
+
+            if (this.includes != null)
+                foreach (var include in this.includes)
+                    x = include(x);
+
+            return x.SingleAsync(a => a.Id == id);
         }
 
         public virtual TModel create(TModel tModel)
@@ -47,6 +63,27 @@ namespace Phoenix.DataHandle.Main
             this.dbContext.SaveChanges();
 
             return true;
+        }
+
+        public virtual void include(params Expression<Func<TModel, object>>[] paths)
+        {
+            foreach (var path in paths)
+            {
+                this.includes.Add(models => models.Include(path));
+            }
+        }
+
+        public virtual void include(params Func<IQueryable<TModel>, IQueryable<TModel>>[] includes)
+        {
+            foreach (var include in includes)
+            {
+                this.includes.Add(include);
+            }
+        }
+
+        public virtual void includeClear()
+        {
+            this.includes.Clear();
         }
 
     }

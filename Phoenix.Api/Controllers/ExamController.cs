@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Phoenix.Api.Models.Api;
 using Phoenix.DataHandle.Main;
@@ -22,6 +21,7 @@ namespace Phoenix.Api.Controllers
         {
             this._logger = logger;
             this._examRepository = new Repository<Exam>(phoenixContext);
+            this._examRepository.include(a => a.Lecture);
         }
 
         [HttpGet("{id}")]
@@ -34,35 +34,46 @@ namespace Phoenix.Api.Controllers
             return new ExamApi
             {
                 id = exam.Id,
+                Name = exam.Name,
                 Comments = exam.Comments,
-                Materials = exam.Material.Select(material => new MaterialApi
-                {
-                    id = material.Id,
-                    Chapter = material.Chapter,
-                    Section = material.Section,
-                    Comments = material.Comments,
-                    Book = material.Book != null ? new BookApi
+                Materials = exam.Material != null
+                    ? exam.Material.Select(material => new MaterialApi
                     {
-                        id = material.Book.Id,
-                        Name = material.Book.Name,
-                    } :  null
-                }).ToList(),
-                Lecture = new LectureApi
-                {
-                    id = exam.Lecture.Id,
-                    StartDateTime = exam.Lecture.StartDateTime,
-                    EndDateTime = exam.Lecture.EndDateTime,
-                    Status = exam.Lecture.Status,
-                    Info = exam.Lecture.Info,
-                    Course = new CourseApi
+                        id = material.Id,
+                        Chapter = material.Chapter,
+                        Section = material.Section,
+                        Comments = material.Comments,
+                        Book = material.Book != null
+                            ? new BookApi
+                            {
+                                id = material.Book.Id,
+                                Name = material.Book.Name,
+                            }
+                            : null
+                    }).ToList()
+                    : new List<MaterialApi>(),
+                Lecture = exam.Lecture != null
+                    ? new LectureApi
                     {
-                        id = exam.Lecture.Course.Id
-                    },
-                    Classroom = new ClassroomApi
-                    {
-                        id = exam.Lecture.Classroom.Id
+                        id = exam.Lecture.Id,
+                        StartDateTime = exam.Lecture.StartDateTime,
+                        EndDateTime = exam.Lecture.EndDateTime,
+                        Status = exam.Lecture.Status,
+                        Info = exam.Lecture.Info,
+                        Course = exam.Lecture.Course != null
+                            ? new CourseApi
+                            {
+                                id = exam.Lecture.Course.Id
+                            }
+                            : null,
+                        Classroom = exam.Lecture.Classroom != null
+                            ? new ClassroomApi
+                            {
+                                id = exam.Lecture.Classroom.Id
+                            }
+                            : null
                     }
-                }
+                    : null,
             };
         }
 
@@ -73,6 +84,7 @@ namespace Phoenix.Api.Controllers
 
             Exam exam = new Exam
             {
+                Name = examApi.Name,
                 Comments = examApi.Comments,
                 LectureId = examApi.Lecture.id
             };
@@ -84,37 +96,46 @@ namespace Phoenix.Api.Controllers
             return new ExamApi
             {
                 id = exam.Id,
+                Name = exam.Name,
                 Comments = exam.Comments,
-                Materials = exam.Material.Select(material => new MaterialApi
-                {
-                    id = material.Id,
-                    Chapter = material.Chapter,
-                    Section = material.Section,
-                    Comments = material.Comments,
-                    Book = material.Book != null
-                        ? new BookApi
-                        {
-                            id = material.Book.Id,
-                            Name = material.Book.Name,
-                        }
-                        : null
-                }).ToList(),
-                Lecture = new LectureApi
-                {
-                    id = exam.Lecture.Id,
-                    StartDateTime = exam.Lecture.StartDateTime,
-                    EndDateTime = exam.Lecture.EndDateTime,
-                    Status = exam.Lecture.Status,
-                    Info = exam.Lecture.Info,
-                    Course = new CourseApi
+                Materials = exam.Material != null
+                    ? exam.Material.Select(material => new MaterialApi
                     {
-                        id = exam.Lecture.Course.Id
-                    },
-                    Classroom = new ClassroomApi
+                        id = material.Id,
+                        Chapter = material.Chapter,
+                        Section = material.Section,
+                        Comments = material.Comments,
+                        Book = material.Book != null
+                            ? new BookApi
+                            {
+                                id = material.Book.Id,
+                                Name = material.Book.Name,
+                            }
+                            : null
+                    }).ToList()
+                    : new List<MaterialApi>(),
+                Lecture = exam.Lecture != null
+                    ? new LectureApi
                     {
-                        id = exam.Lecture.Classroom.Id
+                        id = exam.Lecture.Id,
+                        StartDateTime = exam.Lecture.StartDateTime,
+                        EndDateTime = exam.Lecture.EndDateTime,
+                        Status = exam.Lecture.Status,
+                        Info = exam.Lecture.Info,
+                        Course = exam.Lecture.Course != null
+                            ? new CourseApi
+                            {
+                                id = exam.Lecture.Course.Id
+                            }
+                            : null,
+                        Classroom = exam.Lecture.Classroom != null
+                            ? new ClassroomApi
+                            {
+                                id = exam.Lecture.Classroom.Id
+                            }
+                            : null
                     }
-                }
+                    : null,
             };
         }
 
@@ -126,6 +147,7 @@ namespace Phoenix.Api.Controllers
             Exam exam = new Exam
             {
                 Id = examApi.id,
+                Name = examApi.Name,
                 Comments = examApi.Comments,
                 LectureId = examApi.Lecture.id
             };
@@ -137,37 +159,46 @@ namespace Phoenix.Api.Controllers
             return new ExamApi
             {
                 id = exam.Id,
+                Name = exam.Name,
                 Comments = exam.Comments,
-                Materials = exam.Material.Select(material => new MaterialApi
-                {
-                    id = material.Id,
-                    Chapter = material.Chapter,
-                    Section = material.Section,
-                    Comments = material.Comments,
-                    Book = material.Book != null
-                        ? new BookApi
-                        {
-                            id = material.Book.Id,
-                            Name = material.Book.Name,
-                        }
-                        : null
-                }).ToList(),
-                Lecture = new LectureApi
-                {
-                    id = exam.Lecture.Id,
-                    StartDateTime = exam.Lecture.StartDateTime,
-                    EndDateTime = exam.Lecture.EndDateTime,
-                    Status = exam.Lecture.Status,
-                    Info = exam.Lecture.Info,
-                    Course = new CourseApi
+                Materials = exam.Material != null
+                    ? exam.Material.Select(material => new MaterialApi
                     {
-                        id = exam.Lecture.Course.Id
-                    },
-                    Classroom = new ClassroomApi
+                        id = material.Id,
+                        Chapter = material.Chapter,
+                        Section = material.Section,
+                        Comments = material.Comments,
+                        Book = material.Book != null
+                            ? new BookApi
+                            {
+                                id = material.Book.Id,
+                                Name = material.Book.Name,
+                            }
+                            : null
+                    }).ToList()
+                    : new List<MaterialApi>(),
+                Lecture = exam.Lecture != null
+                    ? new LectureApi
                     {
-                        id = exam.Lecture.Classroom.Id
+                        id = exam.Lecture.Id,
+                        StartDateTime = exam.Lecture.StartDateTime,
+                        EndDateTime = exam.Lecture.EndDateTime,
+                        Status = exam.Lecture.Status,
+                        Info = exam.Lecture.Info,
+                        Course = exam.Lecture.Course != null
+                            ? new CourseApi
+                            {
+                                id = exam.Lecture.Course.Id
+                            }
+                            : null,
+                        Classroom = exam.Lecture.Classroom != null
+                            ? new ClassroomApi
+                            {
+                                id = exam.Lecture.Classroom.Id
+                            }
+                            : null
                     }
-                }
+                    : null,
             };
         }
 
