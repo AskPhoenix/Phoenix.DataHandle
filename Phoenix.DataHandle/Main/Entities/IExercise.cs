@@ -8,6 +8,7 @@ namespace Phoenix.DataHandle.Main.Entities
         IBook Book { get; }
         string Name { get; set; }
         string Page { get; set; }
+        string Comments { get; set; }
         string Info { get; set; }
 
         ILecture Lecture { get; }
