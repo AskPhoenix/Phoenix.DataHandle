@@ -7,14 +7,16 @@ namespace Phoenix.DataHandle.Main.Entities
 {
     public interface ILecture
     {
-        ICourse Course { get; }
-        IClassroom Classroom { get; }
         DateTime StartDateTime { get; set; }
         DateTime EndDateTime { get; set; }
         LectureStatus Status { get; set; }
         string Info { get; set; }
 
+        ICourse Course { get; }
+        IClassroom Classroom { get; }
+        IExam Exam { get; }
+
         IEnumerable<IAttendance> Attendances { get; }
-        IEnumerable<IHomework> Homeworks { get; }
+        IEnumerable<IExercise> Exercises { get; }
     }
 }

@@ -26,7 +26,6 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<CourseBook> CourseBook { get; set; }
         public virtual DbSet<Exam> Exam { get; set; }
         public virtual DbSet<Exercise> Exercise { get; set; }
-        public virtual DbSet<Homework> Homework { get; set; }
         public virtual DbSet<Lecture> Lecture { get; set; }
         public virtual DbSet<Material> Material { get; set; }
         public virtual DbSet<Schedule> Schedule { get; set; }
@@ -41,7 +40,8 @@ namespace Phoenix.DataHandle.Main.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                throw new Exception("Connection string not specified for PhoenixContext.");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=tcp:askphoenix.database.windows.net,1433;Initial Catalog=PhoenixDB;Persist Security Info=False;User ID=phoenix;Password=20Ph0eniX20!");
             }
         }
 
@@ -218,48 +218,50 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Exam>(entity =>
             {
-                entity.Property(e => e.StartsAt).HasColumnType("datetime2(0)");
+                entity.HasIndex(e => e.LectureId)
+                    .HasName("ExamLectureIdIndex")
+                    .IsUnique();
 
-                entity.HasOne(d => d.Classroom)
-                    .WithMany(p => p.Exam)
-                    .HasForeignKey(d => d.ClassroomId)
-                    .HasConstraintName("FK_Exam_Classroom");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
 
-                entity.HasOne(d => d.Course)
-                    .WithMany(p => p.Exam)
-                    .HasForeignKey(d => d.CourseId)
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
+
+                entity.HasOne(d => d.Lecture)
+                    .WithOne(p => p.Exam)
+                    .HasForeignKey<Exam>(d => d.LectureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Exam_Course");
+                    .HasConstraintName("FK_Exam_Lecture");
             });
 
             modelBuilder.Entity<Exercise>(entity =>
             {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(256);
+
+                entity.Property(e => e.Page)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
 
                 entity.HasOne(d => d.Book)
                     .WithMany(p => p.Exercise)
                     .HasForeignKey(d => d.BookId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Exercise_Book");
-            });
 
-            modelBuilder.Entity<Homework>(entity =>
-            {
-                entity.HasKey(e => new { e.ForLectureId, e.ExerciseId });
-
-                entity.HasOne(d => d.Exercise)
-                    .WithMany(p => p.Homework)
-                    .HasForeignKey(d => d.ExerciseId)
+                entity.HasOne(d => d.Lecture)
+                    .WithMany(p => p.Exercise)
+                    .HasForeignKey(d => d.LectureId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Homework_Exercise");
-
-                entity.HasOne(d => d.ForLecture)
-                    .WithMany(p => p.Homework)
-                    .HasForeignKey(d => d.ForLectureId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Homework_Lecture");
+                    .HasConstraintName("FK_Exercise_Lecture");
             });
 
             modelBuilder.Entity<Lecture>(entity =>
@@ -299,7 +301,6 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Exam)
                     .WithMany(p => p.Material)
                     .HasForeignKey(d => d.ExamId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Material_Exam");
             });
 

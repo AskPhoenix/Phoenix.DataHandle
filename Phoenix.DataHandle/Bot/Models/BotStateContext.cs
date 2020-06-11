@@ -22,7 +22,7 @@ namespace Phoenix.DataHandle.Bot.Models
                 throw new ArgumentNullException(nameof(connectionString));
             }
 
-            _connectionString = connectionString;
+            this._connectionString = connectionString;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Phoenix.DataHandle.Bot.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(_connectionString);
+                optionsBuilder.UseSqlServer(this._connectionString);
             }
 
             base.OnConfiguring(optionsBuilder);
@@ -57,7 +57,7 @@ namespace Phoenix.DataHandle.Bot.Models
         {
             builder.Entity<BotData>(entity =>
             {
-                entity.ToTable(nameof(BotData));
+                entity.ToTable(nameof(this.BotData));
                 entity.HasIndex(e => e.RealId);
                 entity.HasKey(e => e.Id);
             });

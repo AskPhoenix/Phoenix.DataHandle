@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Phoenix.DataHandle.Main.Models.Extensions;
 
@@ -9,6 +12,7 @@ namespace Phoenix.DataHandle.Main
     public class Repository<TModel> where TModel : class, IModelEntity
     {
         protected readonly DbContext dbContext;
+        protected readonly ICollection<Func<IQueryable<TModel>, IQueryable<TModel>>> includes = new List<Func<IQueryable<TModel>, IQueryable<TModel>>>();
 
         public Repository(DbContext dbContext)
         {
@@ -17,36 +21,69 @@ namespace Phoenix.DataHandle.Main
 
         public virtual IQueryable<TModel> find()
         {
-            return dbContext.Set<TModel>();
+            IQueryable<TModel> x = dbContext.Set<TModel>();
+
+            if (this.includes != null)
+                foreach (var include in this.includes)
+                    x = include(x);
+
+            return x;
         }
 
         public virtual Task<TModel> find(int id)
         {
-            return dbContext.Set<TModel>().SingleAsync(a => a.Id == id);
+            IQueryable<TModel> x = dbContext.Set<TModel>();
+
+            if (this.includes != null)
+                foreach (var include in this.includes)
+                    x = include(x);
+
+            return x.SingleAsync(a => a.Id == id);
         }
 
         public virtual TModel create(TModel tModel)
         {
-            dbContext.Set<TModel>().Add(tModel);
-            dbContext.SaveChanges();
+            this.dbContext.Set<TModel>().Add(tModel);
+            this.dbContext.SaveChanges();
 
             return tModel;
         }
 
         public virtual TModel update(TModel tModel)
         {
-            dbContext.Entry(tModel).State = EntityState.Modified;
-            dbContext.SaveChanges();
+            this.dbContext.Entry(tModel).State = EntityState.Modified;
+            this.dbContext.SaveChanges();
 
             return tModel;
         }
 
         public virtual bool delete(int id)
         {
-            dbContext.Set<TModel>().Remove(dbContext.Set<TModel>().Single(a => a.Id == id));
-            dbContext.SaveChanges();
+            this.dbContext.Set<TModel>().Remove(this.dbContext.Set<TModel>().Single(a => a.Id == id));
+            this.dbContext.SaveChanges();
 
             return true;
+        }
+
+        public virtual void include(params Expression<Func<TModel, object>>[] paths)
+        {
+            foreach (var path in paths)
+            {
+                this.includes.Add(models => models.Include(path));
+            }
+        }
+
+        public virtual void include(params Func<IQueryable<TModel>, IQueryable<TModel>>[] includes)
+        {
+            foreach (var include in includes)
+            {
+                this.includes.Add(include);
+            }
+        }
+
+        public virtual void includeClear()
+        {
+            this.includes.Clear();
         }
 
     }

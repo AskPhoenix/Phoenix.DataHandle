@@ -8,7 +8,6 @@ namespace Phoenix.DataHandle.Main.Entities
         string Name { get; set; }
         string Info { get; set; }
 
-        IEnumerable<IExam> Exams { get; }
         IEnumerable<ILecture> Lectures { get; }
     }
 }

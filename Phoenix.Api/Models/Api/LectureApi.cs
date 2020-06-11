@@ -10,13 +10,23 @@ namespace Phoenix.Api.Models.Api
     public class LectureApi : ILecture, IModelApi
     {
         public int id { get; set; }
-        public ICourse Course { get; set; }
-        public IClassroom Classroom { get; set; }
         public DateTime StartDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
         public LectureStatus Status { get; set; }
         public string Info { get; set; }
+
+        public CourseApi Course { get; set; }
+        ICourse ILecture.Course => this.Course;
+
+        public ClassroomApi Classroom { get; set; }
+        IClassroom ILecture.Classroom => this.Classroom;
+
+        public ExamApi Exam { get; set; }
+        IExam ILecture.Exam => this.Exam;
+
+        public ICollection<ExerciseApi> Exercises { get; set; }
+        IEnumerable<IExercise> ILecture.Exercises => this.Exercises;
+
         public IEnumerable<IAttendance> Attendances { get; }
-        public IEnumerable<IHomework> Homeworks { get; }
     }
 }

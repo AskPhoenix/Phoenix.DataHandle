@@ -6,10 +6,8 @@ namespace Phoenix.DataHandle.Main.Entities
 {
     public interface IExam
     {
-        ICourse Course { get; }
-        IClassroom Classroom { get; }
-        DateTime StartsAt { get; set; }
-        DateTime EndsAt { get; set; }
+        ILecture Lecture { get; }
+        string Name { get; set; }
         string Comments { get; set; }
 
         IEnumerable<IMaterial> Materials { get; }

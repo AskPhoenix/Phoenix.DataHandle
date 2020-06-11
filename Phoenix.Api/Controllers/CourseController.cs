@@ -90,9 +90,20 @@ namespace Phoenix.Api.Controllers
                 Classroom = new ClassroomApi
                 {
                     id = lecture.Classroom.Id,
-                    Name = lecture.Course.Name,
+                    Name = lecture.Classroom.Name,
                     Info = lecture.Classroom.Info
                 },
+                Exam = lecture.Exam != null ? new ExamApi
+                {
+                    id = lecture.Exam.Id,
+                    Name = lecture.Exam.Name,
+                    Comments = lecture.Exam.Comments,
+                } : null,
+                Exercises = lecture.Exercise.Select(a => new ExerciseApi
+                {
+                    id = a.Id,
+                    Name = a.Name,
+                }).ToList(),
             }).ToListAsync();
         }
 
@@ -113,7 +124,7 @@ namespace Phoenix.Api.Controllers
                 Classroom = new ClassroomApi
                 {
                     id = schedule.Classroom.Id,
-                    Name = schedule.Course.Name,
+                    Name = schedule.Classroom.Name,
                     Info = schedule.Classroom.Info
                 },
             }).ToListAsync();

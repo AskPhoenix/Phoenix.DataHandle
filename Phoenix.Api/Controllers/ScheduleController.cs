@@ -48,7 +48,7 @@ namespace Phoenix.Api.Controllers
                 Classroom = new ClassroomApi
                 {
                     id = schedule.Classroom.Id,
-                    Name = schedule.Course.Name,
+                    Name = schedule.Classroom.Name,
                     Info = schedule.Classroom.Info
                 },
             }).ToListAsync();
@@ -78,7 +78,7 @@ namespace Phoenix.Api.Controllers
                 Classroom = new ClassroomApi
                 {
                     id = schedule.Classroom.Id,
-                    Name = schedule.Course.Name,
+                    Name = schedule.Classroom.Name,
                     Info = schedule.Classroom.Info
                 },
             };

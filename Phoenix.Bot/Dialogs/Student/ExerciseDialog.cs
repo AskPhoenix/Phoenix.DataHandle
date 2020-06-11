@@ -115,7 +115,7 @@ namespace Phoenix.Bot.Dialogs.Student
             await _selCourseId.SetAsync(stepContext.Context, selCourseId);
 
             var lecWithHw = _phoenixContext.Lecture.
-                Where(l => l.CourseId == selCourseId && l.Homework.Count > 0);
+                Where(l => l.CourseId == selCourseId && l.Exercise.Count > 0);
             if (lecWithHw.Count() == 0)
             {
                 await stepContext.Context.SendActivityAsync("Δεν υπάρχουν ακόμα εργασίες για αυτό το μάθημα.");
@@ -128,12 +128,12 @@ namespace Phoenix.Bot.Dialogs.Student
             if (lecWithHw.Any(l => l.EndDateTime >= grNow))
             {
                 var nextLec = lecWithHw.
-                    Include(l => l.Homework).
+                    Include(l => l.Exercise).
                     Where(l => l.StartDateTime >= grNow).
                     ToList().
                     Aggregate((nl, l) => l.StartDateTime < nl.StartDateTime ? l : nl);
 
-                bool singular = nextLec.Homework.Count == 1;
+                bool singular = nextLec.Exercise.Count == 1;
                 await stepContext.Context.SendActivityAsync($"{(singular ? "Η" : "Οι")} εργασί{(singular ? "α" : "ες")} με την κοντινότερη προθεσμία " +
                     $"είναι για τις {nextLec.StartDateTime:m} και είναι {(singular ? "η" : "οι")} παρακάτω:");
 
@@ -174,7 +174,7 @@ namespace Phoenix.Bot.Dialogs.Student
             var grNow = DialogHelper.GreeceLocalTime();
 
             var pLecDates = _phoenixContext.Lecture.
-                Where(l => l.CourseId == selCourseId && l.StartDateTime < grNow && l.Homework.Count > 0).
+                Where(l => l.CourseId == selCourseId && l.StartDateTime < grNow && l.Exercise.Count > 0).
                 OrderByDescending(h => h.StartDateTime).
                 Take(5).
                 Select(l => $"{l.StartDateTime.Day}/{l.StartDateTime.Month}").
@@ -217,10 +217,10 @@ namespace Phoenix.Bot.Dialogs.Student
             decimal? grade = null;
             const int pageSize = 3;
 
-            var paginatedHw = _phoenixContext.Homework.
-                Include(h => h.Exercise.Book).
+            var paginatedHw = _phoenixContext.Exercise.
+                Include(h => h.Book).
                 ToList().
-                Where(h => h.ForLectureId == lecId).
+                Where(h => h.LectureId == lecId).
                 Where((_, i) => i >= pageSize * page && i < pageSize * (page + 1));
 
             int hwShownCount = page * pageSize;
@@ -232,23 +232,23 @@ namespace Phoenix.Bot.Dialogs.Student
                 card.BackgroundImage = new AdaptiveBackgroundImage("https://www.bot.askphoenix.gr/assets/4f5d75_sq.png");
                 card.Body.Add(new AdaptiveTextBlockHeaderLight($"Εργασία {++hwShownCount} - {lecDate:dddd} {lecDate.Day}/{lecDate.Month}"));
                 card.Body.Add(new AdaptiveTextBlockHeaderLight(courseName));
-                card.Body.Add(new AdaptiveRichFactSetLight("Βιβλίο ", hw.Exercise.Book.Name));
-                card.Body.Add(new AdaptiveRichFactSetLight("Σελίδα ", hw.Exercise.Page.ToString(), separator: true));
+                card.Body.Add(new AdaptiveRichFactSetLight("Βιβλίο ", hw.Book.Name));
+                card.Body.Add(new AdaptiveRichFactSetLight("Σελίδα ", hw.Page.ToString(), separator: true));
                 if (forPastLec)
                 {
                     grade = _phoenixContext.StudentExercise.
-                        SingleOrDefault(se => se.ExerciseId == hw.Exercise.Id && se.Student.AspNetUser.FacebookId == fbId)?.
+                        SingleOrDefault(se => se.ExerciseId == hw.Id && se.Student.AspNetUser.FacebookId == fbId)?.
                         Grade;
                     card.Body.Add(new AdaptiveRichFactSetLight("Βαθμός ", grade == null ? "-" : grade.ToString(), separator: true));
                 }
-                card.Body.Add(new AdaptiveRichFactSetLight("Άσκηση ", hw.Exercise.Name, separator: true));
-                card.Body.Add(new AdaptiveRichFactSetLight("Σχόλια ", string.IsNullOrEmpty(hw.Exercise.Info) ? "-" : hw.Exercise.Info, separator: true));
+                card.Body.Add(new AdaptiveRichFactSetLight("Άσκηση ", hw.Name, separator: true));
+                card.Body.Add(new AdaptiveRichFactSetLight("Σχόλια ", string.IsNullOrEmpty(hw.Info) ? "-" : hw.Info, separator: true));
 
                 await stepContext.Context.SendActivityAsync(
                     MessageFactory.Attachment(new Attachment(contentType: AdaptiveCard.ContentType, content: JObject.FromObject(card))));
             }
 
-            int hwCount = _phoenixContext.Homework.Count(h => h.ForLectureId == lecId);
+            int hwCount = _phoenixContext.Exercise.Count(h => h.LectureId == lecId);
             if (pageSize * (page + 1) < hwCount)
             {
                 int hwLeft = hwCount - (pageSize * page + paginatedHw.Count());
@@ -310,7 +310,7 @@ namespace Phoenix.Bot.Dialogs.Student
 
             var grNow = DialogHelper.GreeceLocalTime();
             var lecDates = _phoenixContext.Lecture.
-                    Where(l => l.CourseId == selCourseId && l.Homework.Count > 0).
+                    Where(l => l.CourseId == selCourseId && l.Exercise.Count > 0).
                     Select(l => l.StartDateTime).
                     OrderByDescending(d => d).
                     Take(5).
@@ -337,13 +337,13 @@ namespace Phoenix.Bot.Dialogs.Student
 
             var selDate = DialogHelper.ResolveDateTime(stepContext.Result as IList<DateTimeResolution>);
             var lec = _phoenixContext.Lecture.
-                Include(l => l.Homework).
+                Include(l => l.Exercise).
                 FirstOrDefault(l => l.CourseId == selCourseId && l.StartDateTime.Date == selDate.Date);
 
             if (lec == null)
             {
                 lec = _phoenixContext.Lecture.
-                    Where(l => l.CourseId == selCourseId && l.Homework.Count > 0).
+                    Where(l => l.CourseId == selCourseId && l.Exercise.Count > 0).
                     ToList().
                     Aggregate((l, cl) => Math.Abs((l.StartDateTime - selDate).Days) < Math.Abs((cl.StartDateTime - selDate).Days) ? l : cl);
 
@@ -353,7 +353,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 return await stepContext.ReplaceDialogAsync(WaterfallNames.Homework, lec.Id, cancellationToken);
             }
 
-            int hwCount = lec.Homework.Count;
+            int hwCount = lec.Exercise.Count;
             if (hwCount == 0)
             {
                 await stepContext.Context.SendActivityAsync($"Δεν υπάρχουν εργασίες για τις {selDate:m}");
