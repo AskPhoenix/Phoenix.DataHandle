@@ -40,8 +40,7 @@ namespace Phoenix.DataHandle.Main.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=tcp:askphoenix.database.windows.net,1433;Initial Catalog=PhoenixDB;Persist Security Info=False;User ID=phoenix;Password=20Ph0eniX20!");
+                throw new Exception("Connection string not specified for PhoenixContext.");
             }
         }
 
@@ -91,9 +90,8 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.Email).HasMaxLength(256);
 
                 entity.Property(e => e.FacebookId)
-                    .HasMaxLength(20)
-                    .IsUnicode(false)
-                    .IsFixedLength();
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
 
