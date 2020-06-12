@@ -7,8 +7,8 @@
             Comment,
             Copliment,
             Suggestion,
-            Complaint,
-            Rating
+            Rating,
+            Complaint
         }
 
         public enum Occasion

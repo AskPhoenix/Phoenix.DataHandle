@@ -195,7 +195,6 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> CommentPromptStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            //TODO: Provide suggested replies for comments
             var reply = (Feedback.Category)stepContext.Options switch
             {
                 Feedback.Category.Comment => MessageFactory.Text("Ωραία! Σε ακούω:"),
