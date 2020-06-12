@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Phoenix.DataHandle", "Phoen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Phoenix.WordPress.Puller", "Phoenix.WordPress.Puller\Phoenix.WordPress.Puller.csproj", "{04551AC7-6260-49EE-8185-748A7F251F77}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phoenix.Scheduler", "Phoenix.Scheduler\Phoenix.Scheduler.csproj", "{63E8ABD4-1EBB-4BD4-90C7-CB63AE78CEBF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{04551AC7-6260-49EE-8185-748A7F251F77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04551AC7-6260-49EE-8185-748A7F251F77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04551AC7-6260-49EE-8185-748A7F251F77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63E8ABD4-1EBB-4BD4-90C7-CB63AE78CEBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63E8ABD4-1EBB-4BD4-90C7-CB63AE78CEBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63E8ABD4-1EBB-4BD4-90C7-CB63AE78CEBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63E8ABD4-1EBB-4BD4-90C7-CB63AE78CEBF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
