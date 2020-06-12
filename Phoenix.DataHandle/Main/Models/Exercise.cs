@@ -12,8 +12,8 @@ namespace Phoenix.DataHandle.Main.Models
 
         public int Id { get; set; }
         public int LectureId { get; set; }
-        public int? BookId { get; set; }
         public string Name { get; set; }
+        public int? BookId { get; set; }
         public string Page { get; set; }
         public string Comments { get; set; }
         public string Info { get; set; }

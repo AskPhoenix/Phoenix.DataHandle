@@ -245,9 +245,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .IsRequired()
                     .HasMaxLength(256);
 
-                entity.Property(e => e.Page)
-                    .IsRequired()
-                    .HasMaxLength(256);
+                entity.Property(e => e.Page).HasMaxLength(256);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
 
