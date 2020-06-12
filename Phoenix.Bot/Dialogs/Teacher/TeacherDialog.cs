@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Phoenix.Bot.Dialogs.Student;
 using Phoenix.Bot.Extensions;
+using Phoenix.Bot.Helpers;
+using static Phoenix.Bot.Helpers.ChannelHelper.Facebook;
 
 namespace Phoenix.Bot.Dialogs.Teacher
 {
@@ -33,6 +32,8 @@ namespace Phoenix.Bot.Dialogs.Teacher
             InitialDialogId = WaterfallNames.Menu;
         }
 
+        #region Teacher Menu Waterfall Dialog
+
         private async Task<DialogTurnResult> MenuStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (stepContext.Options is int index)
@@ -45,6 +46,7 @@ namespace Phoenix.Bot.Dialogs.Teacher
                     },
                     cancellationToken);
 
+            //TODO: For the schedule, only roles > Teacher should be able to edit it. Teachers will only have the permission to view it
             return await stepContext.PromptAsync(
                 nameof(UnaccentedChoicePrompt),
                 new PromptOptions
@@ -58,10 +60,63 @@ namespace Phoenix.Bot.Dialogs.Teacher
 
         private async Task<DialogTurnResult> TaskStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var foundChoice = stepContext.Result as FoundChoice;
+            
+            string taskArticle = string.Empty;
+            string imageUrl = "https://www.bot.askphoenix.gr/assets/";
+            var button = new UrlButton(title: foundChoice.Value + "...", url: "https://www.pwa.askphoenix.gr/",
+                webviewHeightRatio: "tall", messengerExtensions: true);
+
+            switch (foundChoice.Index)
+            {
+                case 0:
+                    taskArticle = "τις";
+                    button.Url += "teacher/homework";
+                    imageUrl += "exercise_bg.png";
+                    break;
+                case 1:
+                    taskArticle = "τα";
+                    button.Url += "teacher/exams";
+                    imageUrl += "exam_bg.png";
+                    break;
+                case 2:
+                    taskArticle = "τις";
+                    button.Url += "teacher/gradation";
+                    imageUrl += "agenda_bg.png";
+                    break;
+                case 3:
+                    taskArticle = "το";
+                    button.Url += "teacher/schedule";
+                    imageUrl += "schedule_bg.png";
+                    break;
+            }
+
+            var taskCard = new GenericTemplate()
+            {
+                ImageAspectRatio = "square",
+                Elements = new GenericElement[1]
+                {
+                    new GenericElement()
+                    {
+                        Title = $"Μετάβαση σ{taskArticle} {foundChoice.Value.ToLower()}" + (foundChoice.Index == 3 ? " διδασκαλίας" : ""),
+                        Subtitle = $"Προβολή ή επεξεργασία των πληροφοριών σχετικά με {taskArticle} {foundChoice.Value.ToLower()}.",
+                        ImageUrl = imageUrl,
+                        DefaultAction = button.ToUrlAction(),
+                        Buttons = new Button[] { button }
+                    }
+                }
+            };
+
+            var reply = MessageFactory.SuggestedActions(new string[1] { "Επιστροφή" });
+            reply.ChannelData = ChannelDataFactory.Template(taskCard);
+            await stepContext.Context.SendActivityAsync(reply);
+
+            return new DialogTurnResult(DialogTurnStatus.Waiting);
         }
 
         private async Task<DialogTurnResult> LoopStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
             => await stepContext.ReplaceDialogAsync(stepContext.ActiveDialog.Id, stepContext.Options, cancellationToken);
+
+        #endregion
     }
 }

@@ -7,6 +7,9 @@ namespace Phoenix.Bot.Helpers
 {
     public static class ChannelHelper
     {
+        public static Facebook.UrlAction ToUrlAction(this Facebook.UrlButton button)
+            => new Facebook.UrlAction(button.Url, button.WebviewHeightRatio, button.MessengerExtensions, button.FallbackUrl, button.WebviewShareButton);
+
         public static class Facebook
         {
             public static class ChannelDataFactory
@@ -120,7 +123,7 @@ namespace Phoenix.Bot.Helpers
                 /// Accepts the same properties as URL button, except title.
                 /// </summary>
                 [JsonProperty("default_action")]
-                public UrlButton DefaultAction { get; set; }
+                public UrlAction DefaultAction { get; set; }
 
                 /// <summary>
                 /// Optional. An array of buttons to append to the template.
@@ -132,16 +135,13 @@ namespace Phoenix.Bot.Helpers
 
                 public GenericElement() { }
 
-                public GenericElement(string title, string subtitle = null, string imageUrl = null, UrlButton defaultAction = null, Button[] buttons = null)
+                public GenericElement(string title, string subtitle = null, string imageUrl = null, UrlAction defaultAction = null, Button[] buttons = null)
                 {
                     this.Title = title;
                     this.Subtitle = subtitle;
                     this.ImageUrl = imageUrl;
                     this.DefaultAction = defaultAction;
                     this.Buttons = buttons;
-
-                    if (this.DefaultAction != null)
-                        this.DefaultAction.Title = null;
                 }
             }
 
@@ -230,6 +230,23 @@ namespace Phoenix.Bot.Helpers
                     this.FallbackUrl = fallback_Url;
                     this.WebviewShareButton = webviewShareButton;
                 }
+            }
+
+            [JsonObject]
+            public class UrlAction : UrlButton
+            {
+                [JsonIgnore]
+                public string Title { get; set; }
+
+                public UrlAction() : base() { }
+
+                public UrlAction(string url,
+                    string webviewHeightRatio = "full",
+                    bool messengerExtensions = false,
+                    string fallback_Url = null,
+                    string webviewShareButton = null) :
+                    base(null, url, webviewHeightRatio, messengerExtensions, fallback_Url, webviewShareButton)
+                { }
             }
 
             [JsonObject]
