@@ -8,20 +8,25 @@ using static Phoenix.Bot.Helpers.ChannelHelper.Facebook;
 using Microsoft.Bot.Schema;
 using System.Collections.Generic;
 using Phoenix.Bot.Helpers;
+using Phoenix.DataHandle.Main;
 
 namespace Phoenix.Bot.Dialogs
 {
     public class WelcomeDialog : ComponentDialog
     {
+        private readonly BotState _userState;
+
         private static class WaterfallNames
         {
             public const string AskForTutorial  = "AskForTutorial_WaterfallDialog";
             public const string Tutorial        = "Tutorial_WaterfallDialog";
         }
 
-        public WelcomeDialog()
+        public WelcomeDialog(UserState userState)
             : base(nameof(WelcomeDialog))
         {
+            _userState = userState;
+
             AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
 
             AddDialog(new WaterfallDialog(WaterfallNames.AskForTutorial,
@@ -92,6 +97,9 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> TutorialTopicsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            Role roleSel = await _userState.CreateProperty<Role>("RoleSelected").GetAsync(stepContext.Context);
+            bool isStudent = roleSel == Role.Student;
+
             var topics = new GenericTemplate()
             {
                 ImageAspectRatio = "square",
@@ -101,14 +109,14 @@ namespace Phoenix.Bot.Dialogs
                     {
                         Title = "Σταθερό μενού",
                         Subtitle = "Ανακάλυψε τις δυνατότητες του σταθερού μενού της συνομιλίας.",
-                        ImageUrl = "https://www.bot.askphoenix.gr/assets/persistent_sq.png",
+                        ImageUrl = "https://www.bot.askphoenix.gr/assets/persistent_sq2.png",
                         Buttons = new Button[] { new PostbackButton("Περισσότερα", "Περισσότερα για το σταθερό μενού") }
                     },
                     new GenericElement()
                     {
                         Title = "Αρχικό μενού",
                         Subtitle = "Μάθε τις δυνατότητες του αρχικού μενού κατά την έναρξη της συνομιλίας.",
-                        ImageUrl = "https://www.bot.askphoenix.gr/assets/home_sq.png",
+                        ImageUrl = $"https://www.bot.askphoenix.gr/assets/home_{(isStudent ? "student" : "teacher")}_sq.png",
                         Buttons = new Button[] { new PostbackButton("Περισσότερα", "Περισσότερα για το αρχικό μενού") }
                     },
                     new GenericElement()
@@ -169,18 +177,18 @@ namespace Phoenix.Bot.Dialogs
                 {
                     new GenericElement()
                     {
-                        Title = "Αρχικό μενού",
+                        Title = "🏠 Αρχικό μενού",
                         Subtitle = "Συντόμευση για το \"Αρχικό μενού\" και την επανέναρξη της συνομιλίας."
                     },
                     new GenericElement()
                     {
-                        Title = "Η ατζέντα μου",
-                        Subtitle = "Εξερεύνησε τις δυνατότητες του Phoenix σε ένα γραφικό, διαδραστικό περιβάλλον."
+                        Title = "ℹ️ Τι μπορώ να κάνω!",
+                        Subtitle = "Ξεναγήσου ανά πάσα στιγμή στις δυνατότητες του Phoenix με μια σύντομη περιήγηση."
                     },
                     new GenericElement()
                     {
-                        Title = "Περιήγηση",
-                        Subtitle = "Ξεναγήσου ανά πάσα στιγμή στις δυνατότητες του Phoenix με μια σύντομη περιήγηση."
+                        Title = "👍 Αφήστε ένα σχόλιο!",
+                        Subtitle = "Βοήθησε το Phoenix να γίνει ακόμα καλύτερο κάνοντας ένα σχόλιο ή μια αξιολόγηση."
                     }
                 }
             };
@@ -195,11 +203,14 @@ namespace Phoenix.Bot.Dialogs
         private async Task<DialogTurnResult> HomeTutorialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var reply = MessageFactory.Text("Το \"Αρχικό μενού\" είναι διαθέσιμο κατά την έναρξη της συνομιλίας μας, " +
-                "καθώς και από την συντόμευση στο \"Σταθερό μενού\".");
+                "καθώς και από την αντίστοιχη συντόμευση στο \"Σταθερό μενού\".");
             await stepContext.Context.SendActivityAsync(reply);
 
             reply.Text = "Οι υπηρεσίες που παρέχει εμφανίζονται παρακάτω εν συντομία:";
             await stepContext.Context.SendActivityAsync(reply);
+
+            Role roleSel = await _userState.CreateProperty<Role>("RoleSelected").GetAsync(stepContext.Context);
+            bool isStudent = roleSel == Role.Student;
 
             var homeCards = new GenericTemplate()
             {
@@ -209,23 +220,34 @@ namespace Phoenix.Bot.Dialogs
                     new GenericElement()
                     {
                         Title = "Εργασίες",
-                        Subtitle = "Έλεγξε τις εργασίες σου για το σπίτι.",
-                        //ImageUrl = "https://www.bot.askphoenix.gr/assets/exercise_bg.png"
+                        Subtitle = isStudent ? "Έλεγξε τις εργασίες σου για το σπίτι." : "Προσθήκη και επεξεργασία των εργασιών των μαθητών."
                     },
                     new GenericElement()
                     {
                         Title = "Διαγωνίσματα",
-                        Subtitle = "Διαχειρίσου τα διαγωνίσματα που έχεις ήδη γράψει ή πρόκειται να γράψεις.",
-                        //ImageUrl = "https://www.bot.askphoenix.gr/assets/exam_bg.png"
+                        Subtitle = isStudent ? "Διαχειρίσου τα διαγωνίσματα που έχεις ήδη γράψει ή πρόκειται να γράψεις." 
+                            : "Δημιουργία νέων διαγωνισμάτων και επεξεργασία της ύλης."
                     },
                     new GenericElement()
                     {
                         Title = "Πρόγραμμα",
-                        Subtitle = "Δες το πρόγραμμα των μαθημάτων σου και τυχόν αλλαγές σε αυτό.",
-                        //ImageUrl = "https://www.bot.askphoenix.gr/assets/schedule_bg.png"
+                        Subtitle = isStudent ? "Δες το πρόγραμμα των μαθημάτων σου και τυχόν αλλαγές σε αυτό."
+                            : (roleSel > Role.Teacher ? "Εμφάνιση και επεξεργασία των ωρών του προγράμματος διδασκαλίας." 
+                            : "Εμφάνιση των ωρών του προγράμματος διδασκαλίας.")
                     }
                 }
             };
+
+            if (!isStudent)
+            {
+                var elements = new List<GenericElement>(homeCards.Elements);
+                elements.Insert(2, new GenericElement() 
+                {
+                    Title = "Βαθμολογίες",
+                    Subtitle = "Εισαγωγή των βαθμολογιών των εργασιών και των διαγωνισμάτων." 
+                });
+                homeCards.Elements = elements.ToArray();
+            }
 
             reply = stepContext.Context.Activity.CreateReply();
             reply.ChannelData = ChannelDataFactory.Template(homeCards);
