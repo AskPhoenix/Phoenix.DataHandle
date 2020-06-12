@@ -11,23 +11,22 @@ curl -X POST -H "Content-Type: application/json" -d '{
             "call_to_actions": [
                 {
                     "type": "postback",
-                    "title": "Αρχικό μενού",
+                    "title": "🏠 Αρχικό μενού",
                     "payload": "--persistent-home--"
-                },
-                {
-                    "type": "web_url",
-                    "title": "Η ατζέντα μου",
-                    "url": "https://nuage.azurewebsites.net/extensions/agenda",
-                    "webview_height_ratio": "tall"
                 },
 		        {
                     "type": "postback",
-                    "title": "Περιήγηση",
+                    "title": "ℹ️ Τι μπορώ να κάνω!",
                     "payload": "--persistent-tutorial--"
+                },
+                {
+                    "type": "postback",
+                    "title": "👍 Αφήστε ένα σχόλιο!",
+                    "payload": "--persistent-feedback--"
                 }
             ]
         }
     ]
-}' "https://graph.facebook.com/v6.0/me/messenger_profile?access_token=$token"
+}' "https://graph.facebook.com/v7.0/me/messenger_profile?access_token=$token"
 
 read -p "Press enter to continue..."

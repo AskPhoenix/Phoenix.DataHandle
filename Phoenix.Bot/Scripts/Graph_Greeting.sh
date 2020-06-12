@@ -13,6 +13,6 @@ curl -X POST -H "Content-Type: application/json" -d '{
       "text":"$text"
     }
   ]
-}' "https://graph.facebook.com/v6.0/me/messenger_profile?access_token=$token"
+}' "https://graph.facebook.com/v7.0/me/messenger_profile?access_token=$token"
 
 read -p "Press enter to continue..."

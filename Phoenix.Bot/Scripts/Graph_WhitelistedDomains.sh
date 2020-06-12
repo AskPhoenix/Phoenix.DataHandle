@@ -14,16 +14,15 @@ read token
 #done
 #json="${json::-2} ] }"
 
-#curl -X POST -H "Content-Type: application/json" -d "$json" "https://graph.facebook.com/v6.0/me/messenger_profile?access_token=$token"
+#curl -X POST -H "Content-Type: application/json" -d "$json" "https://graph.facebook.com/v7.0/me/messenger_profile?access_token=$token"
 
 curl -X POST -H "Content-Type: application/json" -d '{
   "whitelisted_domains": [
     "https://askphoenix.gr/",
     "https://www.askphoenix.gr/",
     "https://pwa.askphoenix.gr/",
-    "https://www.pwa.askphoenix.gr/",
-    "https://nuage.azurewebsites.net/"
+    "https://www.pwa.askphoenix.gr/"
   ]
-}' "https://graph.facebook.com/v6.0/me/messenger_profile?access_token=$token"
+}' "https://graph.facebook.com/v7.0/me/messenger_profile?access_token=$token"
 
 read -p "Press enter to continue..."
