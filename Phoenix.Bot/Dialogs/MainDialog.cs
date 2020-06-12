@@ -11,6 +11,9 @@ using Phoenix.Bot.Helpers;
 using Phoenix.DataHandle.Main.Models;
 using System.Linq;
 using Phoenix.DataHandle.Main;
+using Microsoft.EntityFrameworkCore;
+using Phoenix.Bot.Extensions;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 
 namespace Phoenix.Bot.Dialogs
 {
@@ -35,6 +38,8 @@ namespace Phoenix.Bot.Dialogs
             _userState = userState;
             _phoenixContext = phoenixContext;
 
+            AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
+
             AddDialog(authDialog);
             AddDialog(welcomeDialog);
             AddDialog(feedbackDialog);
@@ -48,6 +53,8 @@ namespace Phoenix.Bot.Dialogs
                     UserRegisterStepAsync,
                     CommandHandleStepAsync,
                     GreetingStepAsync,
+                    MultiRoleStepAsync,
+                    MultiRoleSelectStepAsync,
                     ForwardStepAsync,
                     LoopStepAsync
                 }));
@@ -59,7 +66,14 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> FirstTimeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            bool isAuthenticated = await _userState.CreateProperty<bool>("IsAuthenticated").GetAsync(stepContext.Context);
+            var isAuthAcsr = _userState.CreateProperty<bool>("IsAuthenticated");
+            bool isAuthenticated = await isAuthAcsr.GetAsync(stepContext.Context);
+            if (isAuthenticated)
+            {
+                isAuthenticated &= _phoenixContext.AspNetUsers.Any(u => u.FacebookId == stepContext.Context.Activity.From.Id);
+                if (!isAuthenticated)
+                    await isAuthAcsr.SetAsync(stepContext.Context, false);
+            }
 
             if (!isAuthenticated)
                 return await stepContext.BeginDialogAsync(nameof(AuthDialog), null, cancellationToken);
@@ -94,7 +108,9 @@ namespace Phoenix.Bot.Dialogs
                 user.OneTimeCodeUsed = true;
             await _phoenixContext.SaveChangesAsync();
 
-            return await stepContext.BeginDialogAsync(nameof(WelcomeDialog), null, cancellationToken);
+            await _conversationState.CreateProperty<bool>("NeedsWelcoming").SetAsync(stepContext.Context, true);
+            await _conversationState.SaveChangesAsync(stepContext.Context);
+            return await stepContext.NextAsync(null, cancellationToken);
         }
 
         private async Task<DialogTurnResult> CommandHandleStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -103,6 +119,8 @@ namespace Phoenix.Bot.Dialogs
             switch (cmd)
             {
                 case Persistent.Command.GetStarted:
+                    await _userState.CreateProperty<Role>("RoleSelected").DeleteAsync(stepContext.Context);
+                    return await stepContext.BeginDialogAsync(nameof(WelcomeDialog), null, cancellationToken);
                 case Persistent.Command.Tutorial:
                     return await stepContext.BeginDialogAsync(nameof(WelcomeDialog), null, cancellationToken);
                 case Persistent.Command.Feedback:
@@ -130,16 +148,74 @@ namespace Phoenix.Bot.Dialogs
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
+        private async Task<DialogTurnResult> MultiRoleStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var roleSel = await _userState.CreateProperty<Role>("RoleSelected").GetAsync(stepContext.Context, () => Role.Undefined);
+            if (roleSel != Role.Undefined)
+                return await stepContext.NextAsync(null);
+
+            var userRoles = _phoenixContext.AspNetUsers.
+                Include(u => u.AspNetUserRoles).
+                Single(u => u.FacebookId == stepContext.Context.Activity.From.Id).
+                AspNetUserRoles.
+                Select(ur => ur.Role).
+                ToList();
+
+            // If user has 1 role, then don't ask
+            if (userRoles.Count == 1)
+                return await stepContext.NextAsync(userRoles.First().Type);
+            // If user has multiple non-contradictious roles (e.g. Teacher, Owner), then don't ask and select the hierarchly highest one
+            if (userRoles.All(r => (Role)r.Type >= Role.Teacher))
+                return await stepContext.NextAsync(userRoles.Max(r => r.Type));
+            // If user has multiple roles and the include Student or Teacher, meaning they are contradictious, then ask which one they prefer
+
+            return await stepContext.PromptAsync(
+                nameof(UnaccentedChoicePrompt),
+                new PromptOptions
+                {
+                    Prompt = MessageFactory.Text("Θα ήθελες να συνδεθείς ως:"),
+                    RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε έναν από τους παρακάτω ρόλους:"),
+                    Choices = ChoiceFactory.ToChoices(userRoles.Select(r => r.NormalizedName).ToList())
+                });
+        }
+
+        private async Task<DialogTurnResult> MultiRoleSelectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var roleAcsr = _userState.CreateProperty<Role>("RoleSelected");
+            if (await roleAcsr.GetAsync(stepContext.Context, () => Role.Undefined) == Role.Undefined)
+            {
+                if (stepContext.Result is FoundChoice foundChoice)
+                {
+                    var roleSel = _phoenixContext.AspNetRoles.
+                        Single(r => r.NormalizedName == foundChoice.Value).
+                        Type;
+
+                    await roleAcsr.SetAsync(stepContext.Context, (Role)roleSel);
+                }
+                else
+                    await roleAcsr.SetAsync(stepContext.Context, (Role)stepContext.Result);
+                await _conversationState.SaveChangesAsync(stepContext.Context);
+            }
+
+            var welcomingAcsr = _conversationState.CreateProperty<bool>("NeedsWelcoming");
+            bool needsWelcoming = await welcomingAcsr.GetAsync(stepContext.Context);
+            if (needsWelcoming)
+            {
+                await welcomingAcsr.DeleteAsync(stepContext.Context);
+                return await stepContext.BeginDialogAsync(nameof(WelcomeDialog), null, cancellationToken);
+            }
+            
+            return await stepContext.NextAsync(null, cancellationToken);
+        }
+
         private async Task<DialogTurnResult> ForwardStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            //TODO: Allow to choose between roles if has multiple
-            var userRole = (Role)_phoenixContext.AspNetRoles.
-                First(r => r.AspNetUserRoles.Single(ur => ur.User.FacebookId == stepContext.Context.Activity.From.Id).RoleId == r.Id).Type;
-
-            return userRole switch
+            var roleSel = await _userState.CreateProperty<Role>("RoleSelected").GetAsync(stepContext.Context);
+            
+            return roleSel switch
             {
                 Role.Student => await stepContext.BeginDialogAsync(nameof(StudentDialog), null, cancellationToken),
-                Role.Teacher => await stepContext.BeginDialogAsync(nameof(TeacherDialog), null, cancellationToken),
+                var r when r >= Role.Teacher => await stepContext.BeginDialogAsync(nameof(TeacherDialog), null, cancellationToken),
                 _ => await stepContext.CancelAllDialogsAsync(cancellationToken)
             };
         }
