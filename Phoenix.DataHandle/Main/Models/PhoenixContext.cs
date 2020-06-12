@@ -168,8 +168,8 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Course>(entity =>
             {
-                entity.HasIndex(e => new { e.SchoolId, e.Level })
-                    .HasName("UQ__Course__BE9836D8D4139A41")
+                entity.HasIndex(e => new { e.SchoolId, e.Name, e.SubCourse })
+                    .HasName("UQ_Course")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
@@ -186,7 +186,9 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(255);
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.SubCourse).HasMaxLength(200);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
 
@@ -252,7 +254,6 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Book)
                     .WithMany(p => p.Exercise)
                     .HasForeignKey(d => d.BookId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Exercise_Book");
 
                 entity.HasOne(d => d.Lecture)
@@ -299,6 +300,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Exam)
                     .WithMany(p => p.Material)
                     .HasForeignKey(d => d.ExamId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Material_Exam");
             });
 
