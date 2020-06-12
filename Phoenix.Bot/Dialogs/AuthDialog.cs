@@ -296,18 +296,24 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> SendPinStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            int pin = new Random().Next(1000, 9999);
-            stepContext.Values.Add("pin", pin);
             string phone = Convert.ToInt64(stepContext.Options).ToString();
+            int pin = new Random().Next(1000, 9999);
 
-            string name = GreekNameCall(stepContext.Context.Activity.From.Name.Split(' ')[0]);
-            var sms = new SmsService(_configuration["NexmoSMS:ApiKey"], _configuration["NexmoSMS:ApiSecret"]);
-            await sms.SendAsync(new IdentityMessage() 
+            // Avoid sending the sms with the pin when the phone is the fake one
+            if (phone == "6900000000")
+                pin = 1533278939;
+            else
             {
-                Destination = phone.ToString(),
-                Body = $"Γεια σου {name}! Ο μοναδικός κωδικός σου για το Phoenix είναι ο {pin}. " +
-                    "Όταν σου ζητηθεί, πληκτρολόγησέ τον στη συνομιλία μας στο Messenger."
-            });
+                string name = GreekNameCall(stepContext.Context.Activity.From.Name.Split(' ')[0]);
+                var sms = new SmsService(_configuration["NexmoSMS:ApiKey"], _configuration["NexmoSMS:ApiSecret"]);
+                await sms.SendAsync(new IdentityMessage()
+                {
+                    Destination = phone.ToString(),
+                    Body = $"Γεια σου {name}! Ο μοναδικός κωδικός σου για το Phoenix είναι ο {pin}. " +
+                        "Όταν σου ζητηθεί, πληκτρολόγησέ τον στη συνομιλία μας στο Messenger."
+                });
+            }
+            stepContext.Values.Add("pin", pin);
 
             return await stepContext.PromptAsync(
                 nameof(UnaccentedChoicePrompt),

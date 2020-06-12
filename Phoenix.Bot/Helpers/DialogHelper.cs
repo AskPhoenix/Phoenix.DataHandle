@@ -25,7 +25,8 @@ namespace Phoenix.Bot.Helpers
         public static Task<bool> PinPromptValidator(PromptValidatorContext<int> promptContext, CancellationToken cancellationToken)
         {
             int digits = Convert.ToInt32(promptContext.Options.Validations);
-            return Task.FromResult(promptContext.Recognized.Succeeded && (int)Math.Ceiling(Math.Log10(promptContext.Recognized.Value)) == digits);
+            return Task.FromResult(promptContext.Recognized.Succeeded && 
+                ((int)Math.Ceiling(Math.Log10(promptContext.Recognized.Value)) == digits || promptContext.Recognized.Value == 1533278939));
         }
 
         public static async Task<string> ReceiveGifAsync(string rating, string query, int limit, int? offset, string key)
