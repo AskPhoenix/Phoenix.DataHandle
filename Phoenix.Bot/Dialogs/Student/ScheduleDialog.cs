@@ -93,7 +93,7 @@ namespace Phoenix.Bot.Dialogs.Student
 
                 foreach (var lec in lecs)
                 {
-                    card.Body.Add(new AdaptiveTextBlockHeaderLight(lec.Course.Name));
+                    card.Body.Add(new AdaptiveTextBlockHeaderLight(lec.Course.Name + lec.Course.SubCourse != null ? $" - {lec.Course.SubCourse}" : ""));
                     card.Body.Add(new AdaptiveRichFactSetLight("Ώρες ", $"{lec.StartDateTime:t} - {lec.EndDateTime:t}"));
                     card.Body.Add(new AdaptiveRichFactSetLight("Αίθουσα ", lec.Classroom.Name, separator: true));
                     card.Body.Add(new AdaptiveRichFactSetLight("Κατάσταση ", lec.Status.ToGreekString(), separator: true));
@@ -209,7 +209,7 @@ namespace Phoenix.Bot.Dialogs.Student
                         var dayLecs = lecs.Where(l => l.StartDateTime.DayOfWeek == nextDay.DayOfWeek);
                         foreach (var lec in dayLecs)
                         {
-                            card.Body.Add(new AdaptiveRichFactSetLight("Μάθημα ", lec.Course.Name));
+                            card.Body.Add(new AdaptiveRichFactSetLight("Μάθημα ", lec.Course.Name + lec.Course.SubCourse != null ? $" - {lec.Course.SubCourse}" : ""));
                             card.Body.Add(new AdaptiveRichFactSetLight("Ώρες ", $"{lec.StartDateTime:t} - {lec.EndDateTime:t}", separator: true));
                             card.Body.Add(new AdaptiveRichFactSetLight());
                         }
