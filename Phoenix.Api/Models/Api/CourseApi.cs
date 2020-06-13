@@ -11,6 +11,7 @@ namespace Phoenix.Api.Models.Api
         public int id { get; set; }
         public ISchool School { get; set; }
         public string Name { get; set; }
+        public string SubCourse { get; set; }
         public string Level { get; set; }
         public string Group { get; set; }
         public string Info { get; set; }

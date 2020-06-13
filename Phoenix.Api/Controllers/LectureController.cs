@@ -47,6 +47,7 @@ namespace Phoenix.Api.Controllers
                 {
                     id = lecture.Course.Id,
                     Name = lecture.Course.Name,
+                    SubCourse = lecture.Course.SubCourse,
                     Level = lecture.Course.Level,
                     Group = lecture.Course.Group,
                     Info = lecture.Course.Info
@@ -88,6 +89,7 @@ namespace Phoenix.Api.Controllers
                 {
                     id = lecture.Course.Id,
                     Name = lecture.Course.Name,
+                    SubCourse = lecture.Course.SubCourse,
                     Level = lecture.Course.Level,
                     Group = lecture.Course.Group,
                     Info = lecture.Course.Info

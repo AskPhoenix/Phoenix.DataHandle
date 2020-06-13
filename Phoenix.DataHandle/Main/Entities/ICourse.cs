@@ -7,6 +7,7 @@ namespace Phoenix.DataHandle.Main.Entities
     {
         ISchool School { get; }
         string Name { get; set; }
+        string SubCourse { get; set; }
         string Level { get; set; }
         string Group { get; set; }
         string Info { get; set; }
