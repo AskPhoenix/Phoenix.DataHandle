@@ -239,7 +239,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 2));
                 card.BackgroundImage = new AdaptiveBackgroundImage("https://www.bot.askphoenix.gr/assets/4f5d75_sq.png");
                 card.Body.Add(new AdaptiveTextBlockHeaderLight($"Εργασία {++hwShownCount} - {lecDate:dddd} {lecDate.Day}/{lecDate.Month}"));
-                card.Body.Add(new AdaptiveTextBlockHeaderLight(courseName + subCourse != null ? $" - {subCourse}" : ""));
+                card.Body.Add(new AdaptiveTextBlockHeaderLight(courseName + (subCourse != null ? $" - {subCourse}" : "")));
                 if (hw.Book != null)
                     card.Body.Add(new AdaptiveRichFactSetLight("Βιβλίο ", hw.Book.Name));
                 if (hw.Page != null)
