@@ -14,6 +14,7 @@ namespace Phoenix.Api.Models.Api
         public DateTime EndDateTime { get; set; }
         public LectureStatus Status { get; set; }
         public string Info { get; set; }
+        public LectureCreatedBy CreatedBy { get; set; }
 
         public CourseApi Course { get; set; }
         ICourse ILecture.Course => this.Course;

@@ -86,6 +86,8 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class Lecture : ILecture, IModelEntity
     {
+        public LectureCreatedBy CreatedBy { get; set; }
+
         ICourse ILecture.Course => this.Course;
         IClassroom ILecture.Classroom => this.Classroom;
         IExam ILecture.Exam => this.Exam;
