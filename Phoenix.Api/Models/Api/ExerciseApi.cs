@@ -12,7 +12,6 @@ namespace Phoenix.Api.Models.Api
         public string Page { get; set; }
         public string Name { get; set; }
         public string Comments { get; set; }
-        public string Info { get; set; }
         
         public BookApi Book { get; set; }
         IBook IExercise.Book => this.Book;

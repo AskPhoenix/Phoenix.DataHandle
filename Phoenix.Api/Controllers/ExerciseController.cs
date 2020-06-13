@@ -39,7 +39,6 @@ namespace Phoenix.Api.Controllers
                 Name = exercise.Name,
                 Page = exercise.Page,
                 Comments = exercise.Comments,
-                Info = exercise.Info,
                 Book = new BookApi
                 {
                     id = exercise.Book.Id,
@@ -74,7 +73,6 @@ namespace Phoenix.Api.Controllers
                 Name = exerciseApi.Name,
                 Page = exerciseApi.Page,
                 Comments = exerciseApi.Comments,
-                Info = exerciseApi.Info,
                 LectureId = exerciseApi.Lecture.id,
                 BookId = exerciseApi.Book.id,
             };
@@ -89,7 +87,6 @@ namespace Phoenix.Api.Controllers
                 Name = exercise.Name,
                 Page = exercise.Page,
                 Comments = exercise.Comments,
-                Info = exercise.Info,
                 Book = exercise.Book != null
                     ? new BookApi
                     {
@@ -133,7 +130,6 @@ namespace Phoenix.Api.Controllers
                 Name = exerciseApi.Name,
                 Page = exerciseApi.Page,
                 Comments = exerciseApi.Comments,
-                Info = exerciseApi.Info,
                 LectureId = exerciseApi.Lecture.id,
                 BookId = exerciseApi.Book.id,
             };
@@ -148,7 +144,6 @@ namespace Phoenix.Api.Controllers
                 Name = exercise.Name,
                 Page = exercise.Page,
                 Comments = exercise.Comments,
-                Info = exercise.Info,
                 Book = exercise.Book != null
                     ? new BookApi
                     {
