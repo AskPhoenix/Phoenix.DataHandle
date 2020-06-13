@@ -14,7 +14,21 @@ namespace Phoenix.DataHandle.Repositories
         public LectureRepository(DbContext dbContext) : base(dbContext)
         {
         }
-        
+
+        public override Lecture create(Lecture tModel)
+        {
+            tModel.CreatedAt = DateTime.Now;
+            
+            return base.create(tModel);
+        }
+
+        public override Lecture update(Lecture tModel)
+        {
+            tModel.UpdatedAt = DateTime.Now;
+
+            return base.update(tModel);
+        }
+
         public Task<Lecture> findSingle(int courseId, DateTime day, TimeSpan time, CancellationToken cancellationToken)
         {
             return this

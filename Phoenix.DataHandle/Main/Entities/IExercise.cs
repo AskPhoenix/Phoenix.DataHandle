@@ -9,7 +9,6 @@ namespace Phoenix.DataHandle.Main.Entities
         string Name { get; set; }
         string Page { get; set; }
         string Comments { get; set; }
-        string Info { get; set; }
 
         ILecture Lecture { get; }
         IEnumerable<IStudentExercise> StudentExercises { get; }

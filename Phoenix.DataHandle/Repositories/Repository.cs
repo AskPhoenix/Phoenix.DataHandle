@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Phoenix.DataHandle.Main.Models;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models.Extensions;
 
-namespace Phoenix.DataHandle.Main
+namespace Phoenix.DataHandle.Repositories
 {
     public class Repository<TModel> where TModel : class, IModelEntity
     {
@@ -21,7 +20,7 @@ namespace Phoenix.DataHandle.Main
 
         public virtual IQueryable<TModel> find()
         {
-            IQueryable<TModel> x = dbContext.Set<TModel>();
+            IQueryable<TModel> x = this.dbContext.Set<TModel>();
 
             if (this.includes != null)
                 foreach (var include in this.includes)
@@ -32,7 +31,7 @@ namespace Phoenix.DataHandle.Main
 
         public virtual Task<TModel> find(int id)
         {
-            IQueryable<TModel> x = dbContext.Set<TModel>();
+            IQueryable<TModel> x = this.dbContext.Set<TModel>();
 
             if (this.includes != null)
                 foreach (var include in this.includes)

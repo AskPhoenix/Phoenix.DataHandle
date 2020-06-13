@@ -58,6 +58,7 @@ namespace Phoenix.DataHandle.Main.Models
 
         IEnumerable<ICourseBook> ICourse.CourseBooks => this.CourseBook;
         IEnumerable<ILecture> ICourse.Lectures => this.Lecture;
+        IEnumerable<ISchedule> ICourse.Schedules => this.Schedule;
         IEnumerable<IStudentCourse> ICourse.StudentCourses => this.StudentCourse;
         IEnumerable<ITeacherCourse> ICourse.TeacherCourses => this.TeacherCourse;
     }
@@ -87,6 +88,7 @@ namespace Phoenix.DataHandle.Main.Models
     public partial class Lecture : ILecture, IModelEntity
     {
         ICourse ILecture.Course => this.Course;
+        ISchedule ILecture.Schedule => this.Schedule;
         IClassroom ILecture.Classroom => this.Classroom;
         IExam ILecture.Exam => this.Exam;
 

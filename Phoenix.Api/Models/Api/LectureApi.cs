@@ -19,6 +19,9 @@ namespace Phoenix.Api.Models.Api
         public CourseApi Course { get; set; }
         ICourse ILecture.Course => this.Course;
 
+        public ScheduleApi Schedule { get; set; }
+        ISchedule ILecture.Schedule => this.Schedule;
+
         public ClassroomApi Classroom { get; set; }
         IClassroom ILecture.Classroom => this.Classroom;
 

@@ -13,6 +13,7 @@ namespace Phoenix.DataHandle.Main.Entities
 
         IEnumerable<ICourseBook> CourseBooks { get; }
         IEnumerable<ILecture> Lectures { get; }
+        IEnumerable<ISchedule> Schedules { get; }
         IEnumerable<IStudentCourse> StudentCourses { get; }
         IEnumerable<ITeacherCourse> TeacherCourses { get; }
     }

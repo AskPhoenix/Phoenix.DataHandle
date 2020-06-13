@@ -8,6 +8,7 @@ using Phoenix.Api.Models.Api;
 using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Repositories;
 
 namespace Phoenix.Api.Controllers
 {

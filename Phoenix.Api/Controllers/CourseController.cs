@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Phoenix.Api.Models.Api;
 using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Repositories;
 
 namespace Phoenix.Api.Controllers
 {
@@ -16,15 +17,17 @@ namespace Phoenix.Api.Controllers
     {
         private readonly ILogger<CourseController> _logger;
         private readonly Repository<Course> _courseRepository;
-        private readonly Repository<Lecture> _lectureRepository;
+        private readonly LectureRepository _lectureRepository;
         private readonly Repository<Schedule> _scheduleRepository;
+        private readonly Repository<Book> _bookRepository;
 
         public CourseController(PhoenixContext phoenixContext, ILogger<CourseController> logger)
         {
             this._logger = logger;
             this._courseRepository = new Repository<Course>(phoenixContext);
-            this._lectureRepository = new Repository<Lecture>(phoenixContext);
+            this._lectureRepository = new LectureRepository(phoenixContext);
             this._scheduleRepository = new Repository<Schedule>(phoenixContext);
+            this._bookRepository = new Repository<Book>(phoenixContext);
         }
 
         [HttpGet]
@@ -129,6 +132,21 @@ namespace Phoenix.Api.Controllers
                 },
             }).ToListAsync();
         }
+
+        [HttpGet("{id}/Book")]
+        public async Task<IEnumerable<BookApi>> GetBooks(int id)
+        {
+            this._logger.LogInformation($"Api -> Course -> Get{id} -> Book");
+
+            IQueryable<Book> books = this._bookRepository.find().Where(a => a.CourseBook.Any(b => b.CourseId == id));
+
+            return await books.Select(book => new BookApi
+            {
+                id = book.Id,
+                Name = book.Name,
+            }).ToListAsync();
+        }
+
 
 
     }

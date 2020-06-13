@@ -17,7 +17,10 @@ namespace Phoenix.Api.Models.Api
 
         public ICollection<LectureApi> Lectures { get; set; }
         IEnumerable<ILecture> ICourse.Lectures => this.Lectures;
-        
+
+        public ICollection<ScheduleApi> Schedules { get; set; }
+        IEnumerable<ISchedule> ICourse.Schedules => this.Schedules;
+
         public IEnumerable<ICourseBook> CourseBooks { get; }
         public IEnumerable<IStudentCourse> StudentCourses { get; }
         public IEnumerable<ITeacherCourse> TeacherCourses { get; }

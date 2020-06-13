@@ -14,6 +14,7 @@ namespace Phoenix.DataHandle.Main.Entities
 
         ICourse Course { get; }
         IClassroom Classroom { get; }
+        ISchedule Schedule { get; }
         IExam Exam { get; }
 
         IEnumerable<IAttendance> Attendances { get; }
