@@ -17,6 +17,7 @@ namespace Phoenix.DataHandle.Main.Models
         public int Id { get; set; }
         public int SchoolId { get; set; }
         public string Name { get; set; }
+        public string SubCourse { get; set; }
         public string Level { get; set; }
         public string Group { get; set; }
         public string Info { get; set; }

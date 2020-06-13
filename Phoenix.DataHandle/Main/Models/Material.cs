@@ -6,7 +6,7 @@ namespace Phoenix.DataHandle.Main.Models
     public partial class Material
     {
         public int Id { get; set; }
-        public int? ExamId { get; set; }
+        public int ExamId { get; set; }
         public int? BookId { get; set; }
         public string Chapter { get; set; }
         public string Section { get; set; }

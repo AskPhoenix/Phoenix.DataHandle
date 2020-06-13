@@ -224,9 +224,12 @@ namespace Phoenix.Bot.Dialogs.Student
                 card.BackgroundImage = new AdaptiveBackgroundImage("https://www.bot.askphoenix.gr/assets/4f5d75_sq.png");
                 card.Body.Add(new AdaptiveTextBlockHeaderLight($"Ύλη {++matShownCount} - {examDate:dddd} {examDate.Day}/{examDate.Month}"));
                 card.Body.Add(new AdaptiveTextBlockHeaderLight(courseName));
-                card.Body.Add(new AdaptiveRichFactSetLight("Βιβλίο ", mat.Book.Name));
-                card.Body.Add(new AdaptiveRichFactSetLight("Κεφάλαιο ", mat.Chapter, separator: true));
-                card.Body.Add(new AdaptiveRichFactSetLight("Ενότητα ", mat.Section, separator: true));
+                if (mat.Book != null)
+                    card.Body.Add(new AdaptiveRichFactSetLight("Βιβλίο ", mat.Book.Name));
+                if (mat.Chapter != null)
+                    card.Body.Add(new AdaptiveRichFactSetLight("Κεφάλαιο ", mat.Chapter, separator: true));
+                if (mat.Section != null)
+                    card.Body.Add(new AdaptiveRichFactSetLight("Ενότητα ", mat.Section, separator: true));
                 card.Body.Add(new AdaptiveRichFactSetLight("Σχόλια ", string.IsNullOrEmpty(mat.Comments) ? "-" : mat.Comments, separator: true));
 
                 await stepContext.Context.SendActivityAsync(
