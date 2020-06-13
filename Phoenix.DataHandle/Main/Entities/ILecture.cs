@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Main.Relationships;
 
 namespace Phoenix.DataHandle.Main.Entities

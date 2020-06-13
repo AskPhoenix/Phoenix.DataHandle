@@ -5,6 +5,11 @@ namespace Phoenix.DataHandle.Main.Models
 {
     public partial class Schedule
     {
+        public Schedule()
+        {
+            Lecture = new HashSet<Lecture>();
+        }
+
         public int Id { get; set; }
         public int CourseId { get; set; }
         public int ClassroomId { get; set; }
@@ -17,5 +22,6 @@ namespace Phoenix.DataHandle.Main.Models
 
         public virtual Classroom Classroom { get; set; }
         public virtual Course Course { get; set; }
+        public virtual ICollection<Lecture> Lecture { get; set; }
     }
 }

@@ -282,6 +282,11 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasForeignKey(d => d.CourseId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Lecture_Course");
+
+                entity.HasOne(d => d.Schedule)
+                    .WithMany(p => p.Lecture)
+                    .HasForeignKey(d => d.ScheduleId)
+                    .HasConstraintName("FK_Lecture_Schedule");
             });
 
             modelBuilder.Entity<Material>(entity =>

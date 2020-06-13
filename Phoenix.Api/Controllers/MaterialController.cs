@@ -62,7 +62,7 @@ namespace Phoenix.Api.Controllers
                 Section = materialApi.Section,
                 Comments = materialApi.Comments,
                 BookId = materialApi.Book?.id,
-                ExamId = materialApi.Exam?.id
+                ExamId = materialApi.Exam.id
             };
 
             material = this._materialRepository.create(material);
@@ -101,7 +101,7 @@ namespace Phoenix.Api.Controllers
                 Section = materialApi.Section,
                 Comments = materialApi.Comments,
                 BookId = materialApi.Book?.id,
-                ExamId = materialApi.Exam?.id
+                ExamId = materialApi.Exam.id
             };
 
             material = this._materialRepository.update(material);
