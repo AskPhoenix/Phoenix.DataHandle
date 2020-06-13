@@ -39,7 +39,7 @@ namespace Phoenix.Scheduler
                     {
                         a.WithRunner<LectureService>()
                             .ScheduleOnce()
-                            .ScheduleEvery(TimeSpan.FromSeconds(2))
+                            .ScheduleEvery(TimeSpan.FromSeconds(60 * 30))
                             .Build();
                     });
 

@@ -3,8 +3,8 @@
     public enum LectureCreatedBy
     {
         Unknown = -1,
-        Automatic,
-        Manual
+        Automatic = 1,
+        Manual = 2,
     }
 
     public static class LectureGeneratedByExtensions

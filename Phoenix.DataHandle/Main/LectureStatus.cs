@@ -3,8 +3,8 @@
     public enum LectureStatus
     {
         Unknown = -1,
-        Scheduled,
-        Cancelled
+        Scheduled = 1,
+        Cancelled = 2,
     }
 
     public static class LectureStatusExtensions
