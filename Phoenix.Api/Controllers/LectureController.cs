@@ -17,14 +17,15 @@ namespace Phoenix.Api.Controllers
     public class LectureController : BaseController
     {
         private readonly ILogger<LectureController> _logger;
-        private readonly Repository<Lecture> _lectureRepository;
+        private readonly LectureRepository _lectureRepository;
         private readonly Repository<Exercise> _exerciseRepository;
         private readonly Repository<Exam> _examRepository;
 
         public LectureController(PhoenixContext phoenixContext, ILogger<LectureController> logger)
         {
             this._logger = logger;
-            this._lectureRepository = new Repository<Lecture>(phoenixContext);
+            this._lectureRepository = new LectureRepository(phoenixContext);
+            this._lectureRepository.include(a => a.Course, a => a.Classroom);
             this._exerciseRepository = new Repository<Exercise>(phoenixContext);
             this._examRepository = new Repository<Exam>(phoenixContext);
         }
@@ -175,6 +176,72 @@ namespace Phoenix.Api.Controllers
             }).ToListAsync();
         }
 
+        [HttpPost]
+        public async Task<LectureApi> Post([FromBody] LectureApi lectureApi)
+        {
+            this._logger.LogInformation("Api -> Lecture -> Post");
 
+            Lecture lecture = new Lecture
+            {
+                CourseId = lectureApi.Course.id,
+                ClassroomId = lectureApi.Classroom.id,
+                StartDateTime = lectureApi.StartDateTime,
+                EndDateTime = lectureApi.EndDateTime,
+                CreatedBy = LectureCreatedBy.Manual,
+                Status = LectureStatus.Scheduled,
+                Info = lectureApi.Info,
+                Exam = lectureApi.Exam != null ? new Exam
+                {
+                    Name = lectureApi.Exam.Name,
+                    Comments = lectureApi.Exam.Comments
+                } : null,
+                Attendance = new List<Attendance>(),
+                Exercise = new List<Exercise>(),
+                ScheduleId = null
+            };
+
+            lecture = this._lectureRepository.create(lecture);
+
+            lecture = await this._lectureRepository.find(lecture.Id);
+
+            return new LectureApi
+            {
+                id = lecture.Id,
+                Status = lecture.Status,
+                StartDateTime = lecture.StartDateTime,
+                EndDateTime = lecture.EndDateTime,
+                Info = lecture.Info,
+                Course = new CourseApi
+                {
+                    id = lecture.Course.Id,
+                    Name = lecture.Course.Name,
+                    SubCourse = lecture.Course.SubCourse,
+                    Level = lecture.Course.Level,
+                    Group = lecture.Course.Group,
+                    Info = lecture.Course.Info
+                },
+                Classroom = lecture.Classroom != null
+                    ? new ClassroomApi
+                    {
+                        id = lecture.Classroom.Id,
+                        Name = lecture.Classroom.Name,
+                        Info = lecture.Classroom.Info
+                    }
+                    : null,
+                Exam = lecture.Exam != null
+                    ? new ExamApi
+                    {
+                        id = lecture.Exam.Id,
+                        Name = lecture.Exam.Name,
+                        Comments = lecture.Exam.Comments,
+                    }
+                    : null,
+                Exercises = lecture.Exercise.Select(a => new ExerciseApi
+                {
+                    id = a.Id,
+                    Name = a.Name,
+                }).ToList(),
+            };
+        }
     }
 }
