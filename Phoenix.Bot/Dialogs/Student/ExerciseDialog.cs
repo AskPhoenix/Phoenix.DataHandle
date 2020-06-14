@@ -238,7 +238,7 @@ namespace Phoenix.Bot.Dialogs.Student
 
                 var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 2));
                 card.BackgroundImage = new AdaptiveBackgroundImage("https://www.bot.askphoenix.gr/assets/4f5d75_sq.png");
-                card.Body.Add(new AdaptiveTextBlockHeaderLight($"Εργασία {++hwShownCount} - {lecDate:dddd} {lecDate.Day}/{lecDate.Month}"));
+                card.Body.Add(new AdaptiveTextBlockHeaderLight($"Εργασία {++hwShownCount}η - {lecDate:dddd} {lecDate.Day}/{lecDate.Month}"));
                 card.Body.Add(new AdaptiveTextBlockHeaderLight(courseName + (subCourse != null ? $" - {subCourse}" : "")));
                 if (hw.Book != null)
                     card.Body.Add(new AdaptiveRichFactSetLight("Βιβλίο ", hw.Book.Name));
@@ -252,7 +252,7 @@ namespace Phoenix.Bot.Dialogs.Student
                     card.Body.Add(new AdaptiveRichFactSetLight("Βαθμός ", grade == null ? "-" : grade.ToString(), separator: true));
                 }
                 card.Body.Add(new AdaptiveRichFactSetLight("Άσκηση ", hw.Name, separator: true));
-                card.Body.Add(new AdaptiveRichFactSetLight("Σχόλια ", string.IsNullOrEmpty(hw.Info) ? "-" : hw.Info, separator: true));
+                card.Body.Add(new AdaptiveRichFactSetLight("Σχόλια ", string.IsNullOrEmpty(hw.Comments) ? "-" : hw.Comments, separator: true));
 
                 await stepContext.Context.SendActivityAsync(
                     MessageFactory.Attachment(new Attachment(contentType: AdaptiveCard.ContentType, content: JObject.FromObject(card))));
