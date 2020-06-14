@@ -82,7 +82,7 @@ namespace Phoenix.Bot.Dialogs.Teacher
                 case 2:
                     taskArticle = "τις";
                     button.Url += "teacher/gradation";
-                    imageUrl += "agenda_bg.png";
+                    imageUrl += "gradation_bg.png";
                     break;
                 case 3:
                     taskArticle = "το";
