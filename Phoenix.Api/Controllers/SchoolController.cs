@@ -16,11 +16,13 @@ namespace Phoenix.Api.Controllers
     {
         private readonly ILogger<SchoolController> _logger;
         private readonly Repository<School> _schoolRepository;
+        private readonly Repository<Classroom> _classroomRepository;
 
         public SchoolController(PhoenixContext phoenixContext, ILogger<SchoolController> logger)
         {
             this._logger = logger;
             this._schoolRepository = new Repository<School>(phoenixContext);
+            this._classroomRepository = new Repository<Classroom>(phoenixContext);
         }
 
         [HttpGet]
@@ -80,5 +82,25 @@ namespace Phoenix.Api.Controllers
         { 
             this._logger.LogInformation($"Api -> School -> Get{id}");
         }
+
+        [HttpGet("{id}/Classroom")]
+        public async Task<IEnumerable<ClassroomApi>> GetClassrooms(int id)
+        {
+            this._logger.LogInformation($"Api -> School -> Get{id} -> Classroom");
+
+            IQueryable<Classroom> classrooms = this._classroomRepository.find().Where(a => a.School.Id == id);
+
+            return await classrooms.Select(classroom => new ClassroomApi
+            {
+                id = classroom.Id,
+                Name = classroom.Name,
+                Info = classroom.Info,
+            }).ToListAsync();
+        }
+
+
+
+
+
     }
 }
