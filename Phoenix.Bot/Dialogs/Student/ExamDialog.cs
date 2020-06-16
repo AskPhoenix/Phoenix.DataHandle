@@ -191,7 +191,8 @@ namespace Phoenix.Bot.Dialogs.Student
                 ToList().
                 Aggregate((e, ne) => e.Lecture.StartDateTime < ne.Lecture.StartDateTime ? e : ne);
 
-            await stepContext.Context.SendActivityAsync($"Το αμέσως επόμενο διαγώνισμα είναι την {nextExam.Lecture.StartDateTime:dddd} " +
+            string dayArticle = nextExam.Lecture.StartDateTime.DayOfWeek == DayOfWeek.Saturday ? "το" : "την";
+            await stepContext.Context.SendActivityAsync($"Το αμέσως επόμενο διαγώνισμα είναι {dayArticle} {nextExam.Lecture.StartDateTime:dddd} " +
                 $"{nextExam.Lecture.StartDateTime:m} στις {nextExam.Lecture.StartDateTime:t}" + (nextExam.Lecture?.ClassroomId != null ? $" στην αίθουσα {nextExam.Lecture.Classroom.Name}." : "."));
 
             return await stepContext.ReplaceDialogAsync(WaterfallNames.Material, nextExam.Id, cancellationToken);
