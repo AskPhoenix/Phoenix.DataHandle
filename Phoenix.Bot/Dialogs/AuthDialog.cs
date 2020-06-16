@@ -112,7 +112,7 @@ namespace Phoenix.Bot.Dialogs
                 Buttons = new List<CardAction>
                 {
                     new CardAction(ActionTypes.ImBack, title: "🔓 Σύνδεση", value: "🔓 Σύνδεση"),
-                    new CardAction(ActionTypes.OpenUrl, title: "🦜 Μάθε περισσότερα...", value: "https://www.askphoenix.gr")
+                    new CardAction(ActionTypes.OpenUrl, title: "🦜 Περισσότερα...", value: "https://www.askphoenix.gr")
                 }
             };
 
@@ -284,14 +284,17 @@ namespace Phoenix.Bot.Dialogs
 
             if (sms_left > 0)
             {
-                await smsAcsr.SetAsync(stepContext.Context, sms_left - 1);
+                string phone = Convert.ToInt64(stepContext.Options).ToString();
+                if (phone != "6900000000")
+                    await smsAcsr.SetAsync(stepContext.Context, sms_left - 1);
+
                 return await stepContext.NextAsync(null, cancellationToken);
             }
 
             await stepContext.Context.SendActivityAsync("Δυστυχώς έχεις υπερβεί το όριο μηνυμάτων επαλήθευσης.");
             await stepContext.Context.SendActivityAsync("Παρακαλώ επικοινώνησε με τους καθηγητές σου για να συνεχίσεις.");
 
-            return await stepContext.EndDialogAsync(null, cancellationToken);
+            return await stepContext.EndDialogAsync(false, cancellationToken);
         }
 
         private async Task<DialogTurnResult> SendPinStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
