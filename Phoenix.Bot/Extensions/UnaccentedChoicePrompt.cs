@@ -2,7 +2,9 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Phoenix.Bot.Helpers;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,7 +26,8 @@ namespace Phoenix.Bot.Extensions
 
         protected override Task<PromptRecognizerResult<FoundChoice>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default)
         {
-            //Adds the unaccented version of every choice as its synonym
+            //Adds the unaccented version of every choice after removing any potential emojis as its synonym
+            //If there are synonyms, their unaccented version (without checking for emojis) is also stored
             for (int i = 0; i < options.Choices.Count; i++)
             {
                 if (options.Choices[i].Synonyms != null)
@@ -41,15 +44,16 @@ namespace Phoenix.Bot.Extensions
 
                     options.Choices[i].Synonyms.AddRange(unaccentedSynonyms);
                 }
+                else
+                    options.Choices[i].Synonyms = new List<string>();
 
-                string unaccentedChoice = options.Choices[i].Value.ToUnaccented();
+                //Remove any emojis
+                string noEmojiChoice = new string(options.Choices[i].Value.Where(c => !char.IsSurrogate(c) && !char.IsSymbol(c)).ToArray()).Trim();
+                string unaccentedChoice = noEmojiChoice.ToUnaccented();
+                if (noEmojiChoice != options.Choices[i].Value)
+                    options.Choices[i].Synonyms.Add(noEmojiChoice);
                 if (unaccentedChoice != options.Choices[i].Value)
-                {
-                    if (options.Choices[i].Synonyms == null)
-                        options.Choices[i].Synonyms = new List<string> { unaccentedChoice };
-                    else if (!options.Choices[i].Synonyms.Contains(unaccentedChoice))
-                        options.Choices[i].Synonyms.Add(unaccentedChoice);
-                }
+                    options.Choices[i].Synonyms.Add(unaccentedChoice);
             }
 
             return base.OnRecognizeAsync(turnContext, state, options, cancellationToken);
