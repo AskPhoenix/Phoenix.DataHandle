@@ -103,5 +103,15 @@ namespace Phoenix.Bot.Helpers
             // Just return the closest date including its year.
             return dateTimes.Aggregate((d, cd) => Math.Abs((d - grDateTime).Days) < Math.Abs((cd - grDateTime).Days) ? d : cd);
         }
+
+        public static int[] ToDigitsArray(this int value)
+        {
+            var digits = new Stack<int>();
+
+            for (; value > 0; value /= 10)
+                digits.Push(value % 10);
+
+            return digits.ToArray();
+        }
     }
 }
