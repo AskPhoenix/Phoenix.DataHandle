@@ -63,6 +63,7 @@ namespace Phoenix.Bot.Dialogs.Teacher
             var foundChoice = stepContext.Result as FoundChoice;
             
             string taskArticle = string.Empty;
+            string taskName = foundChoice.Value.TrimEmojis().ToLower();
             string imageUrl = "https://www.bot.askphoenix.gr/assets/";
             var button = new UrlButton(title: foundChoice.Value + "...", url: "https://www.pwa.askphoenix.gr/",
                 webviewHeightRatio: "tall", messengerExtensions: true);
@@ -98,8 +99,8 @@ namespace Phoenix.Bot.Dialogs.Teacher
                 {
                     new GenericElement()
                     {
-                        Title = $"Μετάβαση σ{taskArticle} {foundChoice.Value.ToLower()}" + (foundChoice.Index == 3 ? " διδασκαλίας" : ""),
-                        Subtitle = $"Προβολή ή επεξεργασία των πληροφοριών σχετικά με {taskArticle} {foundChoice.Value.ToLower()}.",
+                        Title = $"Μετάβαση σ{taskArticle} {taskName}" + (foundChoice.Index == 3 ? " διδασκαλίας" : ""),
+                        Subtitle = $"Προβολή ή επεξεργασία των πληροφοριών σχετικά με {taskArticle} {taskName}.",
                         ImageUrl = imageUrl,
                         DefaultAction = button.ToUrlAction(),
                         Buttons = new Button[] { button }

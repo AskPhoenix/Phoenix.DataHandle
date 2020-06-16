@@ -113,5 +113,8 @@ namespace Phoenix.Bot.Helpers
 
             return digits.ToArray();
         }
+
+        public static string TrimEmojis(this string str)
+            => new string(str.Where(c => !char.IsSurrogate(c) && !char.IsSymbol(c)).ToArray()).Trim();
     }
 }

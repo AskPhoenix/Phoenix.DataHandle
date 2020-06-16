@@ -2,6 +2,7 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Phoenix.Bot.Extensions;
+using Phoenix.Bot.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -54,7 +55,7 @@ namespace Phoenix.Bot.Dialogs.Student.Common
         private async Task<DialogTurnResult> CourseSelectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             string resValue = (stepContext.Result as FoundChoice).Value;
-            var selCourseName = new string(resValue.Where(c => !char.IsSurrogate(c) && !char.IsSymbol(c)).ToArray()).Trim();
+            var selCourseName = resValue.TrimEmojis();
             var coursesLookup = stepContext.Options as Dictionary<string, int[]>;
 
             int[] selCourseIds = coursesLookup[selCourseName];

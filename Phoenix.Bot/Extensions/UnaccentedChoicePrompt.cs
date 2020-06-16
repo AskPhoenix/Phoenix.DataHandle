@@ -48,7 +48,7 @@ namespace Phoenix.Bot.Extensions
                     options.Choices[i].Synonyms = new List<string>();
 
                 //Remove any emojis
-                string noEmojiChoice = new string(options.Choices[i].Value.Where(c => !char.IsSurrogate(c) && !char.IsSymbol(c)).ToArray()).Trim();
+                string noEmojiChoice = options.Choices[i].Value.TrimEmojis();
                 string unaccentedChoice = noEmojiChoice.ToUnaccented();
                 if (noEmojiChoice != options.Choices[i].Value)
                     options.Choices[i].Synonyms.Add(noEmojiChoice);
