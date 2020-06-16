@@ -73,7 +73,7 @@ namespace Phoenix.Bot.Dialogs
                 {
                     Prompt = MessageFactory.Text("Προτού ξεκινήσουμε, θα ήθελες να σου δείξω τι μπορώ να κάνω με μια σύντομη περιήγηση;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
-                    Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
+                    Choices = new Choice[] { new Choice("✔️ Ναι"), new Choice("❌ Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
                 });
 
         private async Task<DialogTurnResult> ReplyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -107,24 +107,24 @@ namespace Phoenix.Bot.Dialogs
                 {
                     new GenericElement()
                     {
-                        Title = "Σταθερό μενού",
+                        Title = "☰ Σταθερό μενού",
                         Subtitle = "Ανακάλυψε τις δυνατότητες του σταθερού μενού της συνομιλίας.",
                         ImageUrl = "https://www.bot.askphoenix.gr/assets/persistent_sq2.png",
-                        Buttons = new Button[] { new PostbackButton("Περισσότερα", "Περισσότερα για το σταθερό μενού") }
+                        Buttons = new Button[] { new PostbackButton("🦜 Περισσότερα", "Περισσότερα για το σταθερό μενού") }
                     },
                     new GenericElement()
                     {
-                        Title = "Αρχικό μενού",
+                        Title = "🏁 Αρχικό μενού",
                         Subtitle = "Μάθε τις δυνατότητες του αρχικού μενού κατά την έναρξη της συνομιλίας.",
                         ImageUrl = $"https://www.bot.askphoenix.gr/assets/home_{(isStudent ? "student" : "teacher")}_sq.png",
-                        Buttons = new Button[] { new PostbackButton("Περισσότερα", "Περισσότερα για το αρχικό μενού") }
+                        Buttons = new Button[] { new PostbackButton("🕊 Περισσότερα", "Περισσότερα για το αρχικό μενού") }
                     },
                     new GenericElement()
                     {
-                        Title = "Εκφράσεις - Εντολές",
+                        Title = "🔠 Εκφράσεις - Εντολές",
                         Subtitle = "Δες τι άλλο μπορείς να γράψεις στο Phoenix.",
                         ImageUrl = "https://www.bot.askphoenix.gr/assets/logo_sq.png",
-                        Buttons = new Button[] { new PostbackButton("Περισσότερα", "Περισσότερα για τις εντολές") }
+                        Buttons = new Button[] { new PostbackButton("🐧 Περισσότερα", "Περισσότερα για τις εντολές") }
                     }
                 }
             };
@@ -136,7 +136,7 @@ namespace Phoenix.Bot.Dialogs
             reply.ChannelData = ChannelDataFactory.Template(topics);
             await stepContext.Context.SendActivityAsync(reply);
 
-            reply = (Activity)MessageFactory.SuggestedActions(new CardAction[] { new CardAction(ActionTypes.ImBack, "Παράλειψη") });
+            reply = (Activity)MessageFactory.SuggestedActions(new CardAction[] { new CardAction(ActionTypes.ImBack, "🔚 Παράλειψη") });
             reply.Text = "Πάτησε στα κουμπιά παραπάνω για να μάθεις περισσότερα, ή επίλεξε \"Παράλειψη\" για να ολοκληρώσεις την περιήγηση.";
 
             return await stepContext.PromptAsync(
@@ -147,7 +147,7 @@ namespace Phoenix.Bot.Dialogs
                     RetryPrompt = reply,
                     Style = ListStyle.None,
                     Choices = ChoiceFactory.ToChoices(new string[] 
-                        { "Περισσότερα για το σταθερό μενού", "Περισσότερα για το αρχικό μενού", "Περισσότερα για τις εντολές", "Παράλειψη" })
+                        { "Περισσότερα για το σταθερό μενού", "Περισσότερα για το αρχικό μενού", "Περισσότερα για τις εντολές", "🔚 Παράλειψη" })
                 },
                 cancellationToken);
         }
@@ -219,18 +219,18 @@ namespace Phoenix.Bot.Dialogs
                 {
                     new GenericElement()
                     {
-                        Title = "Εργασίες",
+                        Title = "📚 Εργασίες",
                         Subtitle = isStudent ? "Έλεγξε τις εργασίες σου για το σπίτι." : "Προσθήκη και επεξεργασία των εργασιών των μαθητών."
                     },
                     new GenericElement()
                     {
-                        Title = "Διαγωνίσματα",
+                        Title = "📝 Διαγωνίσματα",
                         Subtitle = isStudent ? "Διαχειρίσου τα διαγωνίσματα που έχεις ήδη γράψει ή πρόκειται να γράψεις." 
                             : "Δημιουργία νέων διαγωνισμάτων και επεξεργασία της ύλης."
                     },
                     new GenericElement()
                     {
-                        Title = "Πρόγραμμα",
+                        Title = "📅 Πρόγραμμα",
                         Subtitle = isStudent ? "Δες το πρόγραμμα των μαθημάτων σου και τυχόν αλλαγές σε αυτό."
                             : (roleSel > Role.Teacher ? "Εμφάνιση και επεξεργασία των ωρών του προγράμματος διδασκαλίας." 
                             : "Εμφάνιση των ωρών του προγράμματος διδασκαλίας.")
@@ -243,7 +243,7 @@ namespace Phoenix.Bot.Dialogs
                 var elements = new List<GenericElement>(homeCards.Elements);
                 elements.Insert(2, new GenericElement() 
                 {
-                    Title = "Βαθμολογίες",
+                    Title = "💯 Βαθμολογίες",
                     Subtitle = "Εισαγωγή των βαθμολογιών των εργασιών και των διαγωνισμάτων." 
                 });
                 homeCards.Elements = elements.ToArray();
@@ -268,12 +268,12 @@ namespace Phoenix.Bot.Dialogs
                 {
                     new GenericElement()
                     {
-                        Title = "Χαιρετισμοί",
+                        Title = "👋 Χαιρετισμοί",
                         Subtitle = "Χαιρέτισε γράφοντας \"Γεια σου Phoenix!\", \"Καλημέρα\" ή παρόμοιες εκφράσεις."
                     },
                     new GenericElement()
                     {
-                        Title = "Βοήθεια",
+                        Title = "💪 Βοήθεια",
                         Subtitle = "Έχεις κάποια αποροία ή έχεις κολλήσει κάπου; Απλά γράψε \"Βοήθεια\"."
                     }
                 }
@@ -293,7 +293,7 @@ namespace Phoenix.Bot.Dialogs
                 {
                     Prompt = MessageFactory.Text("Θα ήθελες να συνεχίσεις την περιήγηση εξερευνώντας κάποιο άλλο θέμα;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε ένα από τα παρακάτω για να συνεχίσουμε:"),
-                    Choices = ChoiceFactory.ToChoices(new string[] { "Άλλο θέμα", "Ολοκλήρωση" }),
+                    Choices = ChoiceFactory.ToChoices(new string[] { "🔙 Άλλο θέμα", "🔚 Ολοκλήρωση" }),
                     Style = ListStyle.SuggestedAction
                 },
                 cancellationToken);

@@ -6,6 +6,7 @@ using Phoenix.Bot.Extensions;
 using Phoenix.Bot.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static Phoenix.Bot.Helpers.ChannelHelper.Facebook;
@@ -77,7 +78,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 {
                     Prompt = MessageFactory.Text("Πώς θα μπορούσα να σε βοηθήσω;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε ή πληκτρολόγησε μία από τις παρακάτω απαντήσεις:"),
-                    Choices = ChoiceFactory.ToChoices(new string[] { "Εργασίες", "Διαγωνίσματα", "Πρόγραμμα", "Βοήθεια" })
+                    Choices = ChoiceFactory.ToChoices(new string[] { "📚 Εργασίες", "📝 Διαγωνίσματα", "📅 Πρόγραμμα", "💪 Βοήθεια" })
                 },
                 cancellationToken);
         }
@@ -125,24 +126,24 @@ namespace Phoenix.Bot.Dialogs.Student
                 {
                     new GenericElement()
                     {
-                        Title = "Εργασίες",
+                        Title = "📚 Εργασίες",
                         Subtitle = "Μάθε πώς μπορείς να διαχειριστείς τις εργασίες για το σπίτι.",
                         ImageUrl = "https://www.bot.askphoenix.gr/assets/exercise_bg.png",
-                        Buttons = new Button[] { new PostbackButton("Περισσότερα", "Περισσότερα για τις εργασίες") }
+                        Buttons = new Button[] { new PostbackButton("🦜 Περισσότερα", "Περισσότερα για τις εργασίες") }
                     },
                     new GenericElement()
                     {
-                        Title = "Διαγωνίσματα",
+                        Title = "📝 Διαγωνίσματα",
                         Subtitle = "Μάθε πώς μπορείς να διαχειριστείς τα διαγωνίσματά σου.",
                         ImageUrl = "https://www.bot.askphoenix.gr/assets/exam_bg.png",
-                        Buttons = new Button[] { new PostbackButton("Περισσότερα", "Περισσότερα για τα διαγωνίσματα") }
+                        Buttons = new Button[] { new PostbackButton("🕊 Περισσότερα", "Περισσότερα για τα διαγωνίσματα") }
                     },
                     new GenericElement()
                     {
-                        Title = "Πρόγραμμα",
+                        Title = "📅 Πρόγραμμα",
                         Subtitle = "Μάθε πώς μπορείς να δεις το πρόγραμμα των μαθημάτων σου.",
                         ImageUrl = "https://www.bot.askphoenix.gr/assets/schedule_bg.png",
-                        Buttons = new Button[] { new PostbackButton("Περισσότερα", "Περισσότερα για το πρόγραμμα") }
+                        Buttons = new Button[] { new PostbackButton("🐧 Περισσότερα", "Περισσότερα για το πρόγραμμα") }
                     }
                 }
             };
@@ -189,18 +190,18 @@ namespace Phoenix.Bot.Dialogs.Student
                 {
                     new GenericElement()
                     {
-                        Title = "Eργασίες",
+                        Title = "📚 Eργασίες",
                         Subtitle = "Μάθε τη δουλειά για το σπίτι για κάποιο μάθημα.",
-                        Buttons = new Button[] { new PostbackButton("Άνοιγμα εργασιών") }
+                        Buttons = new Button[] { new PostbackButton("🎬 Άνοιγμα εργασιών") }
                     },
                     new GenericElement()
                     {
-                        Title = "Για το επόμενο μάθημα",
+                        Title = "⏭ Για το επόμενο μάθημα",
                         Subtitle = "Δες τις εργασίες για το σπίτι που έχεις για το επόμενο μάθημα."
                     },
                     new GenericElement()
                     {
-                        Title = "Για άλλο μάθημα",
+                        Title = "⌚ Για άλλο μάθημα",
                         Subtitle = "Δες παλαιότερες εργασίες ή αν υπάρχει κάτι για κάποιο μελλοντικό μάθημα."
                     }
                 }
@@ -221,23 +222,23 @@ namespace Phoenix.Bot.Dialogs.Student
                 {
                     new GenericElement()
                     {
-                        Title = "Διαγωνίσματα",
+                        Title = "📝 Διαγωνίσματα",
                         Subtitle = "Δες πληροφορίες για τα διαγωνίσματά σου.",
-                        Buttons = new Button[] { new PostbackButton("Άνοιγμα διαγωνισμάτων") }
+                        Buttons = new Button[] { new PostbackButton("🎬 Άνοιγμα διαγωνισμάτων") }
                     },
                     new GenericElement()
                     {
-                        Title = "Επιδόσεις",
+                        Title = "💯 Επιδόσεις",
                         Subtitle = "Έλεγξε τη βαθμολογία σου στα διαγωνίσματα που έχεις γράψει."
                     },
                     new GenericElement()
                     {
-                        Title = "Προγραμματισμένα",
+                        Title = "🔮 Μελλοντικά",
                         Subtitle = "Μάθε πότε είναι τα επόμενα διαγωνίσματα.",
                     },
                     new GenericElement()
                     {
-                        Title = "Προετοιμασία",
+                        Title = "🏃 Προετοιμασία",
                         Subtitle = "Δες την ύλη και τι πρέπει να διαβάσεις για το επόμενο διαγώνισμα."
                     }
                 }
@@ -258,28 +259,28 @@ namespace Phoenix.Bot.Dialogs.Student
                 {
                     new GenericElement()
                     {
-                        Title = "Πρόγραμμα",
+                        Title = "📅 Πρόγραμμα",
                         Subtitle = "Μάθε πληροφορίες για το πρόγραμμα των μαθημάτων σου.",
-                        Buttons = new Button[] { new PostbackButton("Άνοιγμα προγράμματος") }
+                        Buttons = new Button[] { new PostbackButton("🎬 Άνοιγμα προγράμματος") }
                     },
                     new GenericElement()
                     {
-                        Title = "Σημερινό",
+                        Title = "🌞 Σημερινό",
                         Subtitle = "Δες τις ώρες και τις αίθουσες για τα μαθήματα που έχεις για σήμερα."
                     },
                     new GenericElement()
                     {
-                        Title = "Άλλη μέρα",
+                        Title = "🌅 Άλλη μέρα",
                         Subtitle = "Δες το πρόγραμμα των μαθημάτων για μια μέρα της επιλογής σου."
                     },
                     new GenericElement()
                     {
-                        Title = "Εβδομαδιαίο",
+                        Title = "🗓 Εβδομαδιαίο",
                         Subtitle = "Δες το πρόγραμμα των μαθημάτων σου για την επόμενη εβδομάδα."
                     },
                     new GenericElement()
                     {
-                        Title = "Αλλαγές",
+                        Title = "🔄 Αλλαγές",
                         Subtitle = "Οι αλλαγές στο πρόγραμμα εμφανίζονται αυτόματα στις αντίστοιχες ημέρες και ώρες."
                     }
                 }
@@ -296,8 +297,8 @@ namespace Phoenix.Bot.Dialogs.Student
         {
             var promptSuggestedActions = new CardAction[]
             {
-                new CardAction(ActionTypes.ImBack, "Ναι"),
-                new CardAction(ActionTypes.ImBack, "Όχι, ευχαριστώ"),
+                new CardAction(ActionTypes.ImBack, "✔️ Ναι"),
+                new CardAction(ActionTypes.ImBack, "❌ Όχι, ευχαριστώ")
             };
 
             var promptReply = (Activity)MessageFactory.SuggestedActions(promptSuggestedActions, 
@@ -313,11 +314,11 @@ namespace Phoenix.Bot.Dialogs.Student
                     RetryPrompt = rePromptReply,
                     Choices = new Choice[] 
                         {
-                            new Choice("Ναι"),
-                            new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } },
-                            new Choice("Άνοιγμα εργασιών") { Synonyms = new List<string> { "Άνοιγμα" } },
-                            new Choice("Άνοιγμα διαγωνισμάτων"),
-                            new Choice("Άνοιγμα προγράμματος")
+                            new Choice("✔️ Ναι"),
+                            new Choice("❌ Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } },
+                            new Choice("🎬 Άνοιγμα εργασιών") { Synonyms = new List<string> { "Άνοιγμα" } },
+                            new Choice("🎬 Άνοιγμα διαγωνισμάτων"),
+                            new Choice("🎬 Άνοιγμα προγράμματος")
                         },
                     Style = ListStyle.None
                 },

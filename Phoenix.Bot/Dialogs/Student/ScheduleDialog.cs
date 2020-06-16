@@ -110,7 +110,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 {
                     Prompt = MessageFactory.Text("Θα ήθελες να δεις το πρόγραμμα για άλλη ημέρα ή για ολόκληρη την εβδομάδα;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε μία από τις παρακάτω απαντήσεις:"),
-                    Choices = new Choice[] { new Choice("Άλλη ημέρα"), new Choice("Εβδομαδιαίο"), new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
+                    Choices = new Choice[] { new Choice("🌅 Άλλη ημέρα"), new Choice("🗓 Εβδομαδιαίο"), new Choice("❌ Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
                 });
         }
 
@@ -137,7 +137,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 DateTime nextDay = grNow.AddDays(i);
                 choices.Add($"{nextDay:dddd} - {nextDay.Day}/{nextDay.Month}");
             }
-            choices.Add("Άλλη ημερομηνία");
+            choices.Add("📅 Άλλη ημερομηνία");
 
             return await stepContext.PromptAsync(
                 nameof(UnaccentedChoicePrompt),
@@ -228,7 +228,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 {
                     Prompt = MessageFactory.Text("Θα ήθελες να δεις το πρόγραμμα για άλλη ημέρα;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
-                    Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
+                    Choices = new Choice[] { new Choice("✔️ Ναι"), new Choice("❌ Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
                 });
         }
 

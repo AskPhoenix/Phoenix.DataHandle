@@ -164,7 +164,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 {
                     Prompt = MessageFactory.Text("Θα ήθελες να δεις την ύλη για επόμενα διαγωνίσματα ή τους βαθμούς για παλαιότερα;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε ή πληκρολόγησε μία από τις παρακάτω επιλογές:"),
-                    Choices = new Choice[] { new Choice("Ύλη"), new Choice("Βαθμοί") }
+                    Choices = new Choice[] { new Choice("📄 Ύλη"), new Choice("💯 Βαθμοί") }
                 });
         }
 
@@ -254,6 +254,10 @@ namespace Phoenix.Bot.Dialogs.Student
 
                 await pageAcsr.SetAsync(stepContext.Context, page + 1);
 
+                string showMoreNumEmoji = string.Empty;
+                foreach (var digit in showMoreNum.ToDigitsArray())
+                    showMoreNumEmoji += digit.ToString() + "\ufe0f\u20e3";
+
                 return await stepContext.PromptAsync(
                     nameof(UnaccentedChoicePrompt),
                     new PromptOptions
@@ -261,7 +265,7 @@ namespace Phoenix.Bot.Dialogs.Student
                         Prompt = MessageFactory.Text($"Υπάρχ{(singular ? "ει" : "ουν")} ακόμη {matLeft} σημεί{(singular ? "ο" : "α")} " +
                             "που πρέπει να διαβάσεις."),
                         RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε μία από τις παρακάτω απαντήσεις:"),
-                        Choices = new Choice[] { new Choice($"Εμφάνιση {showMoreNum} ακόμη"), new Choice("Ολοκλήρωση") }
+                        Choices = new Choice[] { new Choice($"Εμφάνιση {showMoreNumEmoji} ακόμη"), new Choice("Ολοκλήρωση") }
                     });
             }
 
@@ -297,7 +301,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 {
                     Prompt = MessageFactory.Text("Θα ήθελες να δεις την ύλη για άλλο διαγώνισμα;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
-                    Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
+                    Choices = new Choice[] { new Choice("✔️ Ναι"), new Choice("❌ Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
                 });
         }
 
@@ -425,7 +429,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 {
                     Prompt = MessageFactory.Text("Θα ήθελες να δεις τον βαθμό σου για άλλο διαγώνισμα;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
-                    Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
+                    Choices = new Choice[] { new Choice("✔️ Ναι"), new Choice("❌ Όχι, ευχαριστώ") { Synonyms = new List<string> { "Όχι" } } }
                 });
         }
 

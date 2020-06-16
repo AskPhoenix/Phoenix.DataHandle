@@ -16,6 +16,8 @@ namespace Phoenix.Bot.Dialogs.Student.Common
             public const string Course = "Student_CommonCourse_WaterfallDialog";
         }
 
+        private static readonly string[] BookEmojis = new string[4] { "📕", "📗", "📘", "📙" };
+
         public CourseDialog() :
             base(nameof(CourseDialog))
         {
@@ -45,13 +47,14 @@ namespace Phoenix.Bot.Dialogs.Student.Common
                 {
                     Prompt = MessageFactory.Text($"Για ποιο μάθημα θα ήθελες να δεις {topic} σου;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε ή πληκτρολόγησε ένα από τα παρακάτω μαθήματα:"),
-                    Choices = ChoiceFactory.ToChoices(coursesLookup.Select(p => p.Key).ToList())
+                    Choices = ChoiceFactory.ToChoices(coursesLookup.Select((p, i) => BookEmojis[i % 4] + " " + p.Key).ToList())
                 });
         }
 
         private async Task<DialogTurnResult> CourseSelectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var selCourseName = (stepContext.Result as FoundChoice).Value;
+            string resValue = (stepContext.Result as FoundChoice).Value;
+            var selCourseName = new string(resValue.Where(c => !char.IsSurrogate(c) && !char.IsSymbol(c)).ToArray()).Trim();
             var coursesLookup = stepContext.Options as Dictionary<string, int[]>;
 
             int[] selCourseIds = coursesLookup[selCourseName];

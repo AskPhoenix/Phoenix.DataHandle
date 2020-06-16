@@ -19,7 +19,7 @@
             Persistent_Menu
         }
 
-        public static readonly string[] CategoriesGreek = new string[] { "Γενικό σχόλιο", "Κοπλιμέντο", "Πρόταση ιδέας", "Αξιολόγηση", "Παράπονο" };
+        public static readonly string[] CategoriesGreek = new string[] { "💬 Γενικό σχόλιο", "😊 Κοπλιμέντο", "💡 Πρόταση ιδέας", "👍 Αξιολόγηση", "😒 Παράπονο" };
 
         public static string ToStringGreek(this Category cat) => CategoriesGreek[(int)cat];
     }
