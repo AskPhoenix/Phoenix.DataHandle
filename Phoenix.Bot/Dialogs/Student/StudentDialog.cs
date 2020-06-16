@@ -6,7 +6,6 @@ using Phoenix.Bot.Extensions;
 using Phoenix.Bot.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static Phoenix.Bot.Helpers.ChannelHelper.Facebook;

@@ -111,8 +111,8 @@ namespace Phoenix.Bot.Dialogs
                 Tap = new CardAction(ActionTypes.OpenUrl, value: "https://www.askphoenix.gr"),
                 Buttons = new List<CardAction>
                 {
-                    new CardAction(ActionTypes.ImBack, title: "Σύνδεση", value: "Σύνδεση"),
-                    new CardAction(ActionTypes.OpenUrl, title: "Μάθε περισσότερα...", value: "https://www.askphoenix.gr")
+                    new CardAction(ActionTypes.ImBack, title: "🔓 Σύνδεση", value: "🔓 Σύνδεση"),
+                    new CardAction(ActionTypes.OpenUrl, title: "🦜 Μάθε περισσότερα...", value: "https://www.askphoenix.gr")
                 }
             };
 
@@ -123,7 +123,7 @@ namespace Phoenix.Bot.Dialogs
                 {
                     Prompt = reply,
                     RetryPrompt = reply,
-                    Choices = new Choice[] { new Choice("Σύνδεση") },
+                    Choices = new Choice[] { new Choice("🔓 Σύνδεση") },
                     Style = ListStyle.None
                 });
         }
@@ -180,7 +180,7 @@ namespace Phoenix.Bot.Dialogs
                     Prompt = MessageFactory.Text("Το κινητό τηλέφωνο που έγραψες δε βρέθηκε. " +
                         $"Είσαι σίγουρος ότι το {stepContext.Values["phone"]} είναι το σωστό;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
-                    Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι") }
+                    Choices = new Choice[] { new Choice("✔️ Ναι"), new Choice("❌ Όχι") }
                 });
         }
 
@@ -252,7 +252,7 @@ namespace Phoenix.Bot.Dialogs
                 {
                     Prompt = MessageFactory.Text("Ο κωδικός που πληκτρολόγησες δε βρέθηκε."),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε μία από τις παρακάτω απαντήσεις:"),
-                    Choices = new Choice[] { new Choice("Προσπάθησε ξανά"), new Choice("Ακύρωση") }
+                    Choices = new Choice[] { new Choice("🔁 Προσπάθησε ξανά"), new Choice("🔚 Ακύρωση") }
                 });
         }
 
@@ -321,7 +321,7 @@ namespace Phoenix.Bot.Dialogs
                 {
                     Prompt = MessageFactory.Text("Τέλεια! Μόλις σου έστειλα ένα SMS με ένα μοναδικό pin. Το έλαβες;"),
                     RetryPrompt = MessageFactory.Text("Έλαβες το SMS με το pin; Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
-                    Choices = new Choice[] { new Choice("Ναι"), new Choice("Όχι") }
+                    Choices = new Choice[] { new Choice("✔️ Ναι"), new Choice("❌ Όχι") }
                 });
         }
 
@@ -344,7 +344,7 @@ namespace Phoenix.Bot.Dialogs
                     Prompt = MessageFactory.Text("Αν δεν έχει έρθει ακόμη, μπορώ να προσπαθήσω να σου ξαναστείλω. " +
                     "Αλλιώς, πάτησε \"Το έλαβα\" για να συνεχίσουμε:"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε ή πληκτρολόγησε μία από τις παρακάτω απαντήσεις για να συνεχίσουμε:"),
-                    Choices = new Choice[] { new Choice("Το έλαβα"), new Choice("Στείλε ξανά") }
+                    Choices = new Choice[] { new Choice("👌 Το έλαβα"), new Choice("🔁 Στείλε ξανά") }
                 });
         }
 

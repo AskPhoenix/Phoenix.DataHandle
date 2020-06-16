@@ -53,7 +53,7 @@ namespace Phoenix.Bot.Dialogs.Teacher
                 {
                     Prompt = MessageFactory.Text("Πώς θα μπορούσα να σε βοηθήσω;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε ή πληκτρολόγησε μία από τις παρακάτω απαντήσεις:"),
-                    Choices = ChoiceFactory.ToChoices(new string[] { "Εργασίες", "Διαγωνίσματα", "Βαθμολογίες", "Πρόγραμμα" })
+                    Choices = ChoiceFactory.ToChoices(new string[] { "📚 Εργασίες", "📝 Διαγωνίσματα", "💯 Βαθμολογίες", "📅 Πρόγραμμα" })
                 },
                 cancellationToken);
         }
@@ -107,7 +107,7 @@ namespace Phoenix.Bot.Dialogs.Teacher
                 }
             };
 
-            var reply = MessageFactory.SuggestedActions(new string[1] { "Επιστροφή" });
+            var reply = MessageFactory.SuggestedActions(new string[1] { "🔙 Επιστροφή" });
             reply.ChannelData = ChannelDataFactory.Template(taskCard);
             await stepContext.Context.SendActivityAsync(reply);
 
