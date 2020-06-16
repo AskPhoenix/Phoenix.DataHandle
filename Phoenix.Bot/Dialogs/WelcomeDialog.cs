@@ -116,7 +116,7 @@ namespace Phoenix.Bot.Dialogs
                     {
                         Title = "🏁 Αρχικό μενού",
                         Subtitle = "Μάθε τις δυνατότητες του αρχικού μενού κατά την έναρξη της συνομιλίας.",
-                        ImageUrl = $"https://www.bot.askphoenix.gr/assets/home_{(isStudent ? "student" : "teacher")}_sq.png",
+                        ImageUrl = $"https://www.bot.askphoenix.gr/assets/home_{(isStudent ? "student" : "teacher")}_emoji_sq.png",
                         Buttons = new Button[] { new PostbackButton("🕊 Περισσότερα", "Περισσότερα για το αρχικό μενού") }
                     },
                     new GenericElement()
