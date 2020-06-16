@@ -17,12 +17,14 @@ namespace Phoenix.Api.Controllers
         private readonly ILogger<SchoolController> _logger;
         private readonly Repository<School> _schoolRepository;
         private readonly Repository<Classroom> _classroomRepository;
+        private readonly Repository<Course> _courseRepository;
 
         public SchoolController(PhoenixContext phoenixContext, ILogger<SchoolController> logger)
         {
             this._logger = logger;
             this._schoolRepository = new Repository<School>(phoenixContext);
             this._classroomRepository = new Repository<Classroom>(phoenixContext);
+            this._courseRepository = new Repository<Course>(phoenixContext);
         }
 
         [HttpGet]
@@ -86,7 +88,7 @@ namespace Phoenix.Api.Controllers
         [HttpGet("{id}/Classroom")]
         public async Task<IEnumerable<ClassroomApi>> GetClassrooms(int id)
         {
-            this._logger.LogInformation($"Api -> School -> Get{id} -> Classroom");
+            this._logger.LogInformation($"Api -> School -> Get{id} -> Classrooms");
 
             IQueryable<Classroom> classrooms = this._classroomRepository.find().Where(a => a.School.Id == id);
 
@@ -98,8 +100,23 @@ namespace Phoenix.Api.Controllers
             }).ToListAsync();
         }
 
+        [HttpGet("{id}/Course")]
+        public async Task<IEnumerable<CourseApi>> GetCourses(int id)
+        {
+            this._logger.LogInformation($"Api -> School -> Get{id} -> Courses");
 
+            IQueryable<Course> courses = this._courseRepository.find().Where(a => a.School.Id == id);
 
+            return await courses.Select(course => new CourseApi
+            {
+                id = course.Id,
+                Name = course.Name,
+                Group = course.Group,
+                SubCourse = course.SubCourse,
+                Level = course.Level,
+                Info = course.Info
+            }).ToListAsync();
+        }
 
 
     }

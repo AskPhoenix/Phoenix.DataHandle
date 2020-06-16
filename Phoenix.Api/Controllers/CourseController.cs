@@ -44,9 +44,9 @@ namespace Phoenix.Api.Controllers
                 Group = course.Group,
                 Level = course.Level,
                 Info = course.Info,
-                School = new School
+                School = new SchoolApi
                 {
-                    Id = course.School.Id,
+                    id = course.School.Id,
                     Slug = course.School.Slug,
                     Name = course.School.Name,
                 }
@@ -68,9 +68,9 @@ namespace Phoenix.Api.Controllers
                 Group = course.Group,
                 Level = course.Level,
                 Info = course.Info,
-                School = new School
+                School = new SchoolApi
                 {
-                    Id = course.School.Id,
+                    id = course.School.Id,
                     Slug = course.School.Slug,
                     Name = course.School.Name,
                 }
