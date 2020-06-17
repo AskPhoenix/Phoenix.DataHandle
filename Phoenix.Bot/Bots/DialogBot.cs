@@ -2,6 +2,7 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Phoenix.Bot.Helpers;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using static Phoenix.Bot.Helpers.DialogHelper;
@@ -27,9 +28,13 @@ namespace Phoenix.Bot.Bots
                 turnContext.Activity.Text = string.Empty;
             await base.OnTurnAsync(turnContext, cancellationToken);
 
-            // Save any state changes that might have occured during the turn.
-            await ConversationState.SaveChangesAsync(turnContext, false, cancellationToken);
-            await UserState.SaveChangesAsync(turnContext, false, cancellationToken);
+            try
+            {
+                // Save any state changes that might have occured during the turn.
+                await ConversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+                await UserState.SaveChangesAsync(turnContext, false, cancellationToken);
+            }
+            catch (Exception) { }
         }
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
