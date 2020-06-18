@@ -304,16 +304,15 @@ namespace Phoenix.Bot.Dialogs
 
             // Avoid sending the sms with the pin when the phone is the fake one
             if (phone == "6900000000")
-                pin = 1533278939;
+                pin = Convert.ToInt32(_configuration["test_pin"]);
             else
             {
                 string name = GreekNameCall(stepContext.Context.Activity.From.Name.Split(' ')[0]);
                 var sms = new SmsService(_configuration["NexmoSMS:ApiKey"], _configuration["NexmoSMS:ApiSecret"]);
                 await sms.SendAsync(new IdentityMessage()
                 {
-                    Destination = phone.ToString(),
-                    Body = $"Γεια σου {name}! Ο μοναδικός κωδικός σου για το Phoenix είναι ο {pin}. " +
-                        "Όταν σου ζητηθεί, πληκτρολόγησέ τον στη συνομιλία μας στο Messenger."
+                    Destination = phone,
+                    Body = $"Το pin σου για το Phoenix είναι το {pin}." //TODO: και έχει διάρκεια 5 λεπτά."
                 });
             }
             stepContext.Values.Add("pin", pin);
