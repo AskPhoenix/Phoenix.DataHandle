@@ -16,7 +16,7 @@ namespace Phoenix.DataHandle.Sms
         public string ApiSecret { set => this.apiSecret = value; }
         public string From { set => this.from = value; }
 
-        public SmsService(string apiKey, string apiSecret, string from = "Phoenix")
+        public SmsService(string apiKey, string apiSecret, string from = "AskPhoenix")
         {
             this.apiKey = apiKey;
             this.apiSecret = apiSecret;
@@ -30,11 +30,11 @@ namespace Phoenix.DataHandle.Sms
 
             string phone;
             if (message.Destination.StartsWith("69"))
-                phone = "30" + message.Destination;
+                phone = "+30" + message.Destination;
             else if (message.Destination.StartsWith("30"))
-                phone = message.Destination;
+                phone = "+" + message.Destination;
             else if (message.Destination.StartsWith("+30"))
-                phone = message.Destination.Substring(1);
+                phone = message.Destination;
             else
                 throw new Exception("Invalid phone number. Either it is not a Greek phone number, or not a mobile one.");
 
