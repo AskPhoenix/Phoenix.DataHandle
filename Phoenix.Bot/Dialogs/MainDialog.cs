@@ -97,6 +97,8 @@ namespace Phoenix.Bot.Dialogs
             string phone = await phoneAcsr.GetAsync(stepContext.Context);
             await phoneAcsr.DeleteAsync(stepContext.Context);
 
+            await _userState.CreateProperty<int>("sms_left").DeleteAsync(stepContext.Context);
+
             //This is for the students and their parents who have registered with the same phone number
             var codeAcsr = _conversationState.CreateProperty<string>("OneTimeCode");
             string code = await codeAcsr.GetAsync(stepContext.Context);
