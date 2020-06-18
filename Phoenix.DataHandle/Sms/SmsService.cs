@@ -48,7 +48,8 @@ namespace Phoenix.DataHandle.Sms
             {
                 from = this.from,
                 to = phone,
-                text = message.Body
+                text = message.Body,
+                type = "unicode"
             });
 
             return Task.FromResult(0);
