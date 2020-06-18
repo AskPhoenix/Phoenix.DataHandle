@@ -13,6 +13,7 @@ namespace Phoenix.Api.Models.Api
         public DateTime StartDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
         public LectureStatus Status { get; set; }
+        public string OnlineMeetingLink { get; set; }
         public string Info { get; set; }
         public LectureCreatedBy CreatedBy { get; set; }
 

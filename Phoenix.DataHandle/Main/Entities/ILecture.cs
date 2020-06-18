@@ -10,6 +10,7 @@ namespace Phoenix.DataHandle.Main.Entities
         DateTime EndDateTime { get; set; }
         LectureStatus Status { get; set; }
         string Info { get; set; }
+        string OnlineMeetingLink { get; set; }
         LectureCreatedBy CreatedBy { get; set; }
 
         ICourse Course { get; }
