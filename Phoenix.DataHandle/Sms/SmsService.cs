@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNet.Identity;
-using Nexmo.Api;
+﻿using Nexmo.Api;
 using Nexmo.Api.Request;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Phoenix.DataHandle.Sms
 {
-    public class SmsService : IIdentityMessageService
+    public class SmsService : ISmsService
     {
         private string apiKey;
         private string apiSecret;
@@ -23,18 +23,18 @@ namespace Phoenix.DataHandle.Sms
             this.from = from;
         }
 
-        public Task SendAsync(IdentityMessage message)
+        public Task SendAsync(string destination, string body)
         {
             if (string.IsNullOrEmpty(this.apiKey) || string.IsNullOrEmpty(this.apiSecret))
                 throw new Exception("SMS API credentials not defined.");
 
             string phone;
-            if (message.Destination.StartsWith("69"))
-                phone = "+30" + message.Destination;
-            else if (message.Destination.StartsWith("30"))
-                phone = "+" + message.Destination;
-            else if (message.Destination.StartsWith("+30"))
-                phone = message.Destination;
+            if (destination.StartsWith("69"))
+                phone = "+30" + destination;
+            else if (destination.StartsWith("30"))
+                phone = "+" + destination;
+            else if (destination.StartsWith("+30"))
+                phone = destination;
             else
                 throw new Exception("Invalid phone number. Either it is not a Greek phone number, or not a mobile one.");
 
@@ -43,16 +43,20 @@ namespace Phoenix.DataHandle.Sms
                 ApiKey = this.apiKey,
                 ApiSecret = this.apiSecret
             });
-            
+
             var results = client.SMS.Send(request: new SMS.SMSRequest
             {
                 from = this.from,
                 to = phone,
-                text = message.Body,
+                text = body,
                 type = "unicode"
             });
 
-            return Task.FromResult(0);
+            if(results.messages.Any(m => m.status != "0"))
+                throw new Exception(results.messages.FirstOrDefault(m => !string.IsNullOrWhiteSpace(m.error_text))?.error_text);
+
+
+            return Task.CompletedTask;
         }
     }
 }

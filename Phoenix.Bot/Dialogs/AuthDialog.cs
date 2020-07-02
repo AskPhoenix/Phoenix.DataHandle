@@ -1,6 +1,5 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using static Phoenix.Bot.Helpers.DialogHelper;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,8 +11,8 @@ using Phoenix.DataHandle.Main.Models;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Phoenix.DataHandle.Sms;
-using Microsoft.AspNet.Identity;
 using Phoenix.Bot.Helpers;
+using static Phoenix.Bot.Helpers.DialogHelper;
 
 namespace Phoenix.Bot.Dialogs
 {
@@ -309,11 +308,7 @@ namespace Phoenix.Bot.Dialogs
             {
                 string name = GreekNameCall(stepContext.Context.Activity.From.Name.Split(' ')[0]);
                 var sms = new SmsService(_configuration["NexmoSMS:ApiKey"], _configuration["NexmoSMS:ApiSecret"]);
-                await sms.SendAsync(new IdentityMessage()
-                {
-                    Destination = phone,
-                    Body = $"Το pin σου για το Phoenix είναι το {pin}." //TODO: και έχει διάρκεια 5 λεπτά."
-                });
+                await sms.SendAsync(phone, $"Το pin σου για το Phoenix είναι το {pin}.");   //TODO: και έχει διάρκεια 5 λεπτά."
             }
             stepContext.Values.Add("pin", pin);
 
