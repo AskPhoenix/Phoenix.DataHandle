@@ -15,16 +15,12 @@ namespace Phoenix.Api.Controllers
     public class SchoolController : BaseController
     {
         private readonly ILogger<SchoolController> _logger;
-        private readonly Repository<School> _schoolRepository;
-        private readonly Repository<Classroom> _classroomRepository;
-        private readonly Repository<Course> _courseRepository;
+        private readonly SchoolRepository _schoolRepository;
 
         public SchoolController(PhoenixContext phoenixContext, ILogger<SchoolController> logger)
         {
             this._logger = logger;
-            this._schoolRepository = new Repository<School>(phoenixContext);
-            this._classroomRepository = new Repository<Classroom>(phoenixContext);
-            this._courseRepository = new Repository<Course>(phoenixContext);
+            this._schoolRepository = new SchoolRepository(phoenixContext);
         }
 
         [HttpGet]
@@ -68,15 +64,25 @@ namespace Phoenix.Api.Controllers
         }
 
         [HttpPost]
-        public void Post([FromBody]string value)
+        public Task<SchoolApi> Post([FromBody] SchoolApi schoolApi)
         {
             this._logger.LogInformation("Api -> School -> Post");
+
+            if (schoolApi == null)
+                throw new ArgumentNullException(nameof(schoolApi));
+
+            return Task.FromResult(schoolApi);
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public Task<SchoolApi> Put(int id, [FromBody] SchoolApi schoolApi)
         {
-            this._logger.LogInformation("Api -> School -> Put");
+            this._logger.LogInformation("Api -> School -> Put -> {id}");
+
+            if (schoolApi == null)
+                throw new ArgumentNullException(nameof(schoolApi));
+
+            return Task.FromResult(schoolApi);
         }
 
         [HttpDelete("{id}")]
@@ -85,12 +91,13 @@ namespace Phoenix.Api.Controllers
             this._logger.LogInformation($"Api -> School -> Get{id}");
         }
 
+
         [HttpGet("{id}/Classroom")]
         public async Task<IEnumerable<ClassroomApi>> GetClassrooms(int id)
         {
-            this._logger.LogInformation($"Api -> School -> Get{id} -> Classrooms");
+            this._logger.LogInformation($"Api -> School -> {id} -> Classrooms");
 
-            IQueryable<Classroom> classrooms = this._classroomRepository.find().Where(a => a.School.Id == id);
+            IQueryable<Classroom> classrooms = this._schoolRepository.FindClassrooms(id);
 
             return await classrooms.Select(classroom => new ClassroomApi
             {
@@ -103,9 +110,9 @@ namespace Phoenix.Api.Controllers
         [HttpGet("{id}/Course")]
         public async Task<IEnumerable<CourseApi>> GetCourses(int id)
         {
-            this._logger.LogInformation($"Api -> School -> Get{id} -> Courses");
+            this._logger.LogInformation($"Api -> School -> {id} -> Courses");
 
-            IQueryable<Course> courses = this._courseRepository.find().Where(a => a.School.Id == id);
+            IQueryable<Course> courses = this._schoolRepository.FindCourses(id);
 
             return await courses.Select(course => new CourseApi
             {

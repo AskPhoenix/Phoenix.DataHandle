@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Phoenix.Api.Models.Api;
 using Phoenix.DataHandle.Main.Entities;
@@ -15,19 +16,19 @@ namespace Phoenix.Api.Controllers
     public class ExamController : BaseController
     {
         private readonly ILogger<ExamController> _logger;
-        private readonly Repository<Exam> _examRepository;
+        private readonly ExamRepository _examRepository;
 
         public ExamController(PhoenixContext phoenixContext, ILogger<ExamController> logger)
         {
             this._logger = logger;
-            this._examRepository = new Repository<Exam>(phoenixContext);
+            this._examRepository = new ExamRepository(phoenixContext);
             this._examRepository.include(a => a.Lecture);
         }
 
         [HttpGet("{id}")]
         public async Task<IExam> Get(int id)
         {
-            this._logger.LogInformation($"Api -> Exam -> Get{id}");
+            this._logger.LogInformation($"Api -> Exam -> Get -> {id}");
 
             Exam exam = await this._examRepository.find(id);
 
@@ -81,6 +82,9 @@ namespace Phoenix.Api.Controllers
         public async Task<ExamApi> Post([FromBody] ExamApi examApi)
         {
             this._logger.LogInformation("Api -> Exam -> Post");
+
+            if (examApi == null)
+                throw new ArgumentNullException(nameof(examApi));
 
             Exam exam = new Exam
             {
@@ -142,11 +146,14 @@ namespace Phoenix.Api.Controllers
         [HttpPut("{id}")]
         public async Task<ExamApi> Put(int id, [FromBody] ExamApi examApi)
         {
-            this._logger.LogInformation("Api -> Exam -> Put");
+            this._logger.LogInformation($"Api -> Exam -> Put -> {id}");
+
+            if (examApi == null)
+                throw new ArgumentNullException(nameof(examApi));
 
             Exam exam = new Exam
             {
-                Id = examApi.id,
+                Id = id,
                 Name = examApi.Name,
                 Comments = examApi.Comments,
                 LectureId = examApi.Lecture.id
@@ -205,10 +212,42 @@ namespace Phoenix.Api.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-            this._logger.LogInformation($"Api -> Exam -> Get -> {id}");
+            this._logger.LogInformation($"Api -> Exam -> Delete -> {id}");
 
             this._examRepository.delete(id);
         }
+
+
+        [HttpGet("{id}/StudentExam")]
+        public async Task<IEnumerable<StudentExamApi>> GetStudentExams(int id)
+        {
+            this._logger.LogInformation($"Api -> Exam -> {id} -> StudentExams");
+
+            IQueryable<StudentExam> studentExams = this._examRepository.FindStudentExams(id);
+
+            return await studentExams.Select(studentExam => new StudentExamApi
+            {
+                Grade = studentExam.Grade,
+                Student = studentExam.Student != null ? new UserApi
+                {
+                    id = studentExam.Student.AspNetUserId,
+                    FirstName = studentExam.Student.FirstName,
+                    LastName = studentExam.Student.LastName,
+                    FullName = studentExam.Student.FullName,
+                    AspNetUser = new AspNetUserApi
+                    {
+                        id = studentExam.Student.AspNetUser.Id,
+                        UserName = studentExam.Student.AspNetUser.UserName,
+                        Email = studentExam.Student.AspNetUser.Email,
+                        PhoneNumber = studentExam.Student.AspNetUser.PhoneNumber
+                    },
+                } : null, 
+            }).ToListAsync();
+        }
+
+
+
+
 
     }
 }
