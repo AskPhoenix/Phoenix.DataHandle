@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Phoenix.DataHandle.Identity;
 using Phoenix.DataHandle.Main.Models;
 using Talagozis.AspNetCore.Models;
 
-namespace Phoenix.DataHandle.Identity
+namespace Phoenix.Api.App_Plugins
 {
     public class ApplicationUserManager : UserManager<ApplicationUser>, IUserManager<ApplicationUser>
     {

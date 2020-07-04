@@ -5,9 +5,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Phoenix.DataHandle.Identity;
 using Talagozis.AspNetCore.Models;
 
-namespace Phoenix.DataHandle.Identity
+namespace Phoenix.Api.App_Plugins
 {
     public class ApplicationSignInManager : SignInManager<ApplicationUser>, ISignInManager<ApplicationUser>
     {
