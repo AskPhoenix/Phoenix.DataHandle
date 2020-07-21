@@ -49,7 +49,7 @@ namespace Phoenix.Bot.Dialogs.Student.Common
                     Prompt = MessageFactory.Text($"Για ποιο μάθημα θα ήθελες να δεις {topic} σου;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ επίλεξε ή πληκτρολόγησε ένα από τα παρακάτω μαθήματα:"),
                     Choices = ChoiceFactory.ToChoices(coursesLookup.Select((p, i) => BookEmojis[i % 4] + " " + p.Key).ToList())
-                });
+                }, cancellationToken);
         }
 
         private async Task<DialogTurnResult> CourseSelectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)

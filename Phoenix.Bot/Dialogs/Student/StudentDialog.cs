@@ -148,11 +148,11 @@ namespace Phoenix.Bot.Dialogs.Student
             };
 
             var reply = MessageFactory.Text("Σε ποιο από τα παρακάτω θέματα θα ήθελες βοήθεια;");
-            await stepContext.Context.SendActivityAsync(reply);
+            await stepContext.Context.SendActivityAsync(reply, cancellationToken);
 
             reply = stepContext.Context.Activity.CreateReply();
             reply.ChannelData = ChannelDataFactory.Template(topics);
-            await stepContext.Context.SendActivityAsync(reply);
+            await stepContext.Context.SendActivityAsync(reply, cancellationToken);
 
             return await stepContext.PromptAsync(
                 nameof(UnaccentedChoicePrompt),
@@ -167,10 +167,10 @@ namespace Phoenix.Bot.Dialogs.Student
         private async Task<DialogTurnResult> TopicRedirectStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var reply = MessageFactory.Text("Ελπίζω οι συμβουλές που ακολουθούν να σου φανούν χρήσιμες! 😊");
-            await stepContext.Context.SendActivityAsync(reply);
+            await stepContext.Context.SendActivityAsync(reply, cancellationToken);
 
             reply.Text = "Μπορείς να μεταβείς στην αντίστοιχη ενότητα, πατώντας στο κουμπί \"Άνοιγμα\" παρακάτω:";
-            await stepContext.Context.SendActivityAsync(reply);
+            await stepContext.Context.SendActivityAsync(reply, cancellationToken);
 
             return (stepContext.Result as FoundChoice).Index switch
             {
@@ -208,7 +208,7 @@ namespace Phoenix.Bot.Dialogs.Student
 
             var reply = stepContext.Context.Activity.CreateReply();
             reply.ChannelData = ChannelDataFactory.Template(exerciseCards);
-            await stepContext.Context.SendActivityAsync(reply);
+            await stepContext.Context.SendActivityAsync(reply, cancellationToken);
 
             return await stepContext.NextAsync(null, cancellationToken);
         }
@@ -245,7 +245,7 @@ namespace Phoenix.Bot.Dialogs.Student
 
             var reply = stepContext.Context.Activity.CreateReply();
             reply.ChannelData = ChannelDataFactory.Template(examCards);
-            await stepContext.Context.SendActivityAsync(reply);
+            await stepContext.Context.SendActivityAsync(reply, cancellationToken);
 
             return await stepContext.NextAsync(null, cancellationToken);
         }
@@ -287,7 +287,7 @@ namespace Phoenix.Bot.Dialogs.Student
 
             var reply = stepContext.Context.Activity.CreateReply();
             reply.ChannelData = ChannelDataFactory.Template(scheduleCards);
-            await stepContext.Context.SendActivityAsync(reply);
+            await stepContext.Context.SendActivityAsync(reply, cancellationToken);
 
             return await stepContext.NextAsync(null, cancellationToken);
         }

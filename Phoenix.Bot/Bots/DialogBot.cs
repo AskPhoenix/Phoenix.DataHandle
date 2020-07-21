@@ -5,7 +5,6 @@ using Phoenix.Bot.Helpers;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using static Phoenix.Bot.Helpers.DialogHelper;
 
 namespace Phoenix.Bot.Bots
 {
@@ -44,7 +43,7 @@ namespace Phoenix.Bot.Bots
             bool resetConversation = Persistent.IsCommand(mess) 
                 || mess.ContainsSynonyms(SynonymHelper.Topics.Greetings)
                 || (mess.ContainsSynonyms(SynonymHelper.Topics.Help) 
-                    && await UserState.CreateProperty<bool>("IsAuthenticated").GetAsync(turnContext));
+                    && await UserState.CreateProperty<bool>("IsAuthenticated").GetAsync(turnContext, cancellationToken: cancellationToken));
 
             if (resetConversation)
                 await ConversationState.ClearStateAsync(turnContext, cancellationToken);

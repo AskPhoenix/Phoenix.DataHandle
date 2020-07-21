@@ -124,7 +124,7 @@ namespace Phoenix.Bot.Dialogs
                     RetryPrompt = reply,
                     Choices = new Choice[] { new Choice("🔓 Σύνδεση") },
                     Style = ListStyle.None
-                });
+                }, cancellationToken);
         }
 
         private async Task<DialogTurnResult> SignInStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)

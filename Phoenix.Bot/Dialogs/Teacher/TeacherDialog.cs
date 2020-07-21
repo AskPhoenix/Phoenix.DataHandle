@@ -65,7 +65,7 @@ namespace Phoenix.Bot.Dialogs.Teacher
             string taskArticle = string.Empty;
             string taskName = foundChoice.Value.TrimEmojis().ToLower();
             string imageUrl = "https://www.bot.askphoenix.gr/assets/";
-            var button = new UrlButton(title: foundChoice.Value + "...", url: "https://www.pwa.askphoenix.gr/",
+            var button = new UrlButton(title: foundChoice.Value + "...", url: "https://pwa.askphoenix.gr/",
                 webviewHeightRatio: "tall", messengerExtensions: true);
 
             switch (foundChoice.Index)
@@ -110,7 +110,7 @@ namespace Phoenix.Bot.Dialogs.Teacher
 
             var reply = MessageFactory.SuggestedActions(new string[1] { "🔙 Επιστροφή" });
             reply.ChannelData = ChannelDataFactory.Template(taskCard);
-            await stepContext.Context.SendActivityAsync(reply);
+            await stepContext.Context.SendActivityAsync(reply, cancellationToken);
 
             return new DialogTurnResult(DialogTurnStatus.Waiting);
         }
