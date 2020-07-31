@@ -2,6 +2,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Extensions.Configuration;
 
 namespace Phoenix.Bot.Controllers
 {
@@ -12,18 +14,26 @@ namespace Phoenix.Bot.Controllers
     [ApiController]
     public class BotController : ControllerBase
     {
-        private readonly IBotFrameworkHttpAdapter Adapter;
+        private IBotFrameworkHttpAdapter Adapter;
         private readonly IBot Bot;
 
-        public BotController(IBotFrameworkHttpAdapter adapter, IBot bot)
+        private readonly IConfiguration _configuration;
+
+        public BotController(IBotFrameworkHttpAdapter adapter, IBot bot, IConfiguration configuration)
         {
             Adapter = adapter;
             Bot = bot;
+            
+            _configuration = configuration;
         }
 
         [HttpPost, HttpGet]
-        public async Task PostAsync()
+        public async Task PostAsync(bool? stage = false)
         {
+            if ((bool)stage)
+                Adapter = new BotFrameworkHttpAdapter(
+                    new SimpleCredentialProvider(_configuration["StageSettings:MicrosoftAppId"], _configuration["StageSettings:MicrosoftAppPassword"]));
+
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
             await Adapter.ProcessAsync(Request, Response, Bot);

@@ -236,7 +236,7 @@ namespace Phoenix.Bot.Helpers
             public class UrlAction : UrlButton
             {
                 [JsonIgnore]
-                public string Title { get; set; }
+                public new string Title { get; set; }
 
                 public UrlAction() : base() { }
 

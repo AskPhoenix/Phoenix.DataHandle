@@ -113,7 +113,7 @@ namespace Phoenix.Bot.Dialogs.Student
             }
 
             if (coursesLookup.Count == 1)
-                return await stepContext.NextAsync(coursesLookup.First().Key, cancellationToken);
+                return await stepContext.NextAsync(coursesLookup.First().Value, cancellationToken);
 
             return await stepContext.BeginDialogAsync(nameof(CourseDialog), coursesLookup, cancellationToken);
         }

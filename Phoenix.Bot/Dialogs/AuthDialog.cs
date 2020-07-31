@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Phoenix.DataHandle.Sms;
 using Phoenix.Bot.Helpers;
 using static Phoenix.Bot.Helpers.DialogHelper;
+using Microsoft.EntityFrameworkCore;
 
 namespace Phoenix.Bot.Dialogs
 {
@@ -155,15 +156,35 @@ namespace Phoenix.Bot.Dialogs
             long phone = Convert.ToInt64(stepContext.Result);
             stepContext.Values.Add("phone", phone);
 
-            //If a student has their parent's phone registered, then they must be differentiated by a unique code given by the school.
-            var usersWithThatPhone = _phoenixContext.AspNetUsers.Where(u => u.PhoneNumber == phone.ToString());
-            if (!usersWithThatPhone.Any())
-                return await stepContext.NextAsync(null, cancellationToken);
+            int countStudentsWithThatPhoneAtThisSchool, countTeachersWithThatPhoneAtThisSchool = -1;
 
+            string schoolFbId = stepContext.Context.Activity.Recipient.Id;
+            countStudentsWithThatPhoneAtThisSchool = _phoenixContext.StudentCourse.
+                Include(sc => sc.Student).
+                Where(sc => sc.Student.AspNetUser.PhoneNumber == phone.ToString() && sc.Course.School.FacebookPageId == schoolFbId).
+                AsEnumerable().
+                GroupBy(sc => sc.Student).
+                Count();
+
+            if (countStudentsWithThatPhoneAtThisSchool == 0)
+            {
+                countTeachersWithThatPhoneAtThisSchool = _phoenixContext.TeacherCourse.
+                    Include(tc => tc.Teacher).
+                    Where(tc => tc.Teacher.AspNetUser.PhoneNumber == phone.ToString() && tc.Course.School.FacebookPageId == schoolFbId).
+                    AsEnumerable().
+                    GroupBy(tc => tc.Teacher).
+                    Count();
+
+                if (countTeachersWithThatPhoneAtThisSchool == 0)
+                    return await stepContext.NextAsync(null, cancellationToken);
+            }
+            
             await _conversationState.CreateProperty<string>("Phone").SetAsync(stepContext.Context, phone.ToString());
-            if (usersWithThatPhone.Count() == 1) 
+            if (countStudentsWithThatPhoneAtThisSchool == 1 || countTeachersWithThatPhoneAtThisSchool == 1)
                 return await stepContext.BeginDialogAsync(WaterfallNames.SendPin, phone, cancellationToken);
-        
+
+            //If a student (most probably a phone duplicate will belong to students and not to teachers) has their parent's phone registered,
+            //then they must be differentiated by a unique code given by the school.
             return await stepContext.BeginDialogAsync(WaterfallNames.Code, phone, cancellationToken);
         }
 
@@ -176,7 +197,7 @@ namespace Phoenix.Bot.Dialogs
                 nameof(UnaccentedChoicePrompt),
                 new PromptOptions
                 {
-                    Prompt = MessageFactory.Text("Το κινητό τηλέφωνο που έγραψες δε βρέθηκε. " +
+                    Prompt = MessageFactory.Text("Το κινητό τηλέφωνο που έγραψες δε βρέθηκε στο συγκεκριμένο φροντιστήριο. " +
                         $"Είσαι σίγουρος ότι το {stepContext.Values["phone"]} είναι το σωστό;"),
                     RetryPrompt = MessageFactory.Text("Παρακαλώ απάντησε με ένα Ναι ή Όχι:"),
                     Choices = new Choice[] { new Choice("✔️ Ναι"), new Choice("❌ Όχι") }
@@ -303,7 +324,7 @@ namespace Phoenix.Bot.Dialogs
 
             // Avoid sending the sms with the pin when the phone is the fake one
             if (phone == "6900000000")
-                pin = Convert.ToInt32(_configuration["test_pin"]);
+                pin = Convert.ToInt32(_configuration["TestPin"]);
             else
             {
                 string name = GreekNameCall(stepContext.Context.Activity.From.Name.Split(' ')[0]);
