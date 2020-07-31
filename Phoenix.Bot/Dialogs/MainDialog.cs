@@ -102,7 +102,7 @@ namespace Phoenix.Bot.Dialogs
             //This is for the students and their parents who have registered with the same phone number
             var codeAcsr = _conversationState.CreateProperty<string>("OneTimeCode");
             string code = await codeAcsr.GetAsync(stepContext.Context);
-            await phoneAcsr.DeleteAsync(stepContext.Context);
+            await codeAcsr.DeleteAsync(stepContext.Context);
 
             var user = _phoenixContext.AspNetUsers.SingleOrDefault(u => u.PhoneNumber == phone && u.OneTimeCode == code);
             user.FacebookId = stepContext.Context.Activity.From.Id;
@@ -117,7 +117,9 @@ namespace Phoenix.Bot.Dialogs
 
         private async Task<DialogTurnResult> CommandHandleStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            Persistent.TryGetCommand(stepContext.Context.Activity.Text, out Persistent.Command cmd);
+            if (!Persistent.TryGetCommand(stepContext.Context.Activity.Text, out Persistent.Command cmd))
+                return await stepContext.NextAsync(null, cancellationToken);
+
             switch (cmd)
             {
                 case Persistent.Command.GetStarted:
@@ -196,7 +198,7 @@ namespace Phoenix.Bot.Dialogs
                 }
                 else
                     await roleAcsr.SetAsync(stepContext.Context, (Role)stepContext.Result);
-                await _conversationState.SaveChangesAsync(stepContext.Context);
+                await _userState.SaveChangesAsync(stepContext.Context);
             }
 
             var welcomingAcsr = _conversationState.CreateProperty<bool>("NeedsWelcoming");
