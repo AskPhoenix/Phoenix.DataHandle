@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Phoenix.DataHandle.Main.Models
 {
@@ -34,12 +35,14 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<StudentExercise> StudentExercise { get; set; }
         public virtual DbSet<TeacherCourse> TeacherCourse { get; set; }
         public virtual DbSet<User> User { get; set; }
+        public virtual DbSet<UserSchool> UserSchool { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                throw new Exception("Connection string not specified for PhoenixContext.");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=tcp:askphoenix.database.windows.net,1433;Initial Catalog=PhoenixDB;Persist Security Info=False;User ID=phoenix;Password=20Ph0eniX20!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
         }
 
@@ -76,6 +79,9 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<AspNetUsers>(entity =>
             {
+                entity.HasIndex(e => e.Id)
+                    .HasName("IX_AspNetUsers");
+
                 entity.HasIndex(e => e.NormalizedEmail)
                     .HasName("EmailIndex");
 
@@ -83,6 +89,10 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasName("UserNameIndex")
                     .IsUnique()
                     .HasFilter("([NormalizedUserName] IS NOT NULL)");
+
+                entity.HasIndex(e => e.PhoneNumber)
+                    .HasName("PhoneNumberIndex")
+                    .IsUnique();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
 
@@ -99,6 +109,11 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.OneTimeCode)
                     .HasMaxLength(50)
                     .IsUnicode(false);
+
+                entity.Property(e => e.PhoneNumber)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsFixedLength();
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
 
@@ -124,6 +139,10 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Book>(entity =>
             {
+                entity.HasIndex(e => e.Name)
+                    .HasName("UQ_Book_Name")
+                    .IsUnique();
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
@@ -167,7 +186,7 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Course>(entity =>
             {
-                entity.HasIndex(e => new { e.SchoolId, e.Name, e.SubCourse })
+                entity.HasIndex(e => new { e.SchoolId, e.Name, e.SubCourse, e.Group, e.Level })
                     .HasName("UQ_Course")
                     .IsUnique();
 
@@ -177,17 +196,17 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.Group)
                     .IsRequired()
-                    .HasMaxLength(255);
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.Level)
                     .IsRequired()
-                    .HasMaxLength(255);
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(200);
+                    .HasMaxLength(150);
 
-                entity.Property(e => e.SubCourse).HasMaxLength(200);
+                entity.Property(e => e.SubCourse).HasMaxLength(150);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
 
@@ -317,7 +336,6 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Classroom)
                     .WithMany(p => p.Schedule)
                     .HasForeignKey(d => d.ClassroomId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Schedule_Classroom");
 
                 entity.HasOne(d => d.Course)
@@ -452,6 +470,29 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithOne(p => p.User)
                     .HasForeignKey<User>(d => d.AspNetUserId)
                     .HasConstraintName("FK_User_AspNetUsers");
+            });
+
+            modelBuilder.Entity<UserSchool>(entity =>
+            {
+                entity.HasKey(e => new { e.AspNetUserId, e.SchoolId });
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
+
+                entity.Property(e => e.EnrolledOn).HasColumnType("datetime2(0)");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
+
+                entity.HasOne(d => d.AspNetUser)
+                    .WithMany(p => p.UserSchool)
+                    .HasForeignKey(d => d.AspNetUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserSchool_AspNetUsers");
+
+                entity.HasOne(d => d.School)
+                    .WithMany(p => p.UserSchool)
+                    .HasForeignKey(d => d.SchoolId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserSchool_School");
             });
 
             OnModelCreatingPartial(modelBuilder);

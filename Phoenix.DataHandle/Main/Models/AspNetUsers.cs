@@ -8,6 +8,7 @@ namespace Phoenix.DataHandle.Main.Models
         public AspNetUsers()
         {
             AspNetUserRoles = new HashSet<AspNetUserRoles>();
+            UserSchool = new HashSet<UserSchool>();
         }
 
         public int Id { get; set; }
@@ -34,5 +35,6 @@ namespace Phoenix.DataHandle.Main.Models
 
         public virtual User User { get; set; }
         public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
+        public virtual ICollection<UserSchool> UserSchool { get; set; }
     }
 }

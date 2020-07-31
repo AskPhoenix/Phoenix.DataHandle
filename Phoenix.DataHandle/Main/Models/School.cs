@@ -9,6 +9,7 @@ namespace Phoenix.DataHandle.Main.Models
         {
             Classroom = new HashSet<Classroom>();
             Course = new HashSet<Course>();
+            UserSchool = new HashSet<UserSchool>();
         }
 
         public int Id { get; set; }
@@ -24,5 +25,6 @@ namespace Phoenix.DataHandle.Main.Models
 
         public virtual ICollection<Classroom> Classroom { get; set; }
         public virtual ICollection<Course> Course { get; set; }
+        public virtual ICollection<UserSchool> UserSchool { get; set; }
     }
 }
