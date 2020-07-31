@@ -17,16 +17,17 @@ namespace Phoenix.Scheduler.App_Plugins.Services
     {
         private readonly ILogger _logger;
         private readonly Repository<Course> _courseRepository;
-        private readonly Repository<Schedule> _scheduleRepository;
+        //private readonly Repository<Schedule> _scheduleRepository;
         private readonly LectureRepository _lectureRepository;
 
         public LectureService(PhoenixContext phoenixContext, ILogger<LectureService> logger)
         {
             this._courseRepository = new Repository<Course>(phoenixContext);
-            this._courseRepository.include(a => a.Lecture, a => a.Schedule);
+            //this._courseRepository.include(a => a.Lecture, a => a.Schedule);
+            this._courseRepository.include(a => a.Include(b => b.Lecture).Include(b => b.Schedule).ThenInclude(b => b.Classroom).Include(b => b.Schedule).ThenInclude(b => b.Course));
 
-            this._scheduleRepository = new Repository<Schedule>(phoenixContext);
-            this._scheduleRepository.include(a => a.Course);
+            //this._scheduleRepository = new Repository<Schedule>(phoenixContext);
+            //this._scheduleRepository.include(a => a.Course);
             this._lectureRepository = new LectureRepository(phoenixContext);
             this._lectureRepository.include(a => a.Course);
             this._logger = logger;
@@ -75,7 +76,7 @@ namespace Phoenix.Scheduler.App_Plugins.Services
                         };
 
                         this._lectureRepository.create(lecture);
-                        this._logger.LogInformation($"Lecture created successfully | {course.Name}| {day:dd/MM/yyyy} | {scheduleOfTheDay.StartTime:HH:mm}");
+                        this._logger.LogInformation($"Lecture created successfully | {course.Name} | {day:dd/MM/yyyy} | {scheduleOfTheDay.StartTime:HH:mm}");
                     }
                     else
                     {
@@ -85,7 +86,7 @@ namespace Phoenix.Scheduler.App_Plugins.Services
                         lecture.EndDateTime = day.Add(scheduleOfTheDay.EndTime.TimeOfDay);
 
                         this._lectureRepository.update(lecture);
-                        this._logger.LogInformation($"Lecture updated successfully | {course.Name}| {day:dd/MM/yyyy} | {scheduleOfTheDay.StartTime:HH:mm}");
+                        this._logger.LogInformation($"Lecture updated successfully | {course.Name} | {day:dd/MM/yyyy} | {scheduleOfTheDay.StartTime:HH:mm}");
                     }
                 }
             }
