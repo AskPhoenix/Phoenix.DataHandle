@@ -24,6 +24,7 @@ namespace Phoenix.Bot.Dialogs.Student
         private readonly BotState _conversationState;
 
         private readonly IStatePropertyAccessor<int[]> _selCourseIds;
+        private readonly IStatePropertyAccessor<int> _coursesEnrolledNum;
 
         private static class WaterfallNames
         {
@@ -40,6 +41,7 @@ namespace Phoenix.Bot.Dialogs.Student
             _conversationState = conversationState;
 
             _selCourseIds = _conversationState.CreateProperty<int[]>("SelCourseIds");
+            _coursesEnrolledNum = _conversationState.CreateProperty<int>("CoursesEnrolledNum");
 
             AddDialog(new CourseDialog());
             AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
@@ -91,14 +93,18 @@ namespace Phoenix.Bot.Dialogs.Student
 
         private async Task<DialogTurnResult> CourseStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            string FbId = stepContext.Context.Activity.From.Id;
             var today = DialogHelper.GreeceLocalTime().Date;
+            string userFbId = stepContext.Context.Activity.From.Id;
+            string schoolFbId = stepContext.Context.Activity.Recipient.Id;
+
             var coursesLookup = _phoenixContext.Course.
-                Where(c => c.StudentCourse.Any(sc => sc.CourseId == c.Id && sc.Student.AspNetUser.FacebookId == FbId)
-                    && today >= c.FirstDate.Date && today <= c.LastDate.Date).
+                Where(c => c.StudentCourse.Any(sc => sc.CourseId == c.Id && sc.Student.AspNetUser.FacebookId == userFbId)
+                    && c.School.FacebookPageId == schoolFbId && today <= c.LastDate.Date).
                 Select(c => new { c.Name, c.Id }).
                 ToLookup(c => c.Name, c => c.Id).
                 ToDictionary(x => x.Key, x => x.ToArray());
+
+            await _coursesEnrolledNum.SetAsync(stepContext.Context, coursesLookup.Count);
 
             if (coursesLookup.Count == 0)
             {
@@ -121,7 +127,8 @@ namespace Phoenix.Bot.Dialogs.Student
                 Where(l => selCourseIds.Contains(l.CourseId) && l.Exercise.Count > 0);
             if (lecWithHw.Count() == 0)
             {
-                await stepContext.Context.SendActivityAsync("Δεν υπάρχουν ακόμα εργασίες για αυτό το μάθημα.");
+                await stepContext.Context.SendActivityAsync("Δεν υπάρχουν ακόμα εργασίες" 
+                    + ((await _coursesEnrolledNum.GetAsync(stepContext.Context) > 1) ? "για αυτό το μάθημα." : "."));
                 await stepContext.Context.SendActivityAsync("Απόλαυσε τον ελέυθερο χρόνο σου! 😎");
 
                 return await stepContext.EndDialogAsync(null, cancellationToken);
@@ -133,7 +140,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 var nextLec = lecWithHw.
                     Include(l => l.Exercise).
                     Where(l => l.StartDateTime >= grNow).
-                    ToList().
+                    AsEnumerable().
                     Aggregate((nl, l) => l.StartDateTime < nl.StartDateTime ? l : nl);
 
                 bool singular = nextLec.Exercise.Count == 1;
@@ -226,8 +233,8 @@ namespace Phoenix.Bot.Dialogs.Student
 
             var paginatedHw = _phoenixContext.Exercise.
                 Include(h => h.Book).
-                ToList().
                 Where(h => h.LectureId == lecId).
+                AsEnumerable().
                 Where((_, i) => i >= pageSize * page && i < pageSize * (page + 1));
 
             int hwShownCount = page * pageSize;
@@ -357,7 +364,7 @@ namespace Phoenix.Bot.Dialogs.Student
             {
                 lec = _phoenixContext.Lecture.
                     Where(l => selCourseIds.Contains(l.CourseId) && l.Exercise.Count > 0).
-                    ToList().
+                    AsEnumerable().
                     Aggregate((l, cl) => Math.Abs((l.StartDateTime - selDate).Days) < Math.Abs((cl.StartDateTime - selDate).Days) ? l : cl);
 
                 await stepContext.Context.SendActivityAsync($"Δεν υπάρχει διάλεξη για αυτό το μάθημα στις {selDate:m}.");

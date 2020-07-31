@@ -24,6 +24,7 @@ namespace Phoenix.Bot.Dialogs.Student
         private readonly BotState _conversationState;
 
         private readonly IStatePropertyAccessor<int[]> _selCourseIds;
+        private readonly IStatePropertyAccessor<int> _coursesEnrolledNum;
 
         private static class WaterfallNames
         {
@@ -41,6 +42,7 @@ namespace Phoenix.Bot.Dialogs.Student
             _conversationState = conversationState;
 
             _selCourseIds = _conversationState.CreateProperty<int[]>("SelCourseIds");
+            _coursesEnrolledNum = _conversationState.CreateProperty<int>("CoursesEnrolledNum");
 
             AddDialog(new CourseDialog());
             AddDialog(new UnaccentedChoicePrompt(nameof(UnaccentedChoicePrompt)));
@@ -97,14 +99,18 @@ namespace Phoenix.Bot.Dialogs.Student
 
         private async Task<DialogTurnResult> CourseStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            string FbId = stepContext.Context.Activity.From.Id;
             var today = DialogHelper.GreeceLocalTime().Date;
+            string userFbId = stepContext.Context.Activity.From.Id;
+            string schoolFbId = stepContext.Context.Activity.Recipient.Id;
+
             var coursesLookup = _phoenixContext.Course.
-                Where(c => c.StudentCourse.Any(sc => sc.CourseId == c.Id && sc.Student.AspNetUser.FacebookId == FbId)
-                    && today >= c.FirstDate.Date && today <= c.LastDate.Date).
+                Where(c => c.StudentCourse.Any(sc => sc.CourseId == c.Id && sc.Student.AspNetUser.FacebookId == userFbId)
+                    && c.School.FacebookPageId == schoolFbId && today <= c.LastDate.Date).
                 Select(c => new { c.Name, c.Id }).
                 ToLookup(c => c.Name, c => c.Id).
                 ToDictionary(x => x.Key, x => x.ToArray());
+
+            await _coursesEnrolledNum.SetAsync(stepContext.Context, coursesLookup.Count);
 
             if (coursesLookup.Count == 0)
             {
@@ -131,7 +137,8 @@ namespace Phoenix.Bot.Dialogs.Student
 
             if (!anyExams)
             {
-                await stepContext.Context.SendActivityAsync("Δεν υπάρχουν ακόμα διαγωνίσματα για αυτό το μάθημα.");
+                await stepContext.Context.SendActivityAsync("Δεν υπάρχουν ακόμα εργασίες"
+                    + ((await _coursesEnrolledNum.GetAsync(stepContext.Context) > 1) ? "για αυτό το μάθημα." : "."));
                 await stepContext.Context.SendActivityAsync("Απόλαυσε τον ελέυθερο χρόνο σου! 😎");
 
                 return await stepContext.EndDialogAsync(null, cancellationToken);
@@ -188,7 +195,7 @@ namespace Phoenix.Bot.Dialogs.Student
             var nextExam = _phoenixContext.Exam.
                 Include(e => e.Lecture.Classroom).
                 Where(e => selCourseIds.Contains(e.Lecture.CourseId) && e.Lecture.EndDateTime >= DialogHelper.GreeceLocalTime()).
-                ToList().
+                AsEnumerable().
                 Aggregate((e, ne) => e.Lecture.StartDateTime < ne.Lecture.StartDateTime ? e : ne);
 
             string dayArticle = nextExam.Lecture.StartDateTime.DayOfWeek == DayOfWeek.Saturday ? "το" : "την";
@@ -220,9 +227,9 @@ namespace Phoenix.Bot.Dialogs.Student
             const int pageSize = 3;
 
             var paginatedMat = _phoenixContext.Material.
-                Include(m => m.Book).
-                ToList().
+                Include(m => m.Book).                
                 Where(m => m.ExamId == examId).
+                AsEnumerable().
                 Where((_, i) => i >= pageSize * page && i < pageSize * (page + 1));
 
             int matShownCount = page * pageSize;
@@ -349,7 +356,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 exam = _phoenixContext.Exam.
                     Include(e => e.Lecture.Classroom).
                     Where(e => selCourseIds.Contains(e.Lecture.CourseId) && e.Lecture.EndDateTime > DialogHelper.GreeceLocalTime()).
-                    ToList().
+                    AsEnumerable().
                     Aggregate((e, fe) => Math.Abs((e.Lecture.StartDateTime - selDate).Days) < Math.Abs((fe.Lecture.StartDateTime - selDate).Days) ? e : fe);
 
                 await stepContext.Context.SendActivityAsync($"Δεν υπάρχει διαγώνισμα για αυτό το μάθημα στις {selDate:m}.");
@@ -378,7 +385,7 @@ namespace Phoenix.Bot.Dialogs.Student
             var lastGradedStudentExam = _phoenixContext.StudentExam.
                 Include(se => se.Exam).
                 Where(se => selCourseIds.Contains(se.Exam.Lecture.CourseId) && se.Student.AspNetUser.FacebookId == fbId && se.Grade != null).
-                ToList().
+                AsEnumerable().
                 Aggregate((se, lse) => se.Exam.Lecture.StartDateTime > lse.Exam.Lecture.StartDateTime ? se : lse);
 
             await stepContext.Context.SendActivityAsync($"Το πιο πρόσφατο βαθμολογημένο διαγώνισμα ήταν αυτό στις {lastGradedStudentExam.Exam.Lecture.StartDateTime:m}.");
@@ -492,7 +499,7 @@ namespace Phoenix.Bot.Dialogs.Student
                 studentExam = gradedStudentExams.
                     Include(se => se.Exam).
                     Where(se => se.Exam.Lecture.EndDateTime < DialogHelper.GreeceLocalTime()).
-                    ToList().
+                    AsEnumerable().
                     Aggregate((se, pse) => Math.Abs((se.Exam.Lecture.StartDateTime - selDate).Days) < Math.Abs((pse.Exam.Lecture.StartDateTime - selDate).Days) ? se : pse);
 
                 

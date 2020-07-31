@@ -163,10 +163,10 @@ namespace Phoenix.Bot.Dialogs
                 Single(u => u.FacebookId == stepContext.Context.Activity.From.Id).
                 AspNetUserRoles.
                 Select(ur => ur.Role).
-                ToList();
+                AsEnumerable();
 
             // If user has 1 role, then don't ask
-            if (userRoles.Count == 1)
+            if (userRoles.Count() == 1)
                 return await stepContext.NextAsync(userRoles.First().Type);
             // If user has multiple non-contradictious roles (e.g. Teacher, Owner), then don't ask and select the hierarchly highest one
             if (userRoles.All(r => (Role)r.Type >= Role.Teacher))

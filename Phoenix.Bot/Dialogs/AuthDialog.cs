@@ -156,31 +156,19 @@ namespace Phoenix.Bot.Dialogs
             long phone = Convert.ToInt64(stepContext.Result);
             stepContext.Values.Add("phone", phone);
 
-            int countStudentsWithThatPhoneAtThisSchool, countTeachersWithThatPhoneAtThisSchool = -1;
-
             string schoolFbId = stepContext.Context.Activity.Recipient.Id;
-            countStudentsWithThatPhoneAtThisSchool = _phoenixContext.StudentCourse.
-                Include(sc => sc.Student).
-                Where(sc => sc.Student.AspNetUser.PhoneNumber == phone.ToString() && sc.Course.School.FacebookPageId == schoolFbId).
+            int countUsersWithThatPhoneAtThisSchool = _phoenixContext.UserSchool.
+                Include(us => us.AspNetUser).
+                Where(us => us.AspNetUser.PhoneNumber == phone.ToString() && us.School.FacebookPageId == schoolFbId).
                 AsEnumerable().
-                GroupBy(sc => sc.Student).
+                GroupBy(us => us.AspNetUser).
                 Count();
 
-            if (countStudentsWithThatPhoneAtThisSchool == 0)
-            {
-                countTeachersWithThatPhoneAtThisSchool = _phoenixContext.TeacherCourse.
-                    Include(tc => tc.Teacher).
-                    Where(tc => tc.Teacher.AspNetUser.PhoneNumber == phone.ToString() && tc.Course.School.FacebookPageId == schoolFbId).
-                    AsEnumerable().
-                    GroupBy(tc => tc.Teacher).
-                    Count();
-
-                if (countTeachersWithThatPhoneAtThisSchool == 0)
-                    return await stepContext.NextAsync(null, cancellationToken);
-            }
+            if (countUsersWithThatPhoneAtThisSchool == 0)
+                return await stepContext.NextAsync(null, cancellationToken);
             
             await _conversationState.CreateProperty<string>("Phone").SetAsync(stepContext.Context, phone.ToString());
-            if (countStudentsWithThatPhoneAtThisSchool == 1 || countTeachersWithThatPhoneAtThisSchool == 1)
+            if (countUsersWithThatPhoneAtThisSchool == 1)
                 return await stepContext.BeginDialogAsync(WaterfallNames.SendPin, phone, cancellationToken);
 
             //If a student (most probably a phone duplicate will belong to students and not to teachers) has their parent's phone registered,

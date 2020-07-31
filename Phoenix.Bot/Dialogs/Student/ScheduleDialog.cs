@@ -62,11 +62,14 @@ namespace Phoenix.Bot.Dialogs.Student
         private async Task<DialogTurnResult> DayStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             DateTime date = stepContext.Options is DateTime dt ? dt : DialogHelper.GreeceLocalTime();
+            string userFbId = stepContext.Context.Activity.From.Id;
+            string schoolFbId = stepContext.Context.Activity.Recipient.Id;
 
             var lecs = _phoenixContext.Lecture.
                 Include(l => l.Course).
                 Include(l => l.Classroom).
-                Where(l => l.StartDateTime.Date == date.Date).
+                Where(l => l.Course.StudentCourse.Any(sc => sc.Student.AspNetUser.FacebookId == userFbId) && l.Course.School.FacebookPageId == schoolFbId
+                    && l.StartDateTime.Date == date.Date).
                 OrderBy(l => l.StartDateTime);
 
             if (lecs.Count() == 0)
@@ -181,11 +184,15 @@ namespace Phoenix.Bot.Dialogs.Student
         private async Task<DialogTurnResult> WeekStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var grNow = DialogHelper.GreeceLocalTime();
+            string userFbId = stepContext.Context.Activity.From.Id;
+            string schoolFbId = stepContext.Context.Activity.Recipient.Id;
+
             var lecs = _phoenixContext.Lecture.
                 Include(l => l.Course).
-                Where(l => l.StartDateTime.Date > grNow.Date && l.StartDateTime.Date <= grNow.AddDays(7).Date).
+                Where(l => l.Course.StudentCourse.Any(sc => sc.Student.AspNetUser.FacebookId == userFbId) && l.Course.School.FacebookPageId == schoolFbId
+                    && l.StartDateTime.Date > grNow.Date && l.StartDateTime.Date <= grNow.AddDays(7).Date).
                 OrderBy(l => l.StartDateTime).
-                ToList();
+                AsEnumerable();
 
             if (lecs.Count() == 0)
             {
