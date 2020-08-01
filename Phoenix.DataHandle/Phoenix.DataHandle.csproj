@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
-    <Authors>Phoenix</Authors>
+    <Authors>AskPhoenix</Authors>
     <Version>0.20.7.19</Version>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageId>Phoenix.DataHandle</PackageId>
     <Company>Phoenix</Company>
     <PackageDescription>Phoenix.DataHandle package.</PackageDescription>
-    <RepositoryUrl>https://github.com/o-theo-s/Phoenix</RepositoryUrl>
+    <RepositoryUrl>https://github.com/AskPhoenix/Phoenix.DataHandle</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
