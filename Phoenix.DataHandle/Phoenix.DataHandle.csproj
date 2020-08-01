@@ -6,14 +6,16 @@
     <Version>0.20.7.19</Version>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageId>Phoenix.DataHandle</PackageId>
-    <Company>Phoenix</Company>
-    <PackageDescription>Phoenix.DataHandle package.</PackageDescription>
-    <RepositoryUrl>https://github.com/AskPhoenix/Phoenix.DataHandle</RepositoryUrl>
+    <Company>AskPhoenix</Company>
+    <PackageDescription>A wrapper for operations on PhoenixDB</PackageDescription>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Product>DataHandle</Product>
+    <Copyright>AskPhoenix 2020</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.8.0" />
-    <PackageReference Include="Nexmo.Csharp.Client" Version="4.3.2" />
+    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.9.4" />
+    <PackageReference Include="Nexmo.Csharp.Client" Version="5.1.0" />
   </ItemGroup>
 
 
