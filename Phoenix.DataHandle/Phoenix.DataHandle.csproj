@@ -11,6 +11,7 @@
     <AutoGenerateBindingRedirects></AutoGenerateBindingRedirects>
     <AssemblyVersion>1.0.1</AssemblyVersion>
     <Version>$(AssemblyVersion)</Version>
+    <RepositoryUrl>https://github.com/AskPhoenix/Phoenix.DataHandle</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
