@@ -9,7 +9,7 @@
     <Copyright>AskPhoenix 2020</Copyright>
     <PackageProjectUrl>https://www.askphoenix.gr/</PackageProjectUrl>
     <AutoGenerateBindingRedirects></AutoGenerateBindingRedirects>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <AssemblyVersion>1.0.1</AssemblyVersion>
     <Version>$(AssemblyVersion)</Version>
   </PropertyGroup>
 

@@ -289,7 +289,6 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Classroom)
                     .WithMany(p => p.Lecture)
                     .HasForeignKey(d => d.ClassroomId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Lecture_Classroom");
 
                 entity.HasOne(d => d.Course)
