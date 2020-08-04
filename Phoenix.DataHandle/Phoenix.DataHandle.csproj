@@ -2,15 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Authors>AskPhoenix</Authors>
-    <Company>AskPhoenix</Company>
-    <Product>DataHandle</Product>
+    <Product>Phoenix.DataHandle</Product>
     <Description>A wrapper for operations on PhoenixDB</Description>
     <Copyright>AskPhoenix 2020</Copyright>
     <PackageProjectUrl>https://www.askphoenix.gr/</PackageProjectUrl>
-    <AutoGenerateBindingRedirects></AutoGenerateBindingRedirects>
-    <AssemblyVersion>1.0.2</AssemblyVersion>
-    <Version>$(AssemblyVersion)</Version>
+    <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Phoenix.DataHandle</PackageId>
+    <Version>1.0.2</Version>
+    <Authors>AskPhoenix</Authors>
+    <Company>AskPhoenix</Company>
+    <PackageDescription>A wrapper for operations on PhoenixDB</PackageDescription>
     <RepositoryUrl>https://github.com/AskPhoenix/Phoenix.DataHandle</RepositoryUrl>
   </PropertyGroup>
 
