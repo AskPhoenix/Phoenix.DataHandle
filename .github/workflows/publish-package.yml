@@ -20,5 +20,5 @@ jobs:
     - name: Pack
       run: dotnet pack --configuration Release --no-restore
     - name: Nuget Push
-      run: dotnet nuget push **/*.nupkg" --source "AskPhoenix" -k {{secrets.GITHUB_TOKEN}}
+      run: dotnet nuget push **/*.nupkg" --source "AskPhoenix" -k ${{ secrets.GITHUB_TOKEN }}
       
