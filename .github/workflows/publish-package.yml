@@ -16,7 +16,7 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Add nuget.org feed
-      run: dotnet nuget update source https://api.nuget.org/v3/index.json
+      run: dotnet nuget update source https://api.nuget.org/v3/index.json -n nuget.org
     - name: Add private feed
       run: dotnet nuget update source https://nuget.pkg.github.com/AskPhoenix/index.json -n AskPhoenix -u AskPhoenix -p ${{ secrets.GITHUB_TOKEN }}
     - name: Install dependencies
