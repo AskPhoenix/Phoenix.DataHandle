@@ -40,7 +40,7 @@ namespace Phoenix.DataHandle.Services
         {
             var period = Enumerable.Range(0, 1 + course.LastDate.Date.Subtract(course.FirstDate.Date).Days)
                  .Select(offset => course.FirstDate.Date.AddDays(offset))
-                 .Where(a => a.Date >= DateTime.Now)
+                 .Where(a => a.Date > DateTime.Now.Date)
                  .ToArray();
 
             foreach (DateTime day in period)
