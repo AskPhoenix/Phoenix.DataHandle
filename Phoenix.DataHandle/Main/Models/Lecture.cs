@@ -15,8 +15,8 @@ namespace Phoenix.DataHandle.Main.Models
         public int CourseId { get; set; }
         public int? ClassroomId { get; set; }
         public int? ScheduleId { get; set; }
-        public DateTime StartDateTime { get; set; }
-        public DateTime EndDateTime { get; set; }
+        public DateTimeOffset StartDateTime { get; set; }
+        public DateTimeOffset EndDateTime { get; set; }
         public LectureStatus Status { get; set; }
         public string OnlineMeetingLink { get; set; }
         public string Info { get; set; }

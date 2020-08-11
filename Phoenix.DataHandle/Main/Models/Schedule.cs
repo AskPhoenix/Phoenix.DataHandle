@@ -14,8 +14,8 @@ namespace Phoenix.DataHandle.Main.Models
         public int CourseId { get; set; }
         public int? ClassroomId { get; set; }
         public DayOfWeek DayOfWeek { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public DateTimeOffset StartTime { get; set; }
+        public DateTimeOffset EndTime { get; set; }
         public string Info { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

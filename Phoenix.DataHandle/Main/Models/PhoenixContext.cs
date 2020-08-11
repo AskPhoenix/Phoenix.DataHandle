@@ -191,11 +191,13 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
 
-                entity.Property(e => e.FirstDate).HasColumnType("datetime2(0)");
+                entity.Property(e => e.FirstDate).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.Group)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.Property(e => e.LastDate).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.Level)
                     .IsRequired()
@@ -280,9 +282,9 @@ namespace Phoenix.DataHandle.Main.Models
             {
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
 
-                entity.Property(e => e.EndDateTime).HasColumnType("datetime2(0)");
+                entity.Property(e => e.EndDateTime).HasColumnType("datetimeoffset(0)");
 
-                entity.Property(e => e.StartDateTime).HasColumnType("datetime2(0)");
+                entity.Property(e => e.StartDateTime).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
 
@@ -325,9 +327,9 @@ namespace Phoenix.DataHandle.Main.Models
             {
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
 
-                entity.Property(e => e.EndTime).HasColumnType("datetime2(0)");
+                entity.Property(e => e.EndTime).HasColumnType("datetimeoffset(0)");
 
-                entity.Property(e => e.StartTime).HasColumnType("datetime2(0)");
+                entity.Property(e => e.StartTime).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
 
