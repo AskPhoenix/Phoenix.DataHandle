@@ -14,14 +14,10 @@ namespace Phoenix.DataHandle.Services
     public class LectureService
     {
         private readonly ILogger _logger;
-        private readonly Repository<Course> _courseRepository;
         private readonly LectureRepository _lectureRepository;
 
         public LectureService(PhoenixContext phoenixContext, ILogger<LectureService> logger)
         {
-            this._courseRepository = new Repository<Course>(phoenixContext);
-            this._courseRepository.include(a => a.Include(b => b.Lecture).Include(b => b.Schedule).ThenInclude(b => b.Classroom).Include(b => b.Schedule).ThenInclude(b => b.Course));
-
             this._lectureRepository = new LectureRepository(phoenixContext);
             this._lectureRepository.include(a => a.Course);
 
