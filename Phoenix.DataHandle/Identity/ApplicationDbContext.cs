@@ -29,6 +29,13 @@ namespace Phoenix.DataHandle.Identity
                 .HasForeignKey<User>(b => b.AspNetUserId);
 
             modelBuilder.Ignore<AspNetUsers>();
+            modelBuilder.Ignore<Attendance>();
+            modelBuilder.Ignore<BotFeedback>();
+            modelBuilder.Ignore<StudentCourse>();
+            modelBuilder.Ignore<StudentExam>();
+            modelBuilder.Ignore<StudentExercise>();
+            modelBuilder.Ignore<TeacherCourse>();
+
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.AspNetUserId);
