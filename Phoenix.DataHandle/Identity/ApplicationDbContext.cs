@@ -53,10 +53,11 @@ namespace Phoenix.DataHandle.Identity
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime RegisteredAt => this.CreatedAt;
+        public string FacebookId { get; set; }
+        public int CreatedApplicationType { get; set; }
 
         IUser IAspNetUsers.User => this.User;
         public User User { get; set; }
-        public string FacebookId { get; set; }
 
         public IEnumerable<IAspNetUserRoles> Roles { get; }
 
