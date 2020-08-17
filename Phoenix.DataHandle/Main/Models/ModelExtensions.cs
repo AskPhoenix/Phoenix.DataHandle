@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models.Extensions;
 using Phoenix.DataHandle.Main.Relationships;
@@ -25,6 +26,24 @@ namespace Phoenix.DataHandle.Main.Models
         IUser IAspNetUsers.User => this.User;
 
         IEnumerable<IAspNetUserRoles> IAspNetUsers.Roles => this.AspNetUserRoles;
+
+        public string getHashSignature()
+        {
+            if(string.IsNullOrWhiteSpace(this.UserName))
+                throw new InvalidOperationException($"The {this.UserName} property cannot be empty or null.");
+
+            byte[] salt = new byte[16];
+            var pbkdf2 = new Rfc2898DeriveBytes(this.UserName, salt, 10 * 1000, HashAlgorithmName.SHA256);
+            byte[] hash = pbkdf2.GetBytes(32);
+            string savedPasswordHash = Convert.ToBase64String(hash);
+
+            return savedPasswordHash;
+        }
+
+        public bool verifyHashSignature(string publicKey)
+        {
+            return publicKey == this.getHashSignature();
+        }
     }
 
     public partial class Attendance : IAttendance
