@@ -97,22 +97,17 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.Email).HasMaxLength(256);
 
-                entity.Property(e => e.FacebookId)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.FacebookId).HasMaxLength(50);
 
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
 
-                entity.Property(e => e.OneTimeCode)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.OneTimeCode).HasMaxLength(50);
 
                 entity.Property(e => e.PhoneNumber)
                     .IsRequired()
-                    .HasMaxLength(50)
-                    .IsFixedLength();
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
 
@@ -367,9 +362,7 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.FacebookPageId)
                     .IsRequired()
-                    .HasMaxLength(20)
-                    .IsUnicode(false)
-                    .IsFixedLength();
+                    .HasMaxLength(20);
 
                 entity.Property(e => e.Name)
                     .IsRequired()

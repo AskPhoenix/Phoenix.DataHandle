@@ -1,7 +1,7 @@
 @echo off
 
 echo If you haven't authenticated GitHub stream, then use the command below:
-echo dotnet nuget add source https://nuget.pkg.github.com/AskPhoenix/index.json -n github -u AskPhoenix -p GH_TOKEN
+echo dotnet nuget add source https://nuget.pkg.github.com/AskPhoenix/index.json -n AskPhoenix -u AskPhoenix -p GH_TOKEN
 echo.
 echo.
 
