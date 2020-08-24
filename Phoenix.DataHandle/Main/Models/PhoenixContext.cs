@@ -93,7 +93,11 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasName("PhoneNumberIndex")
                     .IsUnique();
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
+                entity.Property(e => e.CreatedApplicationType).HasDefaultValueSql("((-1))");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime2(0)")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Email).HasMaxLength(256);
 
@@ -137,9 +141,17 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasName("UQ_Book_Name")
                     .IsUnique();
 
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime2(0)")
+                    .HasDefaultValueSql("(getdate())");
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
+
+                entity.Property(e => e.Publisher).HasMaxLength(255);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
             });
 
             modelBuilder.Entity<BotFeedback>(entity =>
@@ -160,10 +172,12 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<Classroom>(entity =>
             {
                 entity.HasIndex(e => new { e.SchoolId, e.Name })
-                    .HasName("UQ__Classroo__5A933F153A652032")
+                    .HasName("UQ__Classroo__5A933F1586A57822")
                     .IsUnique();
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime2(0)")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -184,7 +198,9 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasName("UQ_Course")
                     .IsUnique();
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime2(0)")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.FirstDate).HasColumnType("datetimeoffset(0)");
 
@@ -251,7 +267,9 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Exercise>(entity =>
             {
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime2(0)")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -275,7 +293,9 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Lecture>(entity =>
             {
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime2(0)")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.EndDateTime).HasColumnType("datetimeoffset(0)");
 
@@ -354,7 +374,9 @@ namespace Phoenix.DataHandle.Main.Models
                     .IsRequired()
                     .HasMaxLength(255);
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime2(0)")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Endpoint)
                     .IsRequired()
