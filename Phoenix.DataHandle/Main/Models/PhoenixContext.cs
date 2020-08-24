@@ -160,7 +160,7 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<Classroom>(entity =>
             {
                 entity.HasIndex(e => new { e.SchoolId, e.Name })
-                    .HasName("UQ__Classroo__A5B5856930D0EBE6")
+                    .HasName("UQ__Classroo__5A933F153A652032")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime2(0)");

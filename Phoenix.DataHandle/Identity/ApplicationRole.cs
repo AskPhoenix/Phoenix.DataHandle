@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Phoenix.DataHandle.Identity
 {
-    public abstract class ApplicationRole : IdentityRole<int>
+    public sealed class ApplicationRole : IdentityRole<int>
     {
     }
 }
