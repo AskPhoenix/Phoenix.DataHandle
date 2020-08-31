@@ -8,7 +8,7 @@ namespace Phoenix.DataHandle.Repositories
 {
     public class ExerciseRepository : Repository<Exercise>
     {
-        public ExerciseRepository(DbContext dbContext) : base(dbContext)
+        public ExerciseRepository(PhoenixContext dbContext) : base(dbContext)
         {
         }
 

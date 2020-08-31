@@ -10,7 +10,7 @@ namespace Phoenix.DataHandle.Repositories
 {
     public class LectureRepository : Repository<Lecture>
     {
-        public LectureRepository(DbContext dbContext) : base(dbContext)
+        public LectureRepository(PhoenixContext dbContext) : base(dbContext)
         {
         }
 

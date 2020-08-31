@@ -9,7 +9,6 @@ namespace Phoenix.DataHandle.Main.Models
 {
     public partial class AspNetRoles : IAspNetRoles, IModelEntity
     {
-        Role IAspNetRoles.Type { get => (Role)this.Type; set => this.Type = (int)value; }
         IEnumerable<IAspNetUserRoles> IAspNetRoles.AspNetUserRoles => this.AspNetUserRoles;
     }
 
