@@ -21,8 +21,8 @@ namespace Phoenix.DataHandle.Main.Models
         public string OnlineMeetingLink { get; set; }
         public string Info { get; set; }
         public LectureCreatedBy CreatedBy { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset? UpdatedAt { get; set; }
 
         public virtual Classroom Classroom { get; set; }
         public virtual Course Course { get; set; }

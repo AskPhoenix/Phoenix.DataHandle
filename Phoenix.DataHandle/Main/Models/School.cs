@@ -18,10 +18,9 @@ namespace Phoenix.DataHandle.Main.Models
         public string City { get; set; }
         public string AddressLine { get; set; }
         public string Info { get; set; }
-        public string Endpoint { get; set; }
         public string FacebookPageId { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset? UpdatedAt { get; set; }
 
         public virtual ICollection<Classroom> Classroom { get; set; }
         public virtual ICollection<Course> Course { get; set; }
