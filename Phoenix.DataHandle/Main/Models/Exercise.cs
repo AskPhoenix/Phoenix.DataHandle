@@ -16,8 +16,8 @@ namespace Phoenix.DataHandle.Main.Models
         public int? BookId { get; set; }
         public string Page { get; set; }
         public string Comments { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset? UpdatedAt { get; set; }
 
         public virtual Book Book { get; set; }
         public virtual Lecture Lecture { get; set; }

@@ -9,7 +9,6 @@ namespace Phoenix.DataHandle.Main.Entities
         string City { get; set; }
         string AddressLine { get; set; }
         string Info { get; set; }
-        string Endpoint { get; set; }
         string FacebookPageId { get; set; }
 
         IEnumerable<IClassroom> Classrooms { get; }
