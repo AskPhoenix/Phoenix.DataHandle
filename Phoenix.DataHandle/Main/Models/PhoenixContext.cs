@@ -78,9 +78,6 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<AspNetUsers>(entity =>
             {
-                entity.HasIndex(e => e.Id)
-                    .HasName("IX_AspNetUsers");
-
                 entity.HasIndex(e => e.NormalizedEmail)
                     .HasName("EmailIndex");
 
@@ -90,8 +87,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasFilter("([NormalizedUserName] IS NOT NULL)");
 
                 entity.HasIndex(e => e.PhoneNumber)
-                    .HasName("PhoneNumberIndex")
-                    .IsUnique();
+                    .HasName("PhoneNumberIndex");
 
                 entity.Property(e => e.CreatedApplicationType).HasDefaultValueSql("((-1))");
 
@@ -502,6 +498,10 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<UserSchool>(entity =>
             {
                 entity.HasKey(e => new { e.AspNetUserId, e.SchoolId });
+
+                entity.HasIndex(e => new { e.Code, e.SchoolId })
+                    .HasName("IX_UserSchool")
+                    .IsUnique();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
 
