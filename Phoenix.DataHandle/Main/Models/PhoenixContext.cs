@@ -194,6 +194,10 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Course>(entity =>
             {
+                entity.HasIndex(e => new { e.SchoolId, e.Code })
+                    .HasName("IX_Course")
+                    .IsUnique();
+
                 entity.HasIndex(e => new { e.SchoolId, e.Name, e.SubCourse, e.Group, e.Level })
                     .HasName("UQ_Course")
                     .IsUnique();
@@ -340,6 +344,10 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Schedule>(entity =>
             {
+                entity.HasIndex(e => new { e.CourseId, e.DayOfWeek, e.StartTime })
+                    .HasName("UQ_Schedule")
+                    .IsUnique();
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.EndTime).HasColumnType("datetimeoffset(0)");
@@ -366,13 +374,17 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasName("SchoolSlugIndex")
                     .IsUnique();
 
+                entity.HasIndex(e => new { e.Name, e.City })
+                    .HasName("IX_NameCity")
+                    .IsUnique();
+
                 entity.Property(e => e.AddressLine)
                     .IsRequired()
                     .HasMaxLength(255);
 
                 entity.Property(e => e.City)
                     .IsRequired()
-                    .HasMaxLength(255);
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetimeoffset(0)")
@@ -384,7 +396,7 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(255);
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.Slug)
                     .IsRequired()
