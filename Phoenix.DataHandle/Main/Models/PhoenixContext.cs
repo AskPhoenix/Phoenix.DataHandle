@@ -172,7 +172,7 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<Classroom>(entity =>
             {
                 entity.HasIndex(e => new { e.SchoolId, e.Name })
-                    .HasName("UQ__Classroo__A5B5856930D0EBE6")
+                    .HasName("IX_Classroom")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt)
@@ -344,6 +344,10 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Schedule>(entity =>
             {
+                entity.HasIndex(e => new { e.CourseId, e.Code })
+                    .HasName("IX_Schedule")
+                    .IsUnique();
+
                 entity.HasIndex(e => new { e.CourseId, e.DayOfWeek, e.StartTime })
                     .HasName("UQ_Schedule")
                     .IsUnique();
