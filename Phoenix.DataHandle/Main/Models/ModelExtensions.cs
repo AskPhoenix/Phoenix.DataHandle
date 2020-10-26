@@ -20,7 +20,7 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class AspNetUsers : IAspNetUsers, IModelEntity
     {
-        public DateTime RegisteredAt => this.CreatedAt;
+        public DateTimeOffset RegisteredAt => this.CreatedAt;
 
         IUser IAspNetUsers.User => this.User;
 
