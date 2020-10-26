@@ -23,7 +23,7 @@ namespace Phoenix.DataHandle.Main.Models
         public string PhoneNumber { get; set; }
         public bool PhoneNumberConfirmed { get; set; }
         public string OneTimeCode { get; set; }
-        public bool? OneTimeCodeUsed { get; set; }
+        public bool OneTimeCodeUsed { get; set; }
         public string FacebookId { get; set; }
         public bool TwoFactorEnabled { get; set; }
         public DateTimeOffset? LockoutEnd { get; set; }
