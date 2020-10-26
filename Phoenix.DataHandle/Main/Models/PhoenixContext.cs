@@ -92,7 +92,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.CreatedApplicationType).HasDefaultValueSql("((-1))");
 
                 entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime2(0)")
+                    .HasColumnType("datetimeoffset(0)")
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Email).HasMaxLength(256);
@@ -109,7 +109,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.UserName).HasMaxLength(256);
             });
