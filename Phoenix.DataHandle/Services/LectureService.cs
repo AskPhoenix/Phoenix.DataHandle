@@ -55,8 +55,8 @@ namespace Phoenix.DataHandle.Services
                             CourseId = scheduleOfTheDay.CourseId,
                             ClassroomId = scheduleOfTheDay.ClassroomId,
                             ScheduleId = scheduleOfTheDay.Id,
-                            StartDateTime = day.Add(scheduleOfTheDay.StartTime.TimeOfDay),
-                            EndDateTime = day.Add(scheduleOfTheDay.EndTime.TimeOfDay),
+                            StartDateTime = new DateTimeOffset(day.Add(scheduleOfTheDay.StartTime.TimeOfDay), scheduleOfTheDay.StartTime.Offset),
+                            EndDateTime = new DateTimeOffset(day.Add(scheduleOfTheDay.EndTime.TimeOfDay), scheduleOfTheDay.EndTime.Offset),
                             CreatedBy = LectureCreatedBy.Automatic,
                             Status = LectureStatus.Scheduled,
                         };
@@ -68,8 +68,8 @@ namespace Phoenix.DataHandle.Services
                     {
                         lecture.ClassroomId = scheduleOfTheDay.ClassroomId;
                         lecture.CourseId = scheduleOfTheDay.CourseId;
-                        lecture.StartDateTime = day.Add(scheduleOfTheDay.StartTime.TimeOfDay);
-                        lecture.EndDateTime = day.Add(scheduleOfTheDay.EndTime.TimeOfDay);
+                        lecture.StartDateTime = new DateTimeOffset(day.Add(scheduleOfTheDay.StartTime.TimeOfDay), scheduleOfTheDay.StartTime.Offset);
+                        lecture.EndDateTime = new DateTimeOffset(day.Add(scheduleOfTheDay.EndTime.TimeOfDay), scheduleOfTheDay.EndTime.Offset);
 
                         this._lectureRepository.update(lecture);
                         this._logger.LogInformation($"Lecture updated successfully | {course.Name} | {day:dd/MM/yyyy} | {scheduleOfTheDay.StartTime:HH:mm}");
