@@ -12,7 +12,7 @@ namespace Phoenix.DataHandle.Main.Entities
         string PhoneNumber { get; set; }
         bool PhoneNumberConfirmed { get; set; }
         string FacebookId { get; set; }
-        DateTime RegisteredAt { get; }
+        DateTimeOffset RegisteredAt { get; }
         int CreatedApplicationType { get; set; }
 
         IUser User { get; }

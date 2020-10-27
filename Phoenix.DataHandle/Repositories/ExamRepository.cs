@@ -14,14 +14,14 @@ namespace Phoenix.DataHandle.Repositories
 
         public override Exam create(Exam tModel)
         {
-            tModel.CreatedAt = DateTime.Now;
+            tModel.CreatedAt = DateTimeOffset.Now;
             
             return base.create(tModel);
         }
 
         public override Exam update(Exam tModel)
         {
-            tModel.UpdatedAt = DateTime.Now;
+            tModel.UpdatedAt = DateTimeOffset.Now;
 
             return base.update(tModel);
         }

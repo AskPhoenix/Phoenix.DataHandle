@@ -16,14 +16,14 @@ namespace Phoenix.DataHandle.Repositories
 
         public override Lecture create(Lecture tModel)
         {
-            tModel.CreatedAt = DateTime.Now;
+            tModel.CreatedAt = DateTimeOffset.Now;
             
             return base.create(tModel);
         }
 
         public override Lecture update(Lecture tModel)
         {
-            tModel.UpdatedAt = DateTime.Now;
+            tModel.UpdatedAt = DateTimeOffset.Now;
 
             return base.update(tModel);
         }

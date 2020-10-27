@@ -78,9 +78,6 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<AspNetUsers>(entity =>
             {
-                entity.HasIndex(e => e.Id)
-                    .HasName("IX_AspNetUsers");
-
                 entity.HasIndex(e => e.NormalizedEmail)
                     .HasName("EmailIndex");
 
@@ -90,13 +87,12 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasFilter("([NormalizedUserName] IS NOT NULL)");
 
                 entity.HasIndex(e => e.PhoneNumber)
-                    .HasName("PhoneNumberIndex")
-                    .IsUnique();
+                    .HasName("PhoneNumberIndex");
 
                 entity.Property(e => e.CreatedApplicationType).HasDefaultValueSql("((-1))");
 
                 entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime2(0)")
+                    .HasColumnType("datetimeoffset(0)")
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Email).HasMaxLength(256);
@@ -113,7 +109,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime2(0)");
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.UserName).HasMaxLength(256);
             });
@@ -172,7 +168,7 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<Classroom>(entity =>
             {
                 entity.HasIndex(e => new { e.SchoolId, e.Name })
-                    .HasName("UQ__Classroo__A5B5856930D0EBE6")
+                    .HasName("IX_Classroom")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt)
@@ -194,6 +190,10 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Course>(entity =>
             {
+                entity.HasIndex(e => new { e.SchoolId, e.Code })
+                    .HasName("IX_Course")
+                    .IsUnique();
+
                 entity.HasIndex(e => new { e.SchoolId, e.Name, e.SubCourse, e.Group, e.Level })
                     .HasName("UQ_Course")
                     .IsUnique();
@@ -340,6 +340,14 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Schedule>(entity =>
             {
+                entity.HasIndex(e => new { e.CourseId, e.Code })
+                    .HasName("IX_Schedule")
+                    .IsUnique();
+
+                entity.HasIndex(e => new { e.CourseId, e.DayOfWeek, e.StartTime })
+                    .HasName("UQ_Schedule")
+                    .IsUnique();
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.EndTime).HasColumnType("datetimeoffset(0)");
@@ -366,13 +374,17 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasName("SchoolSlugIndex")
                     .IsUnique();
 
+                entity.HasIndex(e => new { e.Name, e.City })
+                    .HasName("IX_NameCity")
+                    .IsUnique();
+
                 entity.Property(e => e.AddressLine)
                     .IsRequired()
                     .HasMaxLength(255);
 
                 entity.Property(e => e.City)
                     .IsRequired()
-                    .HasMaxLength(255);
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetimeoffset(0)")
@@ -384,7 +396,7 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(255);
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.Slug)
                     .IsRequired()
@@ -486,6 +498,10 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<UserSchool>(entity =>
             {
                 entity.HasKey(e => new { e.AspNetUserId, e.SchoolId });
+
+                entity.HasIndex(e => new { e.Code, e.SchoolId })
+                    .HasName("IX_UserSchool")
+                    .IsUnique();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
 

@@ -13,6 +13,6 @@ dotnet pack --configuration Release
 echo.
 echo.
 set /p p="Enter version for package to publish: "
-dotnet nuget push "bin/Release/Phoenix.DataHandle.%p%.nupkg" --source "github"
+dotnet nuget push "bin/Release/Phoenix.DataHandle.%p%.nupkg" --source "AskPhoenix"
 
 Pause

@@ -9,9 +9,9 @@ namespace Phoenix.DataHandle.Identity
 {
     public sealed class ApplicationUser : IdentityUser<int>, IAspNetUsers
     {
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public DateTime RegisteredAt => this.CreatedAt;
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTimeOffset RegisteredAt => this.CreatedAt;
         public string FacebookId { get; set; }
         public int CreatedApplicationType { get; set; }
 
