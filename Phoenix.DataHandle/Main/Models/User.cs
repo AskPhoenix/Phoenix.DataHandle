@@ -18,6 +18,7 @@ namespace Phoenix.DataHandle.Main.Models
         public int AspNetUserId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public bool TermsAccepted { get; set; }
 
         public virtual AspNetUsers AspNetUser { get; set; }
         public virtual ICollection<Attendance> Attendance { get; set; }
