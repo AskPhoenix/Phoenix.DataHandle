@@ -13,7 +13,7 @@ namespace Phoenix.DataHandle.Main.Entities
         bool PhoneNumberConfirmed { get; set; }
         string FacebookId { get; set; }
         DateTimeOffset RegisteredAt { get; }
-        int CreatedApplicationType { get; set; }
+        ApplicationType CreatedApplicationType { get; set; }
 
         IUser User { get; }
         IEnumerable<IAspNetUserRoles> Roles { get; }
