@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <LangVersion>7.3</LangVersion>
     <Product>Phoenix.DataHandle</Product>
     <Description>A wrapper for operations on PhoenixDB</Description>
     <Copyright>AskPhoenix 2020</Copyright>
@@ -11,7 +12,7 @@
 
   <PropertyGroup>
     <PackageId>Phoenix.DataHandle</PackageId>
-    <Version>1.2.3</Version>
+    <Version>1.2.4</Version>
     <Authors>AskPhoenix</Authors>
     <Company>AskPhoenix</Company>
     <PackageDescription>A wrapper for operations on PhoenixDB</PackageDescription>
