@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Repositories;
@@ -34,6 +33,8 @@ namespace Phoenix.DataHandle.Services
 
         public Task generateLectures(Course course, CancellationToken cancellationToken)
         {
+            this._logger.LogInformation($"Start generating lectures for course | {course.School.Name} | {course.Name}, {course.Level}, {course.SubCourse} | {course.FirstDate:dd/MM/yyyy}-{course.LastDate:dd/MM/yyyy} | {course.Schedule.Count} Schedules | {course.Lecture.Count} Lectures");
+
             var period = Enumerable.Range(0, 1 + course.LastDate.Date.Subtract(course.FirstDate.Date).Days)
                  .Select(offset => course.FirstDate.Date.AddDays(offset))
                  .Where(a => a.Date > DateTime.Now.Date)
@@ -62,7 +63,7 @@ namespace Phoenix.DataHandle.Services
                         };
 
                         this._lectureRepository.create(lecture);
-                        this._logger.LogInformation($"Lecture created successfully | {course.Name} | {day:dd/MM/yyyy} | {scheduleOfTheDay.StartTime:HH:mm}");
+                        this._logger.LogInformation($"Lecture created successfully | {day:dd/MM/yyyy} | {scheduleOfTheDay.DayOfWeek} | {scheduleOfTheDay.StartTime:HH:mm}-{scheduleOfTheDay.EndTime:HH:mm}");
                     }
                     else
                     {
@@ -72,10 +73,11 @@ namespace Phoenix.DataHandle.Services
                         lecture.EndDateTime = new DateTimeOffset(day.Add(scheduleOfTheDay.EndTime.TimeOfDay), scheduleOfTheDay.EndTime.Offset);
 
                         this._lectureRepository.update(lecture);
-                        this._logger.LogInformation($"Lecture updated successfully | {course.Name} | {day:dd/MM/yyyy} | {scheduleOfTheDay.StartTime:HH:mm}");
+                        this._logger.LogInformation($"Lecture updated successfully | {course.Name}, {course.SubCourse} | {day:dd/MM/yyyy} | {scheduleOfTheDay.StartTime:HH:mm}");
                     }
                 }
             }
+            
             return Task.CompletedTask;
         }
 

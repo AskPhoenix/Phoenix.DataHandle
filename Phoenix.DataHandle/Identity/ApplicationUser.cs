@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
+using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Main.Relationships;
@@ -13,7 +14,7 @@ namespace Phoenix.DataHandle.Identity
         public DateTimeOffset? UpdatedAt { get; set; }
         public DateTimeOffset RegisteredAt => this.CreatedAt;
         public string FacebookId { get; set; }
-        public int CreatedApplicationType { get; set; }
+        public ApplicationType CreatedApplicationType { get; set; }
 
         IUser IAspNetUsers.User => this.User;
         public User User { get; set; }
