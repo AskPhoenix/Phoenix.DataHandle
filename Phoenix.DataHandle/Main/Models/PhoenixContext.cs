@@ -152,12 +152,6 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<BotFeedback>(entity =>
             {
-                entity.Property(e => e.Category).HasMaxLength(50);
-
-                entity.Property(e => e.Occasion)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
                 entity.HasOne(d => d.Author)
                     .WithMany(p => p.BotFeedback)
                     .HasForeignKey(d => d.AuthorId)

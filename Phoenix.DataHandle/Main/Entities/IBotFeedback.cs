@@ -3,8 +3,9 @@
     public interface IBotFeedback
     {
         IUser Author { get; }
-        string Occasion { get; set; }
-        byte? Rating { get; set; }
+        BotFeedbackOccasion Occasion { get; set; }
+        BotFeedbackCategory? Category { get; set; }
+        short? Rating { get; set; }
         string Comment { get; set; }
     }
 }
