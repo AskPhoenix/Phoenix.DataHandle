@@ -1,10 +1,10 @@
-﻿using System;
-
-namespace Phoenix.DataHandle.Main.Models.Extensions
+﻿namespace Phoenix.DataHandle.Main.Models.Extensions
 {
-    public interface IModelRelationship
+    public interface IModelRelationship<TKey1, TKey2>
     {
-        int Id1 { get; }
-        int Id2 { get; }
+        TKey1 Id1 { get; }
+        TKey2 Id2 { get; }
     }
+
+    public interface IModelRelationship : IModelRelationship<int, int> { }
 }

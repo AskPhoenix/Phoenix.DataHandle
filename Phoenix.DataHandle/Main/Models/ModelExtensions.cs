@@ -12,9 +12,9 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IAspNetUserRoles> IAspNetRoles.AspNetUserRoles => this.AspNetUserRoles;
     }
 
-    public partial class AspNetUserLogins : IAspNetUserLogins, IModelEntity
+    public partial class AspNetUserLogins : IAspNetUserLogins, IModelEntity<string>
     {
-        public int Id => this.UserId;
+        public string Id => this.LoginProvider + this.ProviderKey;
 
         IAspNetUsers IAspNetUserLogins.User => this.User;
     }
@@ -173,9 +173,10 @@ namespace Phoenix.DataHandle.Main.Models
     {
         public string FullName => (this.LastName + " " + this.FirstName).Trim();
 
-        int IModelEntity.Id => this.AspNetUserId;
         public DateTimeOffset CreatedAt => ((IModelEntity)this.AspNetUser).CreatedAt;
         public DateTimeOffset? UpdatedAt => ((IModelEntity)this.AspNetUser).UpdatedAt;
+
+        public int Id => this.AspNetUserId;
 
         IAspNetUsers IUser.AspNetUser => this.AspNetUser;
 
