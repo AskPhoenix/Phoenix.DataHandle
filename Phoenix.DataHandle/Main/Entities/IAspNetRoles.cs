@@ -8,7 +8,8 @@ namespace Phoenix.DataHandle.Main.Entities
         Role Type { get; set; }
         string Name { get; set; }
         string NormalizedName { get; set; }
-        
+        string ConcurrencyStamp { get; set; }
+
         IEnumerable<IAspNetUserRoles> AspNetUserRoles { get; }
     }
 }

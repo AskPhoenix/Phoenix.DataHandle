@@ -12,8 +12,19 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IAspNetUserRoles> IAspNetRoles.AspNetUserRoles => this.AspNetUserRoles;
     }
 
-    public partial class AspNetUserRoles : IAspNetUserRoles
+    public partial class AspNetUserLogins : IAspNetUserLogins, IModelEntity
     {
+        public int Id => this.UserId;
+
+        IAspNetUsers IAspNetUserLogins.User => this.User;
+    }
+
+    public partial class AspNetUserRoles : IAspNetUserRoles, IModelRelationship
+    {
+        public int Id1 => this.UserId;
+
+        public int Id2 => this.RoleId;
+
         IAspNetUsers IAspNetUserRoles.User => this.User;
         IAspNetRoles IAspNetUserRoles.Role => this.Role;
     }
@@ -25,6 +36,10 @@ namespace Phoenix.DataHandle.Main.Models
         IUser IAspNetUsers.User => this.User;
 
         IEnumerable<IAspNetUserRoles> IAspNetUsers.Roles => this.AspNetUserRoles;
+
+        IEnumerable<IUserSchool> IAspNetUsers.UserSchool => this.UserSchool;
+
+        IEnumerable<IAspNetUserLogins> IAspNetUsers.AspNetUserLogins => this.AspNetUserLogins;
 
         public string getHashSignature()
         {
@@ -42,8 +57,12 @@ namespace Phoenix.DataHandle.Main.Models
         }
     }
 
-    public partial class Attendance : IAttendance
+    public partial class Attendance : IAttendance, IModelRelationship
     {
+        public int Id1 => this.StudentId;
+
+        public int Id2 => this.LectureId;
+
         IUser IAttendance.Student => this.Student;
         ILecture IAttendance.Lecture => this.Lecture;
     }
@@ -113,6 +132,9 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class Material : IMaterial, IModelEntity
     {
+        public DateTimeOffset CreatedAt => ((IModelEntity)this.Exam).CreatedAt;
+        public DateTimeOffset? UpdatedAt => ((IModelEntity)this.Exam).UpdatedAt;
+
         IExam IMaterial.Exam => this.Exam;
         IBook IMaterial.Book => this.Book;
     }
@@ -152,6 +174,9 @@ namespace Phoenix.DataHandle.Main.Models
         public string FullName => (this.LastName + " " + this.FirstName).Trim();
 
         int IModelEntity.Id => this.AspNetUserId;
+        public DateTimeOffset CreatedAt => ((IModelEntity)this.AspNetUser).CreatedAt;
+        public DateTimeOffset? UpdatedAt => ((IModelEntity)this.AspNetUser).UpdatedAt;
+
         IAspNetUsers IUser.AspNetUser => this.AspNetUser;
 
         IEnumerable<IAttendance> IUser.Attendances => this.Attendance;
@@ -167,4 +192,14 @@ namespace Phoenix.DataHandle.Main.Models
         IClassroom ISchedule.Classroom => this.Classroom;
     }
 
+    public partial class UserSchool : IUserSchool, IModelRelationship
+    {
+        public int Id1 => this.AspNetUserId;
+
+        public int Id2 => this.SchoolId;
+
+        IAspNetUsers IUserSchool.AspNetUser => this.AspNetUser;
+
+        ISchool IUserSchool.School => this.School;
+    }
 }
