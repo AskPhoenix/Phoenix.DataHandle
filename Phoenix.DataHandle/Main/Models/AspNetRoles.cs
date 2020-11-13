@@ -15,6 +15,8 @@ namespace Phoenix.DataHandle.Main.Models
         public string Name { get; set; }
         public string NormalizedName { get; set; }
         public string ConcurrencyStamp { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset? UpdatedAt { get; set; }
 
         public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
     }

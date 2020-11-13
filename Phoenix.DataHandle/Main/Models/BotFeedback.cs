@@ -11,6 +11,8 @@ namespace Phoenix.DataHandle.Main.Models
         public BotFeedbackCategory? Category { get; set; }
         public short? Rating { get; set; }
         public string Comment { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset? UpdatedAt { get; set; }
 
         public virtual User Author { get; set; }
     }
