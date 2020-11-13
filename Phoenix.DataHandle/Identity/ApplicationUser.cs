@@ -13,13 +13,14 @@ namespace Phoenix.DataHandle.Identity
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
         public DateTimeOffset RegisteredAt => this.CreatedAt;
-        public string FacebookId { get; set; }
         public ApplicationType CreatedApplicationType { get; set; }
 
         IUser IAspNetUsers.User => this.User;
         public User User { get; set; }
-
         public IEnumerable<IAspNetUserRoles> Roles { get; }
+        public IEnumerable<IUserSchool> UserSchool { get; }
+
+        public IEnumerable<IAspNetUserLogins> AspNetUserLogins { get; }
 
         public ApplicationUser() { }
 
