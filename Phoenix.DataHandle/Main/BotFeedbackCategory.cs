@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Phoenix.DataHandle.Main
 {
@@ -16,13 +18,23 @@ namespace Phoenix.DataHandle.Main
     {
         //TODO: Use locale
 
-        private static readonly string[] CategoriesGreek = new string[]
+        private static readonly string[] CategoryEmojis = new string[]
         {
-            "💬 Γενικό σχόλιο",
-            "😊 Κοπλιμέντο",
-            "💡 Πρόταση ιδέας",
-            "👍 Αξιολόγηση",
-            "😒 Παράπονο"
+            "💬",
+            "😊",
+            "💡",
+            "👍",
+            "😒"
+        };
+
+        private static readonly string[] CategoryGreek = new string[]
+        {
+            "Κενή",
+            "Γενικό σχόλιο",
+            "Κοπλιμέντο",
+            "Πρόταση ιδέας",
+            "Αξιολόγηση",
+            "Παράπονο"
         };
 
         public static string ToFriendlyString(this BotFeedbackCategory cat)
@@ -46,12 +58,27 @@ namespace Phoenix.DataHandle.Main
             }
         }
 
-        public static string[] GetCategoryNames(bool includeEmoji = true)
+        public static IEnumerable<BotFeedbackCategory> GetAll()
         {
-            if (includeEmoji)
-                return CategoriesGreek;
+            return Enum.
+                GetValues(typeof(BotFeedbackCategory)).
+                Cast<BotFeedbackCategory>();
+        }
 
-            return CategoriesGreek.Select(c => c.Substring(2)).ToArray();
+        public static IEnumerable<string> GetAllNames(bool includeEmoji)
+        {
+            return Enum.
+                GetValues(typeof(BotFeedbackCategory)).
+                Cast<BotFeedbackCategory>().
+                Select(c => includeEmoji && (int)c >= 0 ? CategoryEmojis[(int)c] : "" + " " + c.ToFriendlyString());
+        }
+
+        public static IEnumerable<string> GetAllGreekNames(bool includeEmoji)
+        {
+            return Enum.
+                GetValues(typeof(BotFeedbackCategory)).
+                Cast<BotFeedbackCategory>().
+                Select(c => includeEmoji && (int)c >= 0 ? CategoryEmojis[(int)c] : "" + " " + CategoryGreek[(int)c]);
         }
     }
 }
