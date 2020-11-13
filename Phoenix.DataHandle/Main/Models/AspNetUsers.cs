@@ -7,6 +7,7 @@ namespace Phoenix.DataHandle.Main.Models
     {
         public AspNetUsers()
         {
+            AspNetUserLogins = new HashSet<AspNetUserLogins>();
             AspNetUserRoles = new HashSet<AspNetUserRoles>();
             UserSchool = new HashSet<UserSchool>();
         }
@@ -22,9 +23,6 @@ namespace Phoenix.DataHandle.Main.Models
         public string ConcurrencyStamp { get; set; }
         public string PhoneNumber { get; set; }
         public bool PhoneNumberConfirmed { get; set; }
-        public string OneTimeCode { get; set; }
-        public bool OneTimeCodeUsed { get; set; }
-        public string FacebookId { get; set; }
         public bool TwoFactorEnabled { get; set; }
         public DateTimeOffset? LockoutEnd { get; set; }
         public bool LockoutEnabled { get; set; }
@@ -34,6 +32,7 @@ namespace Phoenix.DataHandle.Main.Models
         public DateTimeOffset? UpdatedAt { get; set; }
 
         public virtual User User { get; set; }
+        public virtual ICollection<AspNetUserLogins> AspNetUserLogins { get; set; }
         public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
         public virtual ICollection<UserSchool> UserSchool { get; set; }
     }

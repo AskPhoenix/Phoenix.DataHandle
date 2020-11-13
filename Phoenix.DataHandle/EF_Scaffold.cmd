@@ -7,6 +7,7 @@ dotnet ef dbcontext scaffold "%cs%" Microsoft.EntityFrameworkCore.SqlServer ^
 --use-database-names ^
 --force ^
 --table "dbo.AspNetRoles" ^
+--table "dbo.AspNetUserLogins" ^
 --table "dbo.AspNetUserRoles" ^
 --table "dbo.AspNetUsers" ^
 --table "dbo.Attendance" ^

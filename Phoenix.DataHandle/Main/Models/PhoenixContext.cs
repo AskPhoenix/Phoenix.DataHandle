@@ -16,6 +16,7 @@ namespace Phoenix.DataHandle.Main.Models
         }
 
         public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
+        public virtual DbSet<AspNetUserLogins> AspNetUserLogins { get; set; }
         public virtual DbSet<AspNetUserRoles> AspNetUserRoles { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<Attendance> Attendance { get; set; }
@@ -54,9 +55,37 @@ namespace Phoenix.DataHandle.Main.Models
                     .IsUnique()
                     .HasFilter("([NormalizedName] IS NOT NULL)");
 
+                entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
+
                 entity.Property(e => e.Name).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedName).HasMaxLength(256);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
+            });
+
+            modelBuilder.Entity<AspNetUserLogins>(entity =>
+            {
+                entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
+
+                entity.HasIndex(e => e.UserId);
+
+                entity.Property(e => e.LoginProvider).HasMaxLength(128);
+
+                entity.Property(e => e.ProviderKey).HasMaxLength(128);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
+
+                entity.Property(e => e.OTCCreatedAt).HasColumnType("datetimeoffset(0)");
+
+                entity.Property(e => e.OneTimeCode).HasMaxLength(128);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.AspNetUserLogins)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_AspNetUserLogins_AspNetUsers");
             });
 
             modelBuilder.Entity<AspNetUserRoles>(entity =>
@@ -97,13 +126,9 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.Email).HasMaxLength(256);
 
-                entity.Property(e => e.FacebookId).HasMaxLength(50);
-
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
-
-                entity.Property(e => e.OneTimeCode).HasMaxLength(50);
 
                 entity.Property(e => e.PhoneNumber)
                     .IsRequired()
@@ -152,6 +177,10 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<BotFeedback>(entity =>
             {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
+
                 entity.HasOne(d => d.Author)
                     .WithMany(p => p.BotFeedback)
                     .HasForeignKey(d => d.AuthorId)
