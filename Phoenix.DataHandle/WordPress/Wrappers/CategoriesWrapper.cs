@@ -4,7 +4,7 @@ using WordPressPCL.Models;
 
 namespace Phoenix.DataHandle.WordPress.Wrappers
 {
-    internal static class CategoriesWrapper
+    public static class CategoriesWrapper
     {
         private static IEnumerable<Category> Categories { get; set; }
 

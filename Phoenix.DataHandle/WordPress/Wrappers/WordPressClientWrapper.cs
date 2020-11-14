@@ -10,7 +10,7 @@ using WordPressPCL.Utility;
 
 namespace Phoenix.DataHandle.WordPress.Wrappers
 {
-    internal static class WordPressClientWrapper
+    public static class WordPressClientWrapper
     {
         private const string WordpressEndpoint = "https://www.askphoenix.gr/";
         private const string PostsPath = "wp/v2/posts";
