@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models;
 
@@ -9,9 +7,7 @@ namespace Phoenix.DataHandle.Identity
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
+            : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,8 +36,6 @@ namespace Phoenix.DataHandle.Identity
                 entity.Property(e => e.LastName).HasMaxLength(255);
                 entity.Property(e => e.FirstName).HasMaxLength(255);
             });
-
         }
-
     }
 }

@@ -23,15 +23,15 @@ namespace Phoenix.DataHandle.Services
             this._logger = logger;
         }
 
-        public async Task generateLectures(ICollection<Course> courses, CancellationToken cancellationToken)
+        public async Task GenerateLectures(ICollection<Course> courses, CancellationToken cancellationToken)
         {
             foreach (Course course in courses)
             {
-                await this.generateLectures(course, cancellationToken);
+                await this.GenerateLectures(course, cancellationToken);
             }
         }
 
-        public Task generateLectures(Course course, CancellationToken cancellationToken)
+        public Task GenerateLectures(Course course, CancellationToken cancellationToken)
         {
             this._logger.LogInformation($"Start generating lectures for course | {course.School.Name} | {course.Name}, {course.Level}, {course.SubCourse} | {course.FirstDate:dd/MM/yyyy}-{course.LastDate:dd/MM/yyyy} | {course.Schedule.Count} Schedules | {course.Lecture.Count} Lectures");
 
@@ -45,7 +45,7 @@ namespace Phoenix.DataHandle.Services
                 foreach (var scheduleOfTheDay in course.Schedule.Where(a => a.DayOfWeek == day.DayOfWeek))
                 {
                     Lecture lecture = scheduleOfTheDay.Lecture?
-                        .Where(a => Utils.getWeekOfYearISO8601(a.StartDateTime) == Utils.getWeekOfYearISO8601(day))
+                        .Where(a => Utils.GetWeekOfYearISO8601(a.StartDateTime) == Utils.GetWeekOfYearISO8601(day))
                         .Where(a => a.Status == LectureStatus.Scheduled)
                         .SingleOrDefault(a => a.CreatedBy == LectureCreatedBy.Automatic);
 
@@ -80,6 +80,5 @@ namespace Phoenix.DataHandle.Services
             
             return Task.CompletedTask;
         }
-
     }
 }

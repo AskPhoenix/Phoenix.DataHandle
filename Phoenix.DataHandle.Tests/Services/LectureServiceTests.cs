@@ -40,7 +40,7 @@ namespace Phoenix.DataHandle.Tests.Services
 
             LectureService lectureService = new LectureService(this._phoenixContext, NullLogger<LectureService>.Instance);
 
-            await lectureService.generateLectures(courses, CancellationToken.None);
+            await lectureService.GenerateLectures(courses, CancellationToken.None);
         }
 
 
