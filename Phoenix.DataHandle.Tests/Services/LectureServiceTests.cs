@@ -33,9 +33,9 @@ namespace Phoenix.DataHandle.Tests.Services
         public async void FetchSchools()
         {
             Repository<Course> courseRepository = new Repository<Course>(this._phoenixContext);
-            courseRepository.include(a => a.Include(b => b.School).Include(b => b.Lecture).Include(b => b.Schedule).ThenInclude(b => b.Classroom).Include(b => b.Schedule).ThenInclude(b => b.Course));
+            courseRepository.Include(a => a.Include(b => b.School).Include(b => b.Lecture).Include(b => b.Schedule).ThenInclude(b => b.Classroom).Include(b => b.Schedule).ThenInclude(b => b.Course));
 
-            ICollection<Course> courses = await courseRepository.find().ToListAsync();
+            ICollection<Course> courses = await courseRepository.Find().ToListAsync();
             courses = courses.OrderBy(x => Guid.NewGuid()).Take(2).ToList();
 
             LectureService lectureService = new LectureService(this._phoenixContext, NullLogger<LectureService>.Instance);

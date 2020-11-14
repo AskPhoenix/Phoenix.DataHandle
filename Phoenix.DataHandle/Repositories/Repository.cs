@@ -18,7 +18,7 @@ namespace Phoenix.DataHandle.Repositories
             this.dbContext = dbContext;
         }
 
-        public virtual IQueryable<TModel> find()
+        public virtual IQueryable<TModel> Find()
         {
             IQueryable<TModel> x = this.dbContext.Set<TModel>();
 
@@ -29,7 +29,7 @@ namespace Phoenix.DataHandle.Repositories
             return x;
         }
 
-        public virtual Task<TModel> find(int id)
+        public virtual Task<TModel> Find(int id)
         {
             IQueryable<TModel> x = this.dbContext.Set<TModel>();
 
@@ -40,7 +40,7 @@ namespace Phoenix.DataHandle.Repositories
             return x.SingleAsync(a => a.Id == id);
         }
 
-        public virtual TModel create(TModel tModel)
+        public virtual TModel Create(TModel tModel)
         {
             this.dbContext.Set<TModel>().Add(tModel);
             this.dbContext.SaveChanges();
@@ -48,7 +48,7 @@ namespace Phoenix.DataHandle.Repositories
             return tModel;
         }
 
-        public virtual TModel update(TModel tModel)
+        public virtual TModel Update(TModel tModel)
         {
             this.dbContext.Entry(tModel).State = EntityState.Modified;
             this.dbContext.SaveChanges();
@@ -56,7 +56,7 @@ namespace Phoenix.DataHandle.Repositories
             return tModel;
         }
 
-        public virtual bool delete(int id)
+        public virtual bool Delete(int id)
         {
             this.dbContext.Set<TModel>().Remove(this.dbContext.Set<TModel>().Single(a => a.Id == id));
             this.dbContext.SaveChanges();
@@ -64,7 +64,7 @@ namespace Phoenix.DataHandle.Repositories
             return true;
         }
 
-        public virtual void include(params Expression<Func<TModel, object>>[] paths)
+        public virtual void Include(params Expression<Func<TModel, object>>[] paths)
         {
             foreach (var path in paths)
             {
@@ -72,7 +72,7 @@ namespace Phoenix.DataHandle.Repositories
             }
         }
 
-        public virtual void include(params Func<IQueryable<TModel>, IQueryable<TModel>>[] includes)
+        public virtual void Include(params Func<IQueryable<TModel>, IQueryable<TModel>>[] includes)
         {
             foreach (var include in includes)
             {
@@ -80,10 +80,9 @@ namespace Phoenix.DataHandle.Repositories
             }
         }
 
-        public virtual void includeClear()
+        public virtual void IncludeClear()
         {
             this.includes.Clear();
         }
-
     }
 }

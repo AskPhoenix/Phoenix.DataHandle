@@ -1,30 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Repositories
 {
     public class CourseRepository : Repository<Course>
     {
-        public CourseRepository(PhoenixContext dbContext) : base(dbContext)
-        {
-        }
+        public CourseRepository(PhoenixContext dbContext) : base(dbContext) { }
 
-        public override Course create(Course tModel)
+        public override Course Create(Course tModel)
         {
             tModel.CreatedAt = DateTimeOffset.Now;
             
-            return base.create(tModel);
+            return base.Create(tModel);
         }
 
-        public override Course update(Course tModel)
+        public override Course Update(Course tModel)
         {
             tModel.UpdatedAt = DateTimeOffset.Now;
 
-            return base.update(tModel);
+            return base.Update(tModel);
         }
-        
-
     }
 }

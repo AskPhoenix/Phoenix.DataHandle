@@ -18,7 +18,7 @@ namespace Phoenix.DataHandle.Services
         public LectureService(PhoenixContext phoenixContext, ILogger<LectureService> logger)
         {
             this._lectureRepository = new LectureRepository(phoenixContext);
-            this._lectureRepository.include(a => a.Course);
+            this._lectureRepository.Include(a => a.Course);
 
             this._logger = logger;
         }
@@ -62,7 +62,7 @@ namespace Phoenix.DataHandle.Services
                             Status = LectureStatus.Scheduled,
                         };
 
-                        this._lectureRepository.create(lecture);
+                        this._lectureRepository.Create(lecture);
                         this._logger.LogInformation($"Lecture created successfully | {day:dd/MM/yyyy} | {scheduleOfTheDay.DayOfWeek} | {scheduleOfTheDay.StartTime:HH:mm}-{scheduleOfTheDay.EndTime:HH:mm}");
                     }
                     else
@@ -72,7 +72,7 @@ namespace Phoenix.DataHandle.Services
                         lecture.StartDateTime = new DateTimeOffset(day.Add(scheduleOfTheDay.StartTime.TimeOfDay), scheduleOfTheDay.StartTime.Offset);
                         lecture.EndDateTime = new DateTimeOffset(day.Add(scheduleOfTheDay.EndTime.TimeOfDay), scheduleOfTheDay.EndTime.Offset);
 
-                        this._lectureRepository.update(lecture);
+                        this._lectureRepository.Update(lecture);
                         this._logger.LogInformation($"Lecture updated successfully | {course.Name}, {course.SubCourse} | {day:dd/MM/yyyy} | {scheduleOfTheDay.StartTime:HH:mm}");
                     }
                 }
