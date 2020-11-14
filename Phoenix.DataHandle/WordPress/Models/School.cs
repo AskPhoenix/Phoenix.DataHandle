@@ -1,11 +1,12 @@
 ﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
 using System;
 
-namespace Phoenix.DataHandle.WordPress.Models.ACF
+namespace Phoenix.DataHandle.WordPress.Models
 {
-    public class School : IAcfModel<ISchool>
+    public class SchoolACF : IModelACF<ISchool>
     {
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
@@ -35,7 +36,7 @@ namespace Phoenix.DataHandle.WordPress.Models.ACF
 
         public ISchool ToContext()
         {
-            return new Main.Models.School
+            return new School
             {
                 Name = this.Name?.Substring(0, Math.Min(this.Name.Length, 200)),
                 Slug = (this.Slug ?? this.Name)?.Substring(0, Math.Min((this.Slug ?? this.Name).Length, 64)),
@@ -47,9 +48,9 @@ namespace Phoenix.DataHandle.WordPress.Models.ACF
             };
         }
 
-        public IAcfModel<ISchool> WithTitleCase()
+        public IModelACF<ISchool> WithTitleCase()
         {
-            return new School
+            return new SchoolACF
             {
                 Name = this.Name,
                 Slug = this.Slug,

@@ -6,9 +6,9 @@ using Phoenix.DataHandle.Utilities;
 using System;
 using System.Linq;
 
-namespace Phoenix.DataHandle.WordPress.Models.ACF
+namespace Phoenix.DataHandle.WordPress.Models
 {
-    public class SchoolUser : IAcfModel<IUserSchool>
+    public class SchoolUserACF : IModelACF<IUserSchool>
     {
         [JsonProperty(PropertyName = "code")]
         public short Code { get; set; }
@@ -56,9 +56,9 @@ namespace Phoenix.DataHandle.WordPress.Models.ACF
             };
         }
 
-        public IAcfModel<IUserSchool> WithTitleCase()
+        public IModelACF<IUserSchool> WithTitleCase()
         {
-            return new SchoolUser()
+            return new SchoolUserACF()
             {
                 Code = this.Code,
                 FirstName = this.FirstName?.UpperToTitleCase(),

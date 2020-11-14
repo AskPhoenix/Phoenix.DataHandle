@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
-using Phoenix.DataHandle.WordPress.Models.ACF;
+using Phoenix.DataHandle.WordPress.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,12 +59,12 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
             return posts;
         }
 
-        public static async Task<IAcfModel<CtxT>> GetAcfAsync<CtxT>(int postId, bool embed = false)
+        public static async Task<IModelACF<CtxT>> GetAcfAsync<CtxT>(int postId, bool embed = false)
         {
             string route = AcfPostsPath + $"/{postId}";
             var response = await GetCustomAsync<JObject>(route, embed);
 
-            return response.GetValue("acf").ToObject<IAcfModel<CtxT>>();
+            return response.GetValue("acf").ToObject<IModelACF<CtxT>>();
         }
 
         public static async Task<T> GetCustomAsync<T>(string route, bool embed = false)

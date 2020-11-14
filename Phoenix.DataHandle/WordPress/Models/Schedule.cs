@@ -3,10 +3,11 @@ using Newtonsoft.Json;
 using System.Globalization;
 using Phoenix.DataHandle.Utilities;
 using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Main.Models;
 
-namespace Phoenix.DataHandle.WordPress.Models.ACF
+namespace Phoenix.DataHandle.WordPress.Models
 {
-    public class Schedule : IAcfModel<ISchedule>
+    public class ScheduleACF : IModelACF<ISchedule>
     {
         [JsonProperty(PropertyName = "code")]
         public short Code { get; set; }
@@ -44,13 +45,13 @@ namespace Phoenix.DataHandle.WordPress.Models.ACF
         public bool MatchesUnique(ISchedule ctxSchedule)
         {
             return ctxSchedule != null
-                && (ctxSchedule as Main.Models.Schedule).CourseId == this.CourseId
+                && (ctxSchedule as Schedule).CourseId == this.CourseId
                 && ctxSchedule.Code == this.Code;
         }
 
         public ISchedule ToContext()
         {
-            return new Main.Models.Schedule()
+            return new Schedule()
             {
                 CourseId = this.CourseId,
                 Code = this.Code,
@@ -63,9 +64,9 @@ namespace Phoenix.DataHandle.WordPress.Models.ACF
             };
         }
 
-        public IAcfModel<ISchedule> WithTitleCase()
+        public IModelACF<ISchedule> WithTitleCase()
         {
-            return new Schedule()
+            return new ScheduleACF()
             {
                 Code = this.Code,
                 CourseCode = this.CourseCode,

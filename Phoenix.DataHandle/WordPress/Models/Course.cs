@@ -1,13 +1,14 @@
 ﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Phoenix.DataHandle.WordPress.Models.ACF
+namespace Phoenix.DataHandle.WordPress.Models
 {
-    public class Course : IAcfModel<ICourse>
+    public class CourseACF : IModelACF<ICourse>
     {
         [JsonProperty(PropertyName = "code")]
         public short Code { get; set; }
@@ -45,13 +46,13 @@ namespace Phoenix.DataHandle.WordPress.Models.ACF
         public bool MatchesUnique(ICourse ctxCourse)
         {
             return ctxCourse != null
-                && (ctxCourse as Main.Models.Course).SchoolId == this.SchoolId
+                && (ctxCourse as Course).SchoolId == this.SchoolId
                 && ctxCourse.Code == this.Code;
         }
 
         public ICourse ToContext()
         {
-            return new Main.Models.Course()
+            return new Course()
             {
                 SchoolId = this.SchoolId,
                 Code = this.Code,
@@ -66,9 +67,9 @@ namespace Phoenix.DataHandle.WordPress.Models.ACF
             };
         }
 
-        public IAcfModel<ICourse> WithTitleCase()
+        public IModelACF<ICourse> WithTitleCase()
         {
-            return new Course()
+            return new CourseACF()
             {
                 Code = this.Code,
                 Name = this.Name?.UpperToTitleCase(),
@@ -91,7 +92,7 @@ namespace Phoenix.DataHandle.WordPress.Models.ACF
             return this.BooksString.
                 Split(',').
                 Select(b => b.Trim()).
-                Select(b => new Main.Models.Book()
+                Select(b => new Book()
                 {
                     Name = b.Substring(0, Math.Min(b.Length, 255)),
                     CreatedAt = DateTimeOffset.Now
