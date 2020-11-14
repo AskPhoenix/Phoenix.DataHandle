@@ -10,8 +10,10 @@ namespace Phoenix.DataHandle.Main.Entities
         string FirstName { get; set; }
         string LastName { get; set; }
         string FullName { get; }
+        bool TermsAccepted { get; set; }
 
         IEnumerable<IAttendance> Attendances { get; }
+        IEnumerable<IBotFeedback> BotFeedbacks { get; }
         IEnumerable<IStudentCourse> StudentCourses { get; }
         IEnumerable<IStudentExam> StudentExams { get; }
         IEnumerable<IStudentExercise> StudentExercises { get; }

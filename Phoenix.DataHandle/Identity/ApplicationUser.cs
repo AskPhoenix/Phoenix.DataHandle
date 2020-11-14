@@ -18,7 +18,7 @@ namespace Phoenix.DataHandle.Identity
         IUser IAspNetUsers.User => this.User;
         public User User { get; set; }
         public IEnumerable<IAspNetUserRoles> Roles { get; }
-        public IEnumerable<IUserSchool> UserSchool { get; }
+        public IEnumerable<IUserSchool> UserSchools { get; }
 
         public IEnumerable<IAspNetUserLogins> AspNetUserLogins { get; }
 

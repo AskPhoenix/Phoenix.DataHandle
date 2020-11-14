@@ -1,4 +1,6 @@
-﻿namespace Phoenix.DataHandle.Main.Entities
+﻿using System;
+
+namespace Phoenix.DataHandle.Main.Entities
 {
     public interface IBotFeedback
     {
@@ -7,5 +9,7 @@
         BotFeedbackCategory? Category { get; set; }
         short? Rating { get; set; }
         string Comment { get; set; }
+        DateTimeOffset CreatedAt { get; set; }
+        DateTimeOffset? UpdatedAt { get; set; }
     }
 }

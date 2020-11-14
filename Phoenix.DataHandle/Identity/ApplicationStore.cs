@@ -26,9 +26,10 @@ namespace Phoenix.DataHandle.Identity
             if (string.IsNullOrWhiteSpace(key))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
 
+            string providerName = provider.GetProviderName();
             return this.Context.Users.
                 Include(u => u.AspNetUserLogins).
-                FirstOrDefaultAsync(u => u.AspNetUserLogins.SingleOrDefault(l => l.UserId == u.Id && l.LoginProvider == provider.GetProviderName() && l.ProviderKey == key) != null, cancellationToken);
+                FirstOrDefaultAsync(u => u.AspNetUserLogins.SingleOrDefault(l => l.UserId == u.Id && l.LoginProvider == providerName && l.ProviderKey == key) != null, cancellationToken);
         }
     }
 }

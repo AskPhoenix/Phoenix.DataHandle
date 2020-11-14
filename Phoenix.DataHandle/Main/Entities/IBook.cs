@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Phoenix.DataHandle.Main.Relationships;
 
 namespace Phoenix.DataHandle.Main.Entities
@@ -8,6 +9,8 @@ namespace Phoenix.DataHandle.Main.Entities
         string Name { get; set; }
         string Publisher { get; set; }
         string Info { get; set; }
+        DateTimeOffset CreatedAt { get; set; }
+        DateTimeOffset? UpdatedAt { get; set; }
 
         IEnumerable<ICourseBook> CourseBooks { get; }
         IEnumerable<IExercise> Exercises { get; }

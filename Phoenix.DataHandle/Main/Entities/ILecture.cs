@@ -12,6 +12,8 @@ namespace Phoenix.DataHandle.Main.Entities
         string Info { get; set; }
         string OnlineMeetingLink { get; set; }
         LectureCreatedBy CreatedBy { get; set; }
+        DateTimeOffset CreatedAt { get; set; }
+        DateTimeOffset? UpdatedAt { get; set; }
 
         ICourse Course { get; }
         IClassroom Classroom { get; }

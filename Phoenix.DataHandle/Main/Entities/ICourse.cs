@@ -7,6 +7,7 @@ namespace Phoenix.DataHandle.Main.Entities
     public interface ICourse
     {
         ISchool School { get; }
+        short Code { get; set; }
         string Name { get; set; }
         string SubCourse { get; set; }
         string Level { get; set; }
@@ -14,6 +15,8 @@ namespace Phoenix.DataHandle.Main.Entities
         string Info { get; set; }
         DateTimeOffset FirstDate { get; set; }
         DateTimeOffset LastDate { get; set; }
+        DateTimeOffset CreatedAt { get; set; }
+        DateTimeOffset? UpdatedAt { get; set; }
 
         IEnumerable<ICourseBook> CourseBooks { get; }
         IEnumerable<ILecture> Lectures { get; }
