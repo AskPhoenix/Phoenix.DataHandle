@@ -6,7 +6,7 @@ using Phoenix.DataHandle.Utilities;
 using System;
 using System.Linq;
 
-namespace Phoenix.DataHandle.WordPress.ACF
+namespace Phoenix.DataHandle.WordPress.Models.ACF
 {
     public class SchoolUser : IAcfModel<IUserSchool>
     {

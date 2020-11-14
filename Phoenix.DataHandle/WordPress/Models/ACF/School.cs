@@ -3,7 +3,7 @@ using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Utilities;
 using System;
 
-namespace Phoenix.DataHandle.WordPress.ACF
+namespace Phoenix.DataHandle.WordPress.Models.ACF
 {
     public class School : IAcfModel<ISchool>
     {

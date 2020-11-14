@@ -1,4 +1,4 @@
-﻿namespace Phoenix.DataHandle.WordPress.ACF
+﻿namespace Phoenix.DataHandle.WordPress.Models.ACF
 {
     public interface IAcfModel<CtxT>
     {

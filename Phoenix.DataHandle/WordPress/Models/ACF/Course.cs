@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Phoenix.DataHandle.WordPress.ACF
+namespace Phoenix.DataHandle.WordPress.Models.ACF
 {
     public class Course : IAcfModel<ICourse>
     {

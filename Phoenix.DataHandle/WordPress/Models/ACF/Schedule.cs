@@ -4,7 +4,7 @@ using System.Globalization;
 using Phoenix.DataHandle.Utilities;
 using Phoenix.DataHandle.Main.Entities;
 
-namespace Phoenix.DataHandle.WordPress.ACF
+namespace Phoenix.DataHandle.WordPress.Models.ACF
 {
     public class Schedule : IAcfModel<ISchedule>
     {
