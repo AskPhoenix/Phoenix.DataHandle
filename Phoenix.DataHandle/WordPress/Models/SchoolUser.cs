@@ -83,15 +83,6 @@ namespace Phoenix.DataHandle.WordPress.Models
             };
         }
 
-        //public IAspNetUsers UpdateAspNetUser(IAspNetUsers aspNetUser)
-        //{
-        //    aspNetUser.UserName = GetUsername();
-        //    aspNetUser.NormalizedUserName = aspNetUser.UserName.ToUpper();
-        //    aspNetUser.PhoneNumber = this.Phone.ToString().Substring(0, Math.Min(this.Phone.ToString().Length, 50));
-
-        //    return aspNetUser;
-        //}
-
         public IUser ExtractUser()
         {
             return new User()
