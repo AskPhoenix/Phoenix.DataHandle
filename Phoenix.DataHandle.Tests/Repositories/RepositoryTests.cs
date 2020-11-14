@@ -32,11 +32,51 @@ namespace Phoenix.DataHandle.Tests.Repositories
         }
 
         [Fact]
+        public async void FetchAspNetUsers()
+        {
+            AspNetUserRepository aspNetUserRepository = new AspNetUserRepository(this._phoenixContext);
+
+            _ = await aspNetUserRepository.find().ToListAsync();
+        }
+
+        [Fact]
+        public async void FetchCourses()
+        {
+            CourseRepository courseRepository = new CourseRepository(this._phoenixContext);
+
+            _ = await courseRepository.find().ToListAsync();
+        }
+
+        [Fact]
         public async void FetchLectures()
         {
             LectureRepository lectureRepository = new LectureRepository(this._phoenixContext);
 
             _ = await lectureRepository.find().ToListAsync();
+        }
+
+        [Fact]
+        public async void FetchExams()
+        {
+            ExamRepository examRepository = new ExamRepository(this._phoenixContext);
+
+            _ = await examRepository.find().ToListAsync();
+        }
+
+        [Fact]
+        public async void FetchExercises()
+        {
+            ExerciseRepository exerciseRepository = new ExerciseRepository(this._phoenixContext);
+
+            _ = await exerciseRepository.find().ToListAsync();
+        }
+
+        [Fact]
+        public async void FetchAUsers()
+        {
+            UserRepository userRepository = new UserRepository(this._phoenixContext);
+
+            _ = await userRepository.find().ToListAsync();
         }
 
 

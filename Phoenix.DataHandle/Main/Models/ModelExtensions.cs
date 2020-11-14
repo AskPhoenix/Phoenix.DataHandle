@@ -12,10 +12,8 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IAspNetUserRoles> IAspNetRoles.AspNetUserRoles => this.AspNetUserRoles;
     }
 
-    public partial class AspNetUserLogins : IAspNetUserLogins, IModelEntity<string>
+    public partial class AspNetUserLogins : IAspNetUserLogins
     {
-        public string Id => this.LoginProvider + this.ProviderKey;
-
         IAspNetUsers IAspNetUserLogins.User => this.User;
     }
 
@@ -44,7 +42,7 @@ namespace Phoenix.DataHandle.Main.Models
         public string getHashSignature()
         {
             byte[] salt = new byte[16];
-            var pbkdf2 = new Rfc2898DeriveBytes(this.Id.ToString() + this.PhoneNumber.ToString(), salt, 10 * 1000, HashAlgorithmName.SHA256);
+            var pbkdf2 = new Rfc2898DeriveBytes(this.Id + this.PhoneNumber, salt, 10 * 1000, HashAlgorithmName.SHA256);
             byte[] hash = pbkdf2.GetBytes(32);
             string savedPasswordHash = Convert.ToBase64String(hash);
 

@@ -1,7 +1,6 @@
-﻿using Phoenix.DataHandle.Main.Entities;
-using System;
+﻿using System;
 
-namespace Phoenix.DataHandle.Main.Models
+namespace Phoenix.DataHandle.Main.Entities
 {
     public interface IAspNetUserLogins
     {
