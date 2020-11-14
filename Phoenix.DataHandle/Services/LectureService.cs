@@ -2,6 +2,7 @@
 using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Repositories;
+using Phoenix.DataHandle.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +46,7 @@ namespace Phoenix.DataHandle.Services
                 foreach (var scheduleOfTheDay in course.Schedule.Where(a => a.DayOfWeek == day.DayOfWeek))
                 {
                     Lecture lecture = scheduleOfTheDay.Lecture?
-                        .Where(a => Utils.GetWeekOfYearISO8601(a.StartDateTime) == Utils.GetWeekOfYearISO8601(day))
+                        .Where(a => CalendarExtensions.GetWeekOfYearISO8601(a.StartDateTime) == CalendarExtensions.GetWeekOfYearISO8601(day))
                         .Where(a => a.Status == LectureStatus.Scheduled)
                         .SingleOrDefault(a => a.CreatedBy == LectureCreatedBy.Automatic);
 
