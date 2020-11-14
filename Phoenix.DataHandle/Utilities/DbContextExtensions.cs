@@ -3,7 +3,7 @@ using System;
 
 namespace Phoenix.DataHandle.Utilities
 {
-    static class DbContextExtensions
+    public static class DbContextExtensions
     {
         public static bool TrySaveChanges(this DbContext context, out int numEntriesWritten)
         {

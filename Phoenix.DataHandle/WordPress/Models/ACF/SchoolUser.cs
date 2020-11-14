@@ -1,12 +1,14 @@
 ﻿using Newtonsoft.Json;
+using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Main.Relationships;
 using Phoenix.DataHandle.Utilities;
 using System;
 using System.Linq;
 
 namespace Phoenix.DataHandle.WordPress.ACF
 {
-    class SchoolUser
+    public class SchoolUser : IAcfModel<IUserSchool>
     {
         [JsonProperty(PropertyName = "code")]
         public short Code { get; set; }
@@ -30,75 +32,31 @@ namespace Phoenix.DataHandle.WordPress.ACF
         public string CourseCodesString { get; set; }
 
         public int SchoolId { get; set; }
+        public int UserId { get; set; }
 
-        public bool MatchesUnique(UserSchool ctxUserSchool)
+        private string GetUsername()
+        {
+            return $"{this.FirstName?.First()}{this.LastName}{this.SchoolId}{this.Code}".ToLower();
+        }
+
+        public bool MatchesUnique(IUserSchool ctxUserSchool)
         {
             return ctxUserSchool != null
-                && ctxUserSchool.SchoolId == this.SchoolId
+                && (ctxUserSchool as UserSchool).SchoolId == this.SchoolId
                 && ctxUserSchool.Code == this.Code;
         }
 
-        public AspNetUsers ExtractAspNetUser()
-        {
-            string username = $"{this.FirstName?.First()}{this.LastName}{this.SchoolId}{this.Code}".ToLower();
-
-            return new AspNetUsers()
-            {
-                UserName = username,
-                NormalizedUserName = username.ToUpper(),
-                PhoneNumber = this.Phone.ToString().Substring(0, Math.Min(this.Phone.ToString().Length, 50)),
-                CreatedApplicationType = 0,
-                CreatedAt = DateTimeOffset.Now
-            };
-        }
-
-        public AspNetUsers ExtractAspNetUser(AspNetUsers aspNetUser)
-        {
-            aspNetUser.UserName = $"{this.FirstName?.First()}{this.LastName}{this.SchoolId}{this.Code}".ToLower();
-            aspNetUser.NormalizedUserName = aspNetUser.UserName.ToUpper();
-            aspNetUser.PhoneNumber = this.ExtractAspNetUser().PhoneNumber;
-            return aspNetUser;
-        }
-
-        public User ExtractUser(int aspNetUserId)
-        {
-            return new User()
-            {
-                AspNetUserId = aspNetUserId,
-                FirstName = this.FirstName?.Substring(0, Math.Min(this.FirstName.Length, 255)),
-                LastName = this.LastName?.Substring(0, Math.Min(this.LastName.Length, 255))
-            };
-        }
-
-        public User ExtractUser(User user)
-        {
-            var extrUser = this.ExtractUser(0);
-            user.FirstName = extrUser.FirstName;
-            user.LastName = extrUser.LastName;
-            return user;
-        }
-
-        public UserSchool ExtractUserSchool(int aspNetUserId)
+        public IUserSchool ToContext()
         {
             return new UserSchool()
             {
-                AspNetUserId = aspNetUserId,
                 Code = this.Code,
-                SchoolId = this.SchoolId,
                 EnrolledOn = DateTimeOffset.Now,
                 CreatedAt = DateTimeOffset.Now
             };
         }
 
-        public short[] ExtractCourseCodes()
-        {
-            if (string.IsNullOrEmpty(this.CourseCodesString))
-                return new short[0];
-
-            return this.CourseCodesString.Split(',').Select(sc => short.Parse(sc.Trim())).ToArray();
-        }
-
-        public SchoolUser WithTitleCaseText()
+        public IAcfModel<IUserSchool> WithTitleCase()
         {
             return new SchoolUser()
             {
@@ -111,6 +69,44 @@ namespace Phoenix.DataHandle.WordPress.ACF
                 CourseCodesString = this.CourseCodesString,
                 SchoolId = this.SchoolId
             };
+        }
+
+        public IAspNetUsers ExtractAspNetUser()
+        {
+            return new AspNetUsers()
+            {
+                UserName = GetUsername(),
+                NormalizedUserName = GetUsername().ToUpper(),
+                PhoneNumber = this.Phone.ToString().Substring(0, Math.Min(this.Phone.ToString().Length, 50)),
+                CreatedApplicationType = Main.ApplicationType.Scheduler,
+                CreatedAt = DateTimeOffset.Now
+            };
+        }
+
+        //public IAspNetUsers UpdateAspNetUser(IAspNetUsers aspNetUser)
+        //{
+        //    aspNetUser.UserName = GetUsername();
+        //    aspNetUser.NormalizedUserName = aspNetUser.UserName.ToUpper();
+        //    aspNetUser.PhoneNumber = this.Phone.ToString().Substring(0, Math.Min(this.Phone.ToString().Length, 50));
+
+        //    return aspNetUser;
+        //}
+
+        public IUser ExtractUser()
+        {
+            return new User()
+            {
+                FirstName = this.FirstName?.Substring(0, Math.Min(this.FirstName.Length, 255)),
+                LastName = this.LastName?.Substring(0, Math.Min(this.LastName.Length, 255))
+            };
+        }
+
+        public short[] ExtractCourseCodes()
+        {
+            if (string.IsNullOrEmpty(this.CourseCodesString))
+                return new short[0];
+
+            return this.CourseCodesString.Split(',').Select(sc => short.Parse(sc.Trim())).ToArray();
         }
     }
 }

@@ -2,10 +2,11 @@
 using Newtonsoft.Json;
 using System.Globalization;
 using Phoenix.DataHandle.Utilities;
+using Phoenix.DataHandle.Main.Entities;
 
 namespace Phoenix.DataHandle.WordPress.ACF
 {
-    class Schedule
+    public class Schedule : IAcfModel<ISchedule>
     {
         [JsonProperty(PropertyName = "code")]
         public short Code { get; set; }
@@ -14,8 +15,8 @@ namespace Phoenix.DataHandle.WordPress.ACF
         public short CourseCode { get; set; }
 
         [JsonProperty(PropertyName = "classroom")]
-        public string Classroom { get => classroom; set => classroom = string.IsNullOrWhiteSpace(value) ? null : value; }
-        private string classroom;
+        public string ClassroomName { get => classroomName; set => classroomName = string.IsNullOrWhiteSpace(value) ? null : value; }
+        private string classroomName;
 
         [JsonProperty(PropertyName = "day")]
         public string DayName { get; set; }
@@ -33,26 +34,27 @@ namespace Phoenix.DataHandle.WordPress.ACF
         private string comments;
 
         public int CourseId { get; set; }
+        public int? ClassroomId { get; set; }
 
         private DayOfWeek GetDayOfWeek(string dayName)
         {
             return (DayOfWeek)Array.FindIndex(CultureInfo.CurrentCulture.DateTimeFormat.DayNames, s => s == dayName);
         }
 
-        public bool MatchesUnique(Main.Models.Schedule ctxSchedule)
+        public bool MatchesUnique(ISchedule ctxSchedule)
         {
             return ctxSchedule != null
-                && ctxSchedule.CourseId == this.CourseId
+                && (ctxSchedule as Main.Models.Schedule).CourseId == this.CourseId
                 && ctxSchedule.Code == this.Code;
         }
 
-        public Main.Models.Schedule ToContextSchedule(int courseId, int? classroomId)
+        public ISchedule ToContext()
         {
             return new Main.Models.Schedule()
             {
-                CourseId = courseId,
+                CourseId = this.CourseId,
                 Code = this.Code,
-                ClassroomId = classroomId,
+                ClassroomId = this.ClassroomId,
                 DayOfWeek = GetDayOfWeek(this.DayName),
                 StartTime = this.StartTime,
                 EndTime = this.EndTime,
@@ -61,13 +63,13 @@ namespace Phoenix.DataHandle.WordPress.ACF
             };
         }
 
-        public Schedule WithTitleCaseText()
+        public IAcfModel<ISchedule> WithTitleCase()
         {
             return new Schedule()
             {
                 Code = this.Code,
                 CourseCode = this.CourseCode,
-                Classroom = this.Classroom?.UpperToTitleCase(),
+                ClassroomName = this.ClassroomName?.UpperToTitleCase(),
                 DayName = this.DayName,
                 StartTimeString = this.StartTimeString,
                 EndTimeString = this.EndTimeString,

@@ -4,5 +4,6 @@
     {
         abstract bool MatchesUnique(CtxT match);
         abstract CtxT ToContext();
+        abstract IAcfModel<CtxT> WithTitleCase();
     }
 }

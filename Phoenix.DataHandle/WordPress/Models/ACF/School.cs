@@ -5,7 +5,7 @@ using System;
 
 namespace Phoenix.DataHandle.WordPress.ACF
 {
-    class School : IAcfModel<ISchool>
+    public class School : IAcfModel<ISchool>
     {
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
@@ -47,7 +47,7 @@ namespace Phoenix.DataHandle.WordPress.ACF
             };
         }
 
-        public School WithTitleCaseText()
+        public IAcfModel<ISchool> WithTitleCase()
         {
             return new School
             {

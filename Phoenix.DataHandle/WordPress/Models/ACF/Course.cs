@@ -1,11 +1,13 @@
 ﻿using Newtonsoft.Json;
+using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Phoenix.DataHandle.WordPress.ACF
 {
-    class Course
+    public class Course : IAcfModel<ICourse>
     {
         [JsonProperty(PropertyName = "code")]
         public short Code { get; set; }
@@ -40,18 +42,18 @@ namespace Phoenix.DataHandle.WordPress.ACF
 
         public int SchoolId { get; set; }
 
-        public bool MatchesUnique(Main.Models.Course ctxCourse)
+        public bool MatchesUnique(ICourse ctxCourse)
         {
             return ctxCourse != null
-                && ctxCourse.SchoolId == this.SchoolId
+                && (ctxCourse as Main.Models.Course).SchoolId == this.SchoolId
                 && ctxCourse.Code == this.Code;
         }
 
-        public Main.Models.Course ToContextCourse(int schoolId)
+        public ICourse ToContext()
         {
             return new Main.Models.Course()
             {
-                SchoolId = schoolId,
+                SchoolId = this.SchoolId,
                 Code = this.Code,
                 Name = this.Name?.Substring(0, Math.Min(this.Name.Length, 150)),
                 SubCourse = this.SubCourse?.Substring(0, Math.Min(this.SubCourse.Length, 150)),
@@ -64,23 +66,7 @@ namespace Phoenix.DataHandle.WordPress.ACF
             };
         }
 
-        public Main.Models.Book[] ExtractBooks()
-        {
-            if (string.IsNullOrEmpty(this.BooksString))
-                return new Main.Models.Book[0];
-
-            return this.BooksString.
-                Split(',').
-                Select(b => b.Trim()).
-                Select(b => new Main.Models.Book()
-                {
-                    Name = b.Substring(0, Math.Min(b.Length, 255)),
-                    CreatedAt = DateTimeOffset.Now
-                }).
-                ToArray();
-        }
-
-        public Course WithTitleCaseText()
+        public IAcfModel<ICourse> WithTitleCase()
         {
             return new Course()
             {
@@ -95,6 +81,21 @@ namespace Phoenix.DataHandle.WordPress.ACF
                 Comments = this.Comments,
                 SchoolId = this.SchoolId
             };
+        }
+
+        public IEnumerable<IBook> ExtractBooks()
+        {
+            if (string.IsNullOrEmpty(this.BooksString))
+                return Enumerable.Empty<IBook>();
+
+            return this.BooksString.
+                Split(',').
+                Select(b => b.Trim()).
+                Select(b => new Main.Models.Book()
+                {
+                    Name = b.Substring(0, Math.Min(b.Length, 255)),
+                    CreatedAt = DateTimeOffset.Now
+                });
         }
     }
 }
