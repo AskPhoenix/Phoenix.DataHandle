@@ -22,6 +22,14 @@ namespace Phoenix.DataHandle.Repositories
             return base.Update(tModel);
         }
 
+        public School Update(School tModel, School tModelFrom)
+        {
+            tModel.Slug = tModelFrom.Slug;
+            tModel.AddressLine = tModelFrom.AddressLine;
+            tModel.Info = tModelFrom.Info;
+
+            return this.Update(tModel);
+        }
 
         public IQueryable<Course> FindCourses(int id)
         {

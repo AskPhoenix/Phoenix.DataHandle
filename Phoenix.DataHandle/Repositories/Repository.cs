@@ -40,6 +40,17 @@ namespace Phoenix.DataHandle.Repositories
             return x.SingleAsync(a => a.Id == id);
         }
 
+        public virtual Task<TModel> Find(Expression<Func<TModel, bool>> checkUnique)
+        {
+            IQueryable<TModel> x = this.dbContext.Set<TModel>();
+
+            if (this.includes != null)
+                foreach (var include in this.includes)
+                    x = include(x);
+
+            return x.SingleOrDefaultAsync(checkUnique);
+        }
+
         public virtual TModel Create(TModel tModel)
         {
             this.dbContext.Set<TModel>().Add(tModel);
