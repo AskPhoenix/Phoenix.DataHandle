@@ -27,22 +27,8 @@ namespace Phoenix.DataHandle.WordPress.Models
 
         public string FacebookPageId { get; set; }
 
-        public Expression<Func<School, bool>> uq1;
-        public Expression<Func<School, bool>> uq2;
-        public SchoolACF()
-        {
-            uq1 = s => this.MatchesUnique(s);
-            uq2 = ctxSchool => ctxSchool != null
-                && ctxSchool.Name == this.Name
-                && ctxSchool.City == this.City;
-        }
-        public bool MatchesUnique(School ctxSchool)
-        {
-            return ctxSchool != null
-                && ctxSchool.Name == this.Name
-                && ctxSchool.City == this.City;
-        }
-
+        public Expression<Func<School, bool>> MatchesUnique => s => s != null && s.Name == this.Name && s.City == this.City;
+        
         public School ToContext()
         {
             return new School

@@ -4,6 +4,7 @@ using Phoenix.DataHandle.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.WordPress.Models
 {
@@ -42,12 +43,7 @@ namespace Phoenix.DataHandle.WordPress.Models
 
         public int SchoolId { get; set; }
 
-        public bool MatchesUnique(Course ctxCourse)
-        {
-            return ctxCourse != null
-                && ctxCourse.SchoolId == this.SchoolId
-                && ctxCourse.Code == this.Code;
-        }
+        public Expression<Func<Course, bool>> MatchesUnique => c => c != null && c.SchoolId == this.SchoolId && c.Code == this.Code;
 
         public Course ToContext()
         {

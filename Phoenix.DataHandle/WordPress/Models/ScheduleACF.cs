@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System.Globalization;
 using Phoenix.DataHandle.Utilities;
 using Phoenix.DataHandle.Main.Models;
+using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.WordPress.Models
 {
@@ -41,12 +42,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             return (DayOfWeek)Array.FindIndex(CultureInfo.CurrentCulture.DateTimeFormat.DayNames, s => s == dayName);
         }
 
-        public bool MatchesUnique(Schedule ctxSchedule)
-        {
-            return ctxSchedule != null
-                && ctxSchedule.CourseId == this.CourseId
-                && ctxSchedule.Code == this.Code;
-        }
+        public Expression<Func<Schedule, bool>> MatchesUnique => s => s != null && s.CourseId == this.CourseId && s.Code == this.Code;
 
         public Schedule ToContext()
         {

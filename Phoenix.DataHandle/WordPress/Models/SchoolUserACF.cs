@@ -3,6 +3,7 @@ using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.WordPress.Models
 {
@@ -37,12 +38,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             return $"{this.FirstName?.First()}{this.LastName}{this.SchoolId}{this.Code}".ToLower();
         }
 
-        public bool MatchesUnique(UserSchool ctxUserSchool)
-        {
-            return ctxUserSchool != null
-                && ctxUserSchool.SchoolId == this.SchoolId
-                && ctxUserSchool.Code == this.Code;
-        }
+        public Expression<Func<UserSchool, bool>> MatchesUnique => us => us != null && us.SchoolId == this.SchoolId && us.Code == Code;
 
         public UserSchool ToContext()
         {
