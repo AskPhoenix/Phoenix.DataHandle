@@ -59,12 +59,13 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
             return posts;
         }
 
-        public static async Task<IModelACF<CtxT>> GetAcfAsync<CtxT>(int postId, bool embed = false)
+        public static async Task<AcfT> GetAcfAsync<AcfT>(int postId, bool embed = false) 
+            where AcfT : class
         {
             string route = AcfPostsPath + $"/{postId}";
             var response = await GetCustomAsync<JObject>(route, embed);
 
-            return response.GetValue("acf").ToObject<IModelACF<CtxT>>();
+            return response.GetValue("acf").ToObject<AcfT>();
         }
 
         public static async Task<T> GetCustomAsync<T>(string route, bool embed = false)
