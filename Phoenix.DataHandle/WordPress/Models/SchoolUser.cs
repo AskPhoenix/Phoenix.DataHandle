@@ -1,14 +1,12 @@
 ﻿using Newtonsoft.Json;
-using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
-using Phoenix.DataHandle.Main.Relationships;
 using Phoenix.DataHandle.Utilities;
 using System;
 using System.Linq;
 
 namespace Phoenix.DataHandle.WordPress.Models
 {
-    public class SchoolUserACF : IModelACF<IUserSchool>
+    public class SchoolUserACF : IModelACF<UserSchool>
     {
         [JsonProperty(PropertyName = "code")]
         public short Code { get; set; }
@@ -39,14 +37,14 @@ namespace Phoenix.DataHandle.WordPress.Models
             return $"{this.FirstName?.First()}{this.LastName}{this.SchoolId}{this.Code}".ToLower();
         }
 
-        public bool MatchesUnique(IUserSchool ctxUserSchool)
+        public bool MatchesUnique(UserSchool ctxUserSchool)
         {
             return ctxUserSchool != null
-                && (ctxUserSchool as UserSchool).SchoolId == this.SchoolId
+                && ctxUserSchool.SchoolId == this.SchoolId
                 && ctxUserSchool.Code == this.Code;
         }
 
-        public IUserSchool ToContext()
+        public UserSchool ToContext()
         {
             return new UserSchool()
             {
@@ -56,7 +54,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             };
         }
 
-        public IModelACF<IUserSchool> WithTitleCase()
+        public IModelACF<UserSchool> WithTitleCase()
         {
             return new SchoolUserACF()
             {
@@ -71,7 +69,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             };
         }
 
-        public IAspNetUsers ExtractAspNetUser()
+        public AspNetUsers ExtractAspNetUser()
         {
             return new AspNetUsers()
             {
@@ -83,7 +81,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             };
         }
 
-        public IUser ExtractUser()
+        public User ExtractUser()
         {
             return new User()
             {

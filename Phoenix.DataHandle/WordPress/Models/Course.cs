@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
 using System;
@@ -8,7 +7,7 @@ using System.Linq;
 
 namespace Phoenix.DataHandle.WordPress.Models
 {
-    public class CourseACF : IModelACF<ICourse>
+    public class CourseACF : IModelACF<Course>
     {
         [JsonProperty(PropertyName = "code")]
         public short Code { get; set; }
@@ -43,14 +42,14 @@ namespace Phoenix.DataHandle.WordPress.Models
 
         public int SchoolId { get; set; }
 
-        public bool MatchesUnique(ICourse ctxCourse)
+        public bool MatchesUnique(Course ctxCourse)
         {
             return ctxCourse != null
-                && (ctxCourse as Course).SchoolId == this.SchoolId
+                && ctxCourse.SchoolId == this.SchoolId
                 && ctxCourse.Code == this.Code;
         }
 
-        public ICourse ToContext()
+        public Course ToContext()
         {
             return new Course()
             {
@@ -67,7 +66,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             };
         }
 
-        public IModelACF<ICourse> WithTitleCase()
+        public IModelACF<Course> WithTitleCase()
         {
             return new CourseACF()
             {
@@ -84,10 +83,10 @@ namespace Phoenix.DataHandle.WordPress.Models
             };
         }
 
-        public IEnumerable<IBook> ExtractBooks()
+        public IEnumerable<Book> ExtractBooks()
         {
             if (string.IsNullOrEmpty(this.BooksString))
-                return Enumerable.Empty<IBook>();
+                return Enumerable.Empty<Book>();
 
             return this.BooksString.
                 Split(',').

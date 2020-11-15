@@ -2,12 +2,11 @@
 using Newtonsoft.Json;
 using System.Globalization;
 using Phoenix.DataHandle.Utilities;
-using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.WordPress.Models
 {
-    public class ScheduleACF : IModelACF<ISchedule>
+    public class ScheduleACF : IModelACF<Schedule>
     {
         [JsonProperty(PropertyName = "code")]
         public short Code { get; set; }
@@ -42,14 +41,14 @@ namespace Phoenix.DataHandle.WordPress.Models
             return (DayOfWeek)Array.FindIndex(CultureInfo.CurrentCulture.DateTimeFormat.DayNames, s => s == dayName);
         }
 
-        public bool MatchesUnique(ISchedule ctxSchedule)
+        public bool MatchesUnique(Schedule ctxSchedule)
         {
             return ctxSchedule != null
-                && (ctxSchedule as Schedule).CourseId == this.CourseId
+                && ctxSchedule.CourseId == this.CourseId
                 && ctxSchedule.Code == this.Code;
         }
 
-        public ISchedule ToContext()
+        public Schedule ToContext()
         {
             return new Schedule()
             {
@@ -64,7 +63,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             };
         }
 
-        public IModelACF<ISchedule> WithTitleCase()
+        public IModelACF<Schedule> WithTitleCase()
         {
             return new ScheduleACF()
             {

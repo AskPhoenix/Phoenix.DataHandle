@@ -1,12 +1,11 @@
 ﻿using Newtonsoft.Json;
-using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
 using System;
 
 namespace Phoenix.DataHandle.WordPress.Models
 {
-    public class SchoolACF : IModelACF<ISchool>
+    public class SchoolACF : IModelACF<School>
     {
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
@@ -27,14 +26,14 @@ namespace Phoenix.DataHandle.WordPress.Models
 
         public string FacebookPageId { get; set; }
 
-        public bool MatchesUnique(ISchool ctxSchool)
+        public bool MatchesUnique(School ctxSchool)
         {
             return ctxSchool != null
                 && ctxSchool.Name == this.Name
                 && ctxSchool.City == this.City;
         }
 
-        public ISchool ToContext()
+        public School ToContext()
         {
             return new School
             {
@@ -48,7 +47,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             };
         }
 
-        public IModelACF<ISchool> WithTitleCase()
+        public IModelACF<School> WithTitleCase()
         {
             return new SchoolACF
             {
