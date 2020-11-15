@@ -10,6 +10,6 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
 
         static CategoriesWrapper() => Categories = WordPressClientWrapper.GetCategoriesAsync().Result;
 
-        public static int GetCategoryId(string categoryName) => Categories.Single(c => c.Name == categoryName).Id;
+        public static int GetCategoryId(PostCategory category) => Categories.Single(c => c.Name == category.GetName()).Id;
     }
 }
