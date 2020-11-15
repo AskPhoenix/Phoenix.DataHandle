@@ -2,6 +2,7 @@
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
 using System;
+using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.WordPress.Models
 {
@@ -26,6 +27,15 @@ namespace Phoenix.DataHandle.WordPress.Models
 
         public string FacebookPageId { get; set; }
 
+        public Expression<Func<School, bool>> uq1;
+        public Expression<Func<School, bool>> uq2;
+        public SchoolACF()
+        {
+            uq1 = s => this.MatchesUnique(s);
+            uq2 = ctxSchool => ctxSchool != null
+                && ctxSchool.Name == this.Name
+                && ctxSchool.City == this.City;
+        }
         public bool MatchesUnique(School ctxSchool)
         {
             return ctxSchool != null
