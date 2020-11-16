@@ -44,6 +44,13 @@ namespace Phoenix.DataHandle.WordPress.Models
 
         public Expression<Func<Schedule, bool>> MatchesUnique => s => s != null && s.CourseId == this.CourseId && s.Code == this.Code;
 
+        public ScheduleACF() { }
+        public ScheduleACF(int courseId, short code)
+        {
+            this.CourseId = courseId;
+            this.Code = code;
+        }
+
         public Schedule ToContext()
         {
             return new Schedule()

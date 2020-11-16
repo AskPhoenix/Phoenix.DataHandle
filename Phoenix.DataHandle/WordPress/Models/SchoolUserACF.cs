@@ -40,6 +40,13 @@ namespace Phoenix.DataHandle.WordPress.Models
 
         public Expression<Func<UserSchool, bool>> MatchesUnique => us => us != null && us.SchoolId == this.SchoolId && us.Code == Code;
 
+        public SchoolUserACF() { }
+        public SchoolUserACF(int schoolId, short code)
+        {
+            this.SchoolId = schoolId;
+            this.Code = code;
+        }
+
         public UserSchool ToContext()
         {
             return new UserSchool()
