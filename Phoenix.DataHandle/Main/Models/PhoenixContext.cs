@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Phoenix.DataHandle.Main.Models
 {
@@ -412,9 +413,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasColumnType("datetimeoffset(0)")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.FacebookPageId)
-                    .IsRequired()
-                    .HasMaxLength(20);
+                entity.Property(e => e.FacebookPageId).HasMaxLength(20);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
