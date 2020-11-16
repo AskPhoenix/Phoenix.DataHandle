@@ -36,14 +36,14 @@ namespace Phoenix.DataHandle.Repositories
             return this.Update(tModel);
         }
 
-        public void LinkBook(Course tModel, Book book)
+        public void LinkBook(Course tModel, int bookId)
         {
-            this.dbContext.Set<CourseBook>().Add(new CourseBook() { CourseId = tModel.Id, BookId = book.Id });
+            this.dbContext.Set<CourseBook>().Add(new CourseBook() { CourseId = tModel.Id, BookId = bookId });
         }
 
-        public void LinkBooks(Course tModel, IEnumerable<Book> books)
+        public void LinkBooks(Course tModel, IEnumerable<int> bookIds)
         {
-            this.dbContext.Set<CourseBook>().AddRange(books.Select(b => new CourseBook() { CourseId = tModel.Id, BookId = b.Id }));
+            this.dbContext.Set<CourseBook>().AddRange(bookIds.Select(bId => new CourseBook() { CourseId = tModel.Id, BookId = bId }));
         }
     }
 }

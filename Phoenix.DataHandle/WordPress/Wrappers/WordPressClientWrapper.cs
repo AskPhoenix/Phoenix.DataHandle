@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Phoenix.DataHandle.WordPress.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,7 +93,7 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
                 if (nextPosts.Count() == 0)
                     break;
 
-                nextPosts = nextPosts.Where(p => p.Title.Rendered.Contains(schoolUnique));
+                nextPosts = nextPosts.Where(p => p.GetTitle().Contains(schoolUnique));
                 if (nextPosts.Count() == 0)
                     continue;
 
