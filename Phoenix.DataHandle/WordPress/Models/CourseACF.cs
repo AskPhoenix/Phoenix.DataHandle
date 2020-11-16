@@ -94,6 +94,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             return this.BooksString.
                 Split(',').
                 Select(b => b.Trim()).
+                Distinct().
                 Select(b => new Book()
                 {
                     Name = b.Substring(0, Math.Min(b.Length, 255)),
