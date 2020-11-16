@@ -14,7 +14,6 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
         private const string WordpressEndpoint = "https://www.askphoenix.gr/";
         private const string PostsPath = "wp/v2/posts";
         private const string AcfPostsPath = "acf/v3/posts";
-        private const string DemoSchoolUnique = "Φοίνιξ_Θεσσαλονίκη";
 
         private const int PostsPerPage = 10;
 
@@ -80,7 +79,7 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
             return posts;
         }
 
-        public static async Task<IEnumerable<Post>> GetPostsByCategoryBySchoolAsync(int categoryId, int perPage = PostsPerPage, string schoolUnique = DemoSchoolUnique, bool embed = false)
+        public static async Task<IEnumerable<Post>> GetPostsByCategoryBySchoolAsync(int categoryId, string schoolUnique, int perPage = PostsPerPage, bool embed = false)
         {
             int curPage = 1;
             List<Post> posts = new List<Post>();

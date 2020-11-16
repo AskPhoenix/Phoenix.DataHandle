@@ -38,7 +38,7 @@ namespace Phoenix.DataHandle.WordPress.Models
                 City = this.City?.Substring(0, Math.Min(this.City.Length, 200)),
                 AddressLine = this.Address?.Substring(0, Math.Min(this.Address.Length, 255)),
                 Info = this.Comments,
-                FacebookPageId = this.FacebookPageId.Substring(0, Math.Min(this.FacebookPageId.Length, 20)),
+                FacebookPageId = this.FacebookPageId?.Substring(0, Math.Min(this.FacebookPageId.Length, 20)),
                 CreatedAt = DateTimeOffset.Now
             };
         }
