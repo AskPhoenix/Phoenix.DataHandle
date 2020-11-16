@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using Phoenix.DataHandle.WordPress.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +14,9 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
         private const string WordpressEndpoint = "https://www.askphoenix.gr/";
         private const string PostsPath = "wp/v2/posts";
         private const string AcfPostsPath = "acf/v3/posts";
+        private const string DemoSchoolUnique = "Φοίνιξ_Θεσσαλονίκη";
+
+        private const int PostsPerPage = 10;
 
         private static WordPressClient Client { get; set; }
         public static bool AlwaysUseAuthentication { get; set; } = false;
@@ -41,7 +43,7 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
         public static async Task<IEnumerable<Category>> GetCategoriesAsync(bool embed = false) 
             => await Client.Categories.GetAll(embed, AlwaysUseAuthentication);
 
-        public static async Task<IEnumerable<Post>> GetPaginatedPostsByCategoryAsync(int categoryId, int page, int perPage = 10, bool embed = false)
+        public static async Task<IEnumerable<Post>> GetPaginatedPostsByCategoryAsync(int categoryId, int page, int perPage = PostsPerPage, bool embed = false)
         {
             var queryBuilder = new PostsQueryBuilder() { Page = page, PerPage = perPage, Categories = new int[1] { categoryId } };
             string route = PostsPath + queryBuilder.BuildQueryURL();
@@ -49,12 +51,54 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
             IEnumerable<Post> posts;
             try
             {
-                posts = await Client.CustomRequest.Get<IEnumerable<Post>>(route, embed, AlwaysUseAuthentication);
+                posts = await GetCustomAsync<IEnumerable<Post>>(route, embed);
             }
             catch (Exception) 
             {
                 posts = Enumerable.Empty<Post>();
             }
+
+            return posts;
+        }
+
+        public static async Task<IEnumerable<Post>> GetPostsByCategoryAsync(int categoryId, int perPage = PostsPerPage, bool embed = false)
+        {
+            int curPage = 1;
+            List<Post> posts = new List<Post>();
+            IEnumerable<Post> nextPosts;
+
+            do
+            {
+                nextPosts = await GetPaginatedPostsByCategoryAsync(categoryId, curPage++, perPage, embed);
+
+                if (nextPosts.Count() == 0)
+                    break;
+
+                posts.AddRange(nextPosts);
+            } while (nextPosts.Count() % PostsPerPage == 0);
+
+            return posts;
+        }
+
+        public static async Task<IEnumerable<Post>> GetPostsByCategoryBySchoolAsync(int categoryId, int perPage = PostsPerPage, string schoolUnique = DemoSchoolUnique, bool embed = false)
+        {
+            int curPage = 1;
+            List<Post> posts = new List<Post>();
+            IEnumerable<Post> nextPosts;
+
+            do
+            {
+                nextPosts = await GetPaginatedPostsByCategoryAsync(categoryId, curPage++, perPage, embed);
+
+                if (nextPosts.Count() == 0)
+                    break;
+
+                nextPosts = nextPosts.Where(p => p.Title.Rendered.Contains(schoolUnique));
+                if (nextPosts.Count() == 0)
+                    continue;
+
+                posts.AddRange(nextPosts);
+            } while (nextPosts.Count() % PostsPerPage == 0);
 
             return posts;
         }
