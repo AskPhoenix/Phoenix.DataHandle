@@ -57,7 +57,7 @@ namespace Phoenix.DataHandle.Main.Models
         ILecture IAttendance.Lecture => this.Lecture;
     }
 
-    public partial class Book : IBook
+    public partial class Book : IBook, IModelEntity
     {
         IEnumerable<ICourseBook> IBook.CourseBooks => this.CourseBook;
         IEnumerable<IExercise> IBook.Exercises => this.Exercise;
