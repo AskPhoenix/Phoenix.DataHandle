@@ -38,8 +38,4 @@
     <PackageReference Include="WordPressPCL" Version="1.8.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="WordPress\Wrappers\" />
-  </ItemGroup>
-
 </Project>
