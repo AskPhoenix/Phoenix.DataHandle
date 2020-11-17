@@ -9,8 +9,6 @@ namespace Phoenix.DataHandle.Main.Models
         public short Code { get; set; }
         public int SchoolId { get; set; }
         public DateTimeOffset? EnrolledOn { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset? UpdatedAt { get; set; }
 
         public virtual AspNetUsers AspNetUser { get; set; }
         public virtual School School { get; set; }

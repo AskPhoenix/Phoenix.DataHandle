@@ -531,11 +531,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasName("IX_UserSchool")
                     .IsUnique();
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
-
                 entity.Property(e => e.EnrolledOn).HasColumnType("datetimeoffset(0)");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.HasOne(d => d.AspNetUser)
                     .WithMany(p => p.UserSchool)

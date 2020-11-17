@@ -52,8 +52,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             return new UserSchool()
             {
                 Code = this.Code,
-                EnrolledOn = DateTimeOffset.Now,
-                CreatedAt = DateTimeOffset.Now
+                EnrolledOn = DateTimeOffset.Now
             };
         }
 
