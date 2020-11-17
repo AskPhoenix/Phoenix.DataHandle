@@ -7,6 +7,19 @@ namespace Phoenix.DataHandle.Repositories
     public class UserRepository : Repository<User>
     {
         public UserRepository(PhoenixContext dbContext) : base(dbContext) { }
+
+        public User Update(User tModel, User tModelFrom)
+        {
+            tModel.FirstName = tModelFrom.FirstName;
+            tModel.LastName = tModelFrom.LastName;
+            
+            return base.Update(tModel);
+        }
+
+        public void LinkSchool(UserSchool userSchool)
+        {
+            this.dbContext.Set<UserSchool>().Add(userSchool);
+        }
     }
 
     public static class UserRepositoryExtensions
