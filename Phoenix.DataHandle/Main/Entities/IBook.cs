@@ -7,6 +7,7 @@ namespace Phoenix.DataHandle.Main.Entities
     public interface IBook
     {
         string Name { get; set; }
+        string NormalizedName { get; set; }
         string Publisher { get; set; }
         string Info { get; set; }
         DateTimeOffset CreatedAt { get; set; }

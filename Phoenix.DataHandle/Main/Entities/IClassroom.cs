@@ -7,6 +7,7 @@ namespace Phoenix.DataHandle.Main.Entities
     {
         ISchool School { get; }
         string Name { get; set; }
+        string NormalizedName { get; set; }
         string Info { get; set; }
         DateTimeOffset CreatedAt { get; set; }
         DateTimeOffset? UpdatedAt { get; set; }

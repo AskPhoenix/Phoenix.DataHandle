@@ -14,6 +14,7 @@ namespace Phoenix.DataHandle.Main.Models
         public int Id { get; set; }
         public int SchoolId { get; set; }
         public string Name { get; set; }
+        public string NormalizedName { get; set; }
         public string Info { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }

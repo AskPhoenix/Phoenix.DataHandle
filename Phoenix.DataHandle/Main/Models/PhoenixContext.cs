@@ -158,8 +158,8 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Book>(entity =>
             {
-                entity.HasIndex(e => e.Name)
-                    .HasName("UQ_Book_Name")
+                entity.HasIndex(e => e.NormalizedName)
+                    .HasName("IX_Book")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt)
@@ -167,6 +167,10 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.NormalizedName)
                     .IsRequired()
                     .HasMaxLength(255);
 
@@ -190,7 +194,7 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Classroom>(entity =>
             {
-                entity.HasIndex(e => new { e.SchoolId, e.Name })
+                entity.HasIndex(e => new { e.SchoolId, e.NormalizedName })
                     .HasName("IX_Classroom")
                     .IsUnique();
 
@@ -199,6 +203,10 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.NormalizedName)
                     .IsRequired()
                     .HasMaxLength(255);
 
