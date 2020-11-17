@@ -69,7 +69,7 @@ namespace Phoenix.DataHandle.Main.Models
         IUser IBotFeedback.Author => this.Author;
     }
 
-    public partial class Classroom : IClassroom
+    public partial class Classroom : IClassroom, IModelEntity
     {
         ISchool IClassroom.School => this.School;
 
@@ -172,7 +172,7 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ITeacherCourse> IUser.TeacherCourses => this.TeacherCourse;
     }
 
-    public partial class Schedule : ISchedule
+    public partial class Schedule : ISchedule, IModelEntity
     {
         ICourse ISchedule.Course => this.Course;
         IClassroom ISchedule.Classroom => this.Classroom;
