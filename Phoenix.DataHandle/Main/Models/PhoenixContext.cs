@@ -402,8 +402,7 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<School>(entity =>
             {
                 entity.HasIndex(e => e.Slug)
-                    .HasName("SchoolSlugIndex")
-                    .IsUnique();
+                    .HasName("IX_Slug");
 
                 entity.HasIndex(e => new { e.Name, e.City })
                     .HasName("IX_NameCity")
