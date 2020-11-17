@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Repositories
@@ -44,6 +45,11 @@ namespace Phoenix.DataHandle.Repositories
         public void LinkBooks(Course tModel, IEnumerable<int> bookIds)
         {
             this.dbContext.Set<CourseBook>().AddRange(bookIds.Select(bId => new CourseBook() { CourseId = tModel.Id, BookId = bId }));
+        }
+
+        public IEnumerable<Book> GetLinkedBooks(Course tModel)
+        {
+            return this.dbContext.Set<CourseBook>().Include(cb => cb.Book).Where(cb => cb.CourseId == tModel.Id).Select(cb => cb.Book).AsEnumerable();
         }
     }
 }
