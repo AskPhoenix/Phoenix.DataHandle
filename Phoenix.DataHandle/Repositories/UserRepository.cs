@@ -1,6 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Main.Models.Extensions;
 
 namespace Phoenix.DataHandle.Repositories
 {
@@ -19,6 +24,11 @@ namespace Phoenix.DataHandle.Repositories
         public void LinkSchool(UserSchool userSchool)
         {
             this.dbContext.Set<UserSchool>().Add(userSchool);
+        }
+
+        public Task<UserSchool> FindUserSchoolAsync(Expression<Func<UserSchool, bool>> checkUnique)
+        {
+            return this.dbContext.Set<UserSchool>().SingleOrDefaultAsync(checkUnique);
         }
     }
 
