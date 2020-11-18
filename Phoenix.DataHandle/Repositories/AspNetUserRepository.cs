@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Models;
 
@@ -37,6 +38,11 @@ namespace Phoenix.DataHandle.Repositories
             tModel.PhoneNumber = tModelFrom.PhoneNumber;
 
             return this.Update(tModel);
+        }
+
+        public bool HasRole(AspNetUsers user, Role role)
+        {
+            return this.dbContext.Set<AspNetUserRoles>().Include(ur => ur.Role).Any(ur => ur.UserId == user.Id && ur.Role.Type == role);
         }
 
         public void LinkRoles(AspNetUsers tModel, IEnumerable<int> roleIds)
