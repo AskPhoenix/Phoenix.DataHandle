@@ -5,13 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Models;
-using Phoenix.DataHandle.Main.Models.Extensions;
 
 namespace Phoenix.DataHandle.Repositories
 {
     public class UserRepository : Repository<User>
     {
         public UserRepository(PhoenixContext dbContext) : base(dbContext) { }
+
+        public override Task<User> Find(int id)
+        {
+            return base.Find().SingleAsync(u => u.AspNetUserId == id);
+        }
 
         public User Update(User tModel, User tModelFrom)
         {
