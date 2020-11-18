@@ -29,9 +29,38 @@ namespace Phoenix.DataHandle.Main
             return me.ToString();
         }
 
-        public static string ToStringNormalize(this Role me)
+        public static string ToFriendlyString(this Role me)
         {
-            return me.ToString().ToUpper();
+            return me switch
+            {
+                Role.Undefined      => "Undefined",
+                Role.None           => "None",
+                Role.Student        => "Student",
+                Role.Parent         => "Parent",
+                Role.Secretary      => "Secretary",
+                Role.Teacher        => "Teacher",
+                Role.Admin          => "Admin",
+                Role.SchoolOwner    => "SchoolOwner",
+                Role.SuperAdmin     => "SuperAdmin",
+                _                   => string.Empty,
+            };
+        }
+
+        public static string ToNormalizedString(this Role me)
+        {
+            return me switch
+            {
+                Role.Undefined      => "Απροσδιόριστος",
+                Role.None           => "Κανένας",
+                Role.Student        => "Μαθητής",
+                Role.Parent         => "Γονέας / Κηδεμόνας",
+                Role.Secretary      => "Γραμματέας",
+                Role.Teacher        => "Εκπαιδευτικός",
+                Role.Admin          => "Διαχειριστής",
+                Role.SchoolOwner    => "Ιδιοκτήτης",
+                Role.SuperAdmin     => "Υπερδιαχειριστής",
+                _                   => string.Empty,
+            };
         }
 
         public static Role ToRole(this string me)
@@ -45,7 +74,5 @@ namespace Phoenix.DataHandle.Main
                 return Role.Undefined;
             }
         }
-
     }
-
 }

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
 using System;
@@ -32,6 +33,7 @@ namespace Phoenix.DataHandle.WordPress.Models
 
         public int SchoolId { get; set; }
         public int UserId { get; set; }
+        public Role RoleType => this.RoleString.ToRole();
 
         private string GetUsername()
         {
