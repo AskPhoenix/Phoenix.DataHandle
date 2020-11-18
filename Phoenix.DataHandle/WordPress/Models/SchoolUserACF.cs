@@ -34,6 +34,7 @@ namespace Phoenix.DataHandle.WordPress.Models
         public int SchoolId { get; set; }
         public int UserId { get; set; }
         public Role RoleType => this.RoleString.ToRole();
+        public Role SecondRoleType => this.SecondRoleString.ToRole();
 
         private string GetUsername()
         {
