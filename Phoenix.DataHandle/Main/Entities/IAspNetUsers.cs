@@ -22,8 +22,6 @@ namespace Phoenix.DataHandle.Main.Entities
         int AccessFailedCount { get; set; }
         DateTimeOffset RegisteredAt { get; }
         ApplicationType CreatedApplicationType { get; set; }
-        DateTimeOffset CreatedAt { get; set; }
-        DateTimeOffset? UpdatedAt { get; set; }
 
         IUser User { get; }
         IEnumerable<IAspNetUserLogins> AspNetUserLogins { get; }

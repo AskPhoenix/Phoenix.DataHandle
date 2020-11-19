@@ -7,7 +7,7 @@ using Phoenix.DataHandle.Main.Relationships;
 
 namespace Phoenix.DataHandle.Main.Models
 {
-    public partial class AspNetRoles : IAspNetRoles
+    public partial class AspNetRoles : IAspNetRoles, IModelEntity
     {
         IEnumerable<IAspNetUserRoles> IAspNetRoles.AspNetUserRoles => this.AspNetUserRoles;
     }

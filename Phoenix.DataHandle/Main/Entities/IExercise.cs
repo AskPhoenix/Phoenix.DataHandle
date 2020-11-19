@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Phoenix.DataHandle.Main.Relationships;
 
 namespace Phoenix.DataHandle.Main.Entities
@@ -11,8 +10,6 @@ namespace Phoenix.DataHandle.Main.Entities
         string Name { get; set; }
         string Page { get; set; }
         string Comments { get; set; }
-        DateTimeOffset CreatedAt { get; set; }
-        DateTimeOffset? UpdatedAt { get; set; }
 
         IEnumerable<IStudentExercise> StudentExercises { get; }
     }

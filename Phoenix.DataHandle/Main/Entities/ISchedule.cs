@@ -11,8 +11,6 @@ namespace Phoenix.DataHandle.Main.Entities
         DateTimeOffset StartTime { get; set; }
         DateTimeOffset EndTime { get; set; }
         string Info { get; set; }
-        DateTimeOffset CreatedAt { get; set; }
-        DateTimeOffset? UpdatedAt { get; set; }
 
         IEnumerable<ILecture> Lectures { get; }
     }
