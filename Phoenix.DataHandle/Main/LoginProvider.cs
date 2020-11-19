@@ -2,6 +2,7 @@
 {
     public enum LoginProvider
     {
+        Other = -1,
         Emulator,
         Facebook
     }
@@ -10,15 +11,22 @@
     {
         public static string GetProviderName(this LoginProvider provider)
         {
-            switch (provider)
+            return provider switch
             {
-                case LoginProvider.Emulator:
-                    return "Emulator";
-                case LoginProvider.Facebook:
-                    return "Facebook";
-                default:
-                    return string.Empty;
-            }
+                LoginProvider.Emulator  => "Emulator",
+                LoginProvider.Facebook  => "Facebook",
+                _                       => string.Empty,
+            };
+        }
+
+        public static LoginProvider ToLoginProvider(this string channel)
+        {
+            return channel.ToLower() switch
+            {
+                "emulator"  => LoginProvider.Emulator,
+                "facebook"  => LoginProvider.Facebook,
+                _           => LoginProvider.Other
+            };
         }
     }
 }
