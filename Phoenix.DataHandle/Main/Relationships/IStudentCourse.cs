@@ -4,7 +4,7 @@ namespace Phoenix.DataHandle.Main.Relationships
 {
     public interface IStudentCourse
     {
-        IUser Student { get; }
+        IAspNetUsers Student { get; }
         ICourse Course { get; }
         decimal? Grade { get; set; }
     }

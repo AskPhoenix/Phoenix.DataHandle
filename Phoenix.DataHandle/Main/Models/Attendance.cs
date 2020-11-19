@@ -9,6 +9,6 @@ namespace Phoenix.DataHandle.Main.Models
         public int LectureId { get; set; }
 
         public virtual Lecture Lecture { get; set; }
-        public virtual User Student { get; set; }
+        public virtual AspNetUsers Student { get; set; }
     }
 }

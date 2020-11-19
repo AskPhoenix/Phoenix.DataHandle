@@ -29,11 +29,14 @@ namespace Phoenix.DataHandle.Main.Models
 
         IUser IAspNetUsers.User => this.User;
 
-        IEnumerable<IAspNetUserRoles> IAspNetUsers.Roles => this.AspNetUserRoles;
-
-        IEnumerable<IUserSchool> IAspNetUsers.UserSchools => this.UserSchool;
-
         IEnumerable<IAspNetUserLogins> IAspNetUsers.AspNetUserLogins => this.AspNetUserLogins;
+        IEnumerable<IAspNetUserRoles> IAspNetUsers.Roles => this.AspNetUserRoles;
+        IEnumerable<IAttendance> IAspNetUsers.Attendances => this.Attendance;
+        IEnumerable<IStudentCourse> IAspNetUsers.StudentCourses => this.StudentCourse;
+        IEnumerable<IStudentExam> IAspNetUsers.StudentExams => this.StudentExam;
+        IEnumerable<IStudentExercise> IAspNetUsers.StudentExercises => this.StudentExercise;
+        IEnumerable<ITeacherCourse> IAspNetUsers.TeacherCourses => this.TeacherCourse;
+        IEnumerable<IUserSchool> IAspNetUsers.UserSchools => this.UserSchool;
 
         public string GetHashSignature()
         {
@@ -53,7 +56,7 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class Attendance : IAttendance
     {
-        IUser IAttendance.Student => this.Student;
+        IAspNetUsers IAttendance.Student => this.Student;
         ILecture IAttendance.Lecture => this.Lecture;
     }
 
@@ -131,25 +134,25 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class StudentCourse : IStudentCourse
     {
-        IUser IStudentCourse.Student => this.Student;
+        IAspNetUsers IStudentCourse.Student => this.Student;
         ICourse IStudentCourse.Course => this.Course;
     }
 
     public partial class StudentExam : IStudentExam
     {
-        IUser IStudentExam.Student => this.Student;
+        IAspNetUsers IStudentExam.Student => this.Student;
         IExam IStudentExam.Exam => this.Exam;
     }
 
     public partial class StudentExercise : IStudentExercise
     {
-        IUser IStudentExercise.Student => this.Student;
+        IAspNetUsers IStudentExercise.Student => this.Student;
         IExercise IStudentExercise.Exercise => this.Exercise;
     }
 
     public partial class TeacherCourse : ITeacherCourse
     {
-        IUser ITeacherCourse.Teacher => this.Teacher;
+        IAspNetUsers ITeacherCourse.Teacher => this.Teacher;
         ICourse ITeacherCourse.Course => this.Course;
     }
 
@@ -158,12 +161,6 @@ namespace Phoenix.DataHandle.Main.Models
         public string FullName => (this.LastName + " " + this.FirstName).Trim();
         public int Id => this.AspNetUser.Id;
         IAspNetUsers IUser.AspNetUser => this.AspNetUser;
-
-        IEnumerable<IAttendance> IUser.Attendances => this.Attendance;
-        IEnumerable<IStudentCourse> IUser.StudentCourses => this.StudentCourse;
-        IEnumerable<IStudentExam> IUser.StudentExams => this.StudentExam;
-        IEnumerable<IStudentExercise> IUser.StudentExercises => this.StudentExercise;
-        IEnumerable<ITeacherCourse> IUser.TeacherCourses => this.TeacherCourse;
     }
 
     public partial class Schedule : ISchedule, IModelEntity

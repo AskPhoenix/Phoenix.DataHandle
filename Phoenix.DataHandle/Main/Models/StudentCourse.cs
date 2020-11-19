@@ -10,6 +10,6 @@ namespace Phoenix.DataHandle.Main.Models
         public decimal? Grade { get; set; }
 
         public virtual Course Course { get; set; }
-        public virtual User Student { get; set; }
+        public virtual AspNetUsers Student { get; set; }
     }
 }

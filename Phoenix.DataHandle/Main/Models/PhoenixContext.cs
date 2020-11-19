@@ -153,7 +153,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.Attendance)
                     .HasForeignKey(d => d.StudentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Attendance_User");
+                    .HasConstraintName("FK_Attendance_AspNetUsers");
             });
 
             modelBuilder.Entity<Book>(entity =>
@@ -189,7 +189,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.BotFeedback)
                     .HasForeignKey(d => d.AuthorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_BotFeedback_User");
+                    .HasConstraintName("FK_BotFeedback_AspNetUsers");
             });
 
             modelBuilder.Entity<Classroom>(entity =>
@@ -453,7 +453,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.StudentCourse)
                     .HasForeignKey(d => d.StudentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StudentCourse_User");
+                    .HasConstraintName("FK_StudentCourse_AspNetUsers");
             });
 
             modelBuilder.Entity<StudentExam>(entity =>
@@ -472,7 +472,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.StudentExam)
                     .HasForeignKey(d => d.StudentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StudentExam_User");
+                    .HasConstraintName("FK_StudentExam_AspNetUsers");
             });
 
             modelBuilder.Entity<StudentExercise>(entity =>
@@ -491,7 +491,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.StudentExercise)
                     .HasForeignKey(d => d.StudentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StudentExercise_User");
+                    .HasConstraintName("FK_StudentExercise_AspNetUsers");
             });
 
             modelBuilder.Entity<TeacherCourse>(entity =>
@@ -508,7 +508,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.TeacherCourse)
                     .HasForeignKey(d => d.TeacherId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_TeacherCourse_User");
+                    .HasConstraintName("FK_TeacherCourse_AspNetUsers");
             });
 
             modelBuilder.Entity<User>(entity =>

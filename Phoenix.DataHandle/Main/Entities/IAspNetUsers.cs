@@ -26,6 +26,11 @@ namespace Phoenix.DataHandle.Main.Entities
         IUser User { get; }
         IEnumerable<IAspNetUserLogins> AspNetUserLogins { get; }
         IEnumerable<IAspNetUserRoles> Roles { get; }
+        IEnumerable<IAttendance> Attendances { get; }
+        IEnumerable<IStudentCourse> StudentCourses { get; }
+        IEnumerable<IStudentExam> StudentExams { get; }
+        IEnumerable<IStudentExercise> StudentExercises { get; }
+        IEnumerable<ITeacherCourse> TeacherCourses { get; }
         IEnumerable<IUserSchool> UserSchools { get; }
     }
 }

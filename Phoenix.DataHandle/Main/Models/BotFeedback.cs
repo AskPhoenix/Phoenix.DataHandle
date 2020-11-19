@@ -14,6 +14,6 @@ namespace Phoenix.DataHandle.Main.Models
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
 
-        public virtual User Author { get; set; }
+        public virtual AspNetUsers Author { get; set; }
     }
 }

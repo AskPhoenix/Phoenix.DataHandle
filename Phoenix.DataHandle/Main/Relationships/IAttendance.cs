@@ -4,7 +4,7 @@ namespace Phoenix.DataHandle.Main.Relationships
 {
     public interface IAttendance
     {
-        IUser Student { get; }
+        IAspNetUsers Student { get; }
         ILecture Lecture { get; }
     }
 }

@@ -17,10 +17,15 @@ namespace Phoenix.DataHandle.Identity
 
         IUser IAspNetUsers.User => this.User;
         public User User { get; set; }
-        public IEnumerable<IAspNetUserRoles> Roles { get; }
-        public IEnumerable<IUserSchool> UserSchools { get; }
 
         public IEnumerable<IAspNetUserLogins> AspNetUserLogins { get; }
+        public IEnumerable<IAspNetUserRoles> Roles { get; }
+        public IEnumerable<IAttendance> Attendances { get; }
+        public IEnumerable<IStudentCourse> StudentCourses { get; }
+        public IEnumerable<IStudentExam> StudentExams { get; }
+        public IEnumerable<IStudentExercise> StudentExercises { get; }
+        public IEnumerable<ITeacherCourse> TeacherCourses { get; }
+        public IEnumerable<IUserSchool> UserSchools { get; }
 
         public ApplicationUser() { }
 

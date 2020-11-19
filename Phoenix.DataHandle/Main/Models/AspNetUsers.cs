@@ -9,6 +9,12 @@ namespace Phoenix.DataHandle.Main.Models
         {
             AspNetUserLogins = new HashSet<AspNetUserLogins>();
             AspNetUserRoles = new HashSet<AspNetUserRoles>();
+            Attendance = new HashSet<Attendance>();
+            BotFeedback = new HashSet<BotFeedback>();
+            StudentCourse = new HashSet<StudentCourse>();
+            StudentExam = new HashSet<StudentExam>();
+            StudentExercise = new HashSet<StudentExercise>();
+            TeacherCourse = new HashSet<TeacherCourse>();
             UserSchool = new HashSet<UserSchool>();
         }
 
@@ -34,6 +40,12 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual User User { get; set; }
         public virtual ICollection<AspNetUserLogins> AspNetUserLogins { get; set; }
         public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
+        public virtual ICollection<Attendance> Attendance { get; set; }
+        public virtual ICollection<BotFeedback> BotFeedback { get; set; }
+        public virtual ICollection<StudentCourse> StudentCourse { get; set; }
+        public virtual ICollection<StudentExam> StudentExam { get; set; }
+        public virtual ICollection<StudentExercise> StudentExercise { get; set; }
+        public virtual ICollection<TeacherCourse> TeacherCourse { get; set; }
         public virtual ICollection<UserSchool> UserSchool { get; set; }
     }
 }
