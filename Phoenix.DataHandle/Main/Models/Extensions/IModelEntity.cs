@@ -2,10 +2,10 @@
 
 namespace Phoenix.DataHandle.Main.Models.Extensions
 {
-    public interface IModelEntity<out TKey>
+    public interface IModelEntity
     {
-        TKey Id { get; }
+        int Id { get; }
+        DateTimeOffset CreatedAt { get; set; }
+        DateTimeOffset? UpdatedAt { get; set; }
     }
-
-    public interface IModelEntity : IModelEntity<int> { }
 }
