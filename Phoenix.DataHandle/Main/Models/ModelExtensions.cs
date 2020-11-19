@@ -153,7 +153,7 @@ namespace Phoenix.DataHandle.Main.Models
         ICourse ITeacherCourse.Course => this.Course;
     }
 
-    public partial class User : IUser, IModelEntity
+    public partial class User : IUser
     {
         public string FullName => (this.LastName + " " + this.FirstName).Trim();
         public int Id => this.AspNetUser.Id;

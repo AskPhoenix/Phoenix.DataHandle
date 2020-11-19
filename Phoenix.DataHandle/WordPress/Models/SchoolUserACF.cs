@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.WordPress.Models
 {
-    public class SchoolUserACF : IModelACF<UserSchool>
+    public class SchoolUserACF : IModelACF<AspNetUsers>
     {
         [JsonProperty(PropertyName = "code")]
         public short Code { get; set; }
@@ -41,7 +41,8 @@ namespace Phoenix.DataHandle.WordPress.Models
             return $"{this.FirstName?.First()}{this.LastName}{this.SchoolId}{this.Code}".ToLower();
         }
 
-        public Expression<Func<UserSchool, bool>> MatchesUnique => us => us != null && us.SchoolId == this.SchoolId && us.Code == Code;
+        public Expression<Func<AspNetUsers, bool>> MatchesUnique => 
+            u => u != null && u.UserSchool.Any(us => us.SchoolId == this.SchoolId && us.Code == Code);
 
         public SchoolUserACF() { }
         public SchoolUserACF(int schoolId, short code)
@@ -50,16 +51,19 @@ namespace Phoenix.DataHandle.WordPress.Models
             this.Code = code;
         }
 
-        public UserSchool ToContext()
+        public AspNetUsers ToContext()
         {
-            return new UserSchool()
+            return new AspNetUsers()
             {
-                Code = this.Code,
-                EnrolledOn = DateTimeOffset.Now
+                UserName = GetUsername(),
+                NormalizedUserName = GetUsername().ToUpper(),
+                PhoneNumber = this.Phone.ToString().Substring(0, Math.Min(this.Phone.ToString().Length, 50)),
+                CreatedApplicationType = ApplicationType.Scheduler,
+                CreatedAt = DateTimeOffset.Now
             };
         }
 
-        public IModelACF<UserSchool> WithTitleCase()
+        public IModelACF<AspNetUsers> WithTitleCase()
         {
             return new SchoolUserACF()
             {
@@ -74,15 +78,12 @@ namespace Phoenix.DataHandle.WordPress.Models
             };
         }
 
-        public AspNetUsers ExtractAspNetUser()
+        public UserSchool ExtractUserSchool()
         {
-            return new AspNetUsers()
+            return new UserSchool()
             {
-                UserName = GetUsername(),
-                NormalizedUserName = GetUsername().ToUpper(),
-                PhoneNumber = this.Phone.ToString().Substring(0, Math.Min(this.Phone.ToString().Length, 50)),
-                CreatedApplicationType = Main.ApplicationType.Scheduler,
-                CreatedAt = DateTimeOffset.Now
+                Code = this.Code,
+                EnrolledOn = DateTimeOffset.Now
             };
         }
 

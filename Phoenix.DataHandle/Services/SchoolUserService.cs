@@ -15,7 +15,6 @@ namespace Phoenix.DataHandle.Services
     public class SchoolUserService : WPService
     {
         private readonly AspNetUserRepository aspNetUserRepository;
-        private readonly UserRepository userRepository;
 
         protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.SchoolUser);
 
@@ -27,7 +26,7 @@ namespace Phoenix.DataHandle.Services
             : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional)
         {
             this.aspNetUserRepository = new AspNetUserRepository(phoenixContext);
-            this.userRepository = new UserRepository(phoenixContext);
+            this.aspNetUserRepository.Include(u => u.User, u => u.UserSchool);
         }
 
         public override void DeleteComplement()
@@ -47,46 +46,37 @@ namespace Phoenix.DataHandle.Services
 
                 SchoolUserACF acfSchoolUser = (SchoolUserACF)(await WordPressClientWrapper.GetAcfAsync<SchoolUserACF>(schoolUserPost.Id)).WithTitleCase();
                 acfSchoolUser.SchoolId = schoolId;
+                var ctxAspNetUser = acfSchoolUser.ToContext();
 
-                AspNetUsers aspNetUser;
-                var curUserSchool = await userRepository.FindUserSchoolAsync(acfSchoolUser.MatchesUnique);
-                if (curUserSchool == null)
+                var curAspNetUser = await aspNetUserRepository.Find(acfSchoolUser.MatchesUnique);
+                if (curAspNetUser == null)
                 {
-                    _logger.LogInformation($"Adding AspNetUser for School User: {schoolUserPost.GetTitle()}");
-                    aspNetUser = acfSchoolUser.ExtractAspNetUser();
-                    aspNetUserRepository.Create(aspNetUser);
-                    acfSchoolUser.UserId = aspNetUser.Id;
-
                     _logger.LogInformation($"Adding User for School User: {schoolUserPost.GetTitle()}");
-                    userRepository.Create(acfSchoolUser.ExtractUser());
+                    aspNetUserRepository.Create(ctxAspNetUser, acfSchoolUser.ExtractUser());
+                    acfSchoolUser.UserId = ctxAspNetUser.Id;
 
-                    _logger.LogInformation($"Adding UserSchool for School User: {schoolUserPost.GetTitle()}");
-                    userRepository.LinkSchool(acfSchoolUser.ToContext());
+                    _logger.LogInformation($"Linking with Schoool of School User: {schoolUserPost.GetTitle()}");
+                    aspNetUserRepository.LinkSchool(acfSchoolUser.ExtractUserSchool());
                     
                     //TODO: What log to keep here? Probably multiple ones will be needed
                     //this.IdsLog.Add( ? );
                 }
                 else
                 {
-                    _logger.LogInformation($"Updating AspNetUser for School User: {schoolUserPost.GetTitle()}");
-                    aspNetUser = await aspNetUserRepository.Find(curUserSchool.AspNetUserId);
-                    aspNetUserRepository.Update(aspNetUser, acfSchoolUser.ExtractAspNetUser());
-
                     _logger.LogInformation($"Updating User for School User: {schoolUserPost.GetTitle()}");
-                    var user = await userRepository.Find(curUserSchool.AspNetUserId);
-                    userRepository.Update(user, acfSchoolUser.ExtractUser());
+                    aspNetUserRepository.Update(curAspNetUser, acfSchoolUser.ToContext(), acfSchoolUser.ExtractUser());
                 }
 
                 //TODO: Delete old Roles if any
                 _logger.LogInformation($"Linking with the AspNetUserRoles of School User: {schoolUserPost.GetTitle()}");
                 
                 List<Role> rolesToAdd = new List<Role>(2);
-                if (!aspNetUserRepository.HasRole(aspNetUser, acfSchoolUser.RoleType))
+                if (!aspNetUserRepository.HasRole(curAspNetUser, acfSchoolUser.RoleType))
                     rolesToAdd.Add(acfSchoolUser.RoleType);
-                if (!aspNetUserRepository.HasRole(aspNetUser, acfSchoolUser.SecondRoleType))
+                if (!aspNetUserRepository.HasRole(curAspNetUser ?? ctxAspNetUser, acfSchoolUser.SecondRoleType))
                     rolesToAdd.Add(acfSchoolUser.SecondRoleType);
                 
-                aspNetUserRepository.LinkRoles(aspNetUser, rolesToAdd);
+                aspNetUserRepository.LinkRoles(curAspNetUser ?? ctxAspNetUser, rolesToAdd);
 
                 _logger.LogInformation($"Linking with the Courses of School User: {schoolUserPost.GetTitle()}");
 
@@ -99,7 +89,7 @@ namespace Phoenix.DataHandle.Services
                     userCourseIds.Add(courseId);
                 }
 
-                aspNetUserRepository.LinkCourses(aspNetUser, userCourseIds);
+                aspNetUserRepository.LinkCourses(curAspNetUser ?? ctxAspNetUser, userCourseIds);
             }
 
             _logger.LogInformation("School Users synchronization finished");

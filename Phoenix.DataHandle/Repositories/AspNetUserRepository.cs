@@ -24,6 +24,16 @@ namespace Phoenix.DataHandle.Repositories
             return base.Create(tModel);
         }
 
+        public AspNetUsers Create(AspNetUsers tModel, User user)
+        {
+            tModel = base.Create(tModel);
+
+            user.AspNetUserId = tModel.Id;
+            this.dbContext.Set<User>().Add(user);
+
+            return tModel;
+        }
+
         public override AspNetUsers Update(AspNetUsers tModel)
         {
             tModel.UpdatedAt = DateTimeOffset.Now;
@@ -40,9 +50,22 @@ namespace Phoenix.DataHandle.Repositories
             return this.Update(tModel);
         }
 
+        public AspNetUsers Update(AspNetUsers tModel, AspNetUsers tModelFrom, User tModel2From)
+        {
+            tModel.User.FirstName = tModel2From.FirstName;
+            tModel.User.LastName = tModel2From.LastName;
+
+            return this.Update(tModel, tModelFrom);
+        }
+
         public bool HasRole(AspNetUsers user, Role role)
         {
             return this.dbContext.Set<AspNetUserRoles>().Include(ur => ur.Role).Any(ur => ur.UserId == user.Id && ur.Role.Type == role);
+        }
+
+        public void LinkSchool(UserSchool userSchool)
+        {
+            this.dbContext.Set<UserSchool>().Add(userSchool);
         }
 
         public void LinkRoles(AspNetUsers tModel, IEnumerable<int> roleIds)
