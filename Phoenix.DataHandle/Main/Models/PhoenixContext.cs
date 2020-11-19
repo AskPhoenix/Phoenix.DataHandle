@@ -355,7 +355,11 @@ namespace Phoenix.DataHandle.Main.Models
             {
                 entity.Property(e => e.Chapter).HasMaxLength(50);
 
+                entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
+
                 entity.Property(e => e.Section).HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.HasOne(d => d.Book)
                     .WithMany(p => p.Material)

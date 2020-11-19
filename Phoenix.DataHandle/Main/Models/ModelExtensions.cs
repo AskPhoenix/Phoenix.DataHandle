@@ -116,7 +116,7 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IExercise> ILecture.Exercises => this.Exercise;
     }
 
-    public partial class Material : IMaterial
+    public partial class Material : IMaterial, IModelEntity
     {
         IExam IMaterial.Exam => this.Exam;
         IBook IMaterial.Book => this.Book;
