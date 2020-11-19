@@ -13,7 +13,6 @@ namespace Phoenix.DataHandle.Main.Entities
         bool TermsAccepted { get; set; }
 
         IEnumerable<IAttendance> Attendances { get; }
-        IEnumerable<IBotFeedback> BotFeedbacks { get; }
         IEnumerable<IStudentCourse> StudentCourses { get; }
         IEnumerable<IStudentExam> StudentExams { get; }
         IEnumerable<IStudentExercise> StudentExercises { get; }

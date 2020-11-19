@@ -64,11 +64,6 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IMaterial> IBook.Materials => this.Material;
     }
 
-    public partial class BotFeedback : IBotFeedback
-    {
-        IUser IBotFeedback.Author => this.Author;
-    }
-
     public partial class Classroom : IClassroom, IModelEntity
     {
         ISchool IClassroom.School => this.School;
@@ -165,7 +160,6 @@ namespace Phoenix.DataHandle.Main.Models
         IAspNetUsers IUser.AspNetUser => this.AspNetUser;
 
         IEnumerable<IAttendance> IUser.Attendances => this.Attendance;
-        IEnumerable<IBotFeedback> IUser.BotFeedbacks => this.BotFeedback;
         IEnumerable<IStudentCourse> IUser.StudentCourses => this.StudentCourse;
         IEnumerable<IStudentExam> IUser.StudentExams => this.StudentExam;
         IEnumerable<IStudentExercise> IUser.StudentExercises => this.StudentExercise;
