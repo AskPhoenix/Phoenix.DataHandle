@@ -7,7 +7,6 @@ namespace Phoenix.DataHandle.Main.Entities
     public interface ICourse
     {
         ISchool School { get; }
-        short Code { get; set; }
         string Name { get; set; }
         string SubCourse { get; set; }
         string Level { get; set; }

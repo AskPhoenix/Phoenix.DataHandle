@@ -7,7 +7,6 @@ namespace Phoenix.DataHandle.Main.Entities
     {
         ICourse Course { get; }
         IClassroom Classroom { get; }
-        short Code { get; set; }
         DayOfWeek DayOfWeek { get; set; }
         DateTimeOffset StartTime { get; set; }
         DateTimeOffset EndTime { get; set; }

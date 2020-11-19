@@ -5,7 +5,6 @@ namespace Phoenix.DataHandle.Main.Relationships
 {
     public interface IUserSchool
     {
-        short Code { get; set; }
         DateTimeOffset? EnrolledOn { get; set; }
         
         IAspNetUsers AspNetUser { get; }
