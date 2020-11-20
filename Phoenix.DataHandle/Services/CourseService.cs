@@ -19,8 +19,8 @@ namespace Phoenix.DataHandle.Services
 
         protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.Course);
 
-        public CourseService(PhoenixContext phoenixContext, ILogger<WPService> logger, bool deleteAdditional)
-            : this(phoenixContext, logger, deleteAdditional, null)
+        public CourseService(PhoenixContext phoenixContext, ILogger<WPService> logger)
+            : this(phoenixContext, logger, false, null)
         { }
 
         public CourseService(PhoenixContext phoenixContext, ILogger<WPService> logger, bool deleteAdditional, string specificSchoolUnique)

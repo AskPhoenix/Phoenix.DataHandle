@@ -15,8 +15,8 @@ namespace Phoenix.DataHandle.Services
         private readonly SchoolRepository schoolRepository;
         protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.School);
 
-        public SchoolService(PhoenixContext phoenixContext, ILogger<WPService> logger, bool deleteAdditional)
-            : this(phoenixContext, logger, deleteAdditional, null) 
+        public SchoolService(PhoenixContext phoenixContext, ILogger<WPService> logger)
+            : this(phoenixContext, logger, false, null) 
         { }
 
         public SchoolService(PhoenixContext phoenixContext, ILogger<WPService> logger, bool deleteAdditional, string specificSchoolUnique)
