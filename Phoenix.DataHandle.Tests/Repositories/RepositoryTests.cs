@@ -8,7 +8,8 @@ namespace Phoenix.DataHandle.Tests.Repositories
 {
     public class RepositoryTests : IDisposable
     {
-        private const string CONNECTION_STRING = "Server=.;Initial Catalog=PhoenixDB;Persist Security Info=False;User ID=sa;Password=root;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=True;Connection Timeout=30;";
+        //private const string CONNECTION_STRING = "Server=.;Initial Catalog=PhoenixDB;Persist Security Info=False;User ID=sa;Password=root;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=True;Connection Timeout=30;";
+        private const string CONNECTION_STRING = "Server=tcp:askphoenix.database.windows.net,1433;Initial Catalog=NuageDB;Persist Security Info=False;User ID=phoenix;Password=20Ph0eniX20!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         private readonly PhoenixContext _phoenixContext;
 
         public RepositoryTests()
@@ -70,15 +71,5 @@ namespace Phoenix.DataHandle.Tests.Repositories
 
             _ = await exerciseRepository.Find().ToListAsync();
         }
-
-        [Fact]
-        public async void FetchAUsers()
-        {
-            UserRepository userRepository = new UserRepository(this._phoenixContext);
-
-            _ = await userRepository.Find().ToListAsync();
-        }
-
-
     }
 }
