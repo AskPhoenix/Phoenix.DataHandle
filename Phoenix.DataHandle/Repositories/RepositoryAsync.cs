@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models.Extensions;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class Repository<TModel> where TModel : class, IModelEntity
+    public class RepositoryAsync<TModel> where TModel : class, IModelEntity
     {
         protected DbContext dbContext { get; }
         protected ICollection<Func<IQueryable<TModel>, IQueryable<TModel>>> includes { get; }
 
-        public Repository(DbContext dbContext)
+        public RepositoryAsync(DbContext dbContext)
         {
             this.dbContext = dbContext;
             this.includes = new List<Func<IQueryable<TModel>, IQueryable<TModel>>>();
@@ -52,26 +53,26 @@ namespace Phoenix.DataHandle.Repositories
             return x.SingleOrDefaultAsync(checkUnique);
         }
 
-        public virtual TModel Create(TModel tModel)
+        public virtual async Task<TModel> Create(TModel tModel, CancellationToken cancellationToken = default)
         {
             this.dbContext.Set<TModel>().Add(tModel);
-            this.dbContext.SaveChanges();
+            await this.dbContext.SaveChangesAsync(cancellationToken);
 
             return tModel;
         }
 
-        public virtual TModel Update(TModel tModel)
+        public virtual async Task<TModel> Update(TModel tModel, CancellationToken cancellationToken = default)
         {
             this.dbContext.Entry(tModel).State = EntityState.Modified;
-            this.dbContext.SaveChanges();
+            await this.dbContext.SaveChangesAsync(cancellationToken);
 
             return tModel;
         }
 
-        public virtual bool Delete(int id)
+        public virtual async Task<bool> Delete(int id, CancellationToken cancellationToken = default)
         {
             this.dbContext.Set<TModel>().Remove(this.dbContext.Set<TModel>().Single(a => a.Id == id));
-            this.dbContext.SaveChanges();
+            await this.dbContext.SaveChangesAsync(cancellationToken);
 
             return true;
         }

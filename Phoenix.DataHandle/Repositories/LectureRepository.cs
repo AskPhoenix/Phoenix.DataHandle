@@ -7,28 +7,28 @@ using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class LectureRepository : Repository<Lecture>
+    public class LectureRepository : RepositoryAsync<Lecture>
     {
         public LectureRepository(PhoenixContext dbContext) : base(dbContext) { }
 
-        public override Lecture Create(Lecture tModel)
+        public override Task<Lecture> Create(Lecture tModel, CancellationToken cancellationToken = default)
         {
             if (tModel == null)
                 throw new ArgumentNullException(nameof(tModel));
 
             tModel.CreatedAt = DateTimeOffset.Now;
             
-            return base.Create(tModel);
+            return base.Create(tModel, cancellationToken);
         }
 
-        public override Lecture Update(Lecture tModel)
+        public override Task<Lecture> Update(Lecture tModel, CancellationToken cancellationToken = default)
         {
             if (tModel == null)
                 throw new ArgumentNullException(nameof(tModel));
 
             tModel.UpdatedAt = DateTimeOffset.Now;
 
-            return base.Update(tModel);
+            return base.Update(tModel, cancellationToken);
         }
 
         public Task<Lecture> FindSingle(int courseId, DateTime day, TimeSpan time, CancellationToken cancellationToken)

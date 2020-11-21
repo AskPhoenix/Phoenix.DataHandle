@@ -35,7 +35,7 @@ namespace Phoenix.DataHandle.Services
             }
         }
 
-        public Task GenerateLectures(Course course, CancellationToken cancellationToken)
+        public async Task GenerateLectures(Course course, CancellationToken cancellationToken)
         {
             if (course == null)
                 throw new ArgumentNullException(nameof(course));
@@ -69,7 +69,7 @@ namespace Phoenix.DataHandle.Services
                             Status = LectureStatus.Scheduled,
                         };
 
-                        this._lectureRepository.Create(lecture);
+                        await this._lectureRepository.Create(lecture, cancellationToken);
                         this._logger.LogInformation($"Lecture created successfully | {day:dd/MM/yyyy} | {scheduleOfTheDay.DayOfWeek} | {scheduleOfTheDay.StartTime:HH:mm}-{scheduleOfTheDay.EndTime:HH:mm}");
                     }
                     else
@@ -79,13 +79,11 @@ namespace Phoenix.DataHandle.Services
                         lecture.StartDateTime = new DateTimeOffset(day.Add(scheduleOfTheDay.StartTime.TimeOfDay), scheduleOfTheDay.StartTime.Offset);
                         lecture.EndDateTime = new DateTimeOffset(day.Add(scheduleOfTheDay.EndTime.TimeOfDay), scheduleOfTheDay.EndTime.Offset);
 
-                        this._lectureRepository.Update(lecture);
+                        await this._lectureRepository.Update(lecture, cancellationToken);
                         this._logger.LogInformation($"Lecture updated successfully | {course.Name}, {course.SubCourse} | {day:dd/MM/yyyy} | {scheduleOfTheDay.StartTime:HH:mm}");
                     }
                 }
             }
-            
-            return Task.CompletedTask;
         }
     }
 }
