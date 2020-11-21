@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>8.0</LangVersion>
-    <Product>Phoenix.DataHandle</Product>
     <Description>A wrapper for operations on PhoenixDB</Description>
     <Copyright>AskPhoenix 2020</Copyright>
     <PackageProjectUrl>https://www.askphoenix.gr/</PackageProjectUrl>
@@ -12,16 +11,13 @@
 
   <PropertyGroup>
     <PackageId>Phoenix.DataHandle</PackageId>
-    <Version>1.6.1</Version>
+    <Product>Phoenix.DataHandle</Product>
+    <Version>1.6.2</Version>
     <Authors>AskPhoenix</Authors>
     <Company>AskPhoenix</Company>
     <PackageDescription>A wrapper for operations on PhoenixDB</PackageDescription>
     <RepositoryUrl>https://github.com/AskPhoenix/Phoenix.DataHandle</RepositoryUrl>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="nuget.exe" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.11.0" />
