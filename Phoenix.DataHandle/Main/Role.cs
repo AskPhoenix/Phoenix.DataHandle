@@ -67,9 +67,9 @@ namespace Phoenix.DataHandle.Main
         {
             try
             {
-                return GetAll().SingleOrDefault(a => string.Equals(a.ToString(), me, StringComparison.CurrentCultureIgnoreCase));
+                return GetAll().SingleOrDefault(a => string.Equals(a.ToString(), me, StringComparison.OrdinalIgnoreCase));
             }
-            catch
+            catch(InvalidOperationException)
             {
                 return Role.Undefined;
             }

@@ -26,6 +26,9 @@ namespace Phoenix.DataHandle.Services
 
         public async Task GenerateLectures(ICollection<Course> courses, CancellationToken cancellationToken)
         {
+            if (courses == null)
+                throw new ArgumentNullException(nameof(courses));
+
             foreach (Course course in courses)
             {
                 await this.GenerateLectures(course, cancellationToken);
@@ -34,6 +37,9 @@ namespace Phoenix.DataHandle.Services
 
         public Task GenerateLectures(Course course, CancellationToken cancellationToken)
         {
+            if (course == null)
+                throw new ArgumentNullException(nameof(course));
+
             this._logger.LogInformation($"Start generating lectures for course | {course.School.Name} | {course.Name}, {course.Level}, {course.SubCourse} | {course.FirstDate:dd/MM/yyyy}-{course.LastDate:dd/MM/yyyy} | {course.Schedule.Count} Schedules | {course.Lecture.Count} Lectures");
 
             var period = Enumerable.Range(0, 1 + course.LastDate.Date.Subtract(course.FirstDate.Date).Days)

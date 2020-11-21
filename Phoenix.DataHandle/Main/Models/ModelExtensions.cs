@@ -41,7 +41,7 @@ namespace Phoenix.DataHandle.Main.Models
         public string GetHashSignature()
         {
             byte[] salt = new byte[16];
-            var pbkdf2 = new Rfc2898DeriveBytes(this.Id + this.PhoneNumber, salt, 10 * 1000, HashAlgorithmName.SHA256);
+            using var pbkdf2 = new Rfc2898DeriveBytes(this.Id + this.PhoneNumber, salt, 10 * 1000, HashAlgorithmName.SHA256);
             byte[] hash = pbkdf2.GetBytes(32);
             string savedPasswordHash = Convert.ToBase64String(hash);
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models.Extensions;
@@ -10,12 +11,13 @@ namespace Phoenix.DataHandle.Repositories
 {
     public class Repository<TModel> where TModel : class, IModelEntity
     {
-        protected readonly DbContext dbContext;
-        protected readonly ICollection<Func<IQueryable<TModel>, IQueryable<TModel>>> includes = new List<Func<IQueryable<TModel>, IQueryable<TModel>>>();
+        protected DbContext dbContext { get; }
+        protected ICollection<Func<IQueryable<TModel>, IQueryable<TModel>>> includes { get; }
 
         public Repository(DbContext dbContext)
         {
             this.dbContext = dbContext;
+            this.includes = new List<Func<IQueryable<TModel>, IQueryable<TModel>>>();
         }
 
         public virtual IQueryable<TModel> Find()

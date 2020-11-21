@@ -31,6 +31,9 @@ namespace Phoenix.DataHandle.Identity
 
         public ApplicationUser(IdentityUser<int> identity) : this()
         {
+            if (identity == null)
+                throw new ArgumentNullException(nameof(identity));
+
             this.Id = identity.Id;
             this.AccessFailedCount = identity.AccessFailedCount;
             this.ConcurrencyStamp = identity.ConcurrencyStamp;

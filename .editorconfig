@@ -26,3 +26,9 @@ dotnet_diagnostic.CA1032.severity = suggestion
 
 # CA1056: URI-like properties should not be strings
 dotnet_diagnostic.CA1056.severity = suggestion
+
+# CA2227: Collection properties should be read only
+dotnet_diagnostic.CA2227.severity = suggestion
+
+# CA1033: Interface methods should be callable by child types
+dotnet_diagnostic.CA1033.severity = suggestion

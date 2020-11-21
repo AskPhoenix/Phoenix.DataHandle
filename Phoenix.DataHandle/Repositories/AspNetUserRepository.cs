@@ -19,6 +19,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public override AspNetUsers Create(AspNetUsers tModel)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
             tModel.CreatedAt = DateTimeOffset.Now;
 
             return base.Create(tModel);
@@ -26,6 +29,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public AspNetUsers Create(AspNetUsers tModel, User user)
         {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
             tModel = base.Create(tModel);
 
             user.AspNetUserId = tModel.Id;
@@ -36,6 +42,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public override AspNetUsers Update(AspNetUsers tModel)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
             tModel.UpdatedAt = DateTimeOffset.Now;
 
             return base.Update(tModel);
@@ -43,6 +52,12 @@ namespace Phoenix.DataHandle.Repositories
 
         public AspNetUsers Update(AspNetUsers tModel, AspNetUsers tModelFrom)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+            if (tModelFrom == null)
+                throw new ArgumentNullException(nameof(tModelFrom));
+
+
             tModel.UserName = tModelFrom.UserName;
             tModel.NormalizedUserName = tModelFrom.NormalizedUserName;
             tModel.PhoneNumber = tModelFrom.PhoneNumber;
@@ -52,6 +67,12 @@ namespace Phoenix.DataHandle.Repositories
 
         public AspNetUsers Update(AspNetUsers tModel, AspNetUsers tModelFrom, User tModel2From)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+            if (tModel2From == null)
+                throw new ArgumentNullException(nameof(tModel2From));
+
+
             tModel.User.FirstName = tModel2From.FirstName;
             tModel.User.LastName = tModel2From.LastName;
 

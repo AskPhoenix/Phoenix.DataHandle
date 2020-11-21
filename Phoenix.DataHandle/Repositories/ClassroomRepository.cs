@@ -9,6 +9,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public override Classroom Create(Classroom tModel)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
             tModel.CreatedAt = DateTimeOffset.Now;
 
             return base.Create(tModel);
@@ -16,6 +19,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public override Classroom Update(Classroom tModel)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
             tModel.UpdatedAt = DateTimeOffset.Now;
 
             return base.Update(tModel);

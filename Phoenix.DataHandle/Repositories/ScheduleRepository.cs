@@ -9,6 +9,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public override Schedule Create(Schedule tModel)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
             tModel.CreatedAt = DateTimeOffset.Now;
 
             return base.Create(tModel);
@@ -16,6 +19,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public override Schedule Update(Schedule tModel)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
             tModel.UpdatedAt = DateTimeOffset.Now;
 
             return base.Update(tModel);
@@ -23,6 +29,12 @@ namespace Phoenix.DataHandle.Repositories
 
         public Schedule Update(Schedule tModel, Schedule tModelFrom)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
+            if (tModelFrom == null)
+                throw new ArgumentNullException(nameof(tModelFrom));
+
             tModel.ClassroomId = tModelFrom.ClassroomId;
             tModel.DayOfWeek = tModelFrom.DayOfWeek;
             tModel.StartTime = tModel.StartTime.Date + tModelFrom.StartTime.TimeOfDay;

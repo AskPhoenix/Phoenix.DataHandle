@@ -15,6 +15,15 @@ namespace Phoenix.DataHandle.Utilities
 
         public static DateTimeOffset GetDateTimeOffsetFromString(string dateTime, string format, IFormatProvider provider, TimeZoneInfo timeZone)
         {
+            if (string.IsNullOrWhiteSpace(dateTime))
+                throw new ArgumentNullException(nameof(dateTime));
+
+            if (string.IsNullOrWhiteSpace(format))
+                throw new ArgumentNullException(nameof(format));
+
+            if (timeZone == null)
+                throw new ArgumentNullException(nameof(timeZone));
+
             DateTime d = DateTime.ParseExact(dateTime, format, provider);
             return new DateTimeOffset(d, timeZone.GetUtcOffset(d));
         }

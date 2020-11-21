@@ -12,6 +12,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public override Course Create(Course tModel)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
             tModel.CreatedAt = DateTimeOffset.Now;
             
             return base.Create(tModel);
@@ -19,6 +22,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public override Course Update(Course tModel)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
             tModel.UpdatedAt = DateTimeOffset.Now;
 
             return base.Update(tModel);
@@ -26,6 +32,12 @@ namespace Phoenix.DataHandle.Repositories
 
         public Course Update(Course tModel, Course tModelFrom)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
+            if (tModelFrom == null)
+                throw new ArgumentNullException(nameof(tModelFrom));
+
             tModel.Name = tModelFrom.Name;
             tModel.SubCourse = tModelFrom.SubCourse;
             tModel.Group = tModelFrom.Group;
@@ -39,6 +51,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public void LinkBook(Course tModel, int bookId)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
             this.dbContext.Set<CourseBook>().Add(new CourseBook() { CourseId = tModel.Id, BookId = bookId });
         }
 

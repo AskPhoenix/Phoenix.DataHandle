@@ -10,6 +10,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public override Exam Create(Exam tModel)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
             tModel.CreatedAt = DateTimeOffset.Now;
             
             return base.Create(tModel);
@@ -17,6 +20,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public override Exam Update(Exam tModel)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
             tModel.UpdatedAt = DateTimeOffset.Now;
 
             return base.Update(tModel);
