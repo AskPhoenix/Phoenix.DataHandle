@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Phoenix.DataHandle", "Phoen
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E8B07192-05EB-4371-B78B-2C61947A6609}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phoenix.DataHandle.Tests", "Phoenix.DataHandle.Tests\Phoenix.DataHandle.Tests.csproj", "{A420B8B6-5C0E-4F37-AAF0-6899697C8A43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Phoenix.DataHandle.Tests", "Phoenix.DataHandle.Tests\Phoenix.DataHandle.Tests.csproj", "{A420B8B6-5C0E-4F37-AAF0-6899697C8A43}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C61D5C60-0765-41A5-89D7-E29436CCB8F2}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
