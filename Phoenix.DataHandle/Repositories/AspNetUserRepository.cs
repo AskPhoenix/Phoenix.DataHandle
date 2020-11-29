@@ -65,6 +65,42 @@ namespace Phoenix.DataHandle.Repositories
             return this.dbContext.Set<AspNetUserRoles>().Include(ur => ur.Role).Any(ur => ur.UserId == user.Id && ur.Role.Type == role);
         }
 
+        public bool AnyLogin(string providerName, string providerKey)
+        {
+            if (providerName == null)
+                throw new ArgumentNullException(nameof(providerName));
+            if (providerKey == null)
+                throw new ArgumentNullException(nameof(providerKey));
+
+            return this.dbContext.Set<AspNetUserLogins>().Any(l => l.LoginProvider == providerName && l.ProviderKey == providerKey);
+        }
+
+        public AspNetUsers FindUserFromLogin(string providerName, string providerKey)
+        {
+            if (providerName == null)
+                throw new ArgumentNullException(nameof(providerName));
+            if (providerKey == null)
+                throw new ArgumentNullException(nameof(providerKey));
+
+            return this.dbContext.Set<AspNetUserLogins>().
+                Include(l => l.User).
+                ThenInclude(u => u.User).
+                SingleOrDefault(l => l.LoginProvider == providerName && l.ProviderKey == providerKey)?.
+                User;
+        }
+
+        public IEnumerable<AspNetRoles> FindRoles(AspNetUsers tModel)
+        {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
+            return this.dbContext.Set<AspNetUserRoles>().
+                Include(ur => ur.Role).
+                Where(ur => ur.UserId == tModel.Id).
+                Select(ur => ur.Role).
+                AsEnumerable();
+        }
+
         public void LinkSchool(UserSchool userSchool)
         {
             if (userSchool == null)
