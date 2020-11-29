@@ -6,15 +6,15 @@ namespace Phoenix.DataHandle.Main
 {
     public enum Role
     {
-        Undefined = -1,
-        None = 0,
-        Student = 1,
-        Parent = 2,
-        Secretary = 3,
-        Teacher = 4,
-        Admin = 5,
-        SchoolOwner = 6,
-        SuperAdmin = 7,
+        Undefined = 0,
+        None,
+        Student,
+        Parent,
+        Secretary,
+        Teacher,
+        Admin,
+        SchoolOwner,
+        SuperAdmin,
     }
 
     public static class RoleExtensions
