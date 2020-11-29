@@ -65,27 +65,23 @@ namespace Phoenix.DataHandle.Repositories
             return this.dbContext.Set<AspNetUserRoles>().Include(ur => ur.Role).Any(ur => ur.UserId == user.Id && ur.Role.Type == role);
         }
 
-        public bool AnyLogin(string providerName, string providerKey)
+        public bool AnyLogin(LoginProvider provider, string providerKey)
         {
-            if (providerName == null)
-                throw new ArgumentNullException(nameof(providerName));
             if (providerKey == null)
                 throw new ArgumentNullException(nameof(providerKey));
 
-            return this.dbContext.Set<AspNetUserLogins>().Any(l => l.LoginProvider == providerName && l.ProviderKey == providerKey);
+            return this.dbContext.Set<AspNetUserLogins>().Any(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
         }
 
-        public AspNetUsers FindUserFromLogin(string providerName, string providerKey)
+        public AspNetUsers FindUserFromLogin(LoginProvider provider, string providerKey)
         {
-            if (providerName == null)
-                throw new ArgumentNullException(nameof(providerName));
             if (providerKey == null)
                 throw new ArgumentNullException(nameof(providerKey));
 
             return this.dbContext.Set<AspNetUserLogins>().
                 Include(l => l.User).
                 ThenInclude(u => u.User).
-                SingleOrDefault(l => l.LoginProvider == providerName && l.ProviderKey == providerKey)?.
+                SingleOrDefault(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey)?.
                 User;
         }
 
