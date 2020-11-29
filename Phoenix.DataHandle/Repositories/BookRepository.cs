@@ -1,6 +1,7 @@
 ﻿using Phoenix.DataHandle.Main.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Phoenix.DataHandle.Repositories
 {
@@ -8,28 +9,13 @@ namespace Phoenix.DataHandle.Repositories
     {
         public BookRepository(PhoenixContext dbContext) : base(dbContext) { }
 
-        public override Book Create(Book tModel)
-        {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-
-            tModel.CreatedAt = DateTimeOffset.Now;
-
-            return base.Create(tModel);
-        }
-
-        public override Book Update(Book tModel)
-        {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-
-            tModel.UpdatedAt = DateTimeOffset.Now;
-
-            return base.Update(tModel);
-        }
-
         public IEnumerable<Book> CreateMany(IEnumerable<Book> tModels)
         {
+            if (tModels == null)
+                throw new ArgumentNullException(nameof(tModels));
+            
+            tModels = tModels.Where(b => b != null);
+
             this.dbContext.Set<Book>().AddRange(tModels);
             this.dbContext.SaveChanges();
 

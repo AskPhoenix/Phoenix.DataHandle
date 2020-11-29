@@ -54,6 +54,11 @@ namespace Phoenix.DataHandle.Repositories
 
         public virtual TModel Create(TModel tModel)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
+            tModel.CreatedAt = DateTimeOffset.Now;
+
             this.dbContext.Set<TModel>().Add(tModel);
             this.dbContext.SaveChanges();
 
@@ -62,6 +67,11 @@ namespace Phoenix.DataHandle.Repositories
 
         public virtual TModel Update(TModel tModel)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
+            tModel.UpdatedAt = DateTimeOffset.Now;
+
             this.dbContext.Entry(tModel).State = EntityState.Modified;
             this.dbContext.SaveChanges();
 

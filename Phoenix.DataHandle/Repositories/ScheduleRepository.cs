@@ -7,31 +7,10 @@ namespace Phoenix.DataHandle.Repositories
     {
         public ScheduleRepository(PhoenixContext dbContext) : base(dbContext) { }
 
-        public override Schedule Create(Schedule tModel)
-        {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-
-            tModel.CreatedAt = DateTimeOffset.Now;
-
-            return base.Create(tModel);
-        }
-
-        public override Schedule Update(Schedule tModel)
-        {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-
-            tModel.UpdatedAt = DateTimeOffset.Now;
-
-            return base.Update(tModel);
-        }
-
         public Schedule Update(Schedule tModel, Schedule tModelFrom)
         {
             if (tModel == null)
                 throw new ArgumentNullException(nameof(tModel));
-
             if (tModelFrom == null)
                 throw new ArgumentNullException(nameof(tModelFrom));
 

@@ -8,31 +8,10 @@ namespace Phoenix.DataHandle.Repositories
     {
         public SchoolRepository(PhoenixContext dbContext) : base(dbContext) { }
 
-        public override School Create(School tModel)
-        {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-
-            tModel.CreatedAt = DateTimeOffset.Now;
-            
-            return base.Create(tModel);
-        }
-
-        public override School Update(School tModel)
-        {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-
-            tModel.UpdatedAt = DateTimeOffset.Now;
-
-            return base.Update(tModel);
-        }
-
         public School Update(School tModel, School tModelFrom)
         {
             if (tModel == null)
                 throw new ArgumentNullException(nameof(tModel));
-
             if (tModelFrom == null)
                 throw new ArgumentNullException(nameof(tModelFrom));
 

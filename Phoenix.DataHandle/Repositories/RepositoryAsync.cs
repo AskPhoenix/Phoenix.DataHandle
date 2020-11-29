@@ -55,6 +55,11 @@ namespace Phoenix.DataHandle.Repositories
 
         public virtual async Task<TModel> Create(TModel tModel, CancellationToken cancellationToken = default)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
+            tModel.CreatedAt = DateTimeOffset.Now;
+
             this.dbContext.Set<TModel>().Add(tModel);
             await this.dbContext.SaveChangesAsync(cancellationToken);
 
@@ -63,6 +68,11 @@ namespace Phoenix.DataHandle.Repositories
 
         public virtual async Task<TModel> Update(TModel tModel, CancellationToken cancellationToken = default)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
+            tModel.UpdatedAt = DateTimeOffset.Now;
+
             this.dbContext.Entry(tModel).State = EntityState.Modified;
             await this.dbContext.SaveChangesAsync(cancellationToken);
 

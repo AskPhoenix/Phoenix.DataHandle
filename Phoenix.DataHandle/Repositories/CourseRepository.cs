@@ -10,31 +10,10 @@ namespace Phoenix.DataHandle.Repositories
     {
         public CourseRepository(PhoenixContext dbContext) : base(dbContext) { }
 
-        public override Course Create(Course tModel)
-        {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-
-            tModel.CreatedAt = DateTimeOffset.Now;
-            
-            return base.Create(tModel);
-        }
-
-        public override Course Update(Course tModel)
-        {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-
-            tModel.UpdatedAt = DateTimeOffset.Now;
-
-            return base.Update(tModel);
-        }
-
         public Course Update(Course tModel, Course tModelFrom)
         {
             if (tModel == null)
                 throw new ArgumentNullException(nameof(tModel));
-
             if (tModelFrom == null)
                 throw new ArgumentNullException(nameof(tModelFrom));
 
@@ -59,11 +38,19 @@ namespace Phoenix.DataHandle.Repositories
 
         public void LinkBooks(Course tModel, IEnumerable<int> bookIds)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+            if (bookIds == null)
+                throw new ArgumentNullException(nameof(bookIds));
+
             this.dbContext.Set<CourseBook>().AddRange(bookIds.Select(bId => new CourseBook() { CourseId = tModel.Id, BookId = bId }));
         }
 
         public IEnumerable<Book> GetLinkedBooks(Course tModel)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
             return this.dbContext.Set<CourseBook>().Include(cb => cb.Book).Where(cb => cb.CourseId == tModel.Id).Select(cb => cb.Book).AsEnumerable();
         }
     }

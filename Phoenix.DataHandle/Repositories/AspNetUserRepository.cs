@@ -17,16 +17,6 @@ namespace Phoenix.DataHandle.Repositories
             teacherRoleId = this.dbContext.Set<AspNetRoles>().Single(r => r.Type == Role.Teacher).Id;
         }
 
-        public override AspNetUsers Create(AspNetUsers tModel)
-        {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-
-            tModel.CreatedAt = DateTimeOffset.Now;
-
-            return base.Create(tModel);
-        }
-
         public AspNetUsers Create(AspNetUsers tModel, User user)
         {
             if (user == null)
@@ -40,23 +30,12 @@ namespace Phoenix.DataHandle.Repositories
             return tModel;
         }
 
-        public override AspNetUsers Update(AspNetUsers tModel)
-        {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-
-            tModel.UpdatedAt = DateTimeOffset.Now;
-
-            return base.Update(tModel);
-        }
-
         public AspNetUsers Update(AspNetUsers tModel, AspNetUsers tModelFrom)
         {
             if (tModel == null)
                 throw new ArgumentNullException(nameof(tModel));
             if (tModelFrom == null)
                 throw new ArgumentNullException(nameof(tModelFrom));
-
 
             tModel.UserName = tModelFrom.UserName;
             tModel.NormalizedUserName = tModelFrom.NormalizedUserName;
@@ -72,7 +51,6 @@ namespace Phoenix.DataHandle.Repositories
             if (tModel2From == null)
                 throw new ArgumentNullException(nameof(tModel2From));
 
-
             tModel.User.FirstName = tModel2From.FirstName;
             tModel.User.LastName = tModel2From.LastName;
 
@@ -81,30 +59,49 @@ namespace Phoenix.DataHandle.Repositories
 
         public bool HasRole(AspNetUsers user, Role role)
         {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
             return this.dbContext.Set<AspNetUserRoles>().Include(ur => ur.Role).Any(ur => ur.UserId == user.Id && ur.Role.Type == role);
         }
 
         public void LinkSchool(UserSchool userSchool)
         {
+            if (userSchool == null)
+                throw new ArgumentNullException(nameof(userSchool));
+
             this.dbContext.Set<UserSchool>().Add(userSchool);
         }
 
         public void LinkRoles(AspNetUsers tModel, IEnumerable<int> roleIds)
         {
-            var aspNetUserRoles = roleIds.Select(id => new AspNetUserRoles() { RoleId = id, UserId = tModel.Id });
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+            if (roleIds == null)
+                throw new ArgumentNullException(nameof(roleIds));
 
+            var aspNetUserRoles = roleIds.Select(id => new AspNetUserRoles() { RoleId = id, UserId = tModel.Id });
             this.dbContext.Set<AspNetUserRoles>().AddRange(aspNetUserRoles);
         }
 
         public void LinkRoles(AspNetUsers tModel, IEnumerable<Role> roles)
         {
-            var roleIds = this.dbContext.Set<AspNetRoles>().Where(r => roles.Contains(r.Type)).Select(r => r.Id);
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+            if (roles == null)
+                throw new ArgumentNullException(nameof(roles));
 
+            var roleIds = this.dbContext.Set<AspNetRoles>().Where(r => roles.Contains(r.Type)).Select(r => r.Id);
             this.LinkRoles(tModel, roleIds);
         }
 
         public void LinkCourses(AspNetUsers tModel, IEnumerable<int> courseIds)
         {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+            if (courseIds == null)
+                throw new ArgumentNullException(nameof(courseIds));
+
             if (this.dbContext.Set<AspNetUserRoles>().Any(ur => ur.UserId == tModel.Id && ur.RoleId == studentRoleId))
             {
                 var idsToExclude = this.dbContext.Set<StudentCourse>()
