@@ -73,6 +73,14 @@ namespace Phoenix.DataHandle.Repositories
             return this.dbContext.Set<AspNetUserLogins>().Any(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
         }
 
+        public void LinkLogin(AspNetUserLogins userLogin)
+        {
+            if (userLogin == null)
+                throw new ArgumentNullException(nameof(userLogin));
+
+            this.dbContext.Set<AspNetUserLogins>().Add(userLogin);
+        }
+
         public AspNetUsers FindUserFromLogin(LoginProvider provider, string providerKey)
         {
             if (providerKey == null)
