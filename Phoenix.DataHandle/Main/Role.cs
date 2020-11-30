@@ -6,7 +6,7 @@ namespace Phoenix.DataHandle.Main
 {
     public enum Role
     {
-        Undefined = 0,
+        Undefined = -1,
         None,
         Student,
         Parent,
