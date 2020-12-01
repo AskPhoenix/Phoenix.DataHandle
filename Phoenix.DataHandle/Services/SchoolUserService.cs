@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WordPressPCL.Models;
 
 namespace Phoenix.DataHandle.Services
 {
@@ -41,15 +42,36 @@ namespace Phoenix.DataHandle.Services
         {
             _logger.LogInformation("School Users synchronization started");
 
-            var schoolUserPosts = await this.GetAllPostsAsync();
-            foreach (var schoolUserPost in schoolUserPosts)
+            int schoolId, previousSchoolId = -1;
+            var schoolUserPosts = (await this.GetAllPostsAsync()).OrderBy(p => p.Title).ToList();
+            Post schoolUserPost;
+
+            for (int i = 0; i < schoolUserPosts.Count(); i++, previousSchoolId = schoolId)
             {
-                if (!this.TryGetSchoolIdFromPost(schoolUserPost, out int schoolId))
+                schoolUserPost = schoolUserPosts.ElementAt(i);
+
+                if (!this.TryGetSchoolIdFromPost(schoolUserPost, out schoolId))
                     continue;
 
-                SchoolUserACF acfSchoolUser = (SchoolUserACF)(await WordPressClientWrapper.GetAcfAsync<SchoolUserACF>(schoolUserPost.Id)).WithTitleCase();
+                SchoolUserACF acfSchoolUser;
+                if (schoolUserPost.Id < 0)
+                    acfSchoolUser = new SchoolUserACF()
+                    {
+                        Code = 0,
+                        FirstName = "Δοκιμαστικός",
+                        LastName = "Χρήστης",
+                        Phone = 6900000000,
+                        RoleString = "Μαθητής",
+                        SecondRoleString = "Υπερδιαχειριστής"
+                    };
+                else
+                    acfSchoolUser = (SchoolUserACF)(await WordPressClientWrapper.GetAcfAsync<SchoolUserACF>(schoolUserPost.Id)).WithTitleCase();
                 acfSchoolUser.SchoolId = schoolId;
                 var ctxAspNetUser = acfSchoolUser.ToContext();
+                
+                //Add Test User
+                if (schoolId != previousSchoolId && acfSchoolUser.Code != 0)
+                    schoolUserPosts.Add(schoolUserPost.CreatePostForTestUser());
 
                 var curAspNetUser = await aspNetUserRepository.Find(acfSchoolUser.MatchesUnique);
                 if (curAspNetUser == null)
