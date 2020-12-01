@@ -78,19 +78,14 @@ namespace Phoenix.DataHandle.Main
 
         public static Role ToRoleFromNormalized(this string me)
         {
-            return me switch
+            try
             {
-                "Απροσδιόριστος"        => Role.Undefined,
-                "Κανένας"               => Role.None,
-                "Μαθητής"               => Role.Student,
-                "Γονέας / Κηδεμόνας"    => Role.Parent,
-                "Γραμματέας"            => Role.Secretary,
-                "Εκπαιδευτικός"         => Role.Teacher,
-                "Διαχειριστής"          => Role.Admin,
-                "Ιδιοκτήτης"            => Role.SchoolOwner,
-                "Υπερδιαχειριστής"      => Role.SuperAdmin,
-                _                       => Role.Undefined
-            };
+                return GetAll().SingleOrDefault(a => string.Equals(a.ToNormalizedString(), me, StringComparison.OrdinalIgnoreCase));
+            }
+            catch (InvalidOperationException)
+            {
+                return Role.Undefined;
+            }
         }
     }
 }
