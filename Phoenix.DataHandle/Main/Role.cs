@@ -17,6 +17,7 @@ namespace Phoenix.DataHandle.Main
         SuperAdmin,
     }
 
+    //TODO: Locale
     public static class RoleExtensions
     {
         public static IEnumerable<Role> GetAll()
@@ -42,7 +43,7 @@ namespace Phoenix.DataHandle.Main
                 Role.Admin          => "Admin",
                 Role.SchoolOwner    => "SchoolOwner",
                 Role.SuperAdmin     => "SuperAdmin",
-                _                   => string.Empty,
+                _                   => string.Empty
             };
         }
 
@@ -59,7 +60,7 @@ namespace Phoenix.DataHandle.Main
                 Role.Admin          => "Διαχειριστής",
                 Role.SchoolOwner    => "Ιδιοκτήτης",
                 Role.SuperAdmin     => "Υπερδιαχειριστής",
-                _                   => string.Empty,
+                _                   => string.Empty
             };
         }
 
@@ -73,6 +74,23 @@ namespace Phoenix.DataHandle.Main
             {
                 return Role.Undefined;
             }
+        }
+
+        public static Role ToRoleFromNormalized(this string me)
+        {
+            return me switch
+            {
+                "Απροσδιόριστος"        => Role.Undefined,
+                "Κανένας"               => Role.None,
+                "Μαθητής"               => Role.Student,
+                "Γονέας / Κηδεμόνας"    => Role.Parent,
+                "Γραμματέας"            => Role.Secretary,
+                "Εκπαιδευτικός"         => Role.Teacher,
+                "Διαχειριστής"          => Role.Admin,
+                "Ιδιοκτήτης"            => Role.SchoolOwner,
+                "Υπερδιαχειριστής"      => Role.SuperAdmin,
+                _                       => Role.Undefined
+            };
         }
     }
 }
