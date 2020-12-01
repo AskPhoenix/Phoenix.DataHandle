@@ -43,7 +43,7 @@ namespace Phoenix.DataHandle.Services
             _logger.LogInformation("School Users synchronization started");
 
             int schoolId, previousSchoolId = -1;
-            var schoolUserPosts = (await this.GetAllPostsAsync()).OrderBy(p => p.Title).ToList();
+            var schoolUserPosts = (await this.GetAllPostsAsync()).OrderBy(p => p.GetTitle()).ToList();
             Post schoolUserPost;
 
             for (int i = 0; i < schoolUserPosts.Count(); i++, previousSchoolId = schoolId)
