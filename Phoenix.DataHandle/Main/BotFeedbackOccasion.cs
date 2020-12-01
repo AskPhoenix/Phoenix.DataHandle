@@ -12,19 +12,14 @@
     {
         public static string ToFriendlyString(this BotFeedbackOccasion occasion)
         {
-            switch (occasion)
+            return occasion switch
             {
-                case BotFeedbackOccasion.Student_Exercise:
-                    return "Student Exercise";
-                case BotFeedbackOccasion.Student_Exam:
-                    return "Student Exam";
-                case BotFeedbackOccasion.Student_Schedule:
-                    return "Student Schedule";
-                case BotFeedbackOccasion.Persistent_Menu:
-                    return "Persistent Menu";
-                default:
-                    return string.Empty;
-            }
+                BotFeedbackOccasion.Student_Exercise => "Student Exercise",
+                BotFeedbackOccasion.Student_Exam => "Student Exam",
+                BotFeedbackOccasion.Student_Schedule => "Student Schedule",
+                BotFeedbackOccasion.Persistent_Menu => "Persistent Menu",
+                _ => string.Empty,
+            };
         }
     }
 }

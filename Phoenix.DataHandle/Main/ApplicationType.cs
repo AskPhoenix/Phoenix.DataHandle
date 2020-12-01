@@ -21,20 +21,14 @@ namespace Phoenix.DataHandle.Main
 
         public static string ToFriendlyString(this ApplicationType me)
         {
-            switch (me)
+            return me switch
             {
-                case ApplicationType.Undefined:
-                    return "Undefined";
-                case ApplicationType.None:
-                    return "None";
-                case ApplicationType.Pwa:
-                    return "Pwa";
-                case ApplicationType.Scheduler:
-                    return "Scheduler";
-                default:
-                    return string.Empty;
-            }
-
+                ApplicationType.Undefined => "Undefined",
+                ApplicationType.None => "None",
+                ApplicationType.Pwa => "Pwa",
+                ApplicationType.Scheduler => "Scheduler",
+                _ => string.Empty,
+            };
         }
     }
 }

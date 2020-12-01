@@ -39,23 +39,16 @@ namespace Phoenix.DataHandle.Main
 
         public static string ToFriendlyString(this BotFeedbackCategory cat)
         {
-            switch (cat)
+            return cat switch
             {
-                case BotFeedbackCategory.Empty:
-                    return "Empty";
-                case BotFeedbackCategory.Comment:
-                    return "Comment";
-                case BotFeedbackCategory.Copliment:
-                    return "Copliment";
-                case BotFeedbackCategory.Suggestion:
-                    return "Suggestion";
-                case BotFeedbackCategory.Rating:
-                    return "Rating";
-                case BotFeedbackCategory.Complaint:
-                    return "Complaint";
-                default:
-                    return string.Empty;
-            }
+                BotFeedbackCategory.Empty => "Empty",
+                BotFeedbackCategory.Comment => "Comment",
+                BotFeedbackCategory.Copliment => "Copliment",
+                BotFeedbackCategory.Suggestion => "Suggestion",
+                BotFeedbackCategory.Rating => "Rating",
+                BotFeedbackCategory.Complaint => "Complaint",
+                _ => string.Empty,
+            };
         }
 
         public static IEnumerable<BotFeedbackCategory> GetAll()

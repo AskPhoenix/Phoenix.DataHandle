@@ -11,17 +11,13 @@
     {
         public static string ToGreekString(this LectureStatus ls)
         {
-            switch (ls)
+            return ls switch
             {
-                case LectureStatus.Unknown:
-                    return "Άγνωστη";
-                case LectureStatus.Scheduled:
-                    return "Κανονικά";
-                case LectureStatus.Cancelled:
-                    return "Ακυρώθηκε";
-            }
-
-            return ls.ToString();
+                LectureStatus.Unknown => "Άγνωστη",
+                LectureStatus.Scheduled => "Κανονικά",
+                LectureStatus.Cancelled => "Ακυρώθηκε",
+                _ => ls.ToString(),
+            };
         }
     }
 }
