@@ -38,7 +38,7 @@ namespace Phoenix.DataHandle.WordPress.Models
 
         private string GetUsername()
         {
-            return $"{this.FirstName?.First()}{this.LastName}{this.SchoolId}{this.Code}".ToLower();
+            return $"{this.FirstName?.First()}{this.LastName}{this.SchoolId}{this.Code}".ToLowerInvariant();
         }
 
         public Expression<Func<AspNetUsers, bool>> MatchesUnique => 
@@ -56,7 +56,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             return new AspNetUsers()
             {
                 UserName = GetUsername(),
-                NormalizedUserName = GetUsername().ToUpper(),
+                NormalizedUserName = GetUsername().ToUpperInvariant(),
                 PhoneNumber = this.Phone.ToString().Substring(0, Math.Min(this.Phone.ToString().Length, 50)),
                 CreatedApplicationType = ApplicationType.Scheduler,
                 CreatedAt = DateTimeOffset.Now

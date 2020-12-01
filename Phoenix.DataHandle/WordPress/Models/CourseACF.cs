@@ -98,7 +98,7 @@ namespace Phoenix.DataHandle.WordPress.Models
                 Select(b => new Book()
                 {
                     Name = b.Substring(0, Math.Min(b.Length, 255)),
-                    NormalizedName = b.ToUpper().Substring(0, Math.Min(b.Length, 255)),
+                    NormalizedName = b.ToUpperInvariant().Substring(0, Math.Min(b.Length, 255)),
                     CreatedAt = DateTimeOffset.Now
                 });
         }

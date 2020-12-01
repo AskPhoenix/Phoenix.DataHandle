@@ -21,7 +21,7 @@
 
         public static LoginProvider ToLoginProvider(this string channel)
         {
-            return channel.ToLower() switch
+            return channel.ToLowerInvariant() switch
             {
                 "emulator"  => LoginProvider.Emulator,
                 "facebook"  => LoginProvider.Facebook,

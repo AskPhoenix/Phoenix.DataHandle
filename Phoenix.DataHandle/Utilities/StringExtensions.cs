@@ -4,11 +4,12 @@ namespace Phoenix.DataHandle.Utilities
 {
     public static class StringExtensions
     {
+        //TODO: Locale
         public static string UpperToTitleCase(this string str)
         {
             string tore = new string(str);
 
-            bool allUpper = tore == tore.ToUpper();
+            bool allUpper = tore == tore.ToUpper() || tore == tore.ToUpperInvariant();
             if (!allUpper)
                 return tore;
 

@@ -51,11 +51,11 @@ namespace Phoenix.DataHandle.Services
                 _logger.LogInformation($"Synchronizing Classroom of Schedule: {schedulePost.GetTitle()}");
                 if (!string.IsNullOrEmpty(acfSchedule.ClassroomName))
                 {
-                    Classroom classroom = await classroomRepository.Find(c => c.SchoolId == schoolId && c.NormalizedName == acfSchedule.ClassroomName.ToUpper());
+                    Classroom classroom = await classroomRepository.Find(c => c.SchoolId == schoolId && c.NormalizedName == acfSchedule.ClassroomName.ToUpperInvariant());
                     if (classroom == null)
                     {
                         _logger.LogInformation($"Adding Classroom {acfSchedule.ClassroomName} in School with id {schoolId}");
-                        classroom = new Classroom() { SchoolId = schoolId, Name = acfSchedule.ClassroomName, NormalizedName = acfSchedule.ClassroomName.ToUpper() };
+                        classroom = new Classroom() { SchoolId = schoolId, Name = acfSchedule.ClassroomName, NormalizedName = acfSchedule.ClassroomName.ToUpperInvariant() };
 
                         classroomRepository.Create(classroom);
                     }
