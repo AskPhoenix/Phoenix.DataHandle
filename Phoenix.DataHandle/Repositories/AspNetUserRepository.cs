@@ -22,12 +22,9 @@ namespace Phoenix.DataHandle.Repositories
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            tModel = base.Create(tModel);
-
             user.AspNetUserId = tModel.Id;
-            this.dbContext.Set<User>().Add(user);
 
-            return tModel;
+            return base.Create(tModel);
         }
 
         public AspNetUsers Update(AspNetUsers tModel, AspNetUsers tModelFrom)
@@ -79,6 +76,7 @@ namespace Phoenix.DataHandle.Repositories
                 throw new ArgumentNullException(nameof(userLogin));
 
             this.dbContext.Set<AspNetUserLogins>().Add(userLogin);
+            this.dbContext.SaveChanges();
         }
 
         public AspNetUsers FindUserFromLogin(LoginProvider provider, string providerKey)
@@ -111,6 +109,7 @@ namespace Phoenix.DataHandle.Repositories
                 throw new ArgumentNullException(nameof(userSchool));
 
             this.dbContext.Set<UserSchool>().Add(userSchool);
+            this.dbContext.SaveChanges();
         }
 
         public void LinkRoles(AspNetUsers tModel, IEnumerable<int> roleIds)
@@ -122,6 +121,7 @@ namespace Phoenix.DataHandle.Repositories
 
             var aspNetUserRoles = roleIds.Select(id => new AspNetUserRoles() { RoleId = id, UserId = tModel.Id });
             this.dbContext.Set<AspNetUserRoles>().AddRange(aspNetUserRoles);
+            this.dbContext.SaveChanges();
         }
 
         public void LinkRoles(AspNetUsers tModel, IEnumerable<Role> roles)
@@ -154,6 +154,7 @@ namespace Phoenix.DataHandle.Repositories
                 var studentCourses = idsToKeep.Select(id => new StudentCourse() { StudentId = tModel.Id, CourseId = id });
 
                 this.dbContext.Set<StudentCourse>().AddRange(studentCourses);
+                this.dbContext.SaveChanges();
             }
 
             if (this.dbContext.Set<AspNetUserRoles>().Any(ur => ur.UserId == tModel.Id && ur.RoleId >= teacherRoleId))
@@ -168,6 +169,7 @@ namespace Phoenix.DataHandle.Repositories
                 var teacherCourses = idsToKeep.Select(id => new TeacherCourse() { TeacherId = tModel.Id, CourseId = id });
 
                 this.dbContext.Set<TeacherCourse>().AddRange(teacherCourses);
+                this.dbContext.SaveChanges();
             }
         }
     }

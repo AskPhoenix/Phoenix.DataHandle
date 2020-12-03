@@ -34,6 +34,7 @@ namespace Phoenix.DataHandle.Repositories
                 throw new ArgumentNullException(nameof(tModel));
 
             this.dbContext.Set<CourseBook>().Add(new CourseBook() { CourseId = tModel.Id, BookId = bookId });
+            this.dbContext.SaveChanges();
         }
 
         public void LinkBooks(Course tModel, IEnumerable<int> bookIds)
@@ -44,6 +45,7 @@ namespace Phoenix.DataHandle.Repositories
                 throw new ArgumentNullException(nameof(bookIds));
 
             this.dbContext.Set<CourseBook>().AddRange(bookIds.Select(bId => new CourseBook() { CourseId = tModel.Id, BookId = bId }));
+            this.dbContext.SaveChanges();
         }
 
         public IEnumerable<Book> GetLinkedBooks(Course tModel)
