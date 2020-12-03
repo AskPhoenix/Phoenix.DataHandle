@@ -70,6 +70,7 @@ namespace Phoenix.DataHandle.WordPress.Models
         {
             return new ScheduleACF()
             {
+                ClassroomId = this.ClassroomId,
                 Code = this.Code,
                 CourseCode = this.CourseCode,
                 ClassroomName = this.ClassroomName?.UpperToTitleCase(),

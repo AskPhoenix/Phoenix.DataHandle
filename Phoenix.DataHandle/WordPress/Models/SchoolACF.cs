@@ -62,6 +62,7 @@ namespace Phoenix.DataHandle.WordPress.Models
         {
             return new SchoolACF
             {
+                FacebookPageId = this.FacebookPageId,
                 Name = this.Name,
                 Slug = this.Slug,
                 City = this.City?.UpperToTitleCase(),

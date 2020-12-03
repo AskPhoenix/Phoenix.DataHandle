@@ -67,6 +67,7 @@ namespace Phoenix.DataHandle.WordPress.Models
         {
             return new SchoolUserACF()
             {
+                UserId = this.UserId,
                 Code = this.Code,
                 FirstName = this.FirstName?.UpperToTitleCase(),
                 LastName = this.LastName?.UpperToTitleCase(),
@@ -82,7 +83,9 @@ namespace Phoenix.DataHandle.WordPress.Models
         {
             return new UserSchool()
             {
+                AspNetUserId = this.UserId,
                 Code = this.Code,
+                SchoolId = this.SchoolId,
                 EnrolledOn = DateTimeOffset.Now
             };
         }
