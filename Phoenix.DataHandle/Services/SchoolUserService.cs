@@ -46,7 +46,7 @@ namespace Phoenix.DataHandle.Services
             var schoolUserPosts = (await this.GetAllPostsAsync()).OrderBy(p => p.GetTitle()).ToList();
             Post schoolUserPost;
 
-            for (int i = 0; i < schoolUserPosts.Count(); i++, previousSchoolId = schoolId)
+            for (int i = 0; i < schoolUserPosts.Count; i++, previousSchoolId = schoolId)
             {
                 schoolUserPost = schoolUserPosts.ElementAt(i);
 
@@ -99,8 +99,11 @@ namespace Phoenix.DataHandle.Services
                 List<Role> rolesToAdd = new List<Role>(2);
                 if (!aspNetUserRepository.HasRole(finalUser, acfSchoolUser.RoleType))
                     rolesToAdd.Add(acfSchoolUser.RoleType);
-                if (!aspNetUserRepository.HasRole(finalUser, acfSchoolUser.SecondRoleType))
+                if (acfSchoolUser.SecondRoleType > Role.None && !aspNetUserRepository.HasRole(finalUser, acfSchoolUser.SecondRoleType))
                     rolesToAdd.Add(acfSchoolUser.SecondRoleType);
+                if (!rolesToAdd.Any() && !aspNetUserRepository.AnyUserRole(finalUser))
+                    rolesToAdd.Add(Role.None);
+
                 aspNetUserRepository.LinkRoles(finalUser, rolesToAdd);
 
                 _logger.LogInformation($"Linking with the Courses of School User: {schoolUserPost.GetTitle()}");

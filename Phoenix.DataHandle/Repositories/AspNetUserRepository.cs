@@ -68,6 +68,19 @@ namespace Phoenix.DataHandle.Repositories
             return this.dbContext.Set<AspNetUserRoles>().Include(ur => ur.Role).Any(ur => ur.UserId == user.Id && ur.Role.Type == role);
         }
 
+        public bool AnyUserRole(int userId)
+        {
+            return this.dbContext.Set<AspNetUserRoles>().Any(ur => ur.UserId == userId);
+        }
+
+        public bool AnyUserRole(AspNetUsers user)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            return this.AnyUserRole(user.Id);
+        }
+
         public bool AnyLogin(LoginProvider provider, string providerKey)
         {
             if (providerKey == null)
