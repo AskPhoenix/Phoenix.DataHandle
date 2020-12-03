@@ -21,10 +21,16 @@ namespace Phoenix.DataHandle.Repositories
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
 
-            user.AspNetUserId = tModel.Id;
+            var tore = this.Create(tModel);
 
-            return base.Create(tModel);
+            user.AspNetUserId = tore.Id;
+            this.dbContext.Set<User>().Add(user);
+            this.dbContext.SaveChanges();
+
+            return tore;
         }
 
         public AspNetUsers Update(AspNetUsers tModel, AspNetUsers tModelFrom)
