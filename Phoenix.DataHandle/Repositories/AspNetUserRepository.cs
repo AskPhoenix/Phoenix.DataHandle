@@ -94,6 +94,8 @@ namespace Phoenix.DataHandle.Repositories
             if (userLogin == null)
                 throw new ArgumentNullException(nameof(userLogin));
 
+            userLogin.CreatedAt = DateTimeOffset.Now;
+
             this.dbContext.Set<AspNetUserLogins>().Add(userLogin);
             this.dbContext.SaveChanges();
         }
