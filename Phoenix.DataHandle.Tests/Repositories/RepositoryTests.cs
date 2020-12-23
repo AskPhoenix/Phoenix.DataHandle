@@ -41,6 +41,18 @@ namespace Phoenix.DataHandle.Tests.Repositories
         }
 
         [Fact]
+        public async void FetchAspNetUser()
+        {
+            AspNetUserRepository aspNetUserRepository = new AspNetUserRepository(this._phoenixContext);
+
+            AspNetUsers aspNetUser = await aspNetUserRepository.Find(210);
+
+            string signature = aspNetUser.GetHashSignature();
+
+            Assert.True(!string.IsNullOrWhiteSpace(signature));
+        }
+
+        [Fact]
         public async void FetchCourses()
         {
             CourseRepository courseRepository = new CourseRepository(this._phoenixContext);
