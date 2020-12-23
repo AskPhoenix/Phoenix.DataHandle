@@ -21,11 +21,15 @@ namespace Phoenix.DataHandle.Identity
         public IEnumerable<IAspNetUserLogins> AspNetUserLogins { get; }
         public IEnumerable<IAspNetUserRoles> Roles { get; }
         public IEnumerable<IAttendance> Attendances { get; }
+        public IEnumerable<IParenthood> Children { get; }
+        public IEnumerable<IParenthood> Parents { get; }
         public IEnumerable<IStudentCourse> StudentCourses { get; }
         public IEnumerable<IStudentExam> StudentExams { get; }
         public IEnumerable<IStudentExercise> StudentExercises { get; }
         public IEnumerable<ITeacherCourse> TeacherCourses { get; }
         public IEnumerable<IUserSchool> UserSchools { get; }
+
+        
 
         public ApplicationUser() { }
 

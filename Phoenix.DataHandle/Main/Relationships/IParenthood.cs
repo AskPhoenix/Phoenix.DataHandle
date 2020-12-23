@@ -4,7 +4,7 @@ namespace Phoenix.DataHandle.Main.Relationships
 {
     public interface IParenthood
     {
-        IAspNetUsers Child { get; set; }
-        IAspNetUsers Parent { get; set; }
+        IAspNetUsers Child { get; }
+        IAspNetUsers Parent { get; }
     }
 }

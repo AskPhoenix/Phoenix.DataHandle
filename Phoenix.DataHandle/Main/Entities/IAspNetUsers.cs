@@ -28,8 +28,8 @@ namespace Phoenix.DataHandle.Main.Entities
         IEnumerable<IAspNetUserLogins> AspNetUserLogins { get; }
         IEnumerable<IAspNetUserRoles> Roles { get; }
         IEnumerable<IAttendance> Attendances { get; }
-        IEnumerable<Parenthood> ParenthoodChild { get; }
-        IEnumerable<Parenthood> ParenthoodParent { get; }
+        IEnumerable<IParenthood> Children { get; }
+        IEnumerable<IParenthood> Parents { get; }
         IEnumerable<IStudentCourse> StudentCourses { get; }
         IEnumerable<IStudentExam> StudentExams { get; }
         IEnumerable<IStudentExercise> StudentExercises { get; }
