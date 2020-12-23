@@ -29,6 +29,7 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<Exercise> Exercise { get; set; }
         public virtual DbSet<Lecture> Lecture { get; set; }
         public virtual DbSet<Material> Material { get; set; }
+        public virtual DbSet<Parenthood> Parenthood { get; set; }
         public virtual DbSet<Schedule> Schedule { get; set; }
         public virtual DbSet<School> School { get; set; }
         public virtual DbSet<StudentCourse> StudentCourse { get; set; }
@@ -367,6 +368,23 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasForeignKey(d => d.ExamId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Material_Exam");
+            });
+
+            modelBuilder.Entity<Parenthood>(entity =>
+            {
+                entity.HasKey(e => new { e.ParentId, e.ChildId });
+
+                entity.HasOne(d => d.Child)
+                    .WithMany(p => p.ParenthoodChild)
+                    .HasForeignKey(d => d.ChildId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Parenthood_AspNetUsers_Child");
+
+                entity.HasOne(d => d.Parent)
+                    .WithMany(p => p.ParenthoodParent)
+                    .HasForeignKey(d => d.ParentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Parenthood_AspNetUsers_Parent");
             });
 
             modelBuilder.Entity<Schedule>(entity =>
