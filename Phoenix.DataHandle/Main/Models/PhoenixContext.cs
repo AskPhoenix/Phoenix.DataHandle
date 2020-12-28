@@ -374,6 +374,10 @@ namespace Phoenix.DataHandle.Main.Models
             {
                 entity.HasKey(e => new { e.ParentId, e.ChildId });
 
+                entity.Property(e => e.VerificationCode)
+                    .IsRequired()
+                    .HasMaxLength(10);
+
                 entity.HasOne(d => d.Child)
                     .WithMany(p => p.ParenthoodChild)
                     .HasForeignKey(d => d.ChildId)
