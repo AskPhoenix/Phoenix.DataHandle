@@ -18,7 +18,7 @@ namespace Phoenix.DataHandle.Identity
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(phoneNumber));
 
-            return this.Context.Users.FirstOrDefaultAsync(applicatonUser => string.Equals(applicatonUser.PhoneNumber, phoneNumber, StringComparison.CurrentCultureIgnoreCase), cancellationToken);
+            return this.Context.Users.SingleOrDefaultAsync(applicatonUser => applicatonUser.PhoneNumber == phoneNumber, cancellationToken);
         }
 
         public Task<ApplicationUser> FindByProviderKeyAsync(LoginProvider provider, string key, CancellationToken cancellationToken = new CancellationToken())
