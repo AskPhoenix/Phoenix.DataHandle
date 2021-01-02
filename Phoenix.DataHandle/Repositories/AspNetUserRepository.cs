@@ -86,7 +86,11 @@ namespace Phoenix.DataHandle.Repositories
             if (providerKey == null)
                 throw new ArgumentNullException(nameof(providerKey));
 
-            return this.dbContext.Set<AspNetUserLogins>().Any(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
+            var dbSet = this.dbContext.Set<AspNetUserLogins>();
+            if (onlyActive)
+                return dbSet.Any(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey && l.IsActive);
+
+            return dbSet.Any(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
         }
 
         public void LinkLogin(AspNetUserLogins userLogin)
