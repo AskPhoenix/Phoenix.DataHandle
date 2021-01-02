@@ -81,7 +81,7 @@ namespace Phoenix.DataHandle.Repositories
             return this.AnyUserRole(user.Id);
         }
 
-        public bool AnyLogin(LoginProvider provider, string providerKey)
+        public bool AnyLogin(LoginProvider provider, string providerKey, bool onlyActive = false)
         {
             if (providerKey == null)
                 throw new ArgumentNullException(nameof(providerKey));
