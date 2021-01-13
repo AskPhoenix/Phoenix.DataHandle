@@ -28,8 +28,9 @@ namespace Phoenix.DataHandle.Identity
 
             string providerName = provider.GetProviderName();
             return this.Context.Users.
-                Include(u => u.AspNetUserLogins).
-                FirstOrDefaultAsync(u => u.AspNetUserLogins.SingleOrDefault(l => l.UserId == u.Id && l.LoginProvider == providerName && l.ProviderKey == key) != null, cancellationToken);
+                Include(u => u.ApplicationUserLogin).
+                SingleOrDefaultAsync(u => u.ApplicationUserLogin.Any(l => l.LoginProvider == providerName && l.ProviderKey == key), cancellationToken);
+
         }
     }
 }

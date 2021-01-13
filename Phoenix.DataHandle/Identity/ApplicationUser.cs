@@ -8,27 +8,27 @@ using Phoenix.DataHandle.Main.Relationships;
 
 namespace Phoenix.DataHandle.Identity
 {
-    public sealed class ApplicationUser : IdentityUser<int>, IAspNetUsers
+    public class ApplicationUser : IdentityUser<int>, IAspNetUsers
     {
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
         public DateTimeOffset RegisteredAt => this.CreatedAt;
         public ApplicationType CreatedApplicationType { get; set; }
 
+        public virtual User User { get; set; }
+        public virtual ICollection<ApplicationUserLogin> ApplicationUserLogin { get; set; }
+
         IUser IAspNetUsers.User => this.User;
-        public User User { get; set; }
-
-        public IEnumerable<IAspNetUserLogins> AspNetUserLogins { get; }
-        public IEnumerable<IAspNetUserRoles> Roles { get; }
-        public IEnumerable<IAttendance> Attendances { get; }
-        public IEnumerable<IParenthood> Children { get; }
-        public IEnumerable<IParenthood> Parents { get; }
-        public IEnumerable<IStudentCourse> StudentCourses { get; }
-        public IEnumerable<IStudentExam> StudentExams { get; }
-        public IEnumerable<IStudentExercise> StudentExercises { get; }
-        public IEnumerable<ITeacherCourse> TeacherCourses { get; }
-        public IEnumerable<IUserSchool> UserSchools { get; }
-
+        IEnumerable<IAspNetUserLogins> IAspNetUsers.AspNetUserLogins => this.ApplicationUserLogin;
+        IEnumerable<IAspNetUserRoles> IAspNetUsers.Roles { get; }
+        IEnumerable<IAttendance> IAspNetUsers.Attendances { get; }
+        IEnumerable<IParenthood> IAspNetUsers.Children { get; }
+        IEnumerable<IParenthood> IAspNetUsers.Parents { get; }
+        IEnumerable<IStudentCourse> IAspNetUsers.StudentCourses { get; }
+        IEnumerable<IStudentExam> IAspNetUsers.StudentExams { get; }
+        IEnumerable<IStudentExercise> IAspNetUsers.StudentExercises { get; }
+        IEnumerable<ITeacherCourse> IAspNetUsers.TeacherCourses { get; }
+        IEnumerable<IUserSchool> IAspNetUsers.UserSchools { get; }
         
 
         public ApplicationUser() { }
