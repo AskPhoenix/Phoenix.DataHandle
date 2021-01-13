@@ -6,7 +6,6 @@ namespace Phoenix.DataHandle.Identity
 {
     public sealed class ApplicationUserLogin : IdentityUserLogin<int>, IAspNetUserLogins
     {
-        public bool IsActive { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
 
