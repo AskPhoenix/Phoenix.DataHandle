@@ -32,6 +32,8 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IAspNetUserLogins> IAspNetUsers.AspNetUserLogins => this.AspNetUserLogins;
         IEnumerable<IAspNetUserRoles> IAspNetUsers.Roles => this.AspNetUserRoles;
         IEnumerable<IAttendance> IAspNetUsers.Attendances => this.Attendance;
+        IEnumerable<IParenthood> IAspNetUsers.Children => this.ParenthoodChild;
+        IEnumerable<IParenthood> IAspNetUsers.Parents => this.ParenthoodParent;
         IEnumerable<IStudentCourse> IAspNetUsers.StudentCourses => this.StudentCourse;
         IEnumerable<IStudentExam> IAspNetUsers.StudentExams => this.StudentExam;
         IEnumerable<IStudentExercise> IAspNetUsers.StudentExercises => this.StudentExercise;
@@ -161,6 +163,12 @@ namespace Phoenix.DataHandle.Main.Models
         public string FullName => (this.LastName + " " + this.FirstName).Trim();
         public int Id => this.AspNetUser.Id;
         IAspNetUsers IUser.AspNetUser => this.AspNetUser;
+    }
+
+    public partial class Parenthood : IParenthood
+    {
+        IAspNetUsers IParenthood.Child => this.Child;
+        IAspNetUsers IParenthood.Parent => this.Parent;
     }
 
     public partial class Schedule : ISchedule, IModelEntity

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Phoenix.DataHandle.Main.Relationships;
-
-namespace Phoenix.DataHandle.Main.Entities
+﻿namespace Phoenix.DataHandle.Main.Entities
 {
     public interface IUser
     {
@@ -10,5 +7,6 @@ namespace Phoenix.DataHandle.Main.Entities
         string LastName { get; set; }
         string FullName { get; }
         bool TermsAccepted { get; set; }
+        bool IsSelfDetermined { get; set; }
     }
 }

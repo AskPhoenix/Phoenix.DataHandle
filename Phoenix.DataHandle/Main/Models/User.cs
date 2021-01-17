@@ -9,6 +9,8 @@ namespace Phoenix.DataHandle.Main.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public bool TermsAccepted { get; set; }
+        public bool IsSelfDetermined { get; set; }
+        public string IdentifierCode { get; set; }
 
         public virtual AspNetUsers AspNetUser { get; set; }
     }

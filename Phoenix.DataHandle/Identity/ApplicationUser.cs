@@ -22,14 +22,13 @@ namespace Phoenix.DataHandle.Identity
         IEnumerable<IAspNetUserLogins> IAspNetUsers.AspNetUserLogins => this.ApplicationUserLogin;
         IEnumerable<IAspNetUserRoles> IAspNetUsers.Roles { get; }
         IEnumerable<IAttendance> IAspNetUsers.Attendances { get; }
+        IEnumerable<IParenthood> IAspNetUsers.Children { get; }
+        IEnumerable<IParenthood> IAspNetUsers.Parents { get; }
         IEnumerable<IStudentCourse> IAspNetUsers.StudentCourses { get; }
         IEnumerable<IStudentExam> IAspNetUsers.StudentExams { get; }
         IEnumerable<IStudentExercise> IAspNetUsers.StudentExercises { get; }
         IEnumerable<ITeacherCourse> IAspNetUsers.TeacherCourses { get; }
         IEnumerable<IUserSchool> IAspNetUsers.UserSchools { get; }
-        
-
-
         
 
         public ApplicationUser() { }

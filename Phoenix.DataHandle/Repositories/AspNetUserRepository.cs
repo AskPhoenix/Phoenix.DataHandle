@@ -81,12 +81,16 @@ namespace Phoenix.DataHandle.Repositories
             return this.AnyUserRole(user.Id);
         }
 
-        public bool AnyLogin(LoginProvider provider, string providerKey)
+        public bool AnyLogin(LoginProvider provider, string providerKey, bool onlyActive = false)
         {
             if (providerKey == null)
                 throw new ArgumentNullException(nameof(providerKey));
 
-            return this.dbContext.Set<AspNetUserLogins>().Any(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
+            var dbSet = this.dbContext.Set<AspNetUserLogins>();
+            if (onlyActive)
+                return dbSet.Any(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey && l.IsActive);
+
+            return dbSet.Any(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
         }
 
         public void LinkLogin(AspNetUserLogins userLogin)
@@ -94,9 +98,17 @@ namespace Phoenix.DataHandle.Repositories
             if (userLogin == null)
                 throw new ArgumentNullException(nameof(userLogin));
 
-            userLogin.CreatedAt = DateTimeOffset.Now;
+            if (AnyLogin(userLogin.LoginProvider.ToLoginProvider(), userLogin.ProviderKey))
+            {
+                userLogin.UpdatedAt = DateTimeOffset.Now;
+                this.dbContext.Set<AspNetUserLogins>().Update(userLogin);
+            }
+            else
+            {
+                userLogin.CreatedAt = DateTimeOffset.Now;
+                this.dbContext.Set<AspNetUserLogins>().Add(userLogin);
+            }
 
-            this.dbContext.Set<AspNetUserLogins>().Add(userLogin);
             this.dbContext.SaveChanges();
         }
 

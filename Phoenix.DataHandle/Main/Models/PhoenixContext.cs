@@ -29,6 +29,7 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<Exercise> Exercise { get; set; }
         public virtual DbSet<Lecture> Lecture { get; set; }
         public virtual DbSet<Material> Material { get; set; }
+        public virtual DbSet<Parenthood> Parenthood { get; set; }
         public virtual DbSet<Schedule> Schedule { get; set; }
         public virtual DbSet<School> School { get; set; }
         public virtual DbSet<StudentCourse> StudentCourse { get; set; }
@@ -42,7 +43,8 @@ namespace Phoenix.DataHandle.Main.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                throw new Exception("Connection string not specified for PhoenixContext.");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=tcp:askphoenix.database.windows.net,1433;Initial Catalog=NuageDB;Persist Security Info=False;User ID=phoenix;Password=20Ph0eniX20!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
         }
 
@@ -75,10 +77,6 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.ProviderKey).HasMaxLength(128);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
-
-                entity.Property(e => e.OTCCreatedAt).HasColumnType("datetimeoffset(0)");
-
-                entity.Property(e => e.OneTimeCode).HasMaxLength(128);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
 
@@ -373,6 +371,23 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasConstraintName("FK_Material_Exam");
             });
 
+            modelBuilder.Entity<Parenthood>(entity =>
+            {
+                entity.HasKey(e => new { e.ParentId, e.ChildId });
+
+                entity.HasOne(d => d.Child)
+                    .WithMany(p => p.ParenthoodChild)
+                    .HasForeignKey(d => d.ChildId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Parenthood_AspNetUsers_Child");
+
+                entity.HasOne(d => d.Parent)
+                    .WithMany(p => p.ParenthoodParent)
+                    .HasForeignKey(d => d.ParentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Parenthood_AspNetUsers_Parent");
+            });
+
             modelBuilder.Entity<Schedule>(entity =>
             {
                 entity.HasIndex(e => new { e.CourseId, e.Code })
@@ -518,6 +533,8 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.AspNetUserId).ValueGeneratedNever();
 
                 entity.Property(e => e.FirstName).HasMaxLength(255);
+
+                entity.Property(e => e.IdentifierCode).HasMaxLength(10);
 
                 entity.Property(e => e.LastName).HasMaxLength(255);
 
