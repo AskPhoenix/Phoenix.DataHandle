@@ -37,9 +37,10 @@ namespace Phoenix.DataHandle.WordPress.Models
         public int CourseId { get; set; }
         public int? ClassroomId { get; set; }
 
-        private DayOfWeek GetDayOfWeek(string dayName)
+        //TODO: Get locale dynamically
+        private DayOfWeek GetDayOfWeek(string dayName, string locale = "el")
         {
-            return (DayOfWeek)Array.FindIndex(CultureInfo.CurrentCulture.DateTimeFormat.DayNames, s => s == dayName);
+            return (DayOfWeek)Array.FindIndex(CultureInfo.GetCultureInfo(locale).DateTimeFormat.DayNames, s => s == dayName);
         }
 
         public Expression<Func<Schedule, bool>> MatchesUnique => s => s != null && s.CourseId == this.CourseId && s.Code == this.Code;
