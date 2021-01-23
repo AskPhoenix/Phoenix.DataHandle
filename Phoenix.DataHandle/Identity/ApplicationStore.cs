@@ -30,7 +30,6 @@ namespace Phoenix.DataHandle.Identity
             return this.Context.Users.
                 Include(u => u.ApplicationUserLogin).
                 SingleOrDefaultAsync(u => u.ApplicationUserLogin.Any(l => l.LoginProvider == providerName && l.ProviderKey == key), cancellationToken);
-
         }
     }
 }
