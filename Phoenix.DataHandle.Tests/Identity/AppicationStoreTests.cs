@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Identity;
@@ -32,7 +33,9 @@ namespace Phoenix.DataHandle.Tests.Repositories
         {
             ApplicationStore applicationStore = new ApplicationStore(this._applicationDbContext);
 
-            _ = await applicationStore.FindByPhoneNumberAsync(PHONE_NUMBER, CancellationToken.None);
+            ApplicationUser applicationUser = await applicationStore.FindByPhoneNumberAsync(PHONE_NUMBER, CancellationToken.None);
+
+            Assert.NotNull(applicationUser);
         }
 
         [Fact]
@@ -41,6 +44,20 @@ namespace Phoenix.DataHandle.Tests.Repositories
             ApplicationStore applicationStore = new ApplicationStore(this._applicationDbContext);
 
             ApplicationUser applicationUser = await applicationStore.FindByProviderKeyAsync(Main.LoginProvider.Facebook, PROVIDER_KEY, CancellationToken.None);
+
+            Assert.NotNull(applicationUser);
+        }
+
+        [Fact]
+        public async void GetRolesAsync()
+        {
+            ApplicationStore applicationStore = new ApplicationStore(this._applicationDbContext);
+
+            ApplicationUser applicationUser = await applicationStore.FindByPhoneNumberAsync(PHONE_NUMBER, CancellationToken.None);
+
+            IList<string> roles = await applicationStore.GetRolesAsync(applicationUser, CancellationToken.None);
+
+            Assert.NotNull(roles);
         }
 
     }
