@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ using Phoenix.DataHandle.Main;
 
 namespace Phoenix.DataHandle.Identity
 {
-    public class ApplicationStore : UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, int>
+    public class ApplicationStore : UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, int, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationUserToken, ApplicationRoleClaim>
     {
         public ApplicationStore(ApplicationDbContext context, IdentityErrorDescriber describer = null) : base(context, describer) { }
 
