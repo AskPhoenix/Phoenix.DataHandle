@@ -2,6 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
+// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
+// If you have enabled NRTs for your project, then un-comment the following line:
+// #nullable disable
+
 namespace Phoenix.DataHandle.Main.Models
 {
     public partial class PhoenixContext : DbContext
@@ -43,8 +47,7 @@ namespace Phoenix.DataHandle.Main.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=tcp:askphoenix.database.windows.net,1433;Initial Catalog=NuageDB;Persist Security Info=False;User ID=phoenix;Password=20Ph0eniX20!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+                throw new Exception("Connection string not specified for PhoenixContext.");
             }
         }
 
@@ -180,6 +183,10 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<BotFeedback>(entity =>
             {
                 entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
+
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
 
