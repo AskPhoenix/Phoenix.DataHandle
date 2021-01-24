@@ -69,6 +69,11 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IMaterial> IBook.Materials => this.Material;
     }
 
+    public partial class BotFeedback : IBotFeedback, IModelEntity
+    {
+        IAspNetUsers IBotFeedback.Author => this.Author;
+    }
+
     public partial class Classroom : IClassroom, IModelEntity
     {
         ISchool IClassroom.School => this.School;
