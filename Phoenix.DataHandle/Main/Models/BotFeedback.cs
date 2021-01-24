@@ -11,7 +11,7 @@ namespace Phoenix.DataHandle.Main.Models
     {
         public int Id { get; set; }
         public int AuthorId { get; set; }
-        public string TriggerActionName { get; set; }
+        public bool AskTriggered { get; set; }
         public string Type { get; set; }
         public short? Rating { get; set; }
         public string Comment { get; set; }

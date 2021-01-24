@@ -184,10 +184,6 @@ namespace Phoenix.DataHandle.Main.Models
             {
                 entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
 
-                entity.Property(e => e.TriggerActionName)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
                 entity.Property(e => e.Type)
                     .IsRequired()
                     .HasMaxLength(50);
