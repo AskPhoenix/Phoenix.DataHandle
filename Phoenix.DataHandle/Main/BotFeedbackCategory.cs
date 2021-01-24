@@ -6,7 +6,7 @@ namespace Phoenix.DataHandle.Main
 {
     public enum BotFeedbackCategory
     {
-        Empty = -1,
+        Empty = 0,
         Comment,
         Copliment,
         Suggestion,
@@ -41,37 +41,38 @@ namespace Phoenix.DataHandle.Main
         {
             return cat switch
             {
-                BotFeedbackCategory.Empty => "Empty",
-                BotFeedbackCategory.Comment => "Comment",
-                BotFeedbackCategory.Copliment => "Copliment",
-                BotFeedbackCategory.Suggestion => "Suggestion",
-                BotFeedbackCategory.Rating => "Rating",
-                BotFeedbackCategory.Complaint => "Complaint",
-                _ => string.Empty,
+                BotFeedbackCategory.Empty       => "Empty",
+                BotFeedbackCategory.Comment     => "Comment",
+                BotFeedbackCategory.Copliment   => "Copliment",
+                BotFeedbackCategory.Suggestion  => "Suggestion",
+                BotFeedbackCategory.Rating      => "Rating",
+                BotFeedbackCategory.Complaint   => "Complaint",
+                _                               => string.Empty,
             };
         }
 
-        public static IEnumerable<BotFeedbackCategory> GetAll()
+        public static IEnumerable<BotFeedbackCategory> GetAll(bool positiveOnly)
         {
-            return Enum.
+            var values = Enum.
                 GetValues(typeof(BotFeedbackCategory)).
                 Cast<BotFeedbackCategory>();
+
+            if (positiveOnly)
+                values = values.Where(c => c > 0);
+
+            return values;
         }
 
-        public static IEnumerable<string> GetAllNames(bool includeEmoji)
+        public static IEnumerable<string> GetAllNames(bool positiveOnly, bool includeEmoji)
         {
-            return Enum.
-                GetValues(typeof(BotFeedbackCategory)).
-                Cast<BotFeedbackCategory>().
-                Select(c => includeEmoji && (int)c >= 0 ? CategoryEmojis[(int)c] : "" + " " + c.ToFriendlyString());
+            return GetAll(positiveOnly).
+                Select(c => (includeEmoji && (int)c > 0 ? CategoryEmojis[(int)c-1] : "") + " " + c.ToFriendlyString());
         }
 
-        public static IEnumerable<string> GetAllGreekNames(bool includeEmoji)
+        public static IEnumerable<string> GetAllGreekNames(bool positiveOnly, bool includeEmoji)
         {
-            return Enum.
-                GetValues(typeof(BotFeedbackCategory)).
-                Cast<BotFeedbackCategory>().
-                Select(c => includeEmoji && (int)c >= 0 ? CategoryEmojis[(int)c] : "" + " " + CategoryGreek[(int)c]);
+            return GetAll(positiveOnly).
+                Select(c => (includeEmoji && (int)c > 0 ? CategoryEmojis[(int)c-1] : "") + " " + CategoryGreek[(int)c]);
         }
     }
 }
