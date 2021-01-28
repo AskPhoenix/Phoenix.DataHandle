@@ -211,7 +211,7 @@ namespace Phoenix.DataHandle.Repositories
     {
         public static IQueryable<AspNetUsers> FilterAdmins(this IQueryable<AspNetUsers> users)
         {
-            return users.Where(a => a.AspNetUserRoles.Any(b => b.Role.Type == Role.Admin || b.Role.Type == Role.SuperAdmin));
+            return users.Where(a => a.AspNetUserRoles.Any(b => b.Role.Type == Role.SchoolAdmin || b.Role.Type == Role.SuperAdmin));
         }
 
         public static IQueryable<AspNetUsers> FilterOwners(this IQueryable<AspNetUsers> users)

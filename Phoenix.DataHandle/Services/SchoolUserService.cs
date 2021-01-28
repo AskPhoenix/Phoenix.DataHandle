@@ -109,7 +109,7 @@ namespace Phoenix.DataHandle.Services
                 _logger.LogInformation($"Linking with the Courses of School User: {schoolUserPost.GetTitle()}");
 
                 List<int> userCourseIds;
-                if (rolesToAdd.Any(r => r >= Role.Admin))
+                if (rolesToAdd.Any(r => r >= Role.SchoolAdmin))
                 {
                     userCourseIds = schoolRepository.FindCourses(schoolId).Select(c => c.Id).ToList();
                 }
