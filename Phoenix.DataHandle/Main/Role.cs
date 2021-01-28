@@ -6,15 +6,23 @@ namespace Phoenix.DataHandle.Main
 {
     public enum Role
     {
-        Undefined = -1,
+        Undefined = 0,
         None,
-        Student,
+        
+        // Client-side
+        Student = 10,
         Parent,
+        
+        // School-side
+        Teacher = 20,
         Secretary,
-        Teacher,
-        Admin,
+        SchoolAdmin,
         SchoolOwner,
-        SuperAdmin,
+
+        // Backend-side
+        SchoolTester = 30,
+        SuperTester,
+        SuperAdmin
     }
 
     //TODO: Locale
@@ -38,11 +46,13 @@ namespace Phoenix.DataHandle.Main
                 Role.None           => "None",
                 Role.Student        => "Student",
                 Role.Parent         => "Parent",
-                Role.Secretary      => "Secretary",
                 Role.Teacher        => "Teacher",
-                Role.Admin          => "Admin",
-                Role.SchoolOwner    => "SchoolOwner",
-                Role.SuperAdmin     => "SuperAdmin",
+                Role.Secretary      => "Secretary",
+                Role.SchoolAdmin    => "Admin",
+                Role.SchoolOwner    => "School Owner",
+                Role.SchoolTester   => "School Tester",
+                Role.SuperTester    => "Super Tester",
+                Role.SuperAdmin     => "Super Admin",
                 _                   => string.Empty
             };
         }
@@ -55,10 +65,12 @@ namespace Phoenix.DataHandle.Main
                 Role.None           => "Κανένας",
                 Role.Student        => "Μαθητής",
                 Role.Parent         => "Γονέας / Κηδεμόνας",
-                Role.Secretary      => "Γραμματέας",
                 Role.Teacher        => "Εκπαιδευτικός",
-                Role.Admin          => "Διαχειριστής",
+                Role.Secretary      => "Γραμματέας",
+                Role.SchoolAdmin    => "Διαχειριστής",
                 Role.SchoolOwner    => "Ιδιοκτήτης",
+                Role.SchoolTester   => "Δοκιμαστής Σχολείου",
+                Role.SuperTester    => "Υπερδοκιμαστής",
                 Role.SuperAdmin     => "Υπερδιαχειριστής",
                 _                   => string.Empty
             };
