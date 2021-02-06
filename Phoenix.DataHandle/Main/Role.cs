@@ -10,19 +10,26 @@ namespace Phoenix.DataHandle.Main
         None,
         
         // Client-side
-        Student = 10,
+        Student = RoleAttributes.ClientRolesBase,
         Parent,
         
         // School-side
-        Teacher = 20,
+        Teacher = RoleAttributes.SchoolRolesBase,
         Secretary,
         SchoolAdmin,
         SchoolOwner,
 
         // Backend-side
-        SchoolTester = 30,
+        SchoolTester = RoleAttributes.BackendRolesBase,
         SuperTester,
         SuperAdmin
+    }
+
+    public static class RoleAttributes
+    {
+        public const int ClientRolesBase = 10;
+        public const int SchoolRolesBase = 20;
+        public const int BackendRolesBase = 30;
     }
 
     //TODO: Locale
