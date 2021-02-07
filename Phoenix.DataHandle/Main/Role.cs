@@ -14,7 +14,7 @@ namespace Phoenix.DataHandle.Main
         Parent,
         
         // School-side
-        Teacher = RoleAttributes.SchoolRolesBase,
+        Teacher = RoleAttributes.StaffRolesBase,
         Secretary,
         SchoolAdmin,
         SchoolOwner,
@@ -28,7 +28,7 @@ namespace Phoenix.DataHandle.Main
     public static class RoleAttributes
     {
         public const int ClientRolesBase = 10;
-        public const int SchoolRolesBase = 20;
+        public const int StaffRolesBase = 20;
         public const int BackendRolesBase = 30;
     }
 
