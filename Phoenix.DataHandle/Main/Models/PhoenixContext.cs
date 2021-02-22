@@ -2,6 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
+// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
+// If you have enabled NRTs for your project, then un-comment the following line:
+// #nullable disable
+
 namespace Phoenix.DataHandle.Main.Models
 {
     public partial class PhoenixContext : DbContext
@@ -131,6 +135,10 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.PhoneNumber)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.Property(e => e.PhoneNumberVerificationCode).HasMaxLength(50);
+
+                entity.Property(e => e.PhoneNumberVerificationCode_at).HasColumnType("datetime2(0)");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
 

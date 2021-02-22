@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
+// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
+// If you have enabled NRTs for your project, then un-comment the following line:
+// #nullable disable
+
 namespace Phoenix.DataHandle.Main.Models
 {
     public partial class AspNetUsers
@@ -31,6 +35,8 @@ namespace Phoenix.DataHandle.Main.Models
         public string ConcurrencyStamp { get; set; }
         public string PhoneNumber { get; set; }
         public bool PhoneNumberConfirmed { get; set; }
+        public string PhoneNumberVerificationCode { get; set; }
+        public DateTime? PhoneNumberVerificationCode_at { get; set; }
         public bool TwoFactorEnabled { get; set; }
         public DateTimeOffset? LockoutEnd { get; set; }
         public bool LockoutEnabled { get; set; }
