@@ -35,6 +35,10 @@ namespace Phoenix.DataHandle.Main
     //TODO: Locale
     public static class RoleExtensions
     {
+        public static bool IsClient(this Role role) => (int)role >= RoleAttributes.ClientRolesBase && (int)role < RoleAttributes.StaffRolesBase;
+        public static bool IsStaff(this Role role) => (int)role >= RoleAttributes.StaffRolesBase && (int)role < RoleAttributes.BackendRolesBase;
+        public static bool IsBackend(this Role role) => (int)role >= RoleAttributes.BackendRolesBase;
+
         public static IEnumerable<Role> GetAll()
         {
             return Enum.GetValues(typeof(Role)).Cast<Role>();
