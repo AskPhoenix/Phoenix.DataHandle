@@ -91,6 +91,17 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ISchedule> ICourse.Schedules => this.Schedule;
         IEnumerable<IStudentCourse> ICourse.StudentCourses => this.StudentCourse;
         IEnumerable<ITeacherCourse> ICourse.TeacherCourses => this.TeacherCourse;
+
+        public string NameWithSubcourse { 
+            get
+            {
+                string tore = this.Name;
+                if (!string.IsNullOrEmpty(this.SubCourse))
+                    tore += " - " + this.SubCourse;
+
+                return tore;
+            }
+        }
     }
 
     public partial class CourseBook : ICourseBook
