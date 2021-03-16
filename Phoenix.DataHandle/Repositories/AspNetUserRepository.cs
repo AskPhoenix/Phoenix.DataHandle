@@ -136,6 +136,24 @@ namespace Phoenix.DataHandle.Repositories
                 AsEnumerable();
         }
 
+        public IQueryable<AspNetUsers> FindChildren(int parentId)
+        {
+            return this.dbContext.Set<Parenthood>().
+                Include(p => p.Child).
+                ThenInclude(ch => ch.User).
+                Where(p => p.ParentId == parentId).
+                Select(p => p.Child);
+        }
+
+        public IQueryable<AspNetUsers> FindParents(int childId)
+        {
+            return this.dbContext.Set<Parenthood>().
+                Include(p => p.Parent).
+                ThenInclude(p => p.User).
+                Where(p => p.ChildId == childId).
+                Select(p => p.Parent);
+        }
+
         public void LinkSchool(UserSchool userSchool)
         {
             if (userSchool == null)

@@ -10,6 +10,22 @@ namespace Phoenix.DataHandle.Repositories
     {
         public CourseRepository(PhoenixContext dbContext) : base(dbContext) { }
 
+        public IQueryable<Course> FindForStudent(int studentId)
+        {
+            return this.dbContext.Set<StudentCourse>().
+                Include(sc => sc.Course).
+                Where(sc => sc.StudentId == studentId).
+                Select(sc => sc.Course);
+        }
+
+        public IQueryable<Course> FindForTeacher(int teacherId)
+        {
+            return this.dbContext.Set<TeacherCourse>().
+                Include(tc => tc.Course).
+                Where(tc => tc.TeacherId == teacherId).
+                Select(tc => tc.Course);
+        }
+
         public Course Update(Course tModel, Course tModelFrom)
         {
             if (tModel == null)
