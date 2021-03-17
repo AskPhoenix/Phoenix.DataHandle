@@ -34,9 +34,9 @@ namespace Phoenix.DataHandle.Repositories
                 Where(se => se.StudentId == studentId);
 
             if (tense == Tense.Past)
-                studentExercises = studentExercises.Where(se => se.Exercise.Lecture.StartDateTime.ToUniversalTime() < DateTimeOffset.UtcNow);
+                studentExercises = studentExercises.Where(se => se.Exercise.Lecture.StartDateTime < DateTimeOffset.UtcNow);
             else if (tense == Tense.Future)
-                studentExercises = studentExercises.Where(se => se.Exercise.Lecture.StartDateTime.ToUniversalTime() >= DateTimeOffset.UtcNow);
+                studentExercises = studentExercises.Where(se => se.Exercise.Lecture.StartDateTime >= DateTimeOffset.UtcNow);
 
             return studentExercises.Select(se => se.Exercise);
         }

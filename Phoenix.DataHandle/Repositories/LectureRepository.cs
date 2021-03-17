@@ -1,4 +1,4 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -22,7 +22,7 @@ namespace Phoenix.DataHandle.Repositories
                 .SingleOrDefaultAsync(a => a.StartDateTime.TimeOfDay == time, cancellationToken: cancellationToken);
         }
 
-        public IQueryable<Lecture> FindMany(int courseId, DateTime day, bool scheduledOnly = false)
+        public IEnumerable<Lecture> FindMany(int courseId, DateTime day, bool scheduledOnly = false)
         {
             var lectures = this.Find().
                 Where(l => l.CourseId == courseId).
@@ -34,7 +34,7 @@ namespace Phoenix.DataHandle.Repositories
             return lectures;
         }
 
-        public IQueryable<Lecture> FindMany(int[] courseIds, DateTime day, bool scheduledOnly = false)
+        public IEnumerable<Lecture> FindMany(int[] courseIds, DateTime day, bool scheduledOnly = false)
         {
             if (courseIds == null)
                 throw new ArgumentNullException(nameof(courseIds));
@@ -44,30 +44,31 @@ namespace Phoenix.DataHandle.Repositories
             foreach (int courseId in courseIds)
                 lectures.AddRange(this.FindMany(courseId, day, scheduledOnly));
 
-            return lectures.AsQueryable();
+            return lectures;
         }
 
-        public IQueryable<DateTime> FindClosestLectureDates(int courseId, Tense tense, int dayRange = 5, bool scheduledOnly = false)
+        public IEnumerable<DateTime> FindClosestLectureDates(int courseId, Tense tense, int dayRange = 5, bool scheduledOnly = false)
         {
             var lectures = this.Find().
                 Where(l => l.CourseId == courseId);
 
             if (tense == Tense.Past)
-                lectures.Where(l => l.StartDateTime.ToUniversalTime() < DateTimeOffset.UtcNow);
+                lectures.Where(l => l.StartDateTime < DateTimeOffset.UtcNow);
             else if (tense == Tense.Future)
-                lectures.Where(l => l.StartDateTime.ToUniversalTime() >= DateTimeOffset.UtcNow);
+                lectures.Where(l => l.StartDateTime >= DateTimeOffset.UtcNow);
             if (scheduledOnly)
                 lectures = lectures.Where(l => l.Status == LectureStatus.Scheduled);
 
             return lectures.
                 GroupBy(l => l.StartDateTime.Date).
                 Select(g => g.Key).
-                OrderByDescending(d => (d.ToUniversalTime() - DateTimeOffset.UtcNow).Duration()).
+                AsEnumerable().
+                OrderByDescending(d => (d - DateTime.UtcNow.Date).Duration()).
                 Take(dayRange).
                 OrderBy(d => d);
         }
 
-        public IQueryable<DateTime> FindClosestLectureDates(int[] courseIds, Tense tense, int dayRange = 5, bool scheduledOnly = false)
+        public IEnumerable<DateTime> FindClosestLectureDates(int[] courseIds, Tense tense, int dayRange = 5, bool scheduledOnly = false)
         {
             if (courseIds == null)
                 throw new ArgumentNullException(nameof(courseIds));
@@ -77,7 +78,9 @@ namespace Phoenix.DataHandle.Repositories
             foreach (int courseId in courseIds)
                 lectures.AddRange(this.FindClosestLectureDates(courseId, tense, dayRange, scheduledOnly));
 
-            return lectures.AsQueryable();
+            return lectures.OrderByDescending(d => (d - DateTime.UtcNow.Date).Duration()).
+                Take(dayRange).
+                OrderBy(d => d);
         }
     }
 }
