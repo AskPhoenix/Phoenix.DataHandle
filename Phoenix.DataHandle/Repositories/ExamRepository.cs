@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Repositories
@@ -14,20 +16,36 @@ namespace Phoenix.DataHandle.Repositories
             return this.Find().Where(a => a.Id == id).SelectMany(a => a.StudentExam);
         }
 
-        public IQueryable<Exam> FindForStudent(int studentId)
+        public decimal? FindGrade(int studentId, int examId)
         {
             return this.dbContext.Set<StudentExam>().
-                Include(se => se.Exam).
-                Where(se => se.StudentId == studentId).
-                Select(se => se.Exam);
+                Single(se => se.StudentId == studentId && se.ExamId == examId).
+                Grade;
         }
 
-        public IQueryable<Exam> FindForStudent(int studentId, int lectureId)
+        public IQueryable<Exam> FindForStudent(int studentId, Tense tense = Tense.Anytime)
         {
-            return this.dbContext.Set<StudentExam>().
+            var studentExams = this.dbContext.Set<StudentExam>().
                 Include(se => se.Exam).
-                Where(se => se.StudentId == studentId && se.Exam.LectureId == lectureId).
-                Select(se => se.Exam);
+                ThenInclude(e => e.Material).
+                ThenInclude(m => m.Book).
+                Include(se => se.Exam.Lecture).
+                Where(se => se.StudentId == studentId);
+
+            if (tense == Tense.Past)
+                studentExams = studentExams.Where(se => se.Exam.Lecture.StartDateTime.ToUniversalTime() < DateTimeOffset.UtcNow);
+            else if (tense == Tense.Future)
+                studentExams = studentExams.Where(se => se.Exam.Lecture.StartDateTime.ToUniversalTime() >= DateTimeOffset.UtcNow);
+
+            return studentExams.Select(se => se.Exam);
+        }
+
+        public IQueryable<Exam> FindForLecture(int lectureId)
+        {
+            return this.dbContext.Set<Exam>().
+                Include(e => e.Material).
+                ThenInclude(m => m.Book).
+                Where(e => e.LectureId == lectureId);
         }
     }
 }
