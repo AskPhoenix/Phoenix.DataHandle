@@ -543,6 +543,8 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.IdentifierCode).HasMaxLength(10);
 
+                entity.Property(e => e.IdentifierCodeCreatedAt).HasColumnType("datetimeoffset(0)");
+
                 entity.Property(e => e.LastName).HasMaxLength(255);
 
                 entity.HasOne(d => d.AspNetUser)
