@@ -10,6 +10,14 @@ namespace Phoenix.DataHandle.Repositories
     {
         public CourseRepository(PhoenixContext dbContext) : base(dbContext) { }
 
+        public IQueryable<Course> FindForUser(int userId, bool findForStaff)
+        {
+            if (findForStaff)
+                return FindForTeacher(userId);
+
+            return FindForStudent(userId);
+        }
+
         public IQueryable<Course> FindForStudent(int studentId)
         {
             return this.dbContext.Set<StudentCourse>().
