@@ -81,16 +81,36 @@ namespace Phoenix.DataHandle.Repositories
             return this.AnyUserRole(user.Id);
         }
 
+        public bool AnyAffiliatedUsers(int userId)
+        {
+            return this.dbContext.Set<Parenthood>().
+                Where(p => p.ParentId == userId).
+                Any();
+        }
+
+        public bool AnyLogin(int userId, bool onlyActive = false)
+        {
+            var userLogins = this.dbContext.Set<AspNetUserLogins>().
+                Where(l => l.UserId == userId);
+
+            if (onlyActive)
+                userLogins = userLogins.Where(l => l.IsActive);
+
+            return userLogins.Any();
+        }
+
         public bool AnyLogin(LoginProvider provider, string providerKey, bool onlyActive = false)
         {
             if (providerKey == null)
                 throw new ArgumentNullException(nameof(providerKey));
 
-            var dbSet = this.dbContext.Set<AspNetUserLogins>();
+            var userLogins = this.dbContext.Set<AspNetUserLogins>().
+                Where(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
+            
             if (onlyActive)
-                return dbSet.Any(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey && l.IsActive);
+                userLogins = userLogins.Where(l => l.IsActive);
 
-            return dbSet.Any(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
+            return userLogins.Any();
         }
 
         public void LinkLogin(AspNetUserLogins userLogin)
