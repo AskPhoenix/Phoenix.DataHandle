@@ -55,9 +55,9 @@ namespace Phoenix.DataHandle.Repositories
                 Where(l => l.CourseId == courseId);
 
             if (tense == Tense.Past)
-                lectures.Where(l => l.StartDateTime < DateTimeOffset.UtcNow);
+                lectures = lectures.Where(l => l.StartDateTime < DateTimeOffset.UtcNow);
             else if (tense == Tense.Future)
-                lectures.Where(l => l.StartDateTime >= DateTimeOffset.UtcNow);
+                lectures = lectures.Where(l => l.StartDateTime >= DateTimeOffset.UtcNow);
             if (scheduledOnly)
                 lectures = lectures.Where(l => l.Status == LectureStatus.Scheduled);
             if (withExamsOnly)
