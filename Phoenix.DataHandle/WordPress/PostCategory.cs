@@ -2,12 +2,12 @@
 {
     public enum PostCategory
     {
-        Uncategorised,
-        SchoolInformation, 
-        Course,
-        Schedule,
-        Personnel,
-        Client
+        Uncategorised = 1,
+        SchoolInformation = 3,
+        Course = 4,
+        Schedule = 5,
+        Personnel = 9,
+        Client = 6
     }
 
     public static class PostCategoryExtensions

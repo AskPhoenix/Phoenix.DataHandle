@@ -474,7 +474,11 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.Language)
                     .IsRequired()
-                    .HasMaxLength(5)
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Locale2)
+                    .IsRequired()
+                    .HasMaxLength(2)
                     .IsFixedLength();
 
                 entity.Property(e => e.TimeZone)

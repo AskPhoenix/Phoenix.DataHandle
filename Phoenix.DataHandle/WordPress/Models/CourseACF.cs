@@ -43,8 +43,8 @@ namespace Phoenix.DataHandle.WordPress.Models
         private string comments;
 
         public Expression<Func<Course, bool>> MatchesUnique => c =>
-            c.School.Name == this.SchoolUnique.NormalizedSchoolName &&
-            c.School.City == this.SchoolUnique.NormalizedSchoolCity &&
+            c.School.NormalizedName == this.SchoolUnique.NormalizedSchoolName &&
+            c.School.NormalizedCity == this.SchoolUnique.NormalizedSchoolCity &&
             c.Code == this.Code;
 
         public SchoolUnique SchoolUnique { get; set; }

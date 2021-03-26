@@ -11,6 +11,7 @@ namespace Phoenix.DataHandle.Main.Models
     {
         public int SchoolId { get; set; }
         public string Language { get; set; }
+        public string Locale2 { get; set; }
         public string TimeZone { get; set; }
 
         public virtual School School { get; set; }

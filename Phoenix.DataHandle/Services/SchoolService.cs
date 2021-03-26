@@ -5,6 +5,7 @@ using Phoenix.DataHandle.WordPress.Models;
 using Phoenix.DataHandle.WordPress.Utilities;
 using Phoenix.DataHandle.WordPress.Wrappers;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Phoenix.DataHandle.Services
@@ -27,9 +28,9 @@ namespace Phoenix.DataHandle.Services
 
         public override async Task SynchronizeAsync()
         {
-            Logger.LogInformation("Schools synchronization started");
-
             var schoolPosts = await this.GetAllPostsAsync();
+            Logger.LogInformation($"Schools synchronization started ({schoolPosts.Count()} Schools found)");
+
             foreach (var schoolPost in schoolPosts)
             {
                 SchoolACF acfSchool = (SchoolACF)(await WordPressClientWrapper.GetAcfAsync<SchoolACF>(schoolPost.Id)).WithTitleCase();

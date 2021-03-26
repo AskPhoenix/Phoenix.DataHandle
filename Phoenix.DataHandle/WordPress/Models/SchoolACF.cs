@@ -47,7 +47,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             this.Name = name;
             this.City = city;
 
-            this.SchoolUnique = new SchoolUnique(name, city);
+            this.SchoolUnique = new SchoolUnique(name.ToUpperInvariant(), city.ToUpperInvariant());
         }
 
         public SchoolACF(SchoolUnique schoolUnique)
@@ -77,7 +77,7 @@ namespace Phoenix.DataHandle.WordPress.Models
                 NormalizedName = this.Name.ToUpperInvariant().Truncate(200),
                 Slug = (this.Slug ?? this.Name).Truncate(64),
                 City = this.City.Truncate(200),
-                NormalizedCity = this.City.Truncate(200),
+                NormalizedCity = this.City.ToUpperInvariant().Truncate(200),
                 AddressLine = this.Address.Truncate(255),
                 FacebookPageId = null,
                 Info = this.Comments
@@ -89,7 +89,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             return new SchoolACF(this)
             {
                 City = this.City.ToTitleCase(),
-                Address = this.Address.ToTitleCase(),
+                Address = this.Address.ToTitleCase()
             };
         }
 
@@ -98,6 +98,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             return new SchoolSettings
             {
                 Language = this.Language,
+                Locale2 = this.Locale,
                 TimeZone = string.Empty
             };
         }

@@ -39,8 +39,8 @@ namespace Phoenix.DataHandle.WordPress.Models
         }
 
         public Expression<Func<Schedule, bool>> MatchesUnique => s =>
-            s.Course.School.Name == this.SchoolUnique.NormalizedSchoolName &&
-            s.Course.School.City == this.SchoolUnique.NormalizedSchoolCity &&
+            s.Course.School.NormalizedName == this.SchoolUnique.NormalizedSchoolName &&
+            s.Course.School.NormalizedCity == this.SchoolUnique.NormalizedSchoolCity &&
             s.Course.Code == this.CourseCode &&
             s.DayOfWeek.ToString().ToUpperInvariant() == this.DayName.ToUpperInvariant() &&
             s.StartTime.ToString("t") == this.StartTimeString;
