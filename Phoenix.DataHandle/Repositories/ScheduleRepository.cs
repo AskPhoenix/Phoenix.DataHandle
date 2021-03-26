@@ -14,9 +14,9 @@ namespace Phoenix.DataHandle.Repositories
             if (tModelFrom == null)
                 throw new ArgumentNullException(nameof(tModelFrom));
 
+            //The columns of the unique keys should not be copied
+
             tModel.ClassroomId = tModelFrom.ClassroomId;
-            tModel.DayOfWeek = tModelFrom.DayOfWeek;
-            tModel.StartTime = tModel.StartTime.Date + tModelFrom.StartTime.TimeOfDay;
             tModel.EndTime = tModel.EndTime.Date + tModelFrom.EndTime.TimeOfDay;
             tModel.Info = tModelFrom.Info;
 

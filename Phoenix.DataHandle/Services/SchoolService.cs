@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Phoenix.DataHandle.Main.Models;
-using Phoenix.DataHandle.Repositories;
 using Phoenix.DataHandle.WordPress;
 using Phoenix.DataHandle.WordPress.Models;
 using Phoenix.DataHandle.WordPress.Utilities;
@@ -12,18 +11,11 @@ namespace Phoenix.DataHandle.Services
 {
     public class SchoolService : WPService
     {
-        private readonly SchoolRepository schoolRepository;
-        protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.School);
+        protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.SchoolInformation);
 
-        public SchoolService(PhoenixContext phoenixContext, ILogger<WPService> logger)
-            : this(phoenixContext, logger, false, null) 
-        { }
-
-        public SchoolService(PhoenixContext phoenixContext, ILogger<WPService> logger, bool deleteAdditional, string specificSchoolUnique)
-            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional)
-        {
-            schoolRepository = new SchoolRepository(phoenixContext);
-        }
+        public SchoolService(PhoenixContext phoenixContext, ILogger<WPService> logger, 
+            string specificSchoolUnique = null, bool deleteAdditional = false)
+            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional) { }
 
         public override void DeleteComplement()
         {
@@ -35,32 +27,34 @@ namespace Phoenix.DataHandle.Services
 
         public override async Task SynchronizeAsync()
         {
-            _logger.LogInformation("Schools synchronization started");
+            Logger.LogInformation("Schools synchronization started");
 
             var schoolPosts = await this.GetAllPostsAsync();
             foreach (var schoolPost in schoolPosts)
             {
                 SchoolACF acfSchool = (SchoolACF)(await WordPressClientWrapper.GetAcfAsync<SchoolACF>(schoolPost.Id)).WithTitleCase();
-                var curSchool = await schoolRepository.Find(checkUnique: acfSchool.MatchesUnique);
+                var curSchool = await this.SchoolRepository.Find(checkUnique: acfSchool.MatchesUnique);
 
-                if (curSchool == null)
+                if (curSchool is null)
                 {
-                    _logger.LogInformation($"Adding School: {schoolPost.GetTitle()}");
+                    Logger.LogInformation($"Adding School: {schoolPost.GetTitle()}");
 
                     var ctxSchool = acfSchool.ToContext();
-                    schoolRepository.Create(ctxSchool);
+                    ctxSchool.SchoolSettings = acfSchool.ExtractSchoolSettings();
+
+                    this.SchoolRepository.Create(ctxSchool);
                     this.IdsLog.Add(ctxSchool.Id);
                 }
                 else
                 {
-                    _logger.LogInformation($"Updating School: {schoolPost.GetTitle()}");
-                    schoolRepository.Update(curSchool, acfSchool.ToContext());
+                    Logger.LogInformation($"Updating School: {schoolPost.GetTitle()}");
+                    this.SchoolRepository.Update(curSchool, acfSchool.ToContext());
                     this.IdsLog.Add(curSchool.Id);
                 }
             }
 
-            _logger.LogInformation("Schools synchronization finished");
-            _logger.LogInformation("--------------------------------");
+            Logger.LogInformation("Schools synchronization finished");
+            Logger.LogInformation("--------------------------------");
         }
     }
 }

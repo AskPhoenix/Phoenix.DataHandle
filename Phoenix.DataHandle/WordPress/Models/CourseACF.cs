@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
+using Phoenix.DataHandle.WordPress.Models.Uniques;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,48 +42,64 @@ namespace Phoenix.DataHandle.WordPress.Models
         public string Comments { get => comments; set => comments = string.IsNullOrWhiteSpace(value) ? null : value; }
         private string comments;
 
-        public int SchoolId { get; set; }
+        public Expression<Func<Course, bool>> MatchesUnique => c =>
+            c.School.Name == this.SchoolUnique.NormalizedSchoolName &&
+            c.School.City == this.SchoolUnique.NormalizedSchoolCity &&
+            c.Code == this.Code;
 
-        public Expression<Func<Course, bool>> MatchesUnique => c => c != null && c.SchoolId == this.SchoolId && c.Code == this.Code;
+        public SchoolUnique SchoolUnique { get; set; }
 
-        public CourseACF() { }
-        public CourseACF(int schoolId, short code)
+        [JsonConstructor]
+        public CourseACF(short code)
         {
-            this.SchoolId = schoolId;
             this.Code = code;
+        }
+
+        public CourseACF(CourseUnique courseUnique)
+            : this(courseUnique.Code)
+        {
+            this.SchoolUnique = courseUnique.SchoolUnique;
+        }
+
+        public CourseACF(CourseACF other)
+        {
+            if (other is null)
+                throw new ArgumentNullException(nameof(other));
+
+            this.Code = other.Code;
+            this.Name = other.Name;
+            this.SubCourse = other.SubCourse;
+            this.Level = other.Level;
+            this.Group = other.Group;
+            this.BooksString = other.BooksString;
+            this.FirstDateString = other.FirstDateString;
+            this.LastDateString = other.LastDateString;
+            this.Comments = other.Comments;
         }
 
         public Course ToContext()
         {
             return new Course()
             {
-                SchoolId = this.SchoolId,
                 Code = this.Code,
-                Name = this.Name?.Substring(0, Math.Min(this.Name.Length, 150)),
-                SubCourse = this.SubCourse?.Substring(0, Math.Min(this.SubCourse.Length, 150)),
-                Level = this.Level?.Substring(0, Math.Min(this.Level.Length, 50)),
-                Group = this.Group?.Substring(0, Math.Min(this.Group.Length, 50)),
+                Name = this.Name.Truncate(150),
+                SubCourse = this.SubCourse.Truncate(150),
+                Level = this.Level.Truncate(50),
+                Group = this.Group.Truncate(50),
                 FirstDate = this.FirstDate,
                 LastDate = this.LastDate,
-                Info = this.Comments,
-                CreatedAt = DateTimeOffset.Now
+                Info = this.Comments
             };
         }
 
         public IModelACF<Course> WithTitleCase()
         {
-            return new CourseACF()
+            return new CourseACF(this)
             {
-                Code = this.Code,
-                Name = this.Name?.UpperToTitleCase(),
-                SubCourse = this.SubCourse?.UpperToTitleCase(),
-                Level = this.Level?.UpperToTitleCase(),
-                Group = this.Group,
-                BooksString = this.BooksString?.UpperToTitleCase(),
-                FirstDateString = this.FirstDateString,
-                LastDateString = this.LastDateString,
-                Comments = this.Comments,
-                SchoolId = this.SchoolId
+                Name = this.Name.ToTitleCase(),
+                SubCourse = this.SubCourse.ToTitleCase(),
+                Level = this.Level.ToTitleCase(),
+                BooksString = this.BooksString.ToTitleCase()
             };
         }
 
@@ -97,9 +114,9 @@ namespace Phoenix.DataHandle.WordPress.Models
                 Distinct().
                 Select(b => new Book()
                 {
-                    Name = b.Substring(0, Math.Min(b.Length, 255)),
-                    NormalizedName = b.ToUpperInvariant().Substring(0, Math.Min(b.Length, 255)),
-                    CreatedAt = DateTimeOffset.Now
+                    Name = b.Truncate(255),
+                    NormalizedName = b.ToUpperInvariant().Truncate(255),
+                    CreatedAt = DateTimeOffset.UtcNow
                 });
         }
     }

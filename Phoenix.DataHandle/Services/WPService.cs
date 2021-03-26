@@ -3,6 +3,7 @@ using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Main.Models.Extensions;
 using Phoenix.DataHandle.Repositories;
 using Phoenix.DataHandle.WordPress.Models;
+using Phoenix.DataHandle.WordPress.Models.Uniques;
 using Phoenix.DataHandle.WordPress.Utilities;
 using Phoenix.DataHandle.WordPress.Wrappers;
 using System.Collections.Generic;
@@ -13,24 +14,24 @@ namespace Phoenix.DataHandle.Services
 {
     public abstract class WPService
     {
-        private readonly SchoolRepository schoolRepository;
-        private readonly CourseRepository courseRepository;
-
-        protected const int PostsPerPage = 20;
-        protected readonly ILogger<WPService> _logger;
-
+        protected SchoolRepository SchoolRepository { get;}
+        protected CourseRepository CourseRepository { get; }
+        protected ILogger<WPService> Logger { get; }
+        
         protected abstract int CategoryId { get; }
         protected List<int> IdsLog { get; set; } = new List<int>(); //Helping log for the Delete method
         protected bool SpecificSchoolOnly => !string.IsNullOrEmpty(SpecificSchoolUnique);
         protected string SpecificSchoolUnique { get; }
         protected bool DeleteAdditional { get; }
 
-        protected WPService(PhoenixContext phoenixContext, ILogger<WPService> logger, string specificSchoolUnique, bool deleteAdditional)
+        protected WPService(PhoenixContext phoenixContext, ILogger<WPService> logger, 
+            string specificSchoolUnique = null, bool deleteAdditional = false)
         {
-            this.schoolRepository = new SchoolRepository(phoenixContext);
-            this.courseRepository = new CourseRepository(phoenixContext);
+            this.SchoolRepository = new SchoolRepository(phoenixContext);
+            this.CourseRepository = new CourseRepository(phoenixContext);
+            this.CourseRepository.Include(c => c.School);
 
-            this._logger = logger;
+            this.Logger = logger;
             this.SpecificSchoolUnique = specificSchoolUnique;
             this.DeleteAdditional = deleteAdditional;
         }
@@ -41,47 +42,51 @@ namespace Phoenix.DataHandle.Services
         public async Task<IEnumerable<Post>> GetAllPostsAsync()
         {
             if (this.SpecificSchoolOnly)
-                return await WordPressClientWrapper.GetPostsByCategoryBySchoolAsync(this.CategoryId, this.SpecificSchoolUnique, PostsPerPage);
+                return await WordPressClientWrapper.GetPostsForSchoolAsync(this.CategoryId, this.SpecificSchoolUnique);
             
-            return await WordPressClientWrapper.GetPostsByCategoryAsync(this.CategoryId, PostsPerPage);
+            return await WordPressClientWrapper.GetPostsAsync(this.CategoryId);
         }
 
-        public bool TryGetSchoolIdFromPost(Post post, out int schoolId)
+        public bool TryFindSchoolId(Post post, out int schoolId)
         {
-            SchoolACF acfSchool = (SchoolACF)new SchoolACF(post.GetSchoolUnique()).WithTitleCase();
-            School school = schoolRepository.Find(acfSchool.MatchesUnique).Result;
+            SchoolUnique schoolUnique = new SchoolUnique(post.GetTitle());
+            SchoolACF acfSchool = (SchoolACF)new SchoolACF(schoolUnique).WithTitleCase();
+            School school = this.SchoolRepository.Find(acfSchool.MatchesUnique).Result;
 
-            bool tore = this.TryGetId(school, out schoolId);
+            bool tore = TryGetId(school, out schoolId);
 
             if (!tore)
-                _logger.LogError($"The School \"{acfSchool.Name} - {acfSchool.City}\" was not found");
+                this.Logger.LogError($"The School \"{acfSchool.Name} - {acfSchool.City}\" was not found.");
 
             return tore;
         }
 
-        public bool TryGetCourseId(int schoolId, short courseCode, out int courseId)
+        public bool TryFindCourseId(Post post, out int courseId)
         {
-            CourseACF acfCourse = new CourseACF(schoolId, courseCode);
-            Course course = courseRepository.Find(acfCourse.MatchesUnique).Result;
+            courseId = -1;
 
-            bool tore = this.TryGetId(course, out courseId);
-            
+            bool tore = TryFindSchoolId(post, out int schoolId);
             if (!tore)
-                _logger.LogError($"The Course with code {courseCode} was not found in School with id {schoolId}");
-
-            return tore;
-        }
-
-        private bool TryGetId(IModelEntity entity, out int id)
-        {
-            if (entity == null)
-            {
-                id = -1;
                 return false;
-            }
 
-            id = entity.Id;
-            return true;
+            CourseUnique courseUnique = new CourseUnique(post.GetTitle());
+            CourseACF acfCourse = new CourseACF(courseUnique);
+            Course course = this.CourseRepository.Find(acfCourse.MatchesUnique).Result;
+
+            tore = TryGetId(course, out courseId);
+            
+            if (!tore)
+                this.Logger.LogError($"The Course {courseUnique} was not found in School with id {schoolId}.");
+
+            return tore;
+        }
+
+        private static bool TryGetId(IModelEntity entity, out int id)
+        {
+            bool nullEntity = entity is null;
+            id = nullEntity ? -1 : entity.Id;
+
+            return nullEntity;
         }
     }
 }

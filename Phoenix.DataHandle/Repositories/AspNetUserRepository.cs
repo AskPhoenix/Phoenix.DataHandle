@@ -17,6 +17,22 @@ namespace Phoenix.DataHandle.Repositories
             teacherRoleId = this.dbContext.Set<AspNetRoles>().Single(r => r.Type == Role.Teacher).Id;
         }
 
+        public override AspNetUsers Create(AspNetUsers tModel)
+        {
+            if (!string.IsNullOrEmpty(tModel.PhoneNumber))
+                tModel.AffiliatedPhoneNumber = null;
+
+            return base.Create(tModel);
+        }
+
+        public override AspNetUsers Update(AspNetUsers tModel)
+        {
+            if (!string.IsNullOrEmpty(tModel.PhoneNumber))
+                tModel.AffiliatedPhoneNumber = null;
+
+            return base.Update(tModel);
+        }
+
         public AspNetUsers Create(AspNetUsers tModel, User user)
         {
             if (user == null)
@@ -43,6 +59,17 @@ namespace Phoenix.DataHandle.Repositories
             tModel.UserName = tModelFrom.UserName;
             tModel.NormalizedUserName = tModelFrom.NormalizedUserName;
             tModel.PhoneNumber = tModelFrom.PhoneNumber;
+            tModel.AffiliatedPhoneNumber = tModelFrom.AffiliatedPhoneNumber;
+            
+            tModel.AccessFailedCount = tModelFrom.AccessFailedCount;
+            tModel.CreatedApplicationType = tModelFrom.CreatedApplicationType;
+            tModel.Email = tModelFrom.Email;
+            tModel.EmailConfirmed = tModelFrom.EmailConfirmed;
+            tModel.LockoutEnabled = tModelFrom.LockoutEnabled;
+            tModel.LockoutEnd = tModelFrom.LockoutEnd;
+            tModel.NormalizedEmail = tModelFrom.NormalizedEmail;
+            tModel.PhoneNumberConfirmed = tModelFrom.PhoneNumberConfirmed;
+            tModel.TwoFactorEnabled = tModelFrom.TwoFactorEnabled;
 
             return this.Update(tModel);
         }
@@ -183,6 +210,21 @@ namespace Phoenix.DataHandle.Repositories
             this.dbContext.SaveChanges();
         }
 
+        public void LinkSchool(AspNetUsers tModel, int schoolId)
+        {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
+            var userSchool = new UserSchool
+            {
+                AspNetUserId = tModel.Id,
+                SchoolId = schoolId,
+                EnrolledOn = DateTimeOffset.UtcNow
+            };
+
+            this.LinkSchool(userSchool);
+        }
+
         public void LinkRoles(AspNetUsers tModel, IEnumerable<int> roleIds)
         {
             if (tModel == null)
@@ -203,6 +245,15 @@ namespace Phoenix.DataHandle.Repositories
                 throw new ArgumentNullException(nameof(roles));
 
             var roleIds = this.dbContext.Set<AspNetRoles>().Where(r => roles.Contains(r.Type)).Select(r => r.Id);
+            this.LinkRoles(tModel, roleIds);
+        }
+
+        public void LinkRole(AspNetUsers tModel, Role roleType)
+        {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
+            var roleIds = this.dbContext.Set<AspNetRoles>().Where(r => r.Type == roleType).Select(r => r.Id);
             this.LinkRoles(tModel, roleIds);
         }
 
@@ -242,6 +293,25 @@ namespace Phoenix.DataHandle.Repositories
                 this.dbContext.Set<TeacherCourse>().AddRange(teacherCourses);
                 this.dbContext.SaveChanges();
             }
+        }
+
+        public void LinkParenthood(AspNetUsers parent, AspNetUsers child)
+        {
+            this.dbContext.Set<Parenthood>().Add(new Parenthood { ParentId = parent.Id, ChildId = child.Id });
+            this.dbContext.SaveChanges();
+        }
+
+        public void DeleteRoles(AspNetUsers tModel, Role? roleTypeToKeep = null)
+        {
+            var rolesToDelete = this.FindRoles(tModel).Where(r => r.Type != roleTypeToKeep);
+            if (!rolesToDelete.Any())
+                return;
+
+            var dbContext = this.dbContext.Set<AspNetUserRoles>();
+            foreach (var role in rolesToDelete)
+                dbContext.Remove(new AspNetUserRoles { RoleId = role.Id, UserId = tModel.Id });
+            
+            this.dbContext.SaveChanges();
         }
     }
 

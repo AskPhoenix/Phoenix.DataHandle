@@ -57,7 +57,7 @@ namespace Phoenix.DataHandle.Repositories
             if (tModel == null)
                 throw new ArgumentNullException(nameof(tModel));
 
-            tModel.CreatedAt = DateTimeOffset.Now;
+            tModel.CreatedAt = DateTimeOffset.UtcNow;
 
             this.dbContext.Set<TModel>().Add(tModel);
             this.dbContext.SaveChanges();
@@ -70,7 +70,7 @@ namespace Phoenix.DataHandle.Repositories
             if (tModel == null)
                 throw new ArgumentNullException(nameof(tModel));
 
-            tModel.UpdatedAt = DateTimeOffset.Now;
+            tModel.UpdatedAt = DateTimeOffset.UtcNow;
 
             this.dbContext.Entry(tModel).State = EntityState.Modified;
             this.dbContext.SaveChanges();

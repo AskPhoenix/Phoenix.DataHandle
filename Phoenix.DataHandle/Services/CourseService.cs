@@ -3,6 +3,7 @@ using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Repositories;
 using Phoenix.DataHandle.WordPress;
 using Phoenix.DataHandle.WordPress.Models;
+using Phoenix.DataHandle.WordPress.Models.Uniques;
 using Phoenix.DataHandle.WordPress.Utilities;
 using Phoenix.DataHandle.WordPress.Wrappers;
 using System;
@@ -14,19 +15,14 @@ namespace Phoenix.DataHandle.Services
 {
     public class CourseService : WPService
     {
-        private readonly CourseRepository courseRepository;
         private readonly BookRepository bookRepository;
 
         protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.Course);
 
-        public CourseService(PhoenixContext phoenixContext, ILogger<WPService> logger)
-            : this(phoenixContext, logger, false, null)
-        { }
-
-        public CourseService(PhoenixContext phoenixContext, ILogger<WPService> logger, bool deleteAdditional, string specificSchoolUnique)
-            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional)
+        public CourseService(PhoenixContext phoenixContext, ILogger<WPService> logger,
+            string specificSchoolUnique = null, bool deleteAdditional = false)
+            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional) 
         {
-            this.courseRepository = new CourseRepository(phoenixContext);
             this.bookRepository = new BookRepository(phoenixContext);
         }
 
@@ -37,34 +33,34 @@ namespace Phoenix.DataHandle.Services
 
         public override async Task SynchronizeAsync()
         {
-            _logger.LogInformation("Courses and Books synchronization started");
+            Logger.LogInformation("Courses and Books synchronization started");
 
             var coursePosts = await this.GetAllPostsAsync();
             foreach (var coursePost in coursePosts)
             {
-                if (!this.TryGetSchoolIdFromPost(coursePost, out int schoolId))
+                if (!this.TryFindSchoolId(coursePost, out int schoolId))
                     continue;
 
                 CourseACF acfCourse = (CourseACF)(await WordPressClientWrapper.GetAcfAsync<CourseACF>(coursePost.Id)).WithTitleCase();
-                acfCourse.SchoolId = schoolId;
+                acfCourse.SchoolUnique = new SchoolUnique(coursePost.GetTitle());
 
-                var curCourse = await courseRepository.Find(acfCourse.MatchesUnique);
+                var curCourse = await this.CourseRepository.Find(acfCourse.MatchesUnique);
                 var ctxCourse = acfCourse.ToContext();
-                if (curCourse == null)
+                if (curCourse is null)
                 {
-                    _logger.LogInformation($"Adding Course: {coursePost.GetTitle()}");
+                    Logger.LogInformation($"Adding Course: {coursePost.GetTitle()}");
                     
-                    courseRepository.Create(ctxCourse);
+                    this.CourseRepository.Create(ctxCourse);
                     this.IdsLog.Add(ctxCourse.Id);
                 }
                 else
                 {
-                    _logger.LogInformation($"Updating Course: {coursePost.GetTitle()}");
-                    courseRepository.Update(curCourse, ctxCourse);
+                    Logger.LogInformation($"Updating Course: {coursePost.GetTitle()}");
+                    this.CourseRepository.Update(curCourse, ctxCourse);
                     this.IdsLog.Add(curCourse.Id);
                 }
 
-                _logger.LogInformation($"Synchronizing Books of Course: {coursePost.GetTitle()}");
+                Logger.LogInformation($"Synchronizing Books of Course: {coursePost.GetTitle()}");
 
                 var books = acfCourse.ExtractBooks();
                 List<int> bookIds = new List<int>(books.Count());
@@ -73,26 +69,26 @@ namespace Phoenix.DataHandle.Services
                 {
                     if (!bookRepository.Find().Any(b => b.NormalizedName == book.NormalizedName))
                     {
-                        _logger.LogInformation($"Adding Book: {book.Name}");
+                        Logger.LogInformation($"Adding Book: {book.Name}");
                         bookRepository.Create(book);
                         bookIds.Add(book.Id);
                     }
                     else
                     {
-                        _logger.LogInformation($"Book \"{book.Name}\" already exists");
+                        Logger.LogInformation($"Book \"{book.Name}\" already exists");
                         bookIds.Add((await bookRepository.Find(b => b.NormalizedName == book.NormalizedName)).Id);
                     }
                 }
 
-                _logger.LogInformation($"Linking Books with Course {coursePost.GetTitle()}");
+                Logger.LogInformation($"Linking Books with Course {coursePost.GetTitle()}");
                 
-                var bookIdsToExclude = courseRepository.GetLinkedBooks(curCourse ?? ctxCourse).Select(b => b.Id);
+                var bookIdsToExclude = this.CourseRepository.GetLinkedBooks(curCourse ?? ctxCourse).Select(b => b.Id);
                 bookIds.RemoveAll(id => bookIdsToExclude.Contains(id));
-                courseRepository.LinkBooks(curCourse ?? ctxCourse, bookIds);
+                this.CourseRepository.LinkBooks(curCourse ?? ctxCourse, bookIds);
             }
 
-            _logger.LogInformation("Courses and Books synchronization finished");
-            _logger.LogInformation("--------------------------------");
+            Logger.LogInformation("Courses and Books synchronization finished");
+            Logger.LogInformation("--------------------------------");
         }
     }
 }

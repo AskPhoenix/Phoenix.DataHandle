@@ -5,18 +5,19 @@ namespace Phoenix.DataHandle.Utilities
     public static class StringExtensions
     {
         //TODO: Locale
-        public static string UpperToTitleCase(this string str)
+        public static string ToTitleCase(this string str, bool ignoreUpperCase = true)
         {
+            if (str is null)
+                return null;
+
             string tore = new string(str);
-
-            bool allUpper = tore == tore.ToUpper() || tore == tore.ToUpperInvariant();
-            if (!allUpper)
-                return tore;
-
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
 
-            tore = tore.ToLower();
-            tore = textInfo.ToTitleCase(tore).Replace("σ ", "ς ").Replace("σ-", "ς-");
+            if (ignoreUpperCase)
+                tore = tore.ToLowerInvariant();
+
+            //Check if a non-invariant culture solves the problem
+            tore = textInfo.ToTitleCase(tore).Replace("σ ", "ς ").Replace("σ-", "ς-").Replace("σ_", "ς_");
 
             if (tore.EndsWith('σ'))
             {
@@ -26,6 +27,11 @@ namespace Phoenix.DataHandle.Utilities
             }
 
             return tore;
+        }
+
+        public static string Truncate(this string str, int maxLength)
+        {
+            return str?.Length <= maxLength ? str : str.Substring(0, maxLength);
         }
     }
 }

@@ -15,9 +15,16 @@ namespace Phoenix.DataHandle.Repositories
             if (tModelFrom == null)
                 throw new ArgumentNullException(nameof(tModelFrom));
 
+            tModel.Name = tModelFrom.Name;
             tModel.Slug = tModelFrom.Slug;
+            tModel.City = tModelFrom.City;
             tModel.AddressLine = tModelFrom.AddressLine;
             tModel.Info = tModelFrom.Info;
+
+            //The columns of the unique keys should not be copied
+
+            if (!string.IsNullOrWhiteSpace(tModelFrom.FacebookPageId))
+                tModel.FacebookPageId = tModelFrom.FacebookPageId;
 
             return this.Update(tModel);
         }

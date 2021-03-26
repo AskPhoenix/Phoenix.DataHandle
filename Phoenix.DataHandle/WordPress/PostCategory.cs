@@ -3,10 +3,11 @@
     public enum PostCategory
     {
         Uncategorised,
-        School, 
+        SchoolInformation, 
         Course,
         Schedule,
-        SchoolUser
+        Personnel,
+        Client
     }
 
     public static class PostCategoryExtensions
@@ -15,12 +16,13 @@
         {
             return cat switch
             {
-                PostCategory.Uncategorised => "Uncategorised",
-                PostCategory.School => "School",
-                PostCategory.Course => "Course",
-                PostCategory.Schedule => "Schedule",
-                PostCategory.SchoolUser => "School User",
-                _ => string.Empty,
+                PostCategory.Uncategorised      => "Uncategorised",
+                PostCategory.SchoolInformation  => "School Information",
+                PostCategory.Course             => "Course",
+                PostCategory.Schedule           => "Schedule",
+                PostCategory.Personnel          => "Personnel",
+                PostCategory.Client             => "Client",
+                _                               => string.Empty
             };
         }
     }

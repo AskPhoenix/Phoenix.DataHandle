@@ -41,6 +41,8 @@ namespace Phoenix.DataHandle.Repositories
             if (tModelFrom == null)
                 throw new ArgumentNullException(nameof(tModelFrom));
 
+            //The columns of the unique keys should not be copied
+
             tModel.Name = tModelFrom.Name;
             tModel.SubCourse = tModelFrom.SubCourse;
             tModel.Group = tModelFrom.Group;

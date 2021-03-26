@@ -145,9 +145,15 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class School : ISchool, IModelEntity
     {
+        ISchoolSettings ISchool.SchoolSettings => this.SchoolSettings;
         IEnumerable<IUserSchool> ISchool.UserSchools => this.UserSchool;
         IEnumerable<IClassroom> ISchool.Classrooms => this.Classroom;
         IEnumerable<ICourse> ISchool.Courses => this.Course;
+    }
+
+    public partial class SchoolSettings : ISchoolSettings
+    {
+        ISchool ISchoolSettings.School => this.School;
     }
 
     public partial class StudentCourse : IStudentCourse

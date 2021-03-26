@@ -38,6 +38,7 @@ namespace Phoenix.DataHandle.Main
         public static bool IsClient(this Role role) => (int)role >= RoleAttributes.ClientRolesBase && (int)role < RoleAttributes.StaffRolesBase;
         public static bool IsStaff(this Role role) => (int)role >= RoleAttributes.StaffRolesBase && (int)role < RoleAttributes.BackendRolesBase;
         public static bool IsBackend(this Role role) => (int)role >= RoleAttributes.BackendRolesBase;
+        public static bool IsStaffAdmin(this Role role) => role.IsStaff() && role >= Role.SchoolAdmin;
 
         public static IEnumerable<Role> GetAll()
         {

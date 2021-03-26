@@ -19,7 +19,7 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
         private const int PostsPerPage = 10;
 
         private static WordPressClient Client { get; set; }
-        public static bool AlwaysUseAuthentication { get; set; } = false;
+        public static bool AlwaysUseAuthentication { get; set; }
 
         static WordPressClientWrapper()
         {
@@ -43,7 +43,7 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
         public static async Task<IEnumerable<Category>> GetCategoriesAsync(bool embed = false) 
             => await Client.Categories.GetAll(embed, AlwaysUseAuthentication);
 
-        public static async Task<IEnumerable<Post>> GetPaginatedPostsByCategoryAsync(int categoryId, int page, int perPage = PostsPerPage, bool embed = false)
+        public static async Task<IEnumerable<Post>> GetPostsPageAsync(int categoryId, int page, bool embed = false, int perPage = PostsPerPage)
         {
             var queryBuilder = new PostsQueryBuilder() { Page = page, PerPage = perPage, Categories = new int[1] { categoryId } };
             string route = PostsPath + queryBuilder.BuildQueryURL();
@@ -61,7 +61,7 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
             return posts;
         }
 
-        public static async Task<IEnumerable<Post>> GetPostsByCategoryAsync(int categoryId, int perPage = PostsPerPage, bool embed = false)
+        public static async Task<IEnumerable<Post>> GetPostsAsync(int categoryId, bool embed = false)
         {
             int curPage = 1;
             List<Post> posts = new List<Post>();
@@ -69,9 +69,9 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
 
             do
             {
-                nextPosts = await GetPaginatedPostsByCategoryAsync(categoryId, curPage++, perPage, embed);
+                nextPosts = await GetPostsPageAsync(categoryId, curPage++, embed);
 
-                if (nextPosts.Count() == 0)
+                if (!nextPosts.Any())
                     break;
 
                 posts.AddRange(nextPosts);
@@ -80,27 +80,10 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
             return posts;
         }
 
-        public static async Task<IEnumerable<Post>> GetPostsByCategoryBySchoolAsync(int categoryId, string schoolUnique, int perPage = PostsPerPage, bool embed = false)
+        public static async Task<IEnumerable<Post>> GetPostsForSchoolAsync(int categoryId, string schoolUnique, bool embed = false)
         {
-            int curPage = 1;
-            List<Post> posts = new List<Post>();
-            IEnumerable<Post> nextPosts;
-
-            do
-            {
-                nextPosts = await GetPaginatedPostsByCategoryAsync(categoryId, curPage++, perPage, embed);
-
-                if (nextPosts.Count() == 0)
-                    break;
-
-                nextPosts = nextPosts.Where(p => p.GetTitle().Contains(schoolUnique));
-                if (nextPosts.Count() == 0)
-                    continue;
-
-                posts.AddRange(nextPosts);
-            } while (nextPosts.Count() % PostsPerPage == 0);
-
-            return posts;
+            return (await GetPostsAsync(categoryId, embed)).
+                Where(p => p.GetTitle().Contains(schoolUnique));
         }
 
         public static async Task<AcfT> GetAcfAsync<AcfT>(int postId, bool embed = false) 

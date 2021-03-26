@@ -15,7 +15,6 @@ namespace Phoenix.DataHandle.Main.Models
         }
 
         public int Id { get; set; }
-        public short Code { get; set; }
         public int CourseId { get; set; }
         public int? ClassroomId { get; set; }
         public DayOfWeek DayOfWeek { get; set; }
