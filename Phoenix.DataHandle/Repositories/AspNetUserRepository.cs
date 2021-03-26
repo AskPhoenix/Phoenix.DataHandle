@@ -33,22 +33,6 @@ namespace Phoenix.DataHandle.Repositories
             return base.Update(tModel);
         }
 
-        public AspNetUsers Create(AspNetUsers tModel, User user)
-        {
-            if (user == null)
-                throw new ArgumentNullException(nameof(user));
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-
-            var tore = this.Create(tModel);
-
-            user.AspNetUserId = tore.Id;
-            this.dbContext.Set<User>().Add(user);
-            this.dbContext.SaveChanges();
-
-            return tore;
-        }
-
         public AspNetUsers Update(AspNetUsers tModel, AspNetUsers tModelFrom)
         {
             if (tModel == null)
@@ -306,10 +290,9 @@ namespace Phoenix.DataHandle.Repositories
             var rolesToDelete = this.FindRoles(tModel).Where(r => r.Type != roleTypeToKeep);
             if (!rolesToDelete.Any())
                 return;
-
-            var dbContext = this.dbContext.Set<AspNetUserRoles>();
-            foreach (var role in rolesToDelete)
-                dbContext.Remove(new AspNetUserRoles { RoleId = role.Id, UserId = tModel.Id });
+            
+            this.dbContext.Set<AspNetUserRoles>()
+                .RemoveRange(rolesToDelete.Select(r => new AspNetUserRoles { RoleId = r.Id, UserId = tModel.Id }));
             
             this.dbContext.SaveChanges();
         }

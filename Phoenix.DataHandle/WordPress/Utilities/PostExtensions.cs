@@ -5,13 +5,13 @@ namespace Phoenix.DataHandle.WordPress.Utilities
 {
     public static class PostExtensions
     {
-        public const string PrimaryDelimiter = "-_-";
-        public const string SecondaryDelimiter = "---";
+        public const string PrimaryDelimiter = "~_~";
+        public const string SecondaryDelimiter = "~-~";
 
         public static string GetTitle(this Post post)
         {
-            //Post Titles in WordPress have "en dashes" (–) instead of "hephens" (-)
-            return HttpUtility.HtmlDecode(post.Title.Rendered).Replace('–', '-');
+            //Attention to successive dashes in WP. They are rendered as single unicode character (e.g. --- -> '\u2014')
+            return HttpUtility.HtmlDecode(post.Title.Rendered);
         }
     }
 }

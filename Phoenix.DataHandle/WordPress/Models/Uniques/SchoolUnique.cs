@@ -12,12 +12,12 @@ namespace Phoenix.DataHandle.WordPress.Models.Uniques
         public SchoolUnique(string postTitle)
         {
             string[] uniqueParts = postTitle?.
-                Split(PostExtensions.PrimaryDelimiter).
+                Split(PostExtensions.PrimaryDelimiter, StringSplitOptions.RemoveEmptyEntries).
                 FirstOrDefault()?.
-                Split(PostExtensions.SecondaryDelimiter);
+                Split(PostExtensions.SecondaryDelimiter, StringSplitOptions.RemoveEmptyEntries);
 
             if (uniqueParts is null || uniqueParts.Length != 2 || uniqueParts.Any(u => string.IsNullOrWhiteSpace(u)))
-                throw new InvalidOperationException("The title of the post is not valid.");
+                throw new InvalidOperationException("The school unique in the title of the post is not valid.");
 
             //School unique is already in capital in the title
             this.NormalizedSchoolName = uniqueParts[0].ToUpperInvariant();

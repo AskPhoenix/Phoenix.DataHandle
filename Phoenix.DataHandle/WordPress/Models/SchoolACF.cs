@@ -31,6 +31,12 @@ namespace Phoenix.DataHandle.WordPress.Models
         public string Comments { get => comments; set => comments = string.IsNullOrWhiteSpace(value) ? null : value; }
         private string comments;
 
+        [JsonProperty(PropertyName = "time_zone")]
+        public string TimeZone { get; set; }
+
+        [JsonProperty(PropertyName = "facebook_page_id")]
+        public string FacebookPageId { get; set; }
+
         public string Locale => CultureInfo.GetCultures(CultureTypes.NeutralCultures).
                 FirstOrDefault(c => c.EnglishName.ToUpperInvariant() == this.Language.ToUpperInvariant())?.
                 TwoLetterISOLanguageName;
@@ -67,6 +73,8 @@ namespace Phoenix.DataHandle.WordPress.Models
             this.Address = other.Address;
             this.Comments = other.comments;
             this.SchoolUnique = other.SchoolUnique;
+            this.TimeZone = other.TimeZone;
+            this.FacebookPageId = other.FacebookPageId;
         }
 
         public School ToContext()
@@ -79,7 +87,7 @@ namespace Phoenix.DataHandle.WordPress.Models
                 City = this.City.Truncate(200),
                 NormalizedCity = this.City.ToUpperInvariant().Truncate(200),
                 AddressLine = this.Address.Truncate(255),
-                FacebookPageId = null,
+                FacebookPageId = this.FacebookPageId,
                 Info = this.Comments
             };
         }
@@ -89,7 +97,8 @@ namespace Phoenix.DataHandle.WordPress.Models
             return new SchoolACF(this)
             {
                 City = this.City.ToTitleCase(),
-                Address = this.Address.ToTitleCase()
+                Address = this.Address.ToTitleCase(),
+                TimeZone = this.TimeZone.ToTitleCase()
             };
         }
 
@@ -99,7 +108,7 @@ namespace Phoenix.DataHandle.WordPress.Models
             {
                 Language = this.Language,
                 Locale2 = this.Locale,
-                TimeZone = string.Empty
+                TimeZone = this.TimeZone
             };
         }
     }

@@ -29,6 +29,20 @@ namespace Phoenix.DataHandle.Repositories
             return this.Update(tModel);
         }
 
+        public School Update(School tModel, School tModelFrom, SchoolSettings tModel2From)
+        {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+            if (tModel2From == null)
+                throw new ArgumentNullException(nameof(tModel2From));
+
+            tModel.SchoolSettings.Language = tModel2From.Language;
+            tModel.SchoolSettings.Locale2 = tModel2From.Locale2;
+            tModel.SchoolSettings.TimeZone = tModel2From.TimeZone;
+
+            return this.Update(tModel, tModelFrom);
+        }
+
         public IQueryable<Course> FindCourses(int id)
         {
             this.Include(a => a.Course);

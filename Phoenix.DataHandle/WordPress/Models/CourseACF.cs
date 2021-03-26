@@ -4,6 +4,7 @@ using Phoenix.DataHandle.Utilities;
 using Phoenix.DataHandle.WordPress.Models.Uniques;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -32,15 +33,17 @@ namespace Phoenix.DataHandle.WordPress.Models
 
         [JsonProperty(PropertyName = "first_date")]
         private string FirstDateString { get; set; }
-        public DateTimeOffset FirstDate { get => CalendarExtensions.GetDateTimeOffsetFromString(FirstDateString, "d"); }
+        public DateTimeOffset FirstDate { get => CalendarExtensions.ParseExact(this.FirstDateString, "d/M/yyyy", this.SchoolTimeZone); }
 
         [JsonProperty(PropertyName = "last_date")]
         private string LastDateString { get; set; }
-        public DateTimeOffset LastDate { get => CalendarExtensions.GetDateTimeOffsetFromString(LastDateString, "d"); }
+        public DateTimeOffset LastDate { get => CalendarExtensions.ParseExact(this.LastDateString, "d/M/yyyy", this.SchoolTimeZone); }
 
         [JsonProperty(PropertyName = "comments")]
         public string Comments { get => comments; set => comments = string.IsNullOrWhiteSpace(value) ? null : value; }
         private string comments;
+
+        public string SchoolTimeZone { get; set; }
 
         public Expression<Func<Course, bool>> MatchesUnique => c =>
             c.School.NormalizedName == this.SchoolUnique.NormalizedSchoolName &&
@@ -115,7 +118,7 @@ namespace Phoenix.DataHandle.WordPress.Models
                 Select(b => new Book()
                 {
                     Name = b.Truncate(255),
-                    NormalizedName = b.ToUpperInvariant().Truncate(255),
+                    NormalizedName = b.ToUpperInvariant().Truncate(255),    //TODO: Find better normalization for book name
                     CreatedAt = DateTimeOffset.UtcNow
                 });
         }

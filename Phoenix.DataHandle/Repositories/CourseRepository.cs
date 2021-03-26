@@ -63,14 +63,22 @@ namespace Phoenix.DataHandle.Repositories
             this.dbContext.SaveChanges();
         }
 
-        public void LinkBooks(Course tModel, IEnumerable<int> bookIds)
+        public void LinkBooks(Course tModel, IEnumerable<int> bookIds, bool deleteAdditionalLinks = false)
         {
             if (tModel == null)
                 throw new ArgumentNullException(nameof(tModel));
             if (bookIds == null)
                 throw new ArgumentNullException(nameof(bookIds));
 
-            this.dbContext.Set<CourseBook>().AddRange(bookIds.Select(bId => new CourseBook() { CourseId = tModel.Id, BookId = bId }));
+            var courseBookSet = this.dbContext.Set<CourseBook>();
+
+            if (deleteAdditionalLinks)
+            {
+                var additionalLinks = courseBookSet.Where(cb => !bookIds.Contains(cb.BookId));
+                courseBookSet.RemoveRange(additionalLinks);
+            }
+
+            courseBookSet.AddRange(bookIds.Select(bId => new CourseBook() { CourseId = tModel.Id, BookId = bId }));
             this.dbContext.SaveChanges();
         }
 

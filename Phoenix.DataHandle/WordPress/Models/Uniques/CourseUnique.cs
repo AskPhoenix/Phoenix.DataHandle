@@ -14,14 +14,14 @@ namespace Phoenix.DataHandle.WordPress.Models.Uniques
             this.SchoolUnique = new SchoolUnique(postTitle);
 
             string unique = postTitle?.
-                Split(PostExtensions.PrimaryDelimiter).
+                Split(PostExtensions.PrimaryDelimiter, StringSplitOptions.RemoveEmptyEntries).
                 LastOrDefault()?.
-                Split(PostExtensions.SecondaryDelimiter).
+                Split(PostExtensions.SecondaryDelimiter, StringSplitOptions.RemoveEmptyEntries).
                 LastOrDefault();
 
             bool codeParsed = short.TryParse(unique, out short code);
-            if (codeParsed)
-                throw new InvalidOperationException("The title of the post is not valid.");
+            if (!codeParsed)
+                throw new InvalidOperationException($"The course code \"{unique}\" in the title of the post is not valid.");
 
             this.Code = code;
         }

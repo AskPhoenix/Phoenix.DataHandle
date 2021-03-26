@@ -37,60 +37,59 @@ namespace Phoenix.DataHandle.Services
         {
             Logger.LogInformation("Personnel synchronization started");
 
-            var personnelPosts = (await this.GetAllPostsAsync());
+            var personnelPosts = await this.GetAllPostsAsync();
             foreach (var personnelPost in personnelPosts)
             {
-                if (!this.TryFindSchoolId(personnelPost, out int schoolId))
+                if (!this.TryFindSchool(personnelPost, out School school))
                     continue;
 
-                PersonnelACF personnelACF = (PersonnelACF)(await WordPressClientWrapper.GetAcfAsync<PersonnelACF>(personnelPost.Id)).WithTitleCase();
-                personnelACF.SchoolUnique = new SchoolUnique(personnelPost.GetTitle());
+                PersonnelACF personnelAcf = (PersonnelACF)(await WordPressClientWrapper.GetAcfAsync<PersonnelACF>(personnelPost.Id)).WithTitleCase();
+                personnelAcf.SchoolUnique = new SchoolUnique(personnelPost.GetTitle());
 
-                var aspNetUser = await this.aspNetUserRepository.Find(checkUnique: personnelACF.MatchesUnique);
+                var aspNetUser = await this.aspNetUserRepository.Find(checkUnique: personnelAcf.MatchesUnique);
                 if (aspNetUser is null)
                 {
                     Logger.LogInformation($"Adding Personnel User with PhoneNumber: {aspNetUser.PhoneNumber}");
 
-                    //TODO: Check if User needs to be created separately
-                    //aspNetUser.User = personnelACF.ExtractUser();
-                    aspNetUser = personnelACF.ToContext();
-                    aspNetUserRepository.Create(aspNetUser, personnelACF.ExtractUser());
+                    aspNetUser = personnelAcf.ToContext();
+                    aspNetUser.User = personnelAcf.ExtractUser();
+                    aspNetUserRepository.Create(aspNetUser);
                     
                     this.aspNetUserRepository.Create(aspNetUser);
                     this.IdsLog.Add(aspNetUser.Id);
 
-                    this.aspNetUserRepository.LinkSchool(aspNetUser, schoolId);
+                    this.aspNetUserRepository.LinkSchool(aspNetUser, school.Id);
                 }
                 else
                 {
                     Logger.LogInformation($"Updating Personnel User with PhoneNumber: {aspNetUser.PhoneNumber}");
-                    this.aspNetUserRepository.Update(aspNetUser, personnelACF.ToContext(), personnelACF.ExtractUser());
+                    this.aspNetUserRepository.Update(aspNetUser, personnelAcf.ToContext(), personnelAcf.ExtractUser());
                     this.IdsLog.Add(aspNetUser.Id);
                 }
 
                 Logger.LogInformation("Linking with the AspNetUserRoles of Personnel User");
 
-                if (!aspNetUserRepository.HasRole(aspNetUser, personnelACF.RoleType))
-                    aspNetUserRepository.LinkRole(aspNetUser, personnelACF.RoleType);
+                if (!aspNetUserRepository.HasRole(aspNetUser, personnelAcf.RoleType))
+                    aspNetUserRepository.LinkRole(aspNetUser, personnelAcf.RoleType);
                 
-                aspNetUserRepository.DeleteRoles(aspNetUser, personnelACF.RoleType);
+                aspNetUserRepository.DeleteRoles(aspNetUser, personnelAcf.RoleType);
 
                 Logger.LogInformation("Linking with the Courses of Personnel User");
 
                 List<int> userCourseIds;
-                if (string.IsNullOrEmpty(personnelACF.CourseCodesString) || personnelACF.RoleType.IsStaffAdmin())
+                if (string.IsNullOrEmpty(personnelAcf.CourseCodesString) || personnelAcf.RoleType.IsStaffAdmin())
                 {
-                    userCourseIds = this.SchoolRepository.FindCourses(schoolId).Select(c => c.Id).ToList();
+                    userCourseIds = this.SchoolRepository.FindCourses(school.Id).Select(c => c.Id).ToList();
                 }
                 else
                 {
-                    short[] courseCodes = personnelACF.ExtractCourseCodes();
+                    short[] courseCodes = personnelAcf.ExtractCourseCodes();
                     userCourseIds = new List<int>(courseCodes.Length);
                     foreach (short courseCode in courseCodes)
                     {
-                        if (!this.TryFindCourseId(personnelPost, out int courseId))
+                        if (!this.TryFindCourse(personnelPost, school.Id, out Course course))
                             continue;
-                        userCourseIds.Add(courseId);
+                        userCourseIds.Add(course.Id);
                     }
                 }
 

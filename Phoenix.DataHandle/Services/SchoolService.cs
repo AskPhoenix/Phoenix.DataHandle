@@ -33,24 +33,24 @@ namespace Phoenix.DataHandle.Services
 
             foreach (var schoolPost in schoolPosts)
             {
-                SchoolACF acfSchool = (SchoolACF)(await WordPressClientWrapper.GetAcfAsync<SchoolACF>(schoolPost.Id)).WithTitleCase();
-                var curSchool = await this.SchoolRepository.Find(checkUnique: acfSchool.MatchesUnique);
+                SchoolACF schoolAcf = (SchoolACF)(await WordPressClientWrapper.GetAcfAsync<SchoolACF>(schoolPost.Id)).WithTitleCase();
+                var school = await this.SchoolRepository.Find(checkUnique: schoolAcf.MatchesUnique);
 
-                if (curSchool is null)
+                if (school is null)
                 {
                     Logger.LogInformation($"Adding School: {schoolPost.GetTitle()}");
 
-                    var ctxSchool = acfSchool.ToContext();
-                    ctxSchool.SchoolSettings = acfSchool.ExtractSchoolSettings();
+                    school = schoolAcf.ToContext();
+                    school.SchoolSettings = schoolAcf.ExtractSchoolSettings();
 
-                    this.SchoolRepository.Create(ctxSchool);
-                    this.IdsLog.Add(ctxSchool.Id);
+                    this.SchoolRepository.Create(school);
+                    this.IdsLog.Add(school.Id);
                 }
                 else
                 {
                     Logger.LogInformation($"Updating School: {schoolPost.GetTitle()}");
-                    this.SchoolRepository.Update(curSchool, acfSchool.ToContext());
-                    this.IdsLog.Add(curSchool.Id);
+                    this.SchoolRepository.Update(school, schoolAcf.ToContext(), schoolAcf.ExtractSchoolSettings());
+                    this.IdsLog.Add(school.Id);
                 }
             }
 

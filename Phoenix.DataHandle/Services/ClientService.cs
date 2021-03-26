@@ -42,7 +42,7 @@ namespace Phoenix.DataHandle.Services
             var clientPosts = (await this.GetAllPostsAsync());
             foreach (var clientPost in clientPosts)
             {
-                if (!this.TryFindSchoolId(clientPost, out int schoolId))
+                if (!this.TryFindSchool(clientPost, out School school))
                     continue;
 
                 ClientACF clientACF = (ClientACF)(await WordPressClientWrapper.GetAcfAsync<ClientACF>(clientPost.Id)).WithTitleCase();
@@ -56,12 +56,13 @@ namespace Phoenix.DataHandle.Services
                     //TODO: Check if User needs to be created separately
                     //aspNetUser.User = personnelACF.ExtractUser();
                     student = clientACF.ToContext();
-                    aspNetUserRepository.Create(student, clientACF.ExtractUser());
+                    student.User = clientACF.ExtractUser();
+                    aspNetUserRepository.Create(student);
 
                     this.aspNetUserRepository.Create(student);
                     this.IdsLog.Add(student.Id);
 
-                    this.aspNetUserRepository.LinkSchool(student, schoolId);
+                    this.aspNetUserRepository.LinkSchool(student, school.Id);
                     this.aspNetUserRepository.LinkRole(student, Role.Student);
                 }
                 else
@@ -90,7 +91,9 @@ namespace Phoenix.DataHandle.Services
                     if (parent == null)
                     {
                         parent = parents[i];
-                        this.aspNetUserRepository.Create(parent, parentUsers[i]);
+                        parent.User = parentUsers[i];
+
+                        this.aspNetUserRepository.Create(parent);
                         this.aspNetUserRepository.LinkParenthood(parent, student);
                         this.aspNetUserRepository.LinkRole(parent, Role.Parent);
                     }
@@ -105,7 +108,7 @@ namespace Phoenix.DataHandle.Services
                 List<int> userCourseIds;
                 if (string.IsNullOrEmpty(clientACF.CourseCodesString))
                 {
-                    userCourseIds = this.SchoolRepository.FindCourses(schoolId).Select(c => c.Id).ToList();
+                    userCourseIds = this.SchoolRepository.FindCourses(school.Id).Select(c => c.Id).ToList();
                 }
                 else
                 {
@@ -113,9 +116,9 @@ namespace Phoenix.DataHandle.Services
                     userCourseIds = new List<int>(courseCodes.Length);
                     foreach (short courseCode in courseCodes)
                     {
-                        if (!this.TryFindCourseId(clientPost, out int courseId))
+                        if (!this.TryFindCourse(clientPost, school.Id, out Course course))
                             continue;
-                        userCourseIds.Add(courseId);
+                        userCourseIds.Add(course.Id);
                     }
                 }
 

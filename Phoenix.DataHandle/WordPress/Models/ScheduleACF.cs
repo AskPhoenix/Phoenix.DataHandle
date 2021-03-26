@@ -22,28 +22,27 @@ namespace Phoenix.DataHandle.WordPress.Models
 
         [JsonProperty(PropertyName = "start_time")]
         private string StartTimeString { get; set; }
-        public DateTimeOffset StartTime { get => CalendarExtensions.GetDateTimeOffsetFromString(StartTimeString, "t"); }    //HH:mm
+        public DateTimeOffset StartTime { get => CalendarExtensions.ParseExact(this.StartTimeString, "H:m", this.SchoolTimeZone); }
 
         [JsonProperty(PropertyName = "end_time")]
         private string EndTimeString { get; set; }
-        public DateTimeOffset EndTime { get => CalendarExtensions.GetDateTimeOffsetFromString(EndTimeString, "t"); }        //HH:mm
+        public DateTimeOffset EndTime { get => CalendarExtensions.ParseExact(this.EndTimeString, "H:m", this.SchoolTimeZone); }
 
         [JsonProperty(PropertyName = "comments")]
         public string Comments { get => comments; set => comments = string.IsNullOrWhiteSpace(value) ? null : value; }
         private string comments;
 
-        //TODO: Get locale dynamically
-        private DayOfWeek GetDayOfWeek(string dayName, string locale = "el")
-        {
-            return (DayOfWeek)Array.FindIndex(CultureInfo.GetCultureInfo(locale).DateTimeFormat.DayNames, s => s == dayName);
-        }
+        public string SchoolTimeZone { get; set; }
+
+        public DayOfWeek InvariantDayOfWeek => (DayOfWeek)Array.FindIndex(CultureInfo.InvariantCulture.DateTimeFormat.DayNames, 
+            d => string.Compare(d, this.DayName, StringComparison.InvariantCultureIgnoreCase) == 0);
 
         public Expression<Func<Schedule, bool>> MatchesUnique => s =>
             s.Course.School.NormalizedName == this.SchoolUnique.NormalizedSchoolName &&
             s.Course.School.NormalizedCity == this.SchoolUnique.NormalizedSchoolCity &&
             s.Course.Code == this.CourseCode &&
-            s.DayOfWeek.ToString().ToUpperInvariant() == this.DayName.ToUpperInvariant() &&
-            s.StartTime.ToString("t") == this.StartTimeString;
+            s.DayOfWeek == this.InvariantDayOfWeek &&
+            s.StartTime == this.StartTime;
 
         public SchoolUnique SchoolUnique { get; set; }
 
@@ -75,7 +74,7 @@ namespace Phoenix.DataHandle.WordPress.Models
         {
             return new Schedule()
             {
-                DayOfWeek = GetDayOfWeek(this.DayName),
+                DayOfWeek = this.InvariantDayOfWeek,
                 StartTime = this.StartTime,
                 EndTime = this.EndTime,
                 Info = this.Comments

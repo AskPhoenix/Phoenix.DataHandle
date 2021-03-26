@@ -13,22 +13,13 @@ namespace Phoenix.DataHandle.Utilities
 
         public static int GetWeekOfYearISO8601(DateTimeOffset date) => GetWeekOfYearISO8601(date.DateTime);
 
-        public static DateTimeOffset GetDateTimeOffsetFromString(string dateTime, string format, IFormatProvider provider, TimeZoneInfo timeZone)
+        public static DateTimeOffset ParseExact(string input, string format, string timeZone)
         {
-            if (string.IsNullOrWhiteSpace(dateTime))
-                throw new ArgumentNullException(nameof(dateTime));
-
-            if (string.IsNullOrWhiteSpace(format))
-                throw new ArgumentNullException(nameof(format));
-
-            if (timeZone == null)
+            if (string.IsNullOrWhiteSpace(timeZone))
                 throw new ArgumentNullException(nameof(timeZone));
 
-            DateTime d = DateTime.ParseExact(dateTime, format, provider);
-            return new DateTimeOffset(d, timeZone.GetUtcOffset(d));
+            var dateTime = DateTime.ParseExact(input, format, CultureInfo.InvariantCulture);
+            return new DateTimeOffset(dateTime, TimeZoneInfo.FindSystemTimeZoneById(timeZone).GetUtcOffset(dateTime));
         }
-
-        public static DateTimeOffset GetDateTimeOffsetFromString(string dateTime, string format)
-            => GetDateTimeOffsetFromString(dateTime, format, new CultureInfo("el-GR"), TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time"));
     }
 }
