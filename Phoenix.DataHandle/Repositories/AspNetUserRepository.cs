@@ -241,40 +241,68 @@ namespace Phoenix.DataHandle.Repositories
             this.LinkRoles(tModel, roleIds);
         }
 
-        public void LinkCourses(AspNetUsers tModel, IEnumerable<int> courseIds)
+        public void LinkCourses(AspNetUsers tModel, IList<int> courseIds, bool deleteAdditionalLinks = false)
         {
             if (tModel == null)
                 throw new ArgumentNullException(nameof(tModel));
             if (courseIds == null)
                 throw new ArgumentNullException(nameof(courseIds));
 
-            if (this.dbContext.Set<AspNetUserRoles>().Any(ur => ur.UserId == tModel.Id && ur.RoleId == studentRoleId))
+            var aspNetUserRolesSet = this.dbContext.Set<AspNetUserRoles>();
+            var backendRoles = RoleExtensions.GetBackendRoles();
+            var staffRoles = RoleExtensions.GetStaffRoles();
+
+            if (aspNetUserRolesSet.Any(ur => ur.UserId == tModel.Id && (ur.Role.Type == Role.Student || backendRoles.Contains(ur.Role.Type))))
             {
-                var idsToExclude = this.dbContext.Set<StudentCourse>()
-                    .Where(sc => sc.StudentId == tModel.Id && courseIds.Contains(sc.CourseId))
-                    .Select(sc => sc.CourseId);
+                var studentCourseSet = this.dbContext.Set<StudentCourse>();
+                var studentCourses = studentCourseSet.Where(sc => sc.StudentId == tModel.Id);
+
+                var idsToExclude = studentCourses.
+                    Where(sc => courseIds.Contains(sc.CourseId)).
+                    Select(sc => sc.CourseId);
 
                 var idsToKeep = courseIds.ToList();
                 idsToKeep.RemoveAll(id => idsToExclude.Contains(id));
 
-                var studentCourses = idsToKeep.Select(id => new StudentCourse() { StudentId = tModel.Id, CourseId = id });
+                var studentCoursesToAdd = idsToKeep.Select(id => new StudentCourse() { StudentId = tModel.Id, CourseId = id });
 
-                this.dbContext.Set<StudentCourse>().AddRange(studentCourses);
+                studentCourseSet.AddRange(studentCoursesToAdd);
+
+                if (deleteAdditionalLinks)
+                {
+                    var additionalCourses = studentCourses.
+                        Where(sc => !courseIds.Contains(sc.CourseId));
+                    if (additionalCourses.Any())
+                        studentCourseSet.RemoveRange(additionalCourses);
+                }
+
                 this.dbContext.SaveChanges();
             }
-
-            if (this.dbContext.Set<AspNetUserRoles>().Any(ur => ur.UserId == tModel.Id && ur.RoleId >= teacherRoleId))
+            
+            if (aspNetUserRolesSet.Any(ur => ur.UserId == tModel.Id && (staffRoles.Contains(ur.Role.Type) || backendRoles.Contains(ur.Role.Type))))
             {
-                var idsToExclude = this.dbContext.Set<TeacherCourse>()
-                    .Where(tc => tc.TeacherId == tModel.Id && courseIds.Contains(tc.CourseId))
-                    .Select(tc => tc.CourseId);
+                var teacherCourseSet = this.dbContext.Set<TeacherCourse>();
+                var teacherCourses = teacherCourseSet.Where(sc => sc.TeacherId == tModel.Id);
+
+                var idsToExclude = teacherCourses.
+                    Where(tc => courseIds.Contains(tc.CourseId)).
+                    Select(tc => tc.CourseId);
 
                 var idsToKeep = courseIds.ToList();
                 idsToKeep.RemoveAll(id => idsToExclude.Contains(id));
 
-                var teacherCourses = idsToKeep.Select(id => new TeacherCourse() { TeacherId = tModel.Id, CourseId = id });
+                var teacherCoursesToAdd = idsToKeep.Select(id => new TeacherCourse() { TeacherId = tModel.Id, CourseId = id });
 
-                this.dbContext.Set<TeacherCourse>().AddRange(teacherCourses);
+                teacherCourseSet.AddRange(teacherCoursesToAdd);
+
+                if (deleteAdditionalLinks)
+                {
+                    var additionalCourses = teacherCourses.
+                        Where(sc => !courseIds.Contains(sc.CourseId));
+                    if (additionalCourses.Any())
+                        teacherCourseSet.RemoveRange(additionalCourses);
+                }
+
                 this.dbContext.SaveChanges();
             }
         }
@@ -285,9 +313,12 @@ namespace Phoenix.DataHandle.Repositories
             this.dbContext.SaveChanges();
         }
 
-        public void DeleteRoles(AspNetUsers tModel, Role? roleTypeToKeep = null)
+        public void DeleteRoles(AspNetUsers tModel, IList<Role> rolesTypeToKeep = null)
         {
-            var rolesToDelete = this.FindRoles(tModel).Where(r => r.Type != roleTypeToKeep);
+            var rolesToDelete = this.FindRoles(tModel);
+            if (rolesTypeToKeep != null)
+                rolesToDelete = rolesToDelete.Where(r => !rolesTypeToKeep.Contains(r.Type));
+            
             if (!rolesToDelete.Any())
                 return;
             

@@ -25,7 +25,7 @@ namespace Phoenix.DataHandle.WordPress.Models
         public string CourseCodesString { get; set; }
 
         public string PhoneString => this.PhoneNumber.ToString();
-        public Role RoleType => this.RoleString.ToUpperInvariant().ToRoleFromNormalized();
+        public Role RoleType => this.RoleString.Replace(" ", "").ToRole();
         public string FirstName => UserInfoHelper.GetFirstName(this.FullName);
         public string LastName => UserInfoHelper.GetLastName(this.FullName);
 

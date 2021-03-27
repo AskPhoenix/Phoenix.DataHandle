@@ -40,16 +40,22 @@ namespace Phoenix.DataHandle.Main
         public static bool IsBackend(this Role role) => (int)role >= RoleAttributes.BackendRolesBase;
         public static bool IsStaffAdmin(this Role role) => role.IsStaff() && role >= Role.SchoolAdmin;
 
-        public static IEnumerable<Role> GetAll()
-        {
-            return Enum.GetValues(typeof(Role)).Cast<Role>();
-        }
+        public static IEnumerable<Role> GetClientRoles() => GetAll().Where(r => r.IsClient());
+
+        public static IEnumerable<Role> GetStaffRoles() => GetAll().Where(r => r.IsStaff());
+
+        public static IEnumerable<Role> GetBackendRoles() => GetAll().Where(r => r.IsBackend());
+
+        public static IEnumerable<Role> GetStaffAdminRoles() => GetAll().Where(r => r.IsStaffAdmin());
+
+        public static IEnumerable<Role> GetAll() => Enum.GetValues(typeof(Role)).Cast<Role>();
 
         public static string ToString(this Role me)
         {
             return me.ToString();
         }
 
+        //TODO: Locale
         public static string ToFriendlyString(this Role me)
         {
             return me switch
@@ -69,6 +75,7 @@ namespace Phoenix.DataHandle.Main
             };
         }
 
+        //TODO: Change Normalized Role Names
         public static string ToNormalizedString(this Role me)
         {
             return me switch

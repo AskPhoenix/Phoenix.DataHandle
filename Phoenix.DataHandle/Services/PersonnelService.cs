@@ -49,11 +49,10 @@ namespace Phoenix.DataHandle.Services
                 var aspNetUser = await this.aspNetUserRepository.Find(checkUnique: personnelAcf.MatchesUnique);
                 if (aspNetUser is null)
                 {
-                    Logger.LogInformation($"Adding Personnel User with PhoneNumber: {aspNetUser.PhoneNumber}");
+                    Logger.LogInformation($"Adding Personnel User with PhoneNumber: {personnelAcf.PhoneString}");
 
                     aspNetUser = personnelAcf.ToContext();
                     aspNetUser.User = personnelAcf.ExtractUser();
-                    aspNetUserRepository.Create(aspNetUser);
                     
                     this.aspNetUserRepository.Create(aspNetUser);
                     this.IdsLog.Add(aspNetUser.Id);
@@ -72,7 +71,9 @@ namespace Phoenix.DataHandle.Services
                 if (!aspNetUserRepository.HasRole(aspNetUser, personnelAcf.RoleType))
                     aspNetUserRepository.LinkRole(aspNetUser, personnelAcf.RoleType);
                 
-                aspNetUserRepository.DeleteRoles(aspNetUser, personnelAcf.RoleType);
+                // Delete any other roles the user might have
+                // The only possible scenario where 2 roles are alowed is: a staff role + parent
+                aspNetUserRepository.DeleteRoles(aspNetUser, new Role[2] { personnelAcf.RoleType, Role.Parent });
 
                 Logger.LogInformation("Linking with the Courses of Personnel User");
 
@@ -93,7 +94,7 @@ namespace Phoenix.DataHandle.Services
                     }
                 }
 
-                aspNetUserRepository.LinkCourses(aspNetUser, userCourseIds);
+                aspNetUserRepository.LinkCourses(aspNetUser, userCourseIds, deleteAdditionalLinks: true);
             }
 
             Logger.LogInformation("Personnel synchronization finished");
