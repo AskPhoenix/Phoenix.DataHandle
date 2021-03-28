@@ -18,7 +18,7 @@ namespace Phoenix.DataHandle.Services
     {
         private readonly AspNetUserRepository aspNetUserRepository;
 
-        protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.Personnel);
+        protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.Client);
 
         public ClientService(PhoenixContext phoenixContext, ILogger<WPService> logger,
             string specificSchoolUnique = null, bool deleteAdditional = false)
@@ -45,19 +45,38 @@ namespace Phoenix.DataHandle.Services
                 if (!this.TryFindSchool(clientPost, out School school))
                     continue;
 
-                ClientACF clientACF = (ClientACF)(await WordPressClientWrapper.GetAcfAsync<ClientACF>(clientPost.Id)).WithTitleCase();
-                clientACF.SchoolUnique = new SchoolUnique(clientPost.GetTitle());
+                ClientACF clientAcf = (ClientACF)(await WordPressClientWrapper.GetAcfAsync<ClientACF>(clientPost.Id)).WithTitleCase();
+                clientAcf.SchoolUnique = new SchoolUnique(clientPost.GetTitle());
+                AspNetUsers student = null;
 
-                var student = await this.aspNetUserRepository.Find(checkUnique: clientACF.MatchesUnique);
+                var parents = clientAcf.ExtractParents();
+                var parentUsers = clientAcf.ExtractParentUsers();
+                AspNetUsers parent1 = null;
+                int parentsNum = parents.Count;
+
+                for (int i = 0; i < parentsNum; i++)
+                {
+                    parents[i].UserName = ClientACF.GetUserName(parentUsers[i], school.Id, parents[i].PhoneNumber);
+                    parents[i].NormalizedUserName = parents[i].UserName.ToUpperInvariant();
+                }
+
+                if (clientAcf.IsSelfDetermined)
+                    student = await this.aspNetUserRepository.Find(checkUnique: clientAcf.MatchesUnique);
+                else
+                {
+                    parent1 = this.aspNetUserRepository.Find().
+                            SingleOrDefault(u => u.User.IsSelfDetermined && u.PhoneNumber == clientAcf.Parent1PhoneNumber.ToString());
+                    student = aspNetUserRepository.FindChild(parent1.Id, clientAcf.StudentFirstName, clientAcf.StudentLastName);
+                }
+
                 if (student is null)
                 {
-                    Logger.LogInformation($"Adding Student with (Affiliated) PhoneNumber: {student.PhoneNumber ?? student.AffiliatedPhoneNumber}");
+                    Logger.LogInformation($"Adding Student with (Parent) PhoneNumber: {clientAcf.TopPhoneNumber}");
 
-                    //TODO: Check if User needs to be created separately
-                    //aspNetUser.User = personnelACF.ExtractUser();
-                    student = clientACF.ToContext();
-                    student.User = clientACF.ExtractUser();
-                    aspNetUserRepository.Create(student);
+                    student = clientAcf.ToContext();
+                    student.User = clientAcf.ExtractUser();
+                    student.UserName = ClientACF.GetUserName(student.User, school.Id, clientAcf.TopPhoneNumber);
+                    student.NormalizedUserName = student.UserName.ToUpperInvariant();
 
                     this.aspNetUserRepository.Create(student);
                     this.IdsLog.Add(student.Id);
@@ -67,28 +86,33 @@ namespace Phoenix.DataHandle.Services
                 }
                 else
                 {
-                    Logger.LogInformation($"Updating Personnel User with PhoneNumber: {student.PhoneNumber}");
-                    this.aspNetUserRepository.Update(student, clientACF.ToContext(), clientACF.ExtractUser());
+                    Logger.LogInformation($"Updating Student with (Parent) PhoneNumber: {clientAcf.TopPhoneNumber}");
+
+                    student.UserName = ClientACF.GetUserName(student.User, school.Id, clientAcf.TopPhoneNumber);
+                    student.NormalizedUserName = student.UserName.ToUpperInvariant();
+
+                    this.aspNetUserRepository.Update(student, clientAcf.ToContext(), clientAcf.ExtractUser());
                     this.IdsLog.Add(student.Id);
                 }
-
-                Logger.LogInformation("Linking with the Parents of Student");
-
-                var parents = clientACF.ExtractParents();
-                var parentUsers = clientACF.ExtractParentUsers();
-                int parentsNum = parents.Count;
 
                 AspNetUsers parent = null;
                 for (int i = 0; i < parentsNum; i++)
                 {
+                    Logger.LogInformation($"Linking with the Parent {i} of Student");
+
                     if (i == 0)
-                        parent = this.aspNetUserRepository.Find().
-                            SingleOrDefault(u => u.User.IsSelfDetermined && u.PhoneNumber == clientACF.Parent1PhoneNumber.ToString());
+                    {
+                        if (parent1 is null)
+                            parent = this.aspNetUserRepository.Find().
+                                SingleOrDefault(u => u.User.IsSelfDetermined && u.PhoneNumber == clientAcf.Parent1PhoneNumber.ToString());
+                        else
+                            parent = parent1;
+                    }
                     else
                         parent = this.aspNetUserRepository.Find().
-                            SingleOrDefault(u => u.User.IsSelfDetermined && u.PhoneNumber == clientACF.Parent2PhoneNumber.ToString());
+                            SingleOrDefault(u => u.User.IsSelfDetermined && u.PhoneNumber == clientAcf.Parent2PhoneNumber.ToString());
 
-                    if (parent == null)
+                    if (parent is null)
                     {
                         parent = parents[i];
                         parent.User = parentUsers[i];
@@ -98,31 +122,28 @@ namespace Phoenix.DataHandle.Services
                         this.aspNetUserRepository.LinkRole(parent, Role.Parent);
                     }
                     else
+                    {
                         this.aspNetUserRepository.Update(parent, parents[i], parentUsers[i]);
+                        if (aspNetUserRepository.FindChild(parent.Id, clientAcf.StudentFirstName, clientAcf.StudentLastName) is null)
+                            this.aspNetUserRepository.LinkParenthood(parent, student);
+                        if (aspNetUserRepository.HasRole(parent, Role.Parent))
+                            this.aspNetUserRepository.LinkRole(parent, Role.Parent);
+                    }
 
                     parent = null;
                 }
 
                 Logger.LogInformation("Linking with the Courses of Student");
 
-                List<int> userCourseIds;
-                if (string.IsNullOrEmpty(clientACF.CourseCodesString))
-                {
-                    userCourseIds = this.SchoolRepository.FindCourses(school.Id).Select(c => c.Id).ToList();
-                }
-                else
-                {
-                    short[] courseCodes = clientACF.ExtractCourseCodes();
-                    userCourseIds = new List<int>(courseCodes.Length);
-                    foreach (short courseCode in courseCodes)
-                    {
-                        if (!this.TryFindCourse(clientPost, school.Id, out Course course))
-                            continue;
-                        userCourseIds.Add(course.Id);
-                    }
-                }
+                short[] userCourseCodes = clientAcf.ExtractCourseCodes();
 
-                aspNetUserRepository.LinkCourses(student, userCourseIds);
+                var userCourses = this.SchoolRepository.FindCourses(school.Id);
+                if (userCourseCodes.Any())
+                    userCourses = userCourses.Where(c => userCourseCodes.Contains(c.Code));
+
+                List<int> userCourseIds = userCourses.Select(c => c.Id).ToList();
+
+                aspNetUserRepository.LinkCourses(student, userCourseIds, deleteAdditionalLinks: true);
             }
 
             Logger.LogInformation("Client synchronization finished");

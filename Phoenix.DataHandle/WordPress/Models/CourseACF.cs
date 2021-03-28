@@ -13,7 +13,7 @@ namespace Phoenix.DataHandle.WordPress.Models
     public class CourseACF : IModelACF<Course>
     {
         [JsonProperty(PropertyName = "code")]
-        public short Code { get; set; }
+        public short Code { get; }
 
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }

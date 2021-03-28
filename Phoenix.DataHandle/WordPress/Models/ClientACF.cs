@@ -23,39 +23,55 @@ namespace Phoenix.DataHandle.WordPress.Models
         public string NeedsParentAuthorizationString { get; set; }
 
         [JsonProperty(PropertyName = "student_phone")]
-        public long? StudentPhoneNumber { get; set; }
+        public long? StudentPhoneNumber 
+        { 
+            get => this.IsSelfDetermined ? studentPhoneNumber : null;
+            private set => this.studentPhoneNumber = value;
+        }
+        private long? studentPhoneNumber;
 
         [JsonProperty(PropertyName = "parent1_full_name")]
-        public string Parent1FullName { get; set; }
+        public string Parent1FullName { get => parent1FullName; set => parent1FullName = string.IsNullOrWhiteSpace(value) ? null : value; }
+        private string parent1FullName;
 
         [JsonProperty(PropertyName = "parent1_phone")]
-        public long? Parent1PhoneNumber { get; set; }
+        public long? Parent1PhoneNumber { get; }
 
         [JsonProperty(PropertyName = "parent2_full_name")]
-        public string Parent2FullName { get; set; }
+        public string Parent2FullName { get => parent2FullName; set => parent2FullName = string.IsNullOrWhiteSpace(value) ? null : value; }
+        private string parent2FullName;
 
         [JsonProperty(PropertyName = "parent2_phone")]
-        public long? Parent2PhoneNumber { get; set; }
+        public long? Parent2PhoneNumber { get; }
 
         public bool IsSelfDetermined => string.Compare(this.NeedsParentAuthorizationString, "No", StringComparison.InvariantCultureIgnoreCase) == 0;
-        public long? AffiliatedPhoneNumber => this.Parent1PhoneNumber ?? this.Parent2PhoneNumber;
+        public string TopPhoneNumber => (this.StudentPhoneNumber ?? this.Parent1PhoneNumber ?? this.Parent2PhoneNumber).ToString();
 
-        public Expression<Func<AspNetUsers, bool>> MatchesUnique => u =>
-            u.PhoneNumber == StudentPhoneNumber.ToString() ||
-            u.AffiliatedPhoneNumber == Parent1PhoneNumber.ToString() ||
-            u.AffiliatedPhoneNumber == Parent2PhoneNumber.ToString();
+        public string StudentPhoneString => this.StudentPhoneNumber.HasValue ? this.StudentPhoneNumber.ToString() : null;
+        public string Parent1PhoneString => this.Parent1PhoneNumber.HasValue ? this.Parent1PhoneNumber.ToString() : null;
+        public string Parent2PhoneString => this.Parent2PhoneNumber.HasValue ? this.Parent2PhoneNumber.ToString() : null;
+
+        public bool HasParent1 => !string.IsNullOrEmpty(this.Parent1FullName) && this.Parent1PhoneNumber.HasValue;
+        public bool HasParent2 => !string.IsNullOrEmpty(this.Parent2FullName) && this.Parent2PhoneNumber.HasValue;
+
+        public string StudentFirstName => UserInfoHelper.GetFirstName(this.StudentFullName);
+        public string StudentLastName => UserInfoHelper.GetLastName(this.StudentFullName);
+
+        public static string GetUserName(User user, int schoolId, string phone)
+        {
+            return $"{user.FirstName.Substring(0, 4)}_{user.LastName}_{schoolId}_{phone}".ToLowerInvariant();
+        }
+
+        public Expression<Func<AspNetUsers, bool>> MatchesUnique => u => this.IsSelfDetermined && u.PhoneNumber == StudentPhoneString;
 
         public SchoolUnique SchoolUnique { get; set; }
 
         [JsonConstructor]
         public ClientACF(long? studentPhoneNumber, long? parent1PhoneNumber, long? parent2PhoneNumber)
         {
-            if (studentPhoneNumber is null || parent1PhoneNumber is null || parent2PhoneNumber is null)
-                throw new ArgumentNullException("", "At least one parameter should be a non-null value");
-
             this.StudentPhoneNumber = studentPhoneNumber;
             this.Parent1PhoneNumber = parent1PhoneNumber;
-            this.Parent1PhoneNumber = parent2PhoneNumber;
+            this.Parent2PhoneNumber = parent2PhoneNumber;
         }
 
         public ClientACF(ClientACF other)
@@ -76,13 +92,8 @@ namespace Phoenix.DataHandle.WordPress.Models
             var user = new AspNetUsers
             {
                 PhoneNumber = this.StudentPhoneNumber.HasValue ? this.StudentPhoneNumber.ToString() : null,
-                AffiliatedPhoneNumber = this.AffiliatedPhoneNumber.HasValue ? this.AffiliatedPhoneNumber.ToString() : null,
                 CreatedApplicationType = ApplicationType.Scheduler
             };
-
-            //TODO: Assign a better UserName
-            user.UserName = this.StudentFullName.Substring(0, 3) + (user.PhoneNumber ?? user.AffiliatedPhoneNumber);
-            user.NormalizedUserName = user.UserName.ToUpperInvariant();
 
             return user;
         }
@@ -101,8 +112,8 @@ namespace Phoenix.DataHandle.WordPress.Models
         {
             return new User()
             {
-                FirstName = UserInfoHelper.GetFirstName(this.StudentFullName).Truncate(255),
-                LastName = UserInfoHelper.GetFirstName(this.StudentFullName).Truncate(255),
+                FirstName = this.StudentFirstName.Truncate(255),
+                LastName =this.StudentLastName.Truncate(255),
                 IsSelfDetermined = this.IsSelfDetermined
             };
         }
@@ -118,23 +129,21 @@ namespace Phoenix.DataHandle.WordPress.Models
 
         public List<AspNetUsers> ExtractParents()
         {
-            //TODO: Assign a better UserName
-
             var parents = new List<AspNetUsers>(2);
-            parents.Add(new AspNetUsers
-            {
-                PhoneNumber = this.Parent1PhoneNumber.ToString(),
-                AffiliatedPhoneNumber = null,
-                CreatedApplicationType = ApplicationType.Scheduler,
-                UserName = this.Parent1FullName.Substring(0, 3) + this.Parent1PhoneNumber,
-                NormalizedUserName = this.Parent1FullName.Substring(0, 3).ToUpperInvariant() + this.Parent1PhoneNumber
-            });
 
-            if (!string.IsNullOrEmpty(this.Parent2FullName) && this.Parent2PhoneNumber.HasValue)
+            if (this.HasParent1)
+                parents.Add(new AspNetUsers
+                {
+                    PhoneNumber = this.Parent1PhoneNumber.ToString(),
+                    CreatedApplicationType = ApplicationType.Scheduler,
+                    UserName = this.Parent1FullName.Substring(0, 3) + this.Parent1PhoneNumber,
+                    NormalizedUserName = this.Parent1FullName.Substring(0, 3).ToUpperInvariant() + this.Parent1PhoneNumber
+                });
+
+            if (this.HasParent2)
                 parents.Add(new AspNetUsers
                 {
                     PhoneNumber = this.Parent2PhoneNumber.ToString(),
-                    AffiliatedPhoneNumber = null,
                     CreatedApplicationType = ApplicationType.Scheduler,
                     UserName = this.Parent2FullName.Substring(0, 3) + this.Parent2PhoneNumber,
                     NormalizedUserName = this.Parent2FullName.Substring(0, 3).ToUpperInvariant() + this.Parent2PhoneNumber
@@ -146,14 +155,16 @@ namespace Phoenix.DataHandle.WordPress.Models
         public List<User> ExtractParentUsers()
         {
             var parentUsers = new List<User>(2);
-            parentUsers.Add(new User
-            {
-                FirstName = UserInfoHelper.GetFirstName(this.Parent1FullName).Truncate(255),
-                LastName = UserInfoHelper.GetLastName(this.Parent1FullName).Truncate(255),
-                IsSelfDetermined = true
-            });
 
-            if (!string.IsNullOrEmpty(this.Parent2FullName) && this.Parent2PhoneNumber.HasValue)
+            if (this.HasParent1)
+                parentUsers.Add(new User
+                {
+                    FirstName = UserInfoHelper.GetFirstName(this.Parent1FullName).Truncate(255),
+                    LastName = UserInfoHelper.GetLastName(this.Parent1FullName).Truncate(255),
+                    IsSelfDetermined = true
+                });
+
+            if (this.HasParent2)
                 parentUsers.Add(new User
                 {
                     FirstName = UserInfoHelper.GetFirstName(this.Parent2FullName).Truncate(255),

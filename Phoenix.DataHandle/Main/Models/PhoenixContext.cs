@@ -122,12 +122,6 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasIndex(e => e.PhoneNumber)
                     .HasName("PhoneNumberIndex");
 
-                entity.HasIndex(e => new { e.PhoneNumber, e.AffiliatedPhoneNumber })
-                    .HasName("UQ_AspNetUsers")
-                    .IsUnique();
-
-                entity.Property(e => e.AffiliatedPhoneNumber).HasMaxLength(50);
-
                 entity.Property(e => e.CreatedApplicationType).HasDefaultValueSql("((-1))");
 
                 entity.Property(e => e.CreatedAt)

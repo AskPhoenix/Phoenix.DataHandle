@@ -17,22 +17,6 @@ namespace Phoenix.DataHandle.Repositories
             teacherRoleId = this.dbContext.Set<AspNetRoles>().Single(r => r.Type == Role.Teacher).Id;
         }
 
-        public override AspNetUsers Create(AspNetUsers tModel)
-        {
-            if (!string.IsNullOrEmpty(tModel.PhoneNumber))
-                tModel.AffiliatedPhoneNumber = null;
-
-            return base.Create(tModel);
-        }
-
-        public override AspNetUsers Update(AspNetUsers tModel)
-        {
-            if (!string.IsNullOrEmpty(tModel.PhoneNumber))
-                tModel.AffiliatedPhoneNumber = null;
-
-            return base.Update(tModel);
-        }
-
         public AspNetUsers Update(AspNetUsers tModel, AspNetUsers tModelFrom)
         {
             if (tModel == null)
@@ -43,7 +27,6 @@ namespace Phoenix.DataHandle.Repositories
             tModel.UserName = tModelFrom.UserName;
             tModel.NormalizedUserName = tModelFrom.NormalizedUserName;
             tModel.PhoneNumber = tModelFrom.PhoneNumber;
-            tModel.AffiliatedPhoneNumber = tModelFrom.AffiliatedPhoneNumber;
             
             tModel.AccessFailedCount = tModelFrom.AccessFailedCount;
             tModel.CreatedApplicationType = tModelFrom.CreatedApplicationType;
@@ -174,6 +157,13 @@ namespace Phoenix.DataHandle.Repositories
                 ThenInclude(ch => ch.User).
                 Where(p => p.ParentId == parentId).
                 Select(p => p.Child);
+        }
+
+        public AspNetUsers FindChild(int parentId, string childFirstName, string childLastName)
+        {
+            return this.FindChildren(parentId).
+                AsEnumerable().
+                SingleOrDefault(c => c.User.FirstName == childFirstName && c.User.LastName == childLastName);
         }
 
         public IQueryable<AspNetUsers> FindParents(int childId)

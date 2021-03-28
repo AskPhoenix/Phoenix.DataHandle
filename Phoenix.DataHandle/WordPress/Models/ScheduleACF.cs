@@ -18,10 +18,10 @@ namespace Phoenix.DataHandle.WordPress.Models
         private string classroomName;
 
         [JsonProperty(PropertyName = "day")]
-        public string DayName { get; set; }
+        public string DayName { get; }
 
         [JsonProperty(PropertyName = "start_time")]
-        private string StartTimeString { get; set; }
+        private string StartTimeString { get; }
         public DateTimeOffset StartTime { get => CalendarExtensions.ParseExact(this.StartTimeString, "H:m", this.SchoolTimeZone); }
 
         [JsonProperty(PropertyName = "end_time")]

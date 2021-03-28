@@ -53,6 +53,8 @@ namespace Phoenix.DataHandle.Services
 
                     aspNetUser = personnelAcf.ToContext();
                     aspNetUser.User = personnelAcf.ExtractUser();
+                    aspNetUser.UserName = PersonnelACF.GetUserName(aspNetUser.User, school.Id, aspNetUser.PhoneNumber);
+                    aspNetUser.NormalizedUserName = aspNetUser.UserName.ToUpperInvariant();
                     
                     this.aspNetUserRepository.Create(aspNetUser);
                     this.IdsLog.Add(aspNetUser.Id);
@@ -62,6 +64,10 @@ namespace Phoenix.DataHandle.Services
                 else
                 {
                     Logger.LogInformation($"Updating Personnel User with PhoneNumber: {aspNetUser.PhoneNumber}");
+
+                    aspNetUser.UserName = PersonnelACF.GetUserName(aspNetUser.User, school.Id, aspNetUser.PhoneNumber);
+                    aspNetUser.NormalizedUserName = aspNetUser.UserName.ToUpperInvariant();
+
                     this.aspNetUserRepository.Update(aspNetUser, personnelAcf.ToContext(), personnelAcf.ExtractUser());
                     this.IdsLog.Add(aspNetUser.Id);
                 }
@@ -77,22 +83,13 @@ namespace Phoenix.DataHandle.Services
 
                 Logger.LogInformation("Linking with the Courses of Personnel User");
 
-                List<int> userCourseIds;
-                if (string.IsNullOrEmpty(personnelAcf.CourseCodesString) || personnelAcf.RoleType.IsStaffAdmin())
-                {
-                    userCourseIds = this.SchoolRepository.FindCourses(school.Id).Select(c => c.Id).ToList();
-                }
-                else
-                {
-                    short[] courseCodes = personnelAcf.ExtractCourseCodes();
-                    userCourseIds = new List<int>(courseCodes.Length);
-                    foreach (short courseCode in courseCodes)
-                    {
-                        if (!this.TryFindCourse(personnelPost, school.Id, out Course course))
-                            continue;
-                        userCourseIds.Add(course.Id);
-                    }
-                }
+                short[] userCourseCodes = personnelAcf.ExtractCourseCodes();
+                
+                var userCourses = this.SchoolRepository.FindCourses(school.Id);
+                if (userCourseCodes.Any())
+                    userCourses = userCourses.Where(c => userCourseCodes.Contains(c.Code));
+
+                List<int> userCourseIds = userCourses.Select(c => c.Id).ToList();
 
                 aspNetUserRepository.LinkCourses(aspNetUser, userCourseIds, deleteAdditionalLinks: true);
             }

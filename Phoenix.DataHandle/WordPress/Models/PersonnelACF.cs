@@ -19,7 +19,7 @@ namespace Phoenix.DataHandle.WordPress.Models
         public string RoleString { get; set; }
 
         [JsonProperty(PropertyName = "phone")]
-        public long PhoneNumber { get; set; }
+        public long PhoneNumber { get; }
 
         [JsonProperty(PropertyName = "course_codes")]
         public string CourseCodesString { get; set; }
@@ -28,6 +28,10 @@ namespace Phoenix.DataHandle.WordPress.Models
         public Role RoleType => this.RoleString.Replace(" ", "").ToRole();
         public string FirstName => UserInfoHelper.GetFirstName(this.FullName);
         public string LastName => UserInfoHelper.GetLastName(this.FullName);
+        public static string GetUserName(User user, int schoolId, string phone)
+        {
+            return $"{user.FirstName.Substring(4)}_{user.LastName}_{schoolId}_{phone}".ToLowerInvariant();
+        }
 
         public Expression<Func<AspNetUsers, bool>> MatchesUnique => u => u.PhoneNumber == this.PhoneString;
 
@@ -49,13 +53,9 @@ namespace Phoenix.DataHandle.WordPress.Models
 
         public AspNetUsers ToContext()
         {
-            //TODO: Assign a better UserName
             return new AspNetUsers
             {
                 PhoneNumber = this.PhoneString,
-                AffiliatedPhoneNumber = null,
-                UserName = this.FullName.Substring(0, 3) + this.PhoneString,
-                NormalizedUserName = this.FullName.Substring(0, 3).ToUpperInvariant() + this.PhoneString,
                 CreatedApplicationType = ApplicationType.Scheduler
             };
         }

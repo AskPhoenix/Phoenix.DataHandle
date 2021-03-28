@@ -12,7 +12,7 @@ namespace Phoenix.DataHandle.WordPress.Models
     public class SchoolACF : IModelACF<School>
     {
         [JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
+        public string Name { get; }
 
         [JsonProperty(PropertyName = "slug")]
         public string Slug { get => slug; set => slug = string.IsNullOrWhiteSpace(value) ? null : value; }
@@ -22,7 +22,7 @@ namespace Phoenix.DataHandle.WordPress.Models
         public string Language { get; set; }
 
         [JsonProperty(PropertyName = "city")]
-        public string City { get; set; }
+        public string City { get; private set; }
 
         [JsonProperty(PropertyName = "address")]
         public string Address { get; set; }
