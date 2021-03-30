@@ -72,13 +72,16 @@ namespace Phoenix.DataHandle.Repositories
 
             var courseBookSet = this.dbContext.Set<CourseBook>();
 
+            var alreadyLinkedBookIds = this.GetLinkedBooks(tModel).Select(b => b.Id);
+            var newBookIdsToLink = bookIds.Where(id => !alreadyLinkedBookIds.Contains(id));
+
             if (deleteAdditionalLinks)
             {
-                var additionalLinks = courseBookSet.Where(cb => !bookIds.Contains(cb.BookId));
-                courseBookSet.RemoveRange(additionalLinks);
+                var courseBooksToRemove = courseBookSet.Where(cb => cb.CourseId == tModel.Id && !bookIds.Contains(cb.BookId));
+                courseBookSet.RemoveRange(courseBooksToRemove);
             }
 
-            courseBookSet.AddRange(bookIds.Select(bId => new CourseBook() { CourseId = tModel.Id, BookId = bId }));
+            courseBookSet.AddRange(newBookIdsToLink.Select(bId => new CourseBook() { CourseId = tModel.Id, BookId = bId }));
             this.dbContext.SaveChanges();
         }
 

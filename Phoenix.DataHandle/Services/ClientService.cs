@@ -88,10 +88,12 @@ namespace Phoenix.DataHandle.Services
                 {
                     Logger.LogInformation($"Updating Student with (Parent) PhoneNumber: {clientAcf.TopPhoneNumber}");
 
-                    student.UserName = ClientACF.GetUserName(student.User, school.Id, clientAcf.TopPhoneNumber);
+                    var updatedUser = clientAcf.ExtractUser();
+
+                    student.UserName = ClientACF.GetUserName(updatedUser, school.Id, clientAcf.TopPhoneNumber);
                     student.NormalizedUserName = student.UserName.ToUpperInvariant();
 
-                    this.aspNetUserRepository.Update(student, clientAcf.ToContext(), clientAcf.ExtractUser());
+                    this.aspNetUserRepository.Update(student, clientAcf.ToContext(), updatedUser);
                     this.IdsLog.Add(student.Id);
                 }
 
@@ -126,7 +128,7 @@ namespace Phoenix.DataHandle.Services
                         this.aspNetUserRepository.Update(parent, parents[i], parentUsers[i]);
                         if (aspNetUserRepository.FindChild(parent.Id, clientAcf.StudentFirstName, clientAcf.StudentLastName) is null)
                             this.aspNetUserRepository.LinkParenthood(parent, student);
-                        if (aspNetUserRepository.HasRole(parent, Role.Parent))
+                        if (!aspNetUserRepository.HasRole(parent, Role.Parent))
                             this.aspNetUserRepository.LinkRole(parent, Role.Parent);
                     }
 

@@ -66,7 +66,7 @@ namespace Phoenix.DataHandle.Services
                 Logger.LogInformation($"Synchronizing Books of Course: {coursePost.GetTitle()}");
 
                 var books = courseAcf.ExtractBooks();
-                List<int> bookIdsToLink = new List<int>(books.Count());
+                List<int> bookIds = new List<int>(books.Count());
 
                 foreach (var book in books)
                 {
@@ -75,20 +75,19 @@ namespace Phoenix.DataHandle.Services
                     {
                         Logger.LogInformation($"Adding Book: {book.Name}");
                         bookRepository.Create(book);
-                        bookIdsToLink.Add(book.Id);
+                        ctxBook = book;
                     }
                     else
                     {
                         Logger.LogInformation($"Updating Book: {book.Name}");
                         bookRepository.Update(ctxBook);
                     }
+                    
+                    bookIds.Add(ctxBook.Id);
                 }
 
-                if (bookIdsToLink.Any())
-                {
-                    Logger.LogInformation($"Linking Books with Course {coursePost.GetTitle()}");
-                    this.CourseRepository.LinkBooks(course, bookIdsToLink, deleteAdditionalLinks: true);
-                }
+                Logger.LogInformation($"Linking Books with Course {coursePost.GetTitle()}");
+                this.CourseRepository.LinkBooks(course, bookIds, deleteAdditionalLinks: true);
             }
 
             Logger.LogInformation("Courses and Books synchronization finished");
