@@ -9,14 +9,11 @@ namespace Phoenix.DataHandle.Repositories
 {
     public class AspNetUserRepository : Repository<AspNetUsers>
     {
-        private readonly int studentRoleId, teacherRoleId;
+        public AspNetUserRepository(PhoenixContext dbContext) 
+            : base(dbContext) { }
 
-        public AspNetUserRepository(PhoenixContext dbContext) : base(dbContext) 
-        {
-            studentRoleId = this.dbContext.Set<AspNetRoles>().Single(r => r.Type == Role.Student).Id;
-            teacherRoleId = this.dbContext.Set<AspNetRoles>().Single(r => r.Type == Role.Teacher).Id;
-        }
-
+        //TODO: Use Repository's Include method
+        //TODO: Revise all repositories methods
         public AspNetUsers Update(AspNetUsers tModel, AspNetUsers tModelFrom)
         {
             if (tModel == null)
@@ -82,6 +79,14 @@ namespace Phoenix.DataHandle.Repositories
                 Any();
         }
 
+        public bool HasLogin(LoginProvider provider, string providerKey)
+        {
+            var login = this.dbContext.Set<AspNetUserLogins>().
+                SingleOrDefault(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
+
+            return login != null;
+        }
+
         public bool AnyLogin(int userId, bool onlyActive = false)
         {
             var userLogins = this.dbContext.Set<AspNetUserLogins>().
@@ -93,13 +98,13 @@ namespace Phoenix.DataHandle.Repositories
             return userLogins.Any();
         }
 
-        public bool AnyLogin(LoginProvider provider, string providerKey, bool onlyActive = false)
+        public bool AnyLogin(int userId, LoginProvider provider, bool onlyActive = false)
         {
-            if (providerKey == null)
-                throw new ArgumentNullException(nameof(providerKey));
+            if (provider == LoginProvider.Other)
+                throw new InvalidOperationException("Provider needs to be a valid channel");
 
             var userLogins = this.dbContext.Set<AspNetUserLogins>().
-                Where(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
+                Where(l => l.UserId == userId && l.LoginProvider == provider.GetProviderName());
             
             if (onlyActive)
                 userLogins = userLogins.Where(l => l.IsActive);
@@ -112,14 +117,14 @@ namespace Phoenix.DataHandle.Repositories
             if (userLogin == null)
                 throw new ArgumentNullException(nameof(userLogin));
 
-            if (AnyLogin(userLogin.LoginProvider.ToLoginProvider(), userLogin.ProviderKey))
+            if (HasLogin(userLogin.LoginProvider.ToLoginProvider(), userLogin.ProviderKey))
             {
-                userLogin.UpdatedAt = DateTimeOffset.Now;
+                userLogin.UpdatedAt = DateTimeOffset.UtcNow;
                 this.dbContext.Set<AspNetUserLogins>().Update(userLogin);
             }
             else
             {
-                userLogin.CreatedAt = DateTimeOffset.Now;
+                userLogin.CreatedAt = DateTimeOffset.UtcNow;
                 this.dbContext.Set<AspNetUserLogins>().Add(userLogin);
             }
 
