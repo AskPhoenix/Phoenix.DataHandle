@@ -79,12 +79,15 @@ namespace Phoenix.DataHandle.Repositories
                 Any();
         }
 
-        public bool HasLogin(LoginProvider provider, string providerKey)
+        public bool HasLogin(LoginProvider provider, string providerKey, bool onlyActive = false)
         {
-            var login = this.dbContext.Set<AspNetUserLogins>().
-                SingleOrDefault(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
+            var login = this.FindLogin(provider, providerKey);
 
-            return login != null;
+            bool hasLogin = login != null;
+            if (onlyActive)
+                hasLogin &= login.IsActive;
+
+            return hasLogin;
         }
 
         public bool AnyLogin(int userId, bool onlyActive = false)
@@ -100,9 +103,6 @@ namespace Phoenix.DataHandle.Repositories
 
         public bool AnyLogin(int userId, LoginProvider provider, bool onlyActive = false)
         {
-            if (provider == LoginProvider.Other)
-                throw new InvalidOperationException("Provider needs to be a valid channel");
-
             var userLogins = this.dbContext.Set<AspNetUserLogins>().
                 Where(l => l.UserId == userId && l.LoginProvider == provider.GetProviderName());
             
@@ -112,23 +112,44 @@ namespace Phoenix.DataHandle.Repositories
             return userLogins.Any();
         }
 
-        public void LinkLogin(AspNetUserLogins userLogin)
+        public void LinkLogin(LoginProvider provider, string providerKey, int userId, bool activate)
         {
-            if (userLogin == null)
-                throw new ArgumentNullException(nameof(userLogin));
+            if (provider == LoginProvider.Other)
+                throw new InvalidOperationException("Provider needs to be a valid channel");
+            if (string.IsNullOrEmpty(providerKey))
+                throw new ArgumentNullException(nameof(providerKey));
 
-            if (HasLogin(userLogin.LoginProvider.ToLoginProvider(), userLogin.ProviderKey))
+            var login = this.FindLogin(provider, providerKey);
+
+            if (login is null)
             {
-                userLogin.UpdatedAt = DateTimeOffset.UtcNow;
-                this.dbContext.Set<AspNetUserLogins>().Update(userLogin);
+                login = new AspNetUserLogins()
+                {
+                    LoginProvider = provider.GetProviderName(),
+                    ProviderDisplayName = provider.GetProviderName().ToLower(),
+                    ProviderKey = providerKey,
+                    IsActive = activate,
+                    UserId = userId,
+                    CreatedAt = DateTimeOffset.UtcNow
+                };
+                this.dbContext.Set<AspNetUserLogins>().Add(login);
             }
             else
             {
-                userLogin.CreatedAt = DateTimeOffset.UtcNow;
-                this.dbContext.Set<AspNetUserLogins>().Add(userLogin);
+                login.UserId = userId;
+                login.IsActive = activate;
+                login.UpdatedAt = DateTimeOffset.UtcNow;
+
+                this.dbContext.Set<AspNetUserLogins>().Update(login);
             }
 
             this.dbContext.SaveChanges();
+        }
+
+        public AspNetUserLogins FindLogin(LoginProvider provider, string providerKey)
+        {
+            return this.dbContext.Set<AspNetUserLogins>().
+                SingleOrDefault(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
         }
 
         public AspNetUsers FindUserFromLogin(LoginProvider provider, string providerKey)
