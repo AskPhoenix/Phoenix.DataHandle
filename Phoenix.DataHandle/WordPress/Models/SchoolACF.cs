@@ -1,7 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
+using Phoenix.DataHandle.WordPress.Models.Uniques;
 using System;
+using System.Globalization;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.WordPress.Models
@@ -9,14 +12,17 @@ namespace Phoenix.DataHandle.WordPress.Models
     public class SchoolACF : IModelACF<School>
     {
         [JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
+        public string Name { get; }
 
         [JsonProperty(PropertyName = "slug")]
         public string Slug { get => slug; set => slug = string.IsNullOrWhiteSpace(value) ? null : value; }
         private string slug;
 
+        [JsonProperty(PropertyName = "language")]
+        public string Language { get; set; }
+
         [JsonProperty(PropertyName = "city")]
-        public string City { get; set; }
+        public string City { get; private set; }
 
         [JsonProperty(PropertyName = "address")]
         public string Address { get; set; }
@@ -25,49 +31,84 @@ namespace Phoenix.DataHandle.WordPress.Models
         public string Comments { get => comments; set => comments = string.IsNullOrWhiteSpace(value) ? null : value; }
         private string comments;
 
+        [JsonProperty(PropertyName = "time_zone")]
+        public string TimeZone { get; set; }
+
+        [JsonProperty(PropertyName = "facebook_page_id")]
         public string FacebookPageId { get; set; }
 
-        public Expression<Func<School, bool>> MatchesUnique => s => s != null && s.Name == this.Name && s.City == this.City;
+        public string Locale => CultureInfo.GetCultures(CultureTypes.NeutralCultures).
+                FirstOrDefault(c => c.EnglishName.ToUpperInvariant() == this.Language.ToUpperInvariant())?.
+                TwoLetterISOLanguageName;
 
-        public SchoolACF() { }
+        public Expression<Func<School, bool>> MatchesUnique => s =>
+            s.NormalizedName == this.SchoolUnique.NormalizedSchoolName &&
+            s.NormalizedCity == this.SchoolUnique.NormalizedSchoolCity;
 
+        public SchoolUnique SchoolUnique { get; set; }
+
+        [JsonConstructor]
         public SchoolACF(string name, string city)
-            : this(new string[2] { name, city })
-        { }
-
-        public SchoolACF(string[] unique)
         {
-            if (unique.Length == 2)
-            {
-                this.Name = unique[0];
-                this.City = unique[1];
-            }
+            this.Name = name;
+            this.City = city;
+
+            this.SchoolUnique = new SchoolUnique(name.ToUpperInvariant(), city.ToUpperInvariant());
         }
-        
+
+        public SchoolACF(SchoolUnique schoolUnique)
+        {
+            this.SchoolUnique = schoolUnique;
+        }
+
+        public SchoolACF(SchoolACF other)
+        {
+            if (other is null)
+                throw new ArgumentNullException(nameof(other));
+
+            this.Name = other.Name;
+            this.Slug = other.Slug;
+            this.City = other.City;
+            this.Language = other.Language;
+            this.Address = other.Address;
+            this.Comments = other.comments;
+            this.SchoolUnique = other.SchoolUnique;
+            this.TimeZone = other.TimeZone;
+            this.FacebookPageId = other.FacebookPageId;
+        }
+
         public School ToContext()
         {
             return new School
             {
-                Name = this.Name?.Substring(0, Math.Min(this.Name.Length, 200)),
-                Slug = (this.Slug ?? this.Name)?.Substring(0, Math.Min((this.Slug ?? this.Name).Length, 64)),
-                City = this.City?.Substring(0, Math.Min(this.City.Length, 200)),
-                AddressLine = this.Address?.Substring(0, Math.Min(this.Address.Length, 255)),
-                Info = this.Comments,
-                FacebookPageId = this.FacebookPageId?.Substring(0, Math.Min(this.FacebookPageId.Length, 20)),
-                CreatedAt = DateTimeOffset.Now
+                Name = this.Name.Truncate(200),
+                NormalizedName = this.Name.ToUpperInvariant().Truncate(200),
+                Slug = (this.Slug ?? this.Name).Truncate(64),
+                City = this.City.Truncate(200),
+                NormalizedCity = this.City.ToUpperInvariant().Truncate(200),
+                AddressLine = this.Address.Truncate(255),
+                FacebookPageId = this.FacebookPageId,
+                Info = this.Comments
             };
         }
 
         public IModelACF<School> WithTitleCase()
         {
-            return new SchoolACF
+            return new SchoolACF(this)
             {
-                FacebookPageId = this.FacebookPageId,
-                Name = this.Name,
-                Slug = this.Slug,
-                City = this.City?.UpperToTitleCase(),
-                Address = this.Address?.UpperToTitleCase(),
-                Comments = this.Comments
+                City = this.City.ToTitleCase(),
+                Address = this.Address.ToTitleCase(),
+                TimeZone = this.TimeZone.ToTitleCase()
+            };
+        }
+
+        public SchoolSettings ExtractSchoolSettings()
+        {
+            return new SchoolSettings
+            {
+                Language = this.Language,
+                Locale2 = this.Locale,
+                TimeZone = this.TimeZone
             };
         }
     }

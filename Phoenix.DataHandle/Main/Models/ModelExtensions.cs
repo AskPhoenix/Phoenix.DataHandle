@@ -69,6 +69,11 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IMaterial> IBook.Materials => this.Material;
     }
 
+    public partial class BotFeedback : IBotFeedback, IModelEntity
+    {
+        IAspNetUsers IBotFeedback.Author => this.Author;
+    }
+
     public partial class Classroom : IClassroom, IModelEntity
     {
         ISchool IClassroom.School => this.School;
@@ -86,6 +91,17 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ISchedule> ICourse.Schedules => this.Schedule;
         IEnumerable<IStudentCourse> ICourse.StudentCourses => this.StudentCourse;
         IEnumerable<ITeacherCourse> ICourse.TeacherCourses => this.TeacherCourse;
+
+        public string NameWithSubcourse { 
+            get
+            {
+                string tore = this.Name;
+                if (!string.IsNullOrEmpty(this.SubCourse))
+                    tore += " - " + this.SubCourse;
+
+                return tore;
+            }
+        }
     }
 
     public partial class CourseBook : ICourseBook
@@ -129,9 +145,15 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class School : ISchool, IModelEntity
     {
+        ISchoolSettings ISchool.SchoolSettings => this.SchoolSettings;
         IEnumerable<IUserSchool> ISchool.UserSchools => this.UserSchool;
         IEnumerable<IClassroom> ISchool.Classrooms => this.Classroom;
         IEnumerable<ICourse> ISchool.Courses => this.Course;
+    }
+
+    public partial class SchoolSettings : ISchoolSettings
+    {
+        ISchool ISchoolSettings.School => this.School;
     }
 
     public partial class StudentCourse : IStudentCourse

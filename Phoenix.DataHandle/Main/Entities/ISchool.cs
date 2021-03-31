@@ -6,12 +6,15 @@ namespace Phoenix.DataHandle.Main.Entities
     public interface ISchool
     {
         string Name { get; set; }
+        string NormalizedName { get; set; }
         string Slug { get; set; }
         string City { get; set; }
+        public string NormalizedCity { get; set; }
         string AddressLine { get; set; }
         string Info { get; set; }
         string FacebookPageId { get; set; }
-
+        
+        ISchoolSettings SchoolSettings { get; }
         IEnumerable<IClassroom> Classrooms { get; }
         IEnumerable<ICourse> Courses { get; }
         IEnumerable<IUserSchool> UserSchools { get; }

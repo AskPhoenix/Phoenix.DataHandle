@@ -3,6 +3,7 @@ using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Repositories;
 using Phoenix.DataHandle.WordPress;
 using Phoenix.DataHandle.WordPress.Models;
+using Phoenix.DataHandle.WordPress.Models.Uniques;
 using Phoenix.DataHandle.WordPress.Utilities;
 using Phoenix.DataHandle.WordPress.Wrappers;
 using System;
@@ -14,19 +15,14 @@ namespace Phoenix.DataHandle.Services
 {
     public class CourseService : WPService
     {
-        private readonly CourseRepository courseRepository;
         private readonly BookRepository bookRepository;
 
         protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.Course);
 
-        public CourseService(PhoenixContext phoenixContext, ILogger<WPService> logger)
-            : this(phoenixContext, logger, false, null)
-        { }
-
-        public CourseService(PhoenixContext phoenixContext, ILogger<WPService> logger, bool deleteAdditional, string specificSchoolUnique)
-            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional)
+        public CourseService(PhoenixContext phoenixContext, ILogger<WPService> logger,
+            string specificSchoolUnique = null, bool deleteAdditional = false)
+            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional) 
         {
-            this.courseRepository = new CourseRepository(phoenixContext);
             this.bookRepository = new BookRepository(phoenixContext);
         }
 
@@ -37,62 +33,65 @@ namespace Phoenix.DataHandle.Services
 
         public override async Task SynchronizeAsync()
         {
-            _logger.LogInformation("Courses and Books synchronization started");
+            Logger.LogInformation("Courses and Books synchronization started");
 
             var coursePosts = await this.GetAllPostsAsync();
             foreach (var coursePost in coursePosts)
             {
-                if (!this.TryGetSchoolIdFromPost(coursePost, out int schoolId))
+                if (!this.TryFindSchool(coursePost, out School school))
                     continue;
 
-                CourseACF acfCourse = (CourseACF)(await WordPressClientWrapper.GetAcfAsync<CourseACF>(coursePost.Id)).WithTitleCase();
-                acfCourse.SchoolId = schoolId;
+                CourseACF courseAcf = (CourseACF)(await WordPressClientWrapper.GetAcfAsync<CourseACF>(coursePost.Id)).WithTitleCase();
+                courseAcf.SchoolUnique = new SchoolUnique(coursePost.GetTitle());
+                courseAcf.SchoolTimeZone = school.SchoolSettings.TimeZone;
 
-                var curCourse = await courseRepository.Find(acfCourse.MatchesUnique);
-                var ctxCourse = acfCourse.ToContext();
-                if (curCourse == null)
+                var course = await this.CourseRepository.Find(courseAcf.MatchesUnique);
+                if (course is null)
                 {
-                    _logger.LogInformation($"Adding Course: {coursePost.GetTitle()}");
-                    
-                    courseRepository.Create(ctxCourse);
-                    this.IdsLog.Add(ctxCourse.Id);
+                    Logger.LogInformation($"Adding Course: {coursePost.GetTitle()}");
+
+                    course = courseAcf.ToContext();
+                    course.SchoolId = school.Id;
+
+                    this.CourseRepository.Create(course);
+                    this.IdsLog.Add(course.Id);
                 }
                 else
                 {
-                    _logger.LogInformation($"Updating Course: {coursePost.GetTitle()}");
-                    courseRepository.Update(curCourse, ctxCourse);
-                    this.IdsLog.Add(curCourse.Id);
+                    Logger.LogInformation($"Updating Course: {coursePost.GetTitle()}");
+                    this.CourseRepository.Update(course, courseAcf.ToContext());
+                    this.IdsLog.Add(course.Id);
                 }
 
-                _logger.LogInformation($"Synchronizing Books of Course: {coursePost.GetTitle()}");
+                Logger.LogInformation($"Synchronizing Books of Course: {coursePost.GetTitle()}");
 
-                var books = acfCourse.ExtractBooks();
+                var books = courseAcf.ExtractBooks();
                 List<int> bookIds = new List<int>(books.Count());
 
                 foreach (var book in books)
                 {
-                    if (!bookRepository.Find().Any(b => b.NormalizedName == book.NormalizedName))
+                    Book ctxBook = await bookRepository.Find(b => b.NormalizedName == book.NormalizedName);
+                    if (ctxBook is null)
                     {
-                        _logger.LogInformation($"Adding Book: {book.Name}");
+                        Logger.LogInformation($"Adding Book: {book.Name}");
                         bookRepository.Create(book);
-                        bookIds.Add(book.Id);
+                        ctxBook = book;
                     }
                     else
                     {
-                        _logger.LogInformation($"Book \"{book.Name}\" already exists");
-                        bookIds.Add((await bookRepository.Find(b => b.NormalizedName == book.NormalizedName)).Id);
+                        Logger.LogInformation($"Updating Book: {book.Name}");
+                        bookRepository.Update(ctxBook);
                     }
+                    
+                    bookIds.Add(ctxBook.Id);
                 }
 
-                _logger.LogInformation($"Linking Books with Course {coursePost.GetTitle()}");
-                
-                var bookIdsToExclude = courseRepository.GetLinkedBooks(curCourse ?? ctxCourse).Select(b => b.Id);
-                bookIds.RemoveAll(id => bookIdsToExclude.Contains(id));
-                courseRepository.LinkBooks(curCourse ?? ctxCourse, bookIds);
+                Logger.LogInformation($"Linking Books with Course {coursePost.GetTitle()}");
+                this.CourseRepository.LinkBooks(course, bookIds, deleteAdditionalLinks: true);
             }
 
-            _logger.LogInformation("Courses and Books synchronization finished");
-            _logger.LogInformation("--------------------------------");
+            Logger.LogInformation("Courses and Books synchronization finished");
+            Logger.LogInformation("--------------------------------");
         }
     }
 }

@@ -9,30 +9,11 @@ namespace Phoenix.DataHandle.Repositories
 {
     public class AspNetUserRepository : Repository<AspNetUsers>
     {
-        private readonly int studentRoleId, teacherRoleId;
+        public AspNetUserRepository(PhoenixContext dbContext) 
+            : base(dbContext) { }
 
-        public AspNetUserRepository(PhoenixContext dbContext) : base(dbContext) 
-        {
-            studentRoleId = this.dbContext.Set<AspNetRoles>().Single(r => r.Type == Role.Student).Id;
-            teacherRoleId = this.dbContext.Set<AspNetRoles>().Single(r => r.Type == Role.Teacher).Id;
-        }
-
-        public AspNetUsers Create(AspNetUsers tModel, User user)
-        {
-            if (user == null)
-                throw new ArgumentNullException(nameof(user));
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-
-            var tore = this.Create(tModel);
-
-            user.AspNetUserId = tore.Id;
-            this.dbContext.Set<User>().Add(user);
-            this.dbContext.SaveChanges();
-
-            return tore;
-        }
-
+        //TODO: Use Repository's Include method
+        //TODO: Revise all repositories methods
         public AspNetUsers Update(AspNetUsers tModel, AspNetUsers tModelFrom)
         {
             if (tModel == null)
@@ -43,6 +24,16 @@ namespace Phoenix.DataHandle.Repositories
             tModel.UserName = tModelFrom.UserName;
             tModel.NormalizedUserName = tModelFrom.NormalizedUserName;
             tModel.PhoneNumber = tModelFrom.PhoneNumber;
+            
+            tModel.AccessFailedCount = tModelFrom.AccessFailedCount;
+            tModel.CreatedApplicationType = tModelFrom.CreatedApplicationType;
+            tModel.Email = tModelFrom.Email;
+            tModel.EmailConfirmed = tModelFrom.EmailConfirmed;
+            tModel.LockoutEnabled = tModelFrom.LockoutEnabled;
+            tModel.LockoutEnd = tModelFrom.LockoutEnd;
+            tModel.NormalizedEmail = tModelFrom.NormalizedEmail;
+            tModel.PhoneNumberConfirmed = tModelFrom.PhoneNumberConfirmed;
+            tModel.TwoFactorEnabled = tModelFrom.TwoFactorEnabled;
 
             return this.Update(tModel);
         }
@@ -81,35 +72,104 @@ namespace Phoenix.DataHandle.Repositories
             return this.AnyUserRole(user.Id);
         }
 
-        public bool AnyLogin(LoginProvider provider, string providerKey, bool onlyActive = false)
+        public bool AnyAffiliatedUsers(int userId)
         {
-            if (providerKey == null)
-                throw new ArgumentNullException(nameof(providerKey));
-
-            var dbSet = this.dbContext.Set<AspNetUserLogins>();
-            if (onlyActive)
-                return dbSet.Any(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey && l.IsActive);
-
-            return dbSet.Any(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
+            return this.dbContext.Set<Parenthood>().
+                Where(p => p.ParentId == userId).
+                Any();
         }
 
-        public void LinkLogin(AspNetUserLogins userLogin)
+        public bool HasLogin(LoginProvider provider, string providerKey, bool onlyActive = false)
         {
-            if (userLogin == null)
-                throw new ArgumentNullException(nameof(userLogin));
+            var login = this.FindLogin(provider, providerKey);
 
-            if (AnyLogin(userLogin.LoginProvider.ToLoginProvider(), userLogin.ProviderKey))
+            bool hasLogin = login != null;
+            if (onlyActive && hasLogin)
+                hasLogin &= login.IsActive;
+
+            return hasLogin;
+        }
+
+        public bool AnyLogin(int userId, bool onlyActive = false)
+        {
+            var userLogins = this.dbContext.Set<AspNetUserLogins>().
+                Where(l => l.UserId == userId);
+
+            if (onlyActive)
+                userLogins = userLogins.Where(l => l.IsActive);
+
+            return userLogins.Any();
+        }
+
+        public bool AnyLogin(int userId, LoginProvider provider, bool onlyActive = false)
+        {
+            var userLogins = this.dbContext.Set<AspNetUserLogins>().
+                Where(l => l.UserId == userId && l.LoginProvider == provider.GetProviderName());
+            
+            if (onlyActive)
+                userLogins = userLogins.Where(l => l.IsActive);
+
+            return userLogins.Any();
+        }
+
+        public void LinkLogin(LoginProvider provider, string providerKey, int userId, bool activate)
+        {
+            if (provider == LoginProvider.Other)
+                throw new InvalidOperationException("Provider needs to be a valid channel");
+            if (string.IsNullOrEmpty(providerKey))
+                throw new ArgumentNullException(nameof(providerKey));
+
+            var login = this.FindLogin(provider, providerKey);
+
+            if (login is null)
             {
-                userLogin.UpdatedAt = DateTimeOffset.Now;
-                this.dbContext.Set<AspNetUserLogins>().Update(userLogin);
+                login = new AspNetUserLogins()
+                {
+                    LoginProvider = provider.GetProviderName(),
+                    ProviderDisplayName = provider.GetProviderName().ToLower(),
+                    ProviderKey = providerKey,
+                    IsActive = activate,
+                    UserId = userId,
+                    CreatedAt = DateTimeOffset.UtcNow
+                };
+                this.dbContext.Set<AspNetUserLogins>().Add(login);
             }
             else
             {
-                userLogin.CreatedAt = DateTimeOffset.Now;
-                this.dbContext.Set<AspNetUserLogins>().Add(userLogin);
+                login.UserId = userId;
+                login.IsActive = activate;
+                login.UpdatedAt = DateTimeOffset.UtcNow;
+
+                this.dbContext.Set<AspNetUserLogins>().Update(login);
             }
 
             this.dbContext.SaveChanges();
+        }
+
+        public IEnumerable<AspNetUserLogins> Logout(int userId, bool logoutAffiliatedUsers = true)
+        {
+            List<int> userIdsToLogout = new List<int> { userId };
+            
+            if (logoutAffiliatedUsers)
+                userIdsToLogout.AddRange(this.FindChildren(userId).Select(c => c.Id));
+
+            var logins = this.dbContext.Set<AspNetUserLogins>().Where(l => userIdsToLogout.Contains(l.UserId));
+            foreach (var login in logins)
+            {
+                login.IsActive = false;
+                login.UpdatedAt = DateTimeOffset.UtcNow;
+            }
+
+            this.dbContext.Set<AspNetUserLogins>().UpdateRange(logins);
+            this.dbContext.SaveChanges();
+
+            return logins.AsEnumerable();
+        }
+
+        public AspNetUserLogins FindLogin(LoginProvider provider, string providerKey)
+        {
+            return this.dbContext.Set<AspNetUserLogins>().
+                SingleOrDefault(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
         }
 
         public AspNetUsers FindUserFromLogin(LoginProvider provider, string providerKey)
@@ -136,6 +196,31 @@ namespace Phoenix.DataHandle.Repositories
                 AsEnumerable();
         }
 
+        public IQueryable<AspNetUsers> FindChildren(int parentId)
+        {
+            return this.dbContext.Set<Parenthood>().
+                Include(p => p.Child).
+                ThenInclude(ch => ch.User).
+                Where(p => p.ParentId == parentId).
+                Select(p => p.Child);
+        }
+
+        public AspNetUsers FindChild(int parentId, string childFirstName, string childLastName)
+        {
+            return this.FindChildren(parentId).
+                AsEnumerable().
+                SingleOrDefault(c => c.User.FirstName == childFirstName && c.User.LastName == childLastName);
+        }
+
+        public IQueryable<AspNetUsers> FindParents(int childId)
+        {
+            return this.dbContext.Set<Parenthood>().
+                Include(p => p.Parent).
+                ThenInclude(p => p.User).
+                Where(p => p.ChildId == childId).
+                Select(p => p.Parent);
+        }
+
         public void LinkSchool(UserSchool userSchool)
         {
             if (userSchool == null)
@@ -143,6 +228,21 @@ namespace Phoenix.DataHandle.Repositories
 
             this.dbContext.Set<UserSchool>().Add(userSchool);
             this.dbContext.SaveChanges();
+        }
+
+        public void LinkSchool(AspNetUsers tModel, int schoolId)
+        {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
+            var userSchool = new UserSchool
+            {
+                AspNetUserId = tModel.Id,
+                SchoolId = schoolId,
+                EnrolledOn = DateTimeOffset.UtcNow
+            };
+
+            this.LinkSchool(userSchool);
         }
 
         public void LinkRoles(AspNetUsers tModel, IEnumerable<int> roleIds)
@@ -168,42 +268,100 @@ namespace Phoenix.DataHandle.Repositories
             this.LinkRoles(tModel, roleIds);
         }
 
-        public void LinkCourses(AspNetUsers tModel, IEnumerable<int> courseIds)
+        public void LinkRole(AspNetUsers tModel, Role roleType)
+        {
+            if (tModel == null)
+                throw new ArgumentNullException(nameof(tModel));
+
+            var roleIds = this.dbContext.Set<AspNetRoles>().Where(r => r.Type == roleType).Select(r => r.Id);
+            this.LinkRoles(tModel, roleIds);
+        }
+
+        public void LinkCourses(AspNetUsers tModel, IList<int> courseIds, bool deleteAdditionalLinks = false)
         {
             if (tModel == null)
                 throw new ArgumentNullException(nameof(tModel));
             if (courseIds == null)
                 throw new ArgumentNullException(nameof(courseIds));
 
-            if (this.dbContext.Set<AspNetUserRoles>().Any(ur => ur.UserId == tModel.Id && ur.RoleId == studentRoleId))
+            var aspNetUserRolesSet = this.dbContext.Set<AspNetUserRoles>();
+            var backendRoles = RoleExtensions.GetBackendRoles();
+            var staffRoles = RoleExtensions.GetStaffRoles();
+
+            if (aspNetUserRolesSet.Any(ur => ur.UserId == tModel.Id && (ur.Role.Type == Role.Student || backendRoles.Contains(ur.Role.Type))))
             {
-                var idsToExclude = this.dbContext.Set<StudentCourse>()
-                    .Where(sc => sc.StudentId == tModel.Id && courseIds.Contains(sc.CourseId))
-                    .Select(sc => sc.CourseId);
+                var studentCourseSet = this.dbContext.Set<StudentCourse>();
+                var studentCourses = studentCourseSet.Where(sc => sc.StudentId == tModel.Id);
+
+                var idsToExclude = studentCourses.
+                    Where(sc => courseIds.Contains(sc.CourseId)).
+                    Select(sc => sc.CourseId);
 
                 var idsToKeep = courseIds.ToList();
                 idsToKeep.RemoveAll(id => idsToExclude.Contains(id));
 
-                var studentCourses = idsToKeep.Select(id => new StudentCourse() { StudentId = tModel.Id, CourseId = id });
+                var studentCoursesToAdd = idsToKeep.Select(id => new StudentCourse() { StudentId = tModel.Id, CourseId = id });
 
-                this.dbContext.Set<StudentCourse>().AddRange(studentCourses);
+                studentCourseSet.AddRange(studentCoursesToAdd);
+
+                if (deleteAdditionalLinks)
+                {
+                    var additionalCourses = studentCourses.
+                        Where(sc => !courseIds.Contains(sc.CourseId));
+                    if (additionalCourses.Any())
+                        studentCourseSet.RemoveRange(additionalCourses);
+                }
+
                 this.dbContext.SaveChanges();
             }
-
-            if (this.dbContext.Set<AspNetUserRoles>().Any(ur => ur.UserId == tModel.Id && ur.RoleId >= teacherRoleId))
+            
+            if (aspNetUserRolesSet.Any(ur => ur.UserId == tModel.Id && (staffRoles.Contains(ur.Role.Type) || backendRoles.Contains(ur.Role.Type))))
             {
-                var idsToExclude = this.dbContext.Set<TeacherCourse>()
-                    .Where(tc => tc.TeacherId == tModel.Id && courseIds.Contains(tc.CourseId))
-                    .Select(tc => tc.CourseId);
+                var teacherCourseSet = this.dbContext.Set<TeacherCourse>();
+                var teacherCourses = teacherCourseSet.Where(sc => sc.TeacherId == tModel.Id);
+
+                var idsToExclude = teacherCourses.
+                    Where(tc => courseIds.Contains(tc.CourseId)).
+                    Select(tc => tc.CourseId);
 
                 var idsToKeep = courseIds.ToList();
                 idsToKeep.RemoveAll(id => idsToExclude.Contains(id));
 
-                var teacherCourses = idsToKeep.Select(id => new TeacherCourse() { TeacherId = tModel.Id, CourseId = id });
+                var teacherCoursesToAdd = idsToKeep.Select(id => new TeacherCourse() { TeacherId = tModel.Id, CourseId = id });
 
-                this.dbContext.Set<TeacherCourse>().AddRange(teacherCourses);
+                teacherCourseSet.AddRange(teacherCoursesToAdd);
+
+                if (deleteAdditionalLinks)
+                {
+                    var additionalCourses = teacherCourses.
+                        Where(sc => !courseIds.Contains(sc.CourseId));
+                    if (additionalCourses.Any())
+                        teacherCourseSet.RemoveRange(additionalCourses);
+                }
+
                 this.dbContext.SaveChanges();
             }
+        }
+
+        public void LinkParenthood(AspNetUsers parent, AspNetUsers child)
+        {
+            this.dbContext.Set<Parenthood>().Add(new Parenthood { ParentId = parent.Id, ChildId = child.Id });
+            this.dbContext.SaveChanges();
+        }
+
+        public void DeleteRoles(AspNetUsers tModel, IList<Role> rolesTypeToKeep = null)
+        {
+            var rolesToDelete = this.FindRoles(tModel);
+            if (rolesTypeToKeep != null)
+                rolesToDelete = rolesToDelete.Where(r => !rolesTypeToKeep.Contains(r.Type));
+            
+            if (!rolesToDelete.Any())
+                return;
+            
+            this.dbContext.Set<AspNetUserRoles>()
+                .RemoveRange(rolesToDelete.Select(r => new AspNetUserRoles { RoleId = r.Id, UserId = tModel.Id }));
+            
+            this.dbContext.SaveChanges();
         }
     }
 
@@ -211,7 +369,7 @@ namespace Phoenix.DataHandle.Repositories
     {
         public static IQueryable<AspNetUsers> FilterAdmins(this IQueryable<AspNetUsers> users)
         {
-            return users.Where(a => a.AspNetUserRoles.Any(b => b.Role.Type == Role.Admin || b.Role.Type == Role.SuperAdmin));
+            return users.Where(a => a.AspNetUserRoles.Any(b => b.Role.Type == Role.SchoolAdmin || b.Role.Type == Role.SuperAdmin));
         }
 
         public static IQueryable<AspNetUsers> FilterOwners(this IQueryable<AspNetUsers> users)

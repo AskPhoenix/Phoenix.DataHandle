@@ -3,9 +3,11 @@ using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Repositories;
 using Phoenix.DataHandle.WordPress;
 using Phoenix.DataHandle.WordPress.Models;
+using Phoenix.DataHandle.WordPress.Models.Uniques;
 using Phoenix.DataHandle.WordPress.Utilities;
 using Phoenix.DataHandle.WordPress.Wrappers;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Phoenix.DataHandle.Services
@@ -17,11 +19,8 @@ namespace Phoenix.DataHandle.Services
 
         protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.Schedule);
 
-        public ScheduleService(PhoenixContext phoenixContext, ILogger<WPService> logger)
-           : this(phoenixContext, logger, false, null)
-        { }
-
-        public ScheduleService(PhoenixContext phoenixContext, ILogger<WPService> logger, bool deleteAdditional, string specificSchoolUnique)
+        public ScheduleService(PhoenixContext phoenixContext, ILogger<WPService> logger,
+            string specificSchoolUnique = null, bool deleteAdditional = false)
             : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional)
         {
             this.scheduleRepository = new ScheduleRepository(phoenixContext);
@@ -35,54 +34,68 @@ namespace Phoenix.DataHandle.Services
 
         public override async Task SynchronizeAsync()
         {
-            _logger.LogInformation("Schedules and Classrooms synchronization started");
+            Logger.LogInformation("Schedules and Classrooms synchronization started");
 
             var schedulePosts = await this.GetAllPostsAsync();
             foreach (var schedulePost in schedulePosts)
             {
-                if (!this.TryGetSchoolIdFromPost(schedulePost, out int schoolId))
+                if (!this.TryFindSchool(schedulePost, out School school) || !this.TryFindCourse(schedulePost, school.Id, out Course course))
                     continue;
 
-                ScheduleACF acfSchedule = (ScheduleACF)(await WordPressClientWrapper.GetAcfAsync<ScheduleACF>(schedulePost.Id)).WithTitleCase();
-                if (!this.TryGetCourseId(schoolId, acfSchedule.CourseCode, out int courseId))
-                    continue;
-                acfSchedule.CourseId = courseId;
+                ScheduleACF scheduleAcf = (ScheduleACF)(await WordPressClientWrapper.GetAcfAsync<ScheduleACF>(schedulePost.Id)).WithTitleCase();
+                scheduleAcf.SchoolUnique = new SchoolUnique(schedulePost.GetTitle());
+                scheduleAcf.SchoolTimeZone = school.SchoolSettings.TimeZone;
+                Classroom classroom = null;
 
-                _logger.LogInformation($"Synchronizing Classroom of Schedule: {schedulePost.GetTitle()}");
-                if (!string.IsNullOrEmpty(acfSchedule.ClassroomName))
+                if (!string.IsNullOrEmpty(scheduleAcf.ClassroomName))
                 {
-                    Classroom classroom = await classroomRepository.Find(c => c.SchoolId == schoolId && c.NormalizedName == acfSchedule.ClassroomName.ToUpperInvariant());
-                    if (classroom == null)
+                    classroom = await this.classroomRepository.
+                        Find(c => c.SchoolId == school.Id && c.NormalizedName == scheduleAcf.ClassroomName.ToUpperInvariant());
+                    if (classroom is null)
                     {
-                        _logger.LogInformation($"Adding Classroom {acfSchedule.ClassroomName} in School with id {schoolId}");
-                        classroom = new Classroom() { SchoolId = schoolId, Name = acfSchedule.ClassroomName, NormalizedName = acfSchedule.ClassroomName.ToUpperInvariant() };
+                        Logger.LogInformation($"Adding Classroom {scheduleAcf.ClassroomName} in School with id {school.Id}");
+                        classroom = new Classroom() 
+                        {
+                            SchoolId = school.Id,
+                            Name = scheduleAcf.ClassroomName,
+                            NormalizedName = scheduleAcf.ClassroomName.ToUpperInvariant()
+                        };
 
-                        classroomRepository.Create(classroom);
+                        this.classroomRepository.Create(classroom);
                     }
-
-                    acfSchedule.ClassroomId = classroom.Id;
+                    else
+                    {
+                        Logger.LogInformation($"Updating Classroom {scheduleAcf.ClassroomName} {classroom.Id} in School with id {school.Id}");
+                        this.classroomRepository.Update(classroom);
+                    }
                 }
 
-                var curSchedule = await scheduleRepository.Find(acfSchedule.MatchesUnique);
-                if (curSchedule == null)
+                var schedule = await this.scheduleRepository.Find(scheduleAcf.MatchesUnique);
+                if (schedule is null)
                 {
-                    _logger.LogInformation($"Adding Schedule: {schedulePost.GetTitle()}");
+                    Logger.LogInformation($"Adding Schedule: {schedulePost.GetTitle()}");
 
-                    var ctxSchedule = acfSchedule.ToContext();
-                    scheduleRepository.Create(ctxSchedule);
-                    this.IdsLog.Add(ctxSchedule.Id);
+                    schedule = scheduleAcf.ToContext();
+                    schedule.CourseId = course.Id;
+                    schedule.ClassroomId = classroom?.Id;
+
+                    scheduleRepository.Create(schedule);
+                    this.IdsLog.Add(schedule.Id);
                 }
                 else
                 {
-                    _logger.LogInformation($"Updating Schedule: {schedulePost.GetTitle()}");
+                    Logger.LogInformation($"Updating Schedule: {schedulePost.GetTitle()}");
 
-                    scheduleRepository.Update(curSchedule, acfSchedule.ToContext());
-                    this.IdsLog.Add(curSchedule.Id);
+                    var scheduleFrom = scheduleAcf.ToContext();
+                    scheduleFrom.ClassroomId = classroom?.Id;
+
+                    scheduleRepository.Update(schedule, scheduleFrom);
+                    this.IdsLog.Add(schedule.Id);
                 }
             }
 
-            _logger.LogInformation("Schedules and Classrooms synchronization finished");
-            _logger.LogInformation("--------------------------------");
+            Logger.LogInformation("Schedules and Classrooms synchronization finished");
+            Logger.LogInformation("--------------------------------");
         }
     }
 }

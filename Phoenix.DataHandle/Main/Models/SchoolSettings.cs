@@ -7,12 +7,13 @@ using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Main.Models
 {
-    public partial class TeacherCourse
+    public partial class SchoolSettings
     {
-        public int TeacherId { get; set; }
-        public int CourseId { get; set; }
+        public int SchoolId { get; set; }
+        public string Language { get; set; }
+        public string Locale2 { get; set; }
+        public string TimeZone { get; set; }
 
-        public virtual Course Course { get; set; }
-        public virtual AspNetUsers Teacher { get; set; }
+        public virtual School School { get; set; }
     }
 }

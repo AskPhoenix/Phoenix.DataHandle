@@ -24,39 +24,44 @@ namespace Phoenix.DataHandle.Services
             this._logger = logger;
         }
 
-        public async Task GenerateLectures(ICollection<Course> courses, CancellationToken cancellationToken)
+        public async Task GenerateLectures(ICollection<Course> courses, CancellationToken cancellationToken, 
+            Tense tenseToGenerateFor = Tense.Future, bool quiet = false)
         {
-            if (courses == null)
+            if (courses is null)
                 throw new ArgumentNullException(nameof(courses));
 
             foreach (Course course in courses)
-            {
-                await this.GenerateLectures(course, cancellationToken);
-            }
+                await this.GenerateLectures(course, cancellationToken, tenseToGenerateFor, quiet);
         }
 
-        public async Task GenerateLectures(Course course, CancellationToken cancellationToken)
+        // TODO: Delete or cancel lectures that are no longer in the schedule (e.g. when the schedule changes)
+        public async Task GenerateLectures(Course course, CancellationToken cancellationToken, 
+            Tense tenseToGenerateFor = Tense.Future, bool quiet = false)
         {
-            if (course == null)
+            if (course is null)
                 throw new ArgumentNullException(nameof(course));
 
-            this._logger.LogInformation($"Start generating lectures for course | {course.School.Name} | {course.Name}, {course.Level}, {course.SubCourse} | {course.FirstDate:dd/MM/yyyy}-{course.LastDate:dd/MM/yyyy} | {course.Schedule.Count} Schedules | {course.Lecture.Count} Lectures");
+            this._logger.LogInformation($"Start generating lectures for course | {course.School.Name} | {course.NameWithSubcourse}, {course.Level} | {course.FirstDate:dd/MM/yyyy}-{course.LastDate:dd/MM/yyyy} | {course.Schedule.Count} Schedules | {course.Lecture.Count} Lectures");
 
             var period = Enumerable.Range(0, 1 + course.LastDate.Date.Subtract(course.FirstDate.Date).Days)
-                 .Select(offset => course.FirstDate.Date.AddDays(offset))
-                 .Where(a => a.Date > DateTime.Now.Date)
-                 .ToArray();
+                 .Select(offset => course.FirstDate.Date.AddDays(offset));
+
+            if (tenseToGenerateFor == Tense.Past)
+                period = period.Where(d => d.Date < DateTime.UtcNow.Date);
+            else if (tenseToGenerateFor is Tense.Future)
+                period = period.Where(d => d.Date >= DateTime.UtcNow.Date);
 
             foreach (DateTime day in period)
             {
-                foreach (var scheduleOfTheDay in course.Schedule.Where(a => a.DayOfWeek == day.DayOfWeek))
+                foreach (var scheduleOfTheDay in course.Schedule.Where(s => s.DayOfWeek == day.DayOfWeek))
                 {
                     Lecture lecture = scheduleOfTheDay.Lecture?
-                        .Where(a => CalendarExtensions.GetWeekOfYearISO8601(a.StartDateTime) == CalendarExtensions.GetWeekOfYearISO8601(day))
-                        .Where(a => a.Status == LectureStatus.Scheduled)
+                        .Where(l => CalendarExtensions.GetWeekOfYearISO8601(l.StartDateTime) == CalendarExtensions.GetWeekOfYearISO8601(day))
+                        .Where(l => l.StartDateTime.Year == day.Year)
+                        .Where(l => l.Status == LectureStatus.Scheduled)
                         .SingleOrDefault(a => a.CreatedBy == LectureCreatedBy.Automatic);
 
-                    if (lecture == null)
+                    if (lecture is null)
                     {
                         lecture = new Lecture
                         {
@@ -70,7 +75,8 @@ namespace Phoenix.DataHandle.Services
                         };
 
                         await this._lectureRepository.Create(lecture, cancellationToken);
-                        this._logger.LogInformation($"Lecture created successfully | {day:dd/MM/yyyy} | {scheduleOfTheDay.DayOfWeek} | {scheduleOfTheDay.StartTime:HH:mm}-{scheduleOfTheDay.EndTime:HH:mm}");
+                        if (!quiet)
+                            this._logger.LogInformation($"Lecture {lecture.Id} created successfully  |  {course.NameWithSubcourse} | {day:dd/MM/yyyy} | {scheduleOfTheDay.DayOfWeek, 10}| {scheduleOfTheDay.StartTime:HH:mm} - {scheduleOfTheDay.EndTime:HH:mm}");
                     }
                     else
                     {
@@ -80,7 +86,8 @@ namespace Phoenix.DataHandle.Services
                         lecture.EndDateTime = new DateTimeOffset(day.Add(scheduleOfTheDay.EndTime.TimeOfDay), scheduleOfTheDay.EndTime.Offset);
 
                         await this._lectureRepository.Update(lecture, cancellationToken);
-                        this._logger.LogInformation($"Lecture updated successfully | {course.Name}, {course.SubCourse} | {day:dd/MM/yyyy} | {scheduleOfTheDay.StartTime:HH:mm}");
+                        if (!quiet)
+                            this._logger.LogInformation($"Lecture {lecture.Id} updated successfully | {course.NameWithSubcourse} | {day:dd/MM/yyyy} | {scheduleOfTheDay.DayOfWeek, 10}| {scheduleOfTheDay.StartTime:HH:mm} - {scheduleOfTheDay.EndTime:HH:mm}");
                     }
                 }
             }

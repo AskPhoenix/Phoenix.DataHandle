@@ -10,12 +10,38 @@ namespace Phoenix.DataHandle.Repositories
     {
         public CourseRepository(PhoenixContext dbContext) : base(dbContext) { }
 
+        public IQueryable<Course> FindForUser(int userId, bool findForStaff)
+        {
+            if (findForStaff)
+                return FindForTeacher(userId);
+
+            return FindForStudent(userId);
+        }
+
+        public IQueryable<Course> FindForStudent(int studentId)
+        {
+            return this.dbContext.Set<StudentCourse>().
+                Include(sc => sc.Course).
+                Where(sc => sc.StudentId == studentId).
+                Select(sc => sc.Course);
+        }
+
+        public IQueryable<Course> FindForTeacher(int teacherId)
+        {
+            return this.dbContext.Set<TeacherCourse>().
+                Include(tc => tc.Course).
+                Where(tc => tc.TeacherId == teacherId).
+                Select(tc => tc.Course);
+        }
+
         public Course Update(Course tModel, Course tModelFrom)
         {
             if (tModel == null)
                 throw new ArgumentNullException(nameof(tModel));
             if (tModelFrom == null)
                 throw new ArgumentNullException(nameof(tModelFrom));
+
+            //The columns of the unique keys should not be copied
 
             tModel.Name = tModelFrom.Name;
             tModel.SubCourse = tModelFrom.SubCourse;
@@ -37,14 +63,25 @@ namespace Phoenix.DataHandle.Repositories
             this.dbContext.SaveChanges();
         }
 
-        public void LinkBooks(Course tModel, IEnumerable<int> bookIds)
+        public void LinkBooks(Course tModel, IEnumerable<int> bookIds, bool deleteAdditionalLinks = false)
         {
             if (tModel == null)
                 throw new ArgumentNullException(nameof(tModel));
             if (bookIds == null)
                 throw new ArgumentNullException(nameof(bookIds));
 
-            this.dbContext.Set<CourseBook>().AddRange(bookIds.Select(bId => new CourseBook() { CourseId = tModel.Id, BookId = bId }));
+            var courseBookSet = this.dbContext.Set<CourseBook>();
+
+            var alreadyLinkedBookIds = this.GetLinkedBooks(tModel).Select(b => b.Id);
+            var newBookIdsToLink = bookIds.Where(id => !alreadyLinkedBookIds.Contains(id));
+
+            if (deleteAdditionalLinks)
+            {
+                var courseBooksToRemove = courseBookSet.Where(cb => cb.CourseId == tModel.Id && !bookIds.Contains(cb.BookId));
+                courseBookSet.RemoveRange(courseBooksToRemove);
+            }
+
+            courseBookSet.AddRange(newBookIdsToLink.Select(bId => new CourseBook() { CourseId = tModel.Id, BookId = bId }));
             this.dbContext.SaveChanges();
         }
 

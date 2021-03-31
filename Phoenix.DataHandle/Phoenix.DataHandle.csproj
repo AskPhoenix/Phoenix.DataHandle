@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>8.0</LangVersion>
     <Description>A wrapper for operations on PhoenixDB</Description>
-    <Copyright>AskPhoenix 2020</Copyright>
+    <Copyright>AskPhoenix 2021</Copyright>
     <PackageProjectUrl>https://www.askphoenix.gr/</PackageProjectUrl>
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
   </PropertyGroup>
@@ -12,7 +12,7 @@
   <PropertyGroup>
     <PackageId>Phoenix.DataHandle</PackageId>
     <Product>Phoenix.DataHandle</Product>
-    <Version>1.8.3</Version>
+    <Version>2.0.0</Version>
     <Authors>AskPhoenix</Authors>
     <Company>AskPhoenix</Company>
     <PackageDescription>A wrapper for operations on PhoenixDB</PackageDescription>
@@ -20,7 +20,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.11.0" />
     <PackageReference Include="Nexmo.Csharp.Client" Version="5.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.*" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.*" />

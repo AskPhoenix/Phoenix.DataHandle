@@ -36,6 +36,7 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<Parenthood> Parenthood { get; set; }
         public virtual DbSet<Schedule> Schedule { get; set; }
         public virtual DbSet<School> School { get; set; }
+        public virtual DbSet<SchoolSettings> SchoolSettings { get; set; }
         public virtual DbSet<StudentCourse> StudentCourse { get; set; }
         public virtual DbSet<StudentExam> StudentExam { get; set; }
         public virtual DbSet<StudentExercise> StudentExercise { get; set; }
@@ -47,8 +48,7 @@ namespace Phoenix.DataHandle.Main.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=tcp:askphoenix.database.windows.net,1433;Initial Catalog=NuageDB;Persist Security Info=False;User ID=phoenix;Password=20Ph0eniX20!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+                throw new Exception("Connection string not specified for PhoenixContext.");
             }
         }
 
@@ -87,6 +87,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.AspNetUserLogins)
                     .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AspNetUserLogins_AspNetUsers");
             });
 
@@ -104,6 +105,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.AspNetUserRoles)
                     .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AspNetUserRoles_AspNetUsers");
             });
 
@@ -132,9 +134,7 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
 
-                entity.Property(e => e.PhoneNumber)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.PhoneNumber).HasMaxLength(50);
 
                 entity.Property(e => e.PhoneNumberVerificationCode).HasMaxLength(50);
 
@@ -189,6 +189,10 @@ namespace Phoenix.DataHandle.Main.Models
             {
                 entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
 
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.HasOne(d => d.Author)
@@ -229,10 +233,6 @@ namespace Phoenix.DataHandle.Main.Models
             {
                 entity.HasIndex(e => new { e.SchoolId, e.Code })
                     .HasName("IX_Course")
-                    .IsUnique();
-
-                entity.HasIndex(e => new { e.SchoolId, e.Name, e.SubCourse, e.Group, e.Level })
-                    .HasName("UQ_Course")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt)
@@ -398,10 +398,6 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Schedule>(entity =>
             {
-                entity.HasIndex(e => new { e.CourseId, e.Code })
-                    .HasName("IX_Schedule")
-                    .IsUnique();
-
                 entity.HasIndex(e => new { e.CourseId, e.DayOfWeek, e.StartTime })
                     .HasName("UQ_Schedule")
                     .IsUnique();
@@ -431,7 +427,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasIndex(e => e.Slug)
                     .HasName("IX_Slug");
 
-                entity.HasIndex(e => new { e.Name, e.City })
+                entity.HasIndex(e => new { e.NormalizedName, e.NormalizedCity })
                     .HasName("IX_NameCity")
                     .IsUnique();
 
@@ -453,11 +449,45 @@ namespace Phoenix.DataHandle.Main.Models
                     .IsRequired()
                     .HasMaxLength(200);
 
+                entity.Property(e => e.NormalizedCity)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.NormalizedName)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
                 entity.Property(e => e.Slug)
                     .IsRequired()
                     .HasMaxLength(64);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
+            });
+
+            modelBuilder.Entity<SchoolSettings>(entity =>
+            {
+                entity.HasKey(e => e.SchoolId);
+
+                entity.Property(e => e.SchoolId).ValueGeneratedNever();
+
+                entity.Property(e => e.Language)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Locale2)
+                    .IsRequired()
+                    .HasMaxLength(2)
+                    .IsFixedLength();
+
+                entity.Property(e => e.TimeZone)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.School)
+                    .WithOne(p => p.SchoolSettings)
+                    .HasForeignKey<SchoolSettings>(d => d.SchoolId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SchoolSettings_School");
             });
 
             modelBuilder.Entity<StudentCourse>(entity =>
@@ -544,21 +574,20 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.IdentifierCode).HasMaxLength(10);
 
+                entity.Property(e => e.IdentifierCodeCreatedAt).HasColumnType("datetimeoffset(0)");
+
                 entity.Property(e => e.LastName).HasMaxLength(255);
 
                 entity.HasOne(d => d.AspNetUser)
                     .WithOne(p => p.User)
                     .HasForeignKey<User>(d => d.AspNetUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_User_AspNetUsers");
             });
 
             modelBuilder.Entity<UserSchool>(entity =>
             {
                 entity.HasKey(e => new { e.AspNetUserId, e.SchoolId });
-
-                entity.HasIndex(e => new { e.Code, e.SchoolId })
-                    .HasName("IX_UserSchool")
-                    .IsUnique();
 
                 entity.Property(e => e.EnrolledOn).HasColumnType("datetimeoffset(0)");
 

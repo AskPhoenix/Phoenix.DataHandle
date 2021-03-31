@@ -23,6 +23,7 @@ dotnet ef dbcontext scaffold "%cs%" Microsoft.EntityFrameworkCore.SqlServer ^
 --table "dbo.Parenthood" ^
 --table "dbo.Schedule" ^
 --table "dbo.School" ^
+--table "dbo.SchoolSettings" ^
 --table "dbo.StudentCourse" ^
 --table "dbo.StudentExam" ^
 --table "dbo.StudentExercise" ^
