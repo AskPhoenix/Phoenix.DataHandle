@@ -65,10 +65,12 @@ namespace Phoenix.DataHandle.Services
                 {
                     Logger.LogInformation($"Updating Personnel User with PhoneNumber: {aspNetUser.PhoneNumber}");
 
-                    aspNetUser.UserName = PersonnelACF.GetUserName(aspNetUser.User, school.Id, aspNetUser.PhoneNumber);
-                    aspNetUser.NormalizedUserName = aspNetUser.UserName.ToUpperInvariant();
+                    var userFrom = personnelAcf.ExtractUser();
+                    var aspNetUserFrom = personnelAcf.ToContext();
+                    aspNetUserFrom.UserName = PersonnelACF.GetUserName(userFrom, school.Id, aspNetUser.PhoneNumber);
+                    aspNetUserFrom.NormalizedUserName = aspNetUserFrom.UserName.ToUpperInvariant();
 
-                    this.aspNetUserRepository.Update(aspNetUser, personnelAcf.ToContext(), personnelAcf.ExtractUser());
+                    this.aspNetUserRepository.Update(aspNetUser, aspNetUserFrom, userFrom);
                     this.IdsLog.Add(aspNetUser.Id);
                 }
 

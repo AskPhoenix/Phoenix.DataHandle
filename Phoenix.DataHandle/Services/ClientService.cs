@@ -89,11 +89,11 @@ namespace Phoenix.DataHandle.Services
                     Logger.LogInformation($"Updating Student with (Parent) PhoneNumber: {clientAcf.TopPhoneNumber}");
 
                     var updatedUser = clientAcf.ExtractUser();
+                    var aspNetUserFrom = clientAcf.ToContext();
+                    aspNetUserFrom.UserName = ClientACF.GetUserName(updatedUser, school.Id, clientAcf.TopPhoneNumber);
+                    aspNetUserFrom.NormalizedUserName = aspNetUserFrom.UserName.ToUpperInvariant();
 
-                    student.UserName = ClientACF.GetUserName(updatedUser, school.Id, clientAcf.TopPhoneNumber);
-                    student.NormalizedUserName = student.UserName.ToUpperInvariant();
-
-                    this.aspNetUserRepository.Update(student, clientAcf.ToContext(), updatedUser);
+                    this.aspNetUserRepository.Update(student, aspNetUserFrom, updatedUser);
                     this.IdsLog.Add(student.Id);
                 }
 
