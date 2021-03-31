@@ -146,6 +146,29 @@ namespace Phoenix.DataHandle.Repositories
             this.dbContext.SaveChanges();
         }
 
+        public void Logout(int userId, bool logoutAffiliatedUsers = true)
+        {
+            var userLogins = this.dbContext.Set<AspNetUserLogins>().Where(l => l.UserId == userId);
+            if (!userLogins.Any())
+                return;
+
+            foreach (var userLogin in userLogins)
+            {
+                userLogin.IsActive = false;
+                userLogin.UpdatedAt = DateTimeOffset.UtcNow;
+            }
+            
+            if (logoutAffiliatedUsers)
+            {
+                var affUsers = this.FindChildren(userId);
+                foreach (var child in affUsers)
+                    this.Logout(child.Id, false);
+            }
+
+            this.dbContext.Set<AspNetUserLogins>().UpdateRange(userLogins);
+            this.dbContext.SaveChanges();
+        }
+
         public AspNetUserLogins FindLogin(LoginProvider provider, string providerKey)
         {
             return this.dbContext.Set<AspNetUserLogins>().
