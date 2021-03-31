@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Phoenix.DataHandle.Main.Models;
-using Phoenix.DataHandle.Main.Models.Extensions;
 using Phoenix.DataHandle.Repositories;
 using Phoenix.DataHandle.WordPress.Models;
 using Phoenix.DataHandle.WordPress.Models.Uniques;
@@ -16,7 +15,7 @@ namespace Phoenix.DataHandle.Services
     {
         protected SchoolRepository SchoolRepository { get;}
         protected CourseRepository CourseRepository { get; }
-        protected ILogger<WPService> Logger { get; }
+        protected ILogger Logger { get; }
         
         protected abstract int CategoryId { get; }
         protected List<int> IdsLog { get; set; } = new List<int>(); //Helping log for the Delete method
