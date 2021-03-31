@@ -84,7 +84,7 @@ namespace Phoenix.DataHandle.Repositories
             var login = this.FindLogin(provider, providerKey);
 
             bool hasLogin = login != null;
-            if (onlyActive)
+            if (onlyActive && hasLogin)
                 hasLogin &= login.IsActive;
 
             return hasLogin;
@@ -146,27 +146,24 @@ namespace Phoenix.DataHandle.Repositories
             this.dbContext.SaveChanges();
         }
 
-        public void Logout(int userId, bool logoutAffiliatedUsers = true)
+        public IEnumerable<AspNetUserLogins> Logout(int userId, bool logoutAffiliatedUsers = true)
         {
-            var userLogins = this.dbContext.Set<AspNetUserLogins>().Where(l => l.UserId == userId);
-            if (!userLogins.Any())
-                return;
-
-            foreach (var userLogin in userLogins)
-            {
-                userLogin.IsActive = false;
-                userLogin.UpdatedAt = DateTimeOffset.UtcNow;
-            }
+            List<int> userIdsToLogout = new List<int> { userId };
             
             if (logoutAffiliatedUsers)
+                userIdsToLogout.AddRange(this.FindChildren(userId).Select(c => c.Id));
+
+            var logins = this.dbContext.Set<AspNetUserLogins>().Where(l => userIdsToLogout.Contains(l.UserId));
+            foreach (var login in logins)
             {
-                var affUsers = this.FindChildren(userId);
-                foreach (var child in affUsers)
-                    this.Logout(child.Id, false);
+                login.IsActive = false;
+                login.UpdatedAt = DateTimeOffset.UtcNow;
             }
 
-            this.dbContext.Set<AspNetUserLogins>().UpdateRange(userLogins);
+            this.dbContext.Set<AspNetUserLogins>().UpdateRange(logins);
             this.dbContext.SaveChanges();
+
+            return logins.AsEnumerable();
         }
 
         public AspNetUserLogins FindLogin(LoginProvider provider, string providerKey)
