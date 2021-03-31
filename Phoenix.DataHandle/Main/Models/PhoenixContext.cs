@@ -136,6 +136,10 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.PhoneNumber).HasMaxLength(50);
 
+                entity.Property(e => e.PhoneNumberVerificationCode).HasMaxLength(50);
+
+                entity.Property(e => e.PhoneNumberVerificationCode_at).HasColumnType("datetime2(0)");
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.UserName).HasMaxLength(256);
