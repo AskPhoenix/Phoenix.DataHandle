@@ -35,6 +35,8 @@ namespace Phoenix.DataHandle.Main.Models
         public string ConcurrencyStamp { get; set; }
         public string PhoneNumber { get; set; }
         public bool PhoneNumberConfirmed { get; set; }
+        public string PhoneNumberVerificationCode { get; set; }
+        public DateTime? PhoneNumberVerificationCode_at { get; set; }
         public bool TwoFactorEnabled { get; set; }
         public DateTimeOffset? LockoutEnd { get; set; }
         public bool LockoutEnabled { get; set; }
