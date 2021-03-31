@@ -49,7 +49,8 @@ namespace Phoenix.DataHandle.Repositories
             return lectures;
         }
 
-        public IEnumerable<DateTime> FindClosestLectureDates(int courseId, Tense tense, int dayRange = 5, bool scheduledOnly = false, bool withExamsOnly = false)
+        public IEnumerable<DateTime> FindClosestLectureDates(int courseId, Tense tense, DateTime? referenceDate = null,
+            int dayRange = 5, bool scheduledOnly = false, bool withExamsOnly = false)
         {
             var lectures = this.Find().
                 Where(l => l.CourseId == courseId);
@@ -63,16 +64,20 @@ namespace Phoenix.DataHandle.Repositories
             if (withExamsOnly)
                 lectures = lectures.Where(l => l.Exam != null);
 
+            DateTime refDate = referenceDate.HasValue ? referenceDate.Value : DateTime.UtcNow.Date;
+
             return lectures.
                 GroupBy(l => l.StartDateTime.Date).
                 Select(g => g.Key).
+                Where(d => d != refDate.Date).
                 AsEnumerable().
-                OrderByDescending(d => (d - DateTime.UtcNow.Date).Duration()).
+                OrderByDescending(d => (d - refDate).Duration()).
                 Take(dayRange).
                 OrderBy(d => d);
         }
 
-        public IEnumerable<DateTime> FindClosestLectureDates(int[] courseIds, Tense tense, int dayRange = 5, bool scheduledOnly = false, bool withExamsOnly = false)
+        public IEnumerable<DateTime> FindClosestLectureDates(int[] courseIds, Tense tense, DateTime? referenceDate = null,
+            int dayRange = 5, bool scheduledOnly = false, bool withExamsOnly = false)
         {
             if (courseIds == null)
                 throw new ArgumentNullException(nameof(courseIds));
@@ -80,7 +85,7 @@ namespace Phoenix.DataHandle.Repositories
             var lectures = new List<DateTime>(courseIds.Length * dayRange);
 
             foreach (int courseId in courseIds)
-                lectures.AddRange(this.FindClosestLectureDates(courseId, tense, dayRange, scheduledOnly, withExamsOnly));
+                lectures.AddRange(this.FindClosestLectureDates(courseId, tense, referenceDate, dayRange, scheduledOnly, withExamsOnly));
 
             return lectures.OrderByDescending(d => (d - DateTime.UtcNow.Date).Duration()).
                 Take(dayRange).
