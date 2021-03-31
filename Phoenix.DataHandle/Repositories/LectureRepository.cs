@@ -71,7 +71,7 @@ namespace Phoenix.DataHandle.Repositories
                 Select(g => g.Key).
                 Where(d => d != refDate.Date).
                 AsEnumerable().
-                OrderByDescending(d => (d - refDate).Duration()).
+                OrderBy(d => (d - refDate).Duration()).
                 Take(dayRange).
                 OrderBy(d => d);
         }
@@ -87,7 +87,10 @@ namespace Phoenix.DataHandle.Repositories
             foreach (int courseId in courseIds)
                 lectures.AddRange(this.FindClosestLectureDates(courseId, tense, referenceDate, dayRange, scheduledOnly, withExamsOnly));
 
-            return lectures.OrderByDescending(d => (d - DateTime.UtcNow.Date).Duration()).
+            DateTime refDate = referenceDate.HasValue ? referenceDate.Value : DateTime.UtcNow.Date;
+
+            return lectures.
+                OrderBy(d => (d - refDate).Duration()).
                 Take(dayRange).
                 OrderBy(d => d);
         }

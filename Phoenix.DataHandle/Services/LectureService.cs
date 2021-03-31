@@ -34,6 +34,7 @@ namespace Phoenix.DataHandle.Services
                 await this.GenerateLectures(course, cancellationToken, tenseToGenerateFor, quiet);
         }
 
+        // TODO: Delete or cancel lectures that are no longer in the schedule (e.g. when the schedule changes)
         public async Task GenerateLectures(Course course, CancellationToken cancellationToken, 
             Tense tenseToGenerateFor = Tense.Future, bool quiet = false)
         {
@@ -75,7 +76,7 @@ namespace Phoenix.DataHandle.Services
 
                         await this._lectureRepository.Create(lecture, cancellationToken);
                         if (!quiet)
-                            this._logger.LogInformation($"Lecture {lecture.Id} created successfully  |  {course.NameWithSubcourse} | {day:dd/MM/yyyy} | {scheduleOfTheDay.DayOfWeek}\t| {scheduleOfTheDay.StartTime:HH:mm} - {scheduleOfTheDay.EndTime:HH:mm}");
+                            this._logger.LogInformation($"Lecture {lecture.Id} created successfully  |  {course.NameWithSubcourse} | {day:dd/MM/yyyy} | {scheduleOfTheDay.DayOfWeek, 10}| {scheduleOfTheDay.StartTime:HH:mm} - {scheduleOfTheDay.EndTime:HH:mm}");
                     }
                     else
                     {
@@ -86,7 +87,7 @@ namespace Phoenix.DataHandle.Services
 
                         await this._lectureRepository.Update(lecture, cancellationToken);
                         if (!quiet)
-                            this._logger.LogInformation($"Lecture {lecture.Id} updated successfully | {course.NameWithSubcourse} | {day:dd/MM/yyyy} | {scheduleOfTheDay.DayOfWeek}\t| {scheduleOfTheDay.StartTime:HH:mm} - {scheduleOfTheDay.EndTime:HH:mm}");
+                            this._logger.LogInformation($"Lecture {lecture.Id} updated successfully | {course.NameWithSubcourse} | {day:dd/MM/yyyy} | {scheduleOfTheDay.DayOfWeek, 10}| {scheduleOfTheDay.StartTime:HH:mm} - {scheduleOfTheDay.EndTime:HH:mm}");
                     }
                 }
             }
