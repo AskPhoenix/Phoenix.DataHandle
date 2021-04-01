@@ -132,7 +132,9 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
 
-                entity.Property(e => e.PhoneNumber).HasMaxLength(50);
+                entity.Property(e => e.PhoneNumber)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.PhoneNumberVerificationCode).HasMaxLength(50);
 

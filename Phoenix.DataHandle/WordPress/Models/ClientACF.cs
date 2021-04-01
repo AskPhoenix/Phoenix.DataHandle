@@ -47,9 +47,9 @@ namespace Phoenix.DataHandle.WordPress.Models
         public bool IsSelfDetermined => string.Compare(this.NeedsParentAuthorizationString, "No", StringComparison.InvariantCultureIgnoreCase) == 0;
         public string TopPhoneNumber => (this.StudentPhoneNumber ?? this.Parent1PhoneNumber ?? this.Parent2PhoneNumber).ToString();
 
-        public string StudentPhoneString => this.StudentPhoneNumber.HasValue ? this.StudentPhoneNumber.ToString() : null;
-        public string Parent1PhoneString => this.Parent1PhoneNumber.HasValue ? this.Parent1PhoneNumber.ToString() : null;
-        public string Parent2PhoneString => this.Parent2PhoneNumber.HasValue ? this.Parent2PhoneNumber.ToString() : null;
+        public string StudentPhoneString => this.StudentPhoneNumber.HasValue ? this.StudentPhoneNumber.ToString() : string.Empty;
+        public string Parent1PhoneString => this.Parent1PhoneNumber.HasValue ? this.Parent1PhoneNumber.ToString() : string.Empty;
+        public string Parent2PhoneString => this.Parent2PhoneNumber.HasValue ? this.Parent2PhoneNumber.ToString() : string.Empty;
 
         public bool HasParent1 => !string.IsNullOrEmpty(this.Parent1FullName) && this.Parent1PhoneNumber.HasValue;
         public bool HasParent2 => !string.IsNullOrEmpty(this.Parent2FullName) && this.Parent2PhoneNumber.HasValue;
@@ -91,7 +91,7 @@ namespace Phoenix.DataHandle.WordPress.Models
         {
             var user = new AspNetUsers
             {
-                PhoneNumber = this.StudentPhoneNumber.HasValue ? this.StudentPhoneNumber.ToString() : null,
+                PhoneNumber = this.StudentPhoneNumber.HasValue ? this.StudentPhoneNumber.ToString() : string.Empty,
                 CreatedApplicationType = ApplicationType.Scheduler
             };
 

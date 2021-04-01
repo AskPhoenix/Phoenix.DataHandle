@@ -65,7 +65,7 @@ namespace Phoenix.DataHandle.Services
                 else
                 {
                     parent1 = this.aspNetUserRepository.Find().
-                            SingleOrDefault(u => u.User.IsSelfDetermined && u.PhoneNumber == clientAcf.Parent1PhoneNumber.ToString());
+                            SingleOrDefault(u => u.User.IsSelfDetermined && u.PhoneNumber == clientAcf.Parent1PhoneString);
                     student = aspNetUserRepository.FindChild(parent1.Id, clientAcf.StudentFirstName, clientAcf.StudentLastName);
                 }
 
@@ -106,13 +106,13 @@ namespace Phoenix.DataHandle.Services
                     {
                         if (parent1 is null)
                             parent = this.aspNetUserRepository.Find().
-                                SingleOrDefault(u => u.User.IsSelfDetermined && u.PhoneNumber == clientAcf.Parent1PhoneNumber.ToString());
+                                SingleOrDefault(u => u.User.IsSelfDetermined && u.PhoneNumber == clientAcf.Parent1PhoneString);
                         else
                             parent = parent1;
                     }
                     else
                         parent = this.aspNetUserRepository.Find().
-                            SingleOrDefault(u => u.User.IsSelfDetermined && u.PhoneNumber == clientAcf.Parent2PhoneNumber.ToString());
+                            SingleOrDefault(u => u.User.IsSelfDetermined && u.PhoneNumber == clientAcf.Parent2PhoneString);
 
                     if (parent is null)
                     {
