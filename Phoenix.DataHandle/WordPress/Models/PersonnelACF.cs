@@ -30,7 +30,8 @@ namespace Phoenix.DataHandle.WordPress.Models
         public string LastName => UserInfoHelper.GetLastName(this.FullName);
         public static string GetUserName(User user, int schoolId, string phone)
         {
-            return $"{user.FirstName.Substring(0, 4)}_{user.LastName}_{schoolId}_{phone}".ToLowerInvariant();
+            var firstNameSub = user.FirstName.Substring(0, Math.Min(4, user.FirstName.Length));
+            return $"{firstNameSub}_{user.LastName}_{schoolId}_{phone}".ToLowerInvariant();
         }
 
         public Expression<Func<AspNetUsers, bool>> MatchesUnique => u => u.PhoneNumber == this.PhoneString;
