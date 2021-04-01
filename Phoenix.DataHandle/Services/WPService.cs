@@ -22,9 +22,10 @@ namespace Phoenix.DataHandle.Services
         protected bool SpecificSchoolOnly => !string.IsNullOrEmpty(SpecificSchoolUnique);
         protected string SpecificSchoolUnique { get; }
         protected bool DeleteAdditional { get; }
+        protected bool Quiet { get; }
 
         protected WPService(PhoenixContext phoenixContext, ILogger<WPService> logger, 
-            string specificSchoolUnique = null, bool deleteAdditional = false)
+            string specificSchoolUnique = null, bool deleteAdditional = false, bool quiet = false)
         {
             this.SchoolRepository = new SchoolRepository(phoenixContext);
             this.SchoolRepository.Include(s => s.SchoolSettings);
@@ -34,6 +35,7 @@ namespace Phoenix.DataHandle.Services
             this.Logger = logger;
             this.SpecificSchoolUnique = specificSchoolUnique;
             this.DeleteAdditional = deleteAdditional;
+            this.Quiet = quiet;
         }
 
         public abstract Task SynchronizeAsync();

@@ -21,8 +21,8 @@ namespace Phoenix.DataHandle.Services
         protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.Personnel);
 
         public PersonnelService(PhoenixContext phoenixContext, ILogger<WPService> logger,
-            string specificSchoolUnique = null, bool deleteAdditional = false) 
-            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional)
+            string specificSchoolUnique = null, bool deleteAdditional = false, bool quiet = false) 
+            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional, quiet)
         {
             this.aspNetUserRepository = new AspNetUserRepository(phoenixContext);
             this.aspNetUserRepository.Include(u => u.User);
@@ -49,7 +49,8 @@ namespace Phoenix.DataHandle.Services
                 var aspNetUser = await this.aspNetUserRepository.Find(checkUnique: personnelAcf.MatchesUnique);
                 if (aspNetUser is null)
                 {
-                    Logger.LogInformation($"Adding Personnel User with PhoneNumber: {personnelAcf.PhoneString}");
+                    if (!Quiet)
+                        Logger.LogInformation($"Adding Personnel User with PhoneNumber: {personnelAcf.PhoneString}");
 
                     aspNetUser = personnelAcf.ToContext();
                     aspNetUser.User = personnelAcf.ExtractUser();
@@ -63,7 +64,8 @@ namespace Phoenix.DataHandle.Services
                 }
                 else
                 {
-                    Logger.LogInformation($"Updating Personnel User with PhoneNumber: {aspNetUser.PhoneNumber}");
+                    if (!Quiet)
+                        Logger.LogInformation($"Updating Personnel User with PhoneNumber: {aspNetUser.PhoneNumber}");
 
                     var userFrom = personnelAcf.ExtractUser();
                     var aspNetUserFrom = personnelAcf.ToContext();
@@ -74,7 +76,8 @@ namespace Phoenix.DataHandle.Services
                     this.IdsLog.Add(aspNetUser.Id);
                 }
 
-                Logger.LogInformation("Linking with the AspNetUserRoles of Personnel User");
+                if (!Quiet)
+                    Logger.LogInformation("Linking with the AspNetUserRoles of Personnel User");
 
                 if (!aspNetUserRepository.HasRole(aspNetUser, personnelAcf.RoleType))
                     aspNetUserRepository.LinkRole(aspNetUser, personnelAcf.RoleType);
@@ -83,7 +86,8 @@ namespace Phoenix.DataHandle.Services
                 // The only possible scenario where 2 roles are alowed is: a staff role + parent
                 aspNetUserRepository.DeleteRoles(aspNetUser, new Role[2] { personnelAcf.RoleType, Role.Parent });
 
-                Logger.LogInformation("Linking with the Courses of Personnel User");
+                if (!Quiet)
+                    Logger.LogInformation("Linking with the Courses of Personnel User");
 
                 short[] userCourseCodes = personnelAcf.ExtractCourseCodes();
                 

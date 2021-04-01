@@ -20,8 +20,8 @@ namespace Phoenix.DataHandle.Services
         protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.Schedule);
 
         public ScheduleService(PhoenixContext phoenixContext, ILogger<WPService> logger,
-            string specificSchoolUnique = null, bool deleteAdditional = false)
-            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional)
+            string specificSchoolUnique = null, bool deleteAdditional = false, bool quiet = false)
+            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional, quiet)
         {
             this.scheduleRepository = new ScheduleRepository(phoenixContext);
             this.classroomRepository = new ClassroomRepository(phoenixContext);
@@ -53,7 +53,8 @@ namespace Phoenix.DataHandle.Services
                         Find(c => c.SchoolId == school.Id && c.NormalizedName == scheduleAcf.ClassroomName.ToUpperInvariant());
                     if (classroom is null)
                     {
-                        Logger.LogInformation($"Adding Classroom {scheduleAcf.ClassroomName} in School with id {school.Id}");
+                        if (!Quiet)
+                            Logger.LogInformation($"Adding Classroom {scheduleAcf.ClassroomName} in School with id {school.Id}");
                         classroom = new Classroom() 
                         {
                             SchoolId = school.Id,
@@ -65,7 +66,8 @@ namespace Phoenix.DataHandle.Services
                     }
                     else
                     {
-                        Logger.LogInformation($"Updating Classroom {scheduleAcf.ClassroomName} {classroom.Id} in School with id {school.Id}");
+                        if (!Quiet)
+                            Logger.LogInformation($"Updating Classroom {scheduleAcf.ClassroomName} {classroom.Id} in School with id {school.Id}");
                         this.classroomRepository.Update(classroom);
                     }
                 }
@@ -73,7 +75,8 @@ namespace Phoenix.DataHandle.Services
                 var schedule = await this.scheduleRepository.Find(scheduleAcf.MatchesUnique);
                 if (schedule is null)
                 {
-                    Logger.LogInformation($"Adding Schedule: {schedulePost.GetTitle()}");
+                    if (!Quiet)
+                        Logger.LogInformation($"Adding Schedule: {schedulePost.GetTitle()}");
 
                     schedule = scheduleAcf.ToContext();
                     schedule.CourseId = course.Id;
@@ -84,7 +87,8 @@ namespace Phoenix.DataHandle.Services
                 }
                 else
                 {
-                    Logger.LogInformation($"Updating Schedule: {schedulePost.GetTitle()}");
+                    if (!Quiet)
+                        Logger.LogInformation($"Updating Schedule: {schedulePost.GetTitle()}");
 
                     var scheduleFrom = scheduleAcf.ToContext();
                     scheduleFrom.ClassroomId = classroom?.Id;

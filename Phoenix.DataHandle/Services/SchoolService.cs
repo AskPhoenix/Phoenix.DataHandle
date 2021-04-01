@@ -15,8 +15,8 @@ namespace Phoenix.DataHandle.Services
         protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.SchoolInformation);
 
         public SchoolService(PhoenixContext phoenixContext, ILogger<WPService> logger, 
-            string specificSchoolUnique = null, bool deleteAdditional = false)
-            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional) { }
+            string specificSchoolUnique = null, bool deleteAdditional = false, bool quiet = false)
+            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional, quiet) { }
 
         public override void DeleteComplement()
         {
@@ -38,7 +38,8 @@ namespace Phoenix.DataHandle.Services
 
                 if (school is null)
                 {
-                    Logger.LogInformation($"Adding School: {schoolPost.GetTitle()}");
+                    if (!Quiet)
+                        Logger.LogInformation($"Adding School: {schoolPost.GetTitle()}");
 
                     school = schoolAcf.ToContext();
                     school.SchoolSettings = schoolAcf.ExtractSchoolSettings();
@@ -48,7 +49,8 @@ namespace Phoenix.DataHandle.Services
                 }
                 else
                 {
-                    Logger.LogInformation($"Updating School: {schoolPost.GetTitle()}");
+                    if (!Quiet)
+                        Logger.LogInformation($"Updating School: {schoolPost.GetTitle()}");
                     this.SchoolRepository.Update(school, schoolAcf.ToContext(), schoolAcf.ExtractSchoolSettings());
                     this.IdsLog.Add(school.Id);
                 }

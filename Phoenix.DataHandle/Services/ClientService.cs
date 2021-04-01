@@ -21,8 +21,8 @@ namespace Phoenix.DataHandle.Services
         protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.Client);
 
         public ClientService(PhoenixContext phoenixContext, ILogger<WPService> logger,
-            string specificSchoolUnique = null, bool deleteAdditional = false)
-            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional)
+            string specificSchoolUnique = null, bool deleteAdditional = false, bool quiet = false)
+            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional, quiet)
         {
             this.aspNetUserRepository = new AspNetUserRepository(phoenixContext);
             this.aspNetUserRepository.Include(u => u.User);
@@ -71,7 +71,8 @@ namespace Phoenix.DataHandle.Services
 
                 if (student is null)
                 {
-                    Logger.LogInformation($"Adding Student with (Parent) PhoneNumber: {clientAcf.TopPhoneNumber}");
+                    if (!Quiet)
+                        Logger.LogInformation($"Adding Student with (Parent) PhoneNumber: {clientAcf.TopPhoneNumber}");
 
                     student = clientAcf.ToContext();
                     student.User = clientAcf.ExtractUser();
@@ -86,7 +87,8 @@ namespace Phoenix.DataHandle.Services
                 }
                 else
                 {
-                    Logger.LogInformation($"Updating Student with (Parent) PhoneNumber: {clientAcf.TopPhoneNumber}");
+                    if (!Quiet)
+                        Logger.LogInformation($"Updating Student with (Parent) PhoneNumber: {clientAcf.TopPhoneNumber}");
 
                     var updatedUser = clientAcf.ExtractUser();
                     var aspNetUserFrom = clientAcf.ToContext();
@@ -100,7 +102,8 @@ namespace Phoenix.DataHandle.Services
                 AspNetUsers parent = null;
                 for (int i = 0; i < parentsNum; i++)
                 {
-                    Logger.LogInformation($"Linking with the Parent {i} of Student");
+                    if (!Quiet)
+                        Logger.LogInformation($"Linking with the Parent {i} of Student");
 
                     if (i == 0)
                     {
@@ -135,7 +138,8 @@ namespace Phoenix.DataHandle.Services
                     parent = null;
                 }
 
-                Logger.LogInformation("Linking with the Courses of Student");
+                if (!Quiet)
+                    Logger.LogInformation("Linking with the Courses of Student");
 
                 short[] userCourseCodes = clientAcf.ExtractCourseCodes();
 

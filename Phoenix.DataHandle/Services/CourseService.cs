@@ -20,8 +20,8 @@ namespace Phoenix.DataHandle.Services
         protected override int CategoryId => PostCategoryWrapper.GetCategoryId(PostCategory.Course);
 
         public CourseService(PhoenixContext phoenixContext, ILogger<WPService> logger,
-            string specificSchoolUnique = null, bool deleteAdditional = false)
-            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional) 
+            string specificSchoolUnique = null, bool deleteAdditional = false, bool quiet = false)
+            : base(phoenixContext, logger, specificSchoolUnique, deleteAdditional, quiet) 
         {
             this.bookRepository = new BookRepository(phoenixContext);
         }
@@ -48,7 +48,8 @@ namespace Phoenix.DataHandle.Services
                 var course = await this.CourseRepository.Find(courseAcf.MatchesUnique);
                 if (course is null)
                 {
-                    Logger.LogInformation($"Adding Course: {coursePost.GetTitle()}");
+                    if (!Quiet)
+                        Logger.LogInformation($"Adding Course: {coursePost.GetTitle()}");
 
                     course = courseAcf.ToContext();
                     course.SchoolId = school.Id;
@@ -58,12 +59,14 @@ namespace Phoenix.DataHandle.Services
                 }
                 else
                 {
-                    Logger.LogInformation($"Updating Course: {coursePost.GetTitle()}");
+                    if (!Quiet)
+                        Logger.LogInformation($"Updating Course: {coursePost.GetTitle()}");
                     this.CourseRepository.Update(course, courseAcf.ToContext());
                     this.IdsLog.Add(course.Id);
                 }
 
-                Logger.LogInformation($"Synchronizing Books of Course: {coursePost.GetTitle()}");
+                if (!Quiet)
+                    Logger.LogInformation($"Synchronizing Books of Course: {coursePost.GetTitle()}");
 
                 var books = courseAcf.ExtractBooks();
                 List<int> bookIds = new List<int>(books.Count());
@@ -73,20 +76,23 @@ namespace Phoenix.DataHandle.Services
                     Book ctxBook = await bookRepository.Find(b => b.NormalizedName == book.NormalizedName);
                     if (ctxBook is null)
                     {
-                        Logger.LogInformation($"Adding Book: {book.Name}");
+                        if (!Quiet)
+                            Logger.LogInformation($"Adding Book: {book.Name}");
                         bookRepository.Create(book);
                         ctxBook = book;
                     }
                     else
                     {
-                        Logger.LogInformation($"Updating Book: {book.Name}");
+                        if (!Quiet)
+                            Logger.LogInformation($"Updating Book: {book.Name}");
                         bookRepository.Update(ctxBook);
                     }
                     
                     bookIds.Add(ctxBook.Id);
                 }
 
-                Logger.LogInformation($"Linking Books with Course {coursePost.GetTitle()}");
+                if (!Quiet)
+                    Logger.LogInformation($"Linking Books with Course {coursePost.GetTitle()}");
                 this.CourseRepository.LinkBooks(course, bookIds, deleteAdditionalLinks: true);
             }
 
