@@ -30,5 +30,17 @@ namespace Phoenix.DataHandle.WordPress.Models.Uniques
             this.NormalizedSchoolName = schoolName?.ToUpperInvariant();
             this.NormalizedSchoolCity = schoolCity?.ToUpperInvariant();
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj is SchoolUnique unique &&
+                   NormalizedSchoolName == unique.NormalizedSchoolName &&
+                   NormalizedSchoolCity == unique.NormalizedSchoolCity;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(NormalizedSchoolName, NormalizedSchoolCity);
+        }
     }
 }

@@ -19,13 +19,13 @@ namespace Phoenix.DataHandle.Services
         
         protected abstract int CategoryId { get; }
         protected List<int> IdsLog { get; set; } = new List<int>(); //Helping log for the Delete method
-        protected bool SpecificSchoolOnly => !string.IsNullOrEmpty(SpecificSchoolUnique);
-        protected string SpecificSchoolUnique { get; }
+        protected bool SpecificSchoolOnly => !string.IsNullOrEmpty(SpecificSchool);
+        protected string SpecificSchool { get; }
         protected bool DeleteAdditional { get; }
         protected bool Quiet { get; }
 
         protected WPService(PhoenixContext phoenixContext, ILogger<WPService> logger, 
-            string specificSchoolUnique = null, bool deleteAdditional = false, bool quiet = false)
+            string specificSchool = null, bool deleteAdditional = false, bool quiet = false)
         {
             this.SchoolRepository = new SchoolRepository(phoenixContext);
             this.SchoolRepository.Include(s => s.SchoolSettings);
@@ -33,7 +33,7 @@ namespace Phoenix.DataHandle.Services
             this.CourseRepository.Include(c => c.School);
 
             this.Logger = logger;
-            this.SpecificSchoolUnique = specificSchoolUnique;
+            this.SpecificSchool = specificSchool;
             this.DeleteAdditional = deleteAdditional;
             this.Quiet = quiet;
         }
@@ -44,7 +44,7 @@ namespace Phoenix.DataHandle.Services
         public async Task<IEnumerable<Post>> GetAllPostsAsync()
         {
             if (this.SpecificSchoolOnly)
-                return await WordPressClientWrapper.GetPostsForSchoolAsync(this.CategoryId, this.SpecificSchoolUnique);
+                return await WordPressClientWrapper.GetPostsForSchoolAsync(this.CategoryId, this.SpecificSchool);
             
             return await WordPressClientWrapper.GetPostsAsync(this.CategoryId);
         }

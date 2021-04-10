@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Phoenix.DataHandle.WordPress.Models.Uniques;
 using Phoenix.DataHandle.WordPress.Utilities;
 using System;
 using System.Collections.Generic;
@@ -80,10 +81,12 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
             return posts;
         }
 
-        public static async Task<IEnumerable<Post>> GetPostsForSchoolAsync(int categoryId, string schoolUnique, bool embed = false)
+        public static async Task<IEnumerable<Post>> GetPostsForSchoolAsync(int categoryId, string specificSchool, bool embed = false)
         {
+            SchoolUnique schoolUnique = new SchoolUnique(specificSchool);
+
             return (await GetPostsAsync(categoryId, embed)).
-                Where(p => p.GetTitle().Contains(schoolUnique));
+                Where(p => schoolUnique.Equals(new SchoolUnique(p.GetTitle())));
         }
 
         public static async Task<AcfT> GetAcfAsync<AcfT>(int postId, bool embed = false) 
