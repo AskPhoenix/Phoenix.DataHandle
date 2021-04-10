@@ -72,6 +72,10 @@ namespace Phoenix.DataHandle.Services
 
                         this.aspNetUserRepository.Create(parent);
                         this.aspNetUserRepository.LinkRole(parent, Role.Parent);
+
+                        if (!Quiet)
+                            Logger.LogInformation($"Linking Parent {i + 1} with School");
+                        this.aspNetUserRepository.LinkSchool(parent, school.Id);
                     }
                     else
                     {
