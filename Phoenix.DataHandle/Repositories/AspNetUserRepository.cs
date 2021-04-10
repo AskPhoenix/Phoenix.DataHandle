@@ -343,9 +343,9 @@ namespace Phoenix.DataHandle.Repositories
             }
         }
 
-        public void LinkParenthood(AspNetUsers parent, AspNetUsers child)
+        public void LinkParenthood(int parentId, int childId)
         {
-            this.dbContext.Set<Parenthood>().Add(new Parenthood { ParentId = parent.Id, ChildId = child.Id });
+            this.dbContext.Set<Parenthood>().Add(new Parenthood { ParentId = parentId, ChildId = childId });
             this.dbContext.SaveChanges();
         }
 

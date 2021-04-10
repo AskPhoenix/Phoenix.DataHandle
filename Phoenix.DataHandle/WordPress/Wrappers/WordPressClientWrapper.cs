@@ -59,7 +59,7 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
                 posts = Enumerable.Empty<Post>();
             }
 
-            return posts;
+            return posts.Where(p => p.Status == Status.Publish);
         }
 
         public static async Task<IEnumerable<Post>> GetPostsAsync(int categoryId, bool embed = false)
