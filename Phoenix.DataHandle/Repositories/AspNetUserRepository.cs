@@ -172,6 +172,7 @@ namespace Phoenix.DataHandle.Repositories
                 SingleOrDefault(l => l.LoginProvider == provider.GetProviderName() && l.ProviderKey == providerKey);
         }
 
+        //TODO: Check only the Active Logins
         public AspNetUsers FindUserFromLogin(LoginProvider provider, string providerKey)
         {
             if (providerKey == null)

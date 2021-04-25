@@ -129,6 +129,9 @@ namespace Phoenix.DataHandle.Services
 
                     this.aspNetUserRepository.Update(student, aspNetUserFrom, updatedUser);
                     this.IdsLog.Add(student.Id);
+
+                    if (!aspNetUserRepository.HasRole(student, Role.Student))
+                        this.aspNetUserRepository.LinkRole(student, Role.Student);
                 }
 
                 foreach (int parId in parentIds)
