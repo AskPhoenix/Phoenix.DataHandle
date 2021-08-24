@@ -21,5 +21,19 @@ namespace Phoenix.DataHandle.Utilities
             var dateTime = DateTime.ParseExact(input, format, CultureInfo.InvariantCulture);
             return new DateTimeOffset(dateTime, TimeZoneInfo.FindSystemTimeZoneById(timeZone).GetUtcOffset(dateTime));
         }
+
+        public static DateTimeOffset ParseTime(string input, string timeZone)
+        {
+            if (string.IsNullOrWhiteSpace(timeZone))
+                throw new ArgumentNullException(nameof(timeZone));
+
+            var dateTime = DateTime.ParseExact(input, "H:m", CultureInfo.InvariantCulture);
+
+            var zeroDate = new DateTime();
+            zeroDate = zeroDate.AddHours(dateTime.Hour);
+            zeroDate = zeroDate.AddMinutes(dateTime.Minute);
+
+            return new DateTimeOffset(zeroDate, TimeZoneInfo.FindSystemTimeZoneById(timeZone).GetUtcOffset(zeroDate));
+        }
     }
 }

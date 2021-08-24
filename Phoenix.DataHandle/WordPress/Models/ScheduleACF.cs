@@ -22,11 +22,11 @@ namespace Phoenix.DataHandle.WordPress.Models
 
         [JsonProperty(PropertyName = "start_time")]
         private string StartTimeString { get; }
-        public DateTimeOffset StartTime { get => CalendarExtensions.ParseExact(this.StartTimeString, "H:m", this.SchoolTimeZone); }
+        public DateTimeOffset StartTime { get => CalendarExtensions.ParseTime(this.StartTimeString, this.SchoolTimeZone); }
 
         [JsonProperty(PropertyName = "end_time")]
         private string EndTimeString { get; set; }
-        public DateTimeOffset EndTime { get => CalendarExtensions.ParseExact(this.EndTimeString, "H:m", this.SchoolTimeZone); }
+        public DateTimeOffset EndTime { get => CalendarExtensions.ParseTime(this.EndTimeString, this.SchoolTimeZone); }
 
         [JsonProperty(PropertyName = "comments")]
         public string Comments { get => comments; set => comments = string.IsNullOrWhiteSpace(value) ? null : value; }
