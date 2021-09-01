@@ -26,6 +26,7 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<Attendance> Attendance { get; set; }
         public virtual DbSet<Book> Book { get; set; }
         public virtual DbSet<BotFeedback> BotFeedback { get; set; }
+        public virtual DbSet<Broadcast> Broadcast { get; set; }
         public virtual DbSet<Classroom> Classroom { get; set; }
         public virtual DbSet<Course> Course { get; set; }
         public virtual DbSet<CourseBook> CourseBook { get; set; }
@@ -198,6 +199,28 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasForeignKey(d => d.AuthorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_BotFeedback_AspNetUsers");
+            });
+
+            modelBuilder.Entity<Broadcast>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
+
+                entity.Property(e => e.Message).IsRequired();
+
+                entity.Property(e => e.ScheduledDate).HasColumnType("datetimeoffset(0)");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
+
+                entity.HasOne(d => d.Course)
+                    .WithMany(p => p.Broadcast)
+                    .HasForeignKey(d => d.CourseId)
+                    .HasConstraintName("FK_Broadcast_Course");
+
+                entity.HasOne(d => d.School)
+                    .WithMany(p => p.Broadcast)
+                    .HasForeignKey(d => d.SchoolId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Broadcast_School");
             });
 
             modelBuilder.Entity<Classroom>(entity =>

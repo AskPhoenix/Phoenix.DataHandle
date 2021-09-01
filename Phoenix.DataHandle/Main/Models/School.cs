@@ -11,6 +11,7 @@ namespace Phoenix.DataHandle.Main.Models
     {
         public School()
         {
+            Broadcast = new HashSet<Broadcast>();
             Classroom = new HashSet<Classroom>();
             Course = new HashSet<Course>();
             UserSchool = new HashSet<UserSchool>();
@@ -29,6 +30,7 @@ namespace Phoenix.DataHandle.Main.Models
         public DateTimeOffset? UpdatedAt { get; set; }
 
         public virtual SchoolSettings SchoolSettings { get; set; }
+        public virtual ICollection<Broadcast> Broadcast { get; set; }
         public virtual ICollection<Classroom> Classroom { get; set; }
         public virtual ICollection<Course> Course { get; set; }
         public virtual ICollection<UserSchool> UserSchool { get; set; }

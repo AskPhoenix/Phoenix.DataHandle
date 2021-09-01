@@ -74,6 +74,12 @@ namespace Phoenix.DataHandle.Main.Models
         IAspNetUsers IBotFeedback.Author => this.Author;
     }
 
+    public partial class Broadcast : IBroadcast, IModelEntity
+    {
+        ISchool IBroadcast.School => this.School;
+        ICourse IBroadcast.Course => this.Course;
+    }
+
     public partial class Classroom : IClassroom, IModelEntity
     {
         ISchool IClassroom.School => this.School;
@@ -113,7 +119,6 @@ namespace Phoenix.DataHandle.Main.Models
     public partial class Exam : IExam, IModelEntity
     {
         ILecture IExam.Lecture => this.Lecture;
-
         IEnumerable<IMaterial> IExam.Materials => this.Material;
         IEnumerable<IStudentExam> IExam.StudentExams => this.StudentExam;
     }
@@ -121,7 +126,6 @@ namespace Phoenix.DataHandle.Main.Models
     public partial class Exercise : IExercise, IModelEntity
     {
         IBook IExercise.Book => this.Book;
-
         ILecture IExercise.Lecture => this.Lecture;
         IEnumerable<IStudentExercise> IExercise.StudentExercises => this.StudentExercise;
     }
