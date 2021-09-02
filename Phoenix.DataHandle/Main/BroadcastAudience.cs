@@ -2,7 +2,8 @@
 {
     public enum BroadcastAudience
     {
-        Students = 0,
+        None = 0,
+        Students,
         Parents,
         StudentsParents,
         Staff,

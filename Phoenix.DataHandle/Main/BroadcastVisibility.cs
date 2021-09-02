@@ -2,7 +2,8 @@
 {
     public enum BroadcastVisibility
     {
-        Group = 0,
+        Hidden = 0,
+        Group,
         Global
     }
 
