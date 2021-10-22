@@ -2,7 +2,8 @@
 {
     public enum Daypart
     {
-        Morning = 0,    // 09:00
+        Now = 0,
+        Morning,        // 09:00
         Midday,         // 12:00
         Afternoon,      // 17:00
         Evening         // 20:00
@@ -15,6 +16,7 @@
         {
             return me switch
             {
+                Daypart.Now => "Τώρα",
                 Daypart.Morning => "Πρωί",
                 Daypart.Midday => "Μεσημέρι",
                 Daypart.Afternoon => "Απόγευμα",

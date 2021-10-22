@@ -14,7 +14,7 @@
             return me switch
             {
                 BroadcastVisibility.Group => "Τμήμα",
-                BroadcastVisibility.Global => "Σε όλο το σχολείο",
+                BroadcastVisibility.Global => "Όλο το φροντιστήριο",
                 _ => string.Empty
             };
         }
