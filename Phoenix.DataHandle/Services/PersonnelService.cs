@@ -81,20 +81,16 @@ namespace Phoenix.DataHandle.Services
 
                 if (!aspNetUserRepository.HasRole(aspNetUser, personnelAcf.RoleType))
                     aspNetUserRepository.LinkRole(aspNetUser, personnelAcf.RoleType);
-
-                short[] userCourseCodes = personnelAcf.ExtractCourseCodes();
-
-                if (personnelAcf.RoleType != Role.Teacher && userCourseCodes.Any())
-                    if (!aspNetUserRepository.HasRole(aspNetUser, Role.Teacher))
-                        aspNetUserRepository.LinkRole(aspNetUser, Role.Teacher);
                 
                 // Delete any other roles the user might have
                 // The only possible scenario where 2 roles are alowed is: a staff role + parent
-                // aspNetUserRepository.DeleteRoles(aspNetUser, new Role[2] { personnelAcf.RoleType, Role.Parent });
+                aspNetUserRepository.DeleteRoles(aspNetUser, new Role[2] { personnelAcf.RoleType, Role.Parent });
 
                 if (!Quiet)
                     Logger.LogInformation("Linking with the Courses of Personnel User");
 
+                short[] userCourseCodes = personnelAcf.ExtractCourseCodes();
+                
                 var userCourses = this.SchoolRepository.FindCourses(school.Id);
                 if (userCourseCodes.Any())
                     userCourses = userCourses.Where(c => userCourseCodes.Contains(c.Code));
