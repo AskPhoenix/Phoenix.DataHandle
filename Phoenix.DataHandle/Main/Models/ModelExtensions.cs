@@ -78,6 +78,7 @@ namespace Phoenix.DataHandle.Main.Models
     {
         ISchool IBroadcast.School => this.School;
         ICourse IBroadcast.Course => this.Course;
+        IAspNetUsers IBroadcast.CreatedByUser => this.CreatedByUser;
     }
 
     public partial class Classroom : IClassroom, IModelEntity

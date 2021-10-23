@@ -216,6 +216,12 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasForeignKey(d => d.CourseId)
                     .HasConstraintName("FK_Broadcast_Course");
 
+                entity.HasOne(d => d.CreatedByUser)
+                    .WithMany(p => p.Broadcast)
+                    .HasForeignKey(d => d.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Broadcast_AspNetUsers");
+
                 entity.HasOne(d => d.School)
                     .WithMany(p => p.Broadcast)
                     .HasForeignKey(d => d.SchoolId)

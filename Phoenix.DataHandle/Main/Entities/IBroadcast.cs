@@ -11,5 +11,7 @@ namespace Phoenix.DataHandle.Main.Entities
         BroadcastAudience Audience { get; set; }
         BroadcastVisibility Visibility { get; set; }
         ICourse Course { get; }
+        BroadcastStatus Status { get; set; }
+        IAspNetUsers CreatedByUser { get; }
     }
 }
