@@ -5,8 +5,10 @@
         None = 0,
         Students,
         Parents,
-        StudentsParents,
         Staff,
+        StudentsParents,
+        StudentsStaff,
+        ParentsStaff,
         All
     }
 
@@ -18,8 +20,10 @@
             {
                 BroadcastAudience.Students => "Μαθητές",
                 BroadcastAudience.Parents => "Γονείς",
-                BroadcastAudience.StudentsParents => "Μαθητές & Γονείς",
                 BroadcastAudience.Staff => "Διδακτικό προσωπικό",
+                BroadcastAudience.StudentsParents => "Μαθητές & Γονείς",
+                BroadcastAudience.StudentsStaff => "Μαθητές & Προσωπικό",
+                BroadcastAudience.ParentsStaff => "Γονείς & Προσωπικό",
                 BroadcastAudience.All => "Όλοι",
                 _ => string.Empty
             };
