@@ -51,6 +51,26 @@ namespace Phoenix.DataHandle.Repositories
             return this.Update(tModel, tModelFrom);
         }
 
+        public IQueryable<AspNetUsers> FindTeachersForCourse(int courseId)
+        {
+            return this.dbContext.Set<AspNetUsers>().
+                Where(u => u.TeacherCourse.Any(tc => tc.CourseId == courseId));
+        }
+
+        public IQueryable<AspNetUsers> FindStudentsForCourse(int courseId)
+        {
+            return this.dbContext.Set<AspNetUsers>().
+                Where(u => u.StudentCourse.Any(sc => sc.CourseId == courseId));
+        }
+
+        public IQueryable<AspNetUsers> FindAllForCourse(int courseId)
+        {
+            var teachers = this.FindTeachersForCourse(courseId);
+            var students = this.FindStudentsForCourse(courseId);
+
+            return teachers.Concat(students);
+        }
+
         public bool HasRole(AspNetUsers user, Role role)
         {
             if (user == null)
@@ -220,6 +240,18 @@ namespace Phoenix.DataHandle.Repositories
                 ThenInclude(p => p.User).
                 Where(p => p.ChildId == childId).
                 Select(p => p.Parent);
+        }
+
+        public IQueryable<AspNetUsers> FindParents(IList<int> childIds)
+        {
+            if (childIds is null)
+                throw new ArgumentNullException(nameof(childIds));
+
+            IQueryable<AspNetUsers> parents = FindParents(childIds.First());
+            foreach (int childId in childIds.Skip(1))
+                parents = parents.Concat(FindParents(childId));
+
+            return parents;
         }
 
         public void LinkSchool(UserSchool userSchool)

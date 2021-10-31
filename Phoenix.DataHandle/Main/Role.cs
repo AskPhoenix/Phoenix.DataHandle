@@ -21,7 +21,7 @@ namespace Phoenix.DataHandle.Main
 
         // Backend-side
         SchoolTester = RoleAttributes.BackendRolesBase,
-        SuperTester,
+        SuperTester = RoleAttributes.SuperRolesBase,
         SuperAdmin
     }
 
@@ -30,6 +30,7 @@ namespace Phoenix.DataHandle.Main
         public const int ClientRolesBase = 10;
         public const int StaffRolesBase = 20;
         public const int BackendRolesBase = 30;
+        public const int SuperRolesBase = 35;
     }
 
     //TODO: Locale
@@ -38,13 +39,21 @@ namespace Phoenix.DataHandle.Main
         public static bool IsClient(this Role role) => (int)role >= RoleAttributes.ClientRolesBase && (int)role < RoleAttributes.StaffRolesBase;
         public static bool IsStaff(this Role role) => (int)role >= RoleAttributes.StaffRolesBase && (int)role < RoleAttributes.BackendRolesBase;
         public static bool IsBackend(this Role role) => (int)role >= RoleAttributes.BackendRolesBase;
+        public static bool IsSuper(this Role role) => (int)role >= RoleAttributes.SuperRolesBase;
+
+        //TODO: Is this needed?
         public static bool IsStaffAdmin(this Role role) => role.IsStaff() && role >= Role.SchoolAdmin;
+        
 
         public static IEnumerable<Role> GetClientRoles() => GetAll().Where(r => r.IsClient());
 
         public static IEnumerable<Role> GetStaffRoles() => GetAll().Where(r => r.IsStaff());
 
         public static IEnumerable<Role> GetBackendRoles() => GetAll().Where(r => r.IsBackend());
+
+        public static IEnumerable<Role> GetSuperRoles() => GetAll().Where(r => r.IsSuper());
+
+        public static IEnumerable<Role> GetSchoolBackendRoles() => GetAll().Where(r => r.IsBackend() && !r.IsSuper());
 
         public static IEnumerable<Role> GetStaffAdminRoles() => GetAll().Where(r => r.IsStaffAdmin());
 

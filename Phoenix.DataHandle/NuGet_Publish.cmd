@@ -22,6 +22,6 @@ dotnet pack --configuration Release --no-restore
 
 echo.
 echo.
-nuget.exe push "**/*.nupkg" -Source "AskPhoenix" -SkipDuplicate
+dotnet nuget push "**/*.nupkg" --source "AskPhoenix" --skip-duplicate
 
 Pause
