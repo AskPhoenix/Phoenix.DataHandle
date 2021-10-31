@@ -17,6 +17,7 @@
     <Company>AskPhoenix</Company>
     <PackageDescription>A wrapper for operations on PhoenixDB</PackageDescription>
     <RepositoryUrl>https://github.com/AskPhoenix/Phoenix.DataHandle</RepositoryUrl>
+    <PackageVersion>2.0.9.3</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
