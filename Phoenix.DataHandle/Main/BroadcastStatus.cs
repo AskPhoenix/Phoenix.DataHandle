@@ -3,7 +3,9 @@
     public enum BroadcastStatus
     {
         Pending = 0,
-        Sent,
+        Processing,
+
+        Succeeded,
         Failed,
         Cancelled
     }

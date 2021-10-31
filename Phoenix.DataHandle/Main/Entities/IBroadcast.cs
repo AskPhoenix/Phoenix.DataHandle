@@ -13,5 +13,6 @@ namespace Phoenix.DataHandle.Main.Entities
         ICourse Course { get; }
         BroadcastStatus Status { get; set; }
         IAspNetUsers CreatedByUser { get; }
+        DateTimeOffset? SentAt { get; set; }
     }
 }

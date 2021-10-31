@@ -19,6 +19,7 @@ namespace Phoenix.DataHandle.Main.Models
         public int? CourseId { get; set; }
         public BroadcastStatus Status { get; set; }
         public int CreatedByUserId { get; set; }
+        public DateTimeOffset? SentAt { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
 

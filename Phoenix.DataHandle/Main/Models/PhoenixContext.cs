@@ -209,6 +209,8 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.ScheduledDate).HasColumnType("datetimeoffset(0)");
 
+                entity.Property(e => e.SentAt).HasColumnType("datetimeoffset(0)");
+
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.HasOne(d => d.Course)
