@@ -26,3 +26,6 @@ CREATE NONCLUSTERED INDEX [IX_TranscriptConversation] ON [dbo].[BotTranscript]
 GO
 ALTER TABLE [dbo].[BotTranscript] ADD  DEFAULT (getutcdate()) FOR [TimeStamp]
 GO
+
+CREATE SYNONYM [dbo].[TranscriptEntity] FOR [dbo].[BotTranscript];
+GO

@@ -14,3 +14,6 @@ ALTER TABLE [dbo].[BotData] ADD  DEFAULT (getutcdate()) FOR [CreatedTime]
 GO
 ALTER TABLE [dbo].[BotData] ADD  DEFAULT (getutcdate()) FOR [TimeStamp]
 GO
+
+CREATE SYNONYM [dbo].[BotDataEntity] FOR [dbo].[BotData];
+GO
