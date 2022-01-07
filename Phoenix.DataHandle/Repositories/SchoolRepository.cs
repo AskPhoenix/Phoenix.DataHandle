@@ -8,6 +8,7 @@ namespace Phoenix.DataHandle.Repositories
     {
         public SchoolRepository(PhoenixContext dbContext) : base(dbContext) { }
 
+        // TODO: Remove and use method: TModel Update(TModel model)
         public School Update(School tModel, School tModelFrom)
         {
             if (tModel == null)
@@ -53,6 +54,11 @@ namespace Phoenix.DataHandle.Repositories
         {
             this.Include(a => a.Classroom);
             return this.Find().Where(a => a.Id == id).SelectMany(a => a.Classroom);
+        }
+
+        public SchoolSettings FindSchoolSettings(int id)
+        {
+            return this.dbContext.Set<SchoolSettings>().Single(a => a.SchoolId == id);
         }
     }
 }
