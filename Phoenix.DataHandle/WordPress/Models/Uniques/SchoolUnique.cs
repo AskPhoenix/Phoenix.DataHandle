@@ -11,29 +11,37 @@ namespace Phoenix.DataHandle.WordPress.Models.Uniques
 
         public SchoolUnique(string postTitle)
         {
-            string[] uniqueParts = postTitle?.
+            if (string.IsNullOrEmpty(postTitle))
+                throw new ArgumentNullException(nameof(postTitle));
+
+            bool titleOk = postTitle.Contains(PostExtensions.PrimaryDelimiter)
+                && postTitle.Contains(PostExtensions.SecondaryDelimiter);
+            if (!titleOk)
+                throw new ArgumentException("Post title is not well formed.");
+
+            string[] uniqueParts = postTitle.Trim().
                 Split(PostExtensions.PrimaryDelimiter, StringSplitOptions.RemoveEmptyEntries).
-                FirstOrDefault()?.
+                First().
                 Split(PostExtensions.SecondaryDelimiter, StringSplitOptions.RemoveEmptyEntries);
 
-            if (uniqueParts is null || uniqueParts.Length != 2 || uniqueParts.Any(u => string.IsNullOrWhiteSpace(u)))
-                throw new InvalidOperationException("The school unique in the title of the post is not valid.");
-
-            //School unique is already in capital in the title
             this.NormalizedSchoolName = uniqueParts[0].ToUpperInvariant();
             this.NormalizedSchoolCity = uniqueParts[1].ToUpperInvariant();
         }
 
         public SchoolUnique(string schoolName, string schoolCity)
         {
-            //School unique is already in capital in the title
-            this.NormalizedSchoolName = schoolName?.ToUpperInvariant();
-            this.NormalizedSchoolCity = schoolCity?.ToUpperInvariant();
+            if (string.IsNullOrEmpty(schoolName))
+                throw new ArgumentNullException(nameof(schoolName));
+            if (string.IsNullOrEmpty(schoolCity))
+                throw new ArgumentNullException(nameof(schoolCity));
+
+            this.NormalizedSchoolName = schoolName.ToUpperInvariant();
+            this.NormalizedSchoolCity = schoolCity.ToUpperInvariant();
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? other)
         {
-            return obj is SchoolUnique unique &&
+            return other is SchoolUnique unique &&
                    NormalizedSchoolName == unique.NormalizedSchoolName &&
                    NormalizedSchoolCity == unique.NormalizedSchoolCity;
         }
@@ -41,6 +49,11 @@ namespace Phoenix.DataHandle.WordPress.Models.Uniques
         public override int GetHashCode()
         {
             return HashCode.Combine(NormalizedSchoolName, NormalizedSchoolCity);
+        }
+
+        public override string ToString()
+        {
+            return NormalizedSchoolName + PostExtensions.SecondaryDelimiter + NormalizedSchoolCity;
         }
     }
 }

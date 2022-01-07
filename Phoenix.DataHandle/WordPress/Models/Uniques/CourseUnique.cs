@@ -11,17 +11,25 @@ namespace Phoenix.DataHandle.WordPress.Models.Uniques
 
         public CourseUnique(string postTitle)
         {
+            if (string.IsNullOrEmpty(postTitle))
+                throw new ArgumentNullException(nameof(postTitle));
+
+            bool titleOk = postTitle.Contains(PostExtensions.PrimaryDelimiter)
+                && postTitle.Contains(PostExtensions.SecondaryDelimiter);
+            if (!titleOk)
+                throw new ArgumentException("Post title is not well formed.");
+
             this.SchoolUnique = new SchoolUnique(postTitle);
 
-            string unique = postTitle?.
+            string codeStr = postTitle.Trim().
                 Split(PostExtensions.PrimaryDelimiter, StringSplitOptions.RemoveEmptyEntries).
-                LastOrDefault()?.
+                Last().
                 Split(PostExtensions.SecondaryDelimiter, StringSplitOptions.RemoveEmptyEntries).
-                LastOrDefault();
+                Last();
 
-            bool codeParsed = short.TryParse(unique, out short code);
+            bool codeParsed = short.TryParse(codeStr, out short code);
             if (!codeParsed)
-                throw new InvalidOperationException($"The course code \"{unique}\" in the title of the post is not valid.");
+                throw new InvalidOperationException($"The course code \"{codeStr}\" in the title of the post is not valid.");
 
             this.Code = code;
         }
@@ -30,6 +38,24 @@ namespace Phoenix.DataHandle.WordPress.Models.Uniques
         {
             this.SchoolUnique = schoolUnique;
             this.Code = code;
+        }
+
+        public override bool Equals(object? other)
+        {
+            return other is CourseUnique courseUnique &&
+                   SchoolUnique.Equals(courseUnique.SchoolUnique) &&
+                   Code == courseUnique.Code;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(SchoolUnique, Code);
+        }
+
+        public override string ToString()
+        {
+            return SchoolUnique.ToString() + PostExtensions.PrimaryDelimiter +
+                "Course" + PostExtensions.SecondaryDelimiter + Code;
         }
     }
 }
