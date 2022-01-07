@@ -43,8 +43,10 @@ namespace Phoenix.DataHandle.Main.Models
         public bool LockoutEnabled { get; set; }
         public int AccessFailedCount { get; set; }
         public ApplicationType CreatedApplicationType { get; set; }
+        public bool IsDeleted { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTimeOffset? DeletedAt { get; set; }
 
         public virtual User User { get; set; }
         public virtual ICollection<AspNetUserLogins> AspNetUserLogins { get; set; }

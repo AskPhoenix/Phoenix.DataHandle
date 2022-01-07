@@ -23,7 +23,7 @@ namespace Phoenix.DataHandle.Main.Models
         IAspNetRoles IAspNetUserRoles.Role => this.Role;
     }
 
-    public partial class AspNetUsers : IAspNetUsers, IModelEntity
+    public partial class AspNetUsers : IAspNetUsers, IDeletableModelEntity
     {
         public DateTimeOffset RegisteredAt => this.CreatedAt;
 
@@ -81,7 +81,7 @@ namespace Phoenix.DataHandle.Main.Models
         IAspNetUsers IBroadcast.CreatedByUser => this.CreatedByUser;
     }
 
-    public partial class Classroom : IClassroom, IModelEntity
+    public partial class Classroom : IClassroom, IDeletableModelEntity
     {
         ISchool IClassroom.School => this.School;
 
@@ -89,7 +89,7 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ISchedule> IClassroom.Schedules => this.Schedule;
     }
 
-    public partial class Course : ICourse, IModelEntity
+    public partial class Course : ICourse, IDeletableModelEntity
     {
         ISchool ICourse.School => this.School;
 
@@ -148,7 +148,7 @@ namespace Phoenix.DataHandle.Main.Models
         IBook IMaterial.Book => this.Book;
     }
 
-    public partial class School : ISchool, IModelEntity
+    public partial class School : ISchool, IDeletableModelEntity
     {
         ISchoolSettings ISchool.SchoolSettings => this.SchoolSettings;
         IEnumerable<IUserSchool> ISchool.UserSchools => this.UserSchool;
@@ -198,7 +198,7 @@ namespace Phoenix.DataHandle.Main.Models
         IAspNetUsers IParenthood.Parent => this.Parent;
     }
 
-    public partial class Schedule : ISchedule, IModelEntity
+    public partial class Schedule : ISchedule, IDeletableModelEntity
     {
         ICourse ISchedule.Course => this.Course;
         IClassroom ISchedule.Classroom => this.Classroom;

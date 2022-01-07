@@ -48,8 +48,8 @@ namespace Phoenix.DataHandle.Main.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-            {
-                throw new Exception("Connection string not specified for PhoenixContext.");
+            { 
+                throw new Exception("Connection string not specified for PhoenixContext."); 
             }
         }
 
@@ -127,6 +127,8 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasColumnType("datetimeoffset(0)")
                     .HasDefaultValueSql("(getdate())");
 
+                entity.Property(e => e.DeletedAt).HasColumnType("datetimeoffset(0)");
+
                 entity.Property(e => e.Email).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
@@ -149,6 +151,8 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<Attendance>(entity =>
             {
                 entity.HasKey(e => new { e.StudentId, e.LectureId });
+
+                entity.HasIndex(e => e.LectureId);
 
                 entity.HasOne(d => d.Lecture)
                     .WithMany(p => p.Attendance)
@@ -186,6 +190,8 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<BotFeedback>(entity =>
             {
+                entity.HasIndex(e => e.AuthorId);
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.Type)
@@ -203,6 +209,12 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Broadcast>(entity =>
             {
+                entity.HasIndex(e => e.CourseId);
+
+                entity.HasIndex(e => e.CreatedByUserId);
+
+                entity.HasIndex(e => e.SchoolId);
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.Message).IsRequired();
@@ -241,6 +253,8 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasColumnType("datetimeoffset(0)")
                     .HasDefaultValueSql("(getdate())");
 
+                entity.Property(e => e.DeletedAt).HasColumnType("datetimeoffset(0)");
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
@@ -266,6 +280,8 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetimeoffset(0)")
                     .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.FirstDate).HasColumnType("datetimeoffset(0)");
 
@@ -296,6 +312,8 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<CourseBook>(entity =>
             {
                 entity.HasKey(e => new { e.CourseId, e.BookId });
+
+                entity.HasIndex(e => e.BookId);
 
                 entity.HasOne(d => d.Book)
                     .WithMany(p => p.CourseBook)
@@ -328,6 +346,10 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Exercise>(entity =>
             {
+                entity.HasIndex(e => e.BookId);
+
+                entity.HasIndex(e => e.LectureId);
+
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetimeoffset(0)")
                     .HasDefaultValueSql("(getdate())");
@@ -354,6 +376,12 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Lecture>(entity =>
             {
+                entity.HasIndex(e => e.ClassroomId);
+
+                entity.HasIndex(e => e.CourseId);
+
+                entity.HasIndex(e => e.ScheduleId);
+
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetimeoffset(0)")
                     .HasDefaultValueSql("(getdate())");
@@ -383,6 +411,10 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Material>(entity =>
             {
+                entity.HasIndex(e => e.BookId);
+
+                entity.HasIndex(e => e.ExamId);
+
                 entity.Property(e => e.Chapter).HasMaxLength(50);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
@@ -407,6 +439,8 @@ namespace Phoenix.DataHandle.Main.Models
             {
                 entity.HasKey(e => new { e.ParentId, e.ChildId });
 
+                entity.HasIndex(e => e.ChildId);
+
                 entity.HasOne(d => d.Child)
                     .WithMany(p => p.ParenthoodChild)
                     .HasForeignKey(d => d.ChildId)
@@ -421,11 +455,15 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Schedule>(entity =>
             {
+                entity.HasIndex(e => e.ClassroomId);
+
                 entity.HasIndex(e => new { e.CourseId, e.DayOfWeek, e.StartTime })
                     .HasName("UQ_Schedule")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.EndTime).HasColumnType("datetimeoffset(0)");
 
@@ -466,6 +504,8 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetimeoffset(0)")
                     .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.FacebookPageId).HasMaxLength(20);
 
@@ -517,6 +557,8 @@ namespace Phoenix.DataHandle.Main.Models
             {
                 entity.HasKey(e => new { e.CourseId, e.StudentId });
 
+                entity.HasIndex(e => e.StudentId);
+
                 entity.Property(e => e.Grade).HasColumnType("decimal(6, 3)");
 
                 entity.HasOne(d => d.Course)
@@ -533,6 +575,8 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<StudentExam>(entity =>
             {
                 entity.HasKey(e => new { e.StudentId, e.ExamId });
+
+                entity.HasIndex(e => e.ExamId);
 
                 entity.Property(e => e.Grade).HasColumnType("decimal(6, 3)");
 
@@ -551,6 +595,8 @@ namespace Phoenix.DataHandle.Main.Models
             {
                 entity.HasKey(e => new { e.StudentId, e.ExerciseId });
 
+                entity.HasIndex(e => e.ExerciseId);
+
                 entity.Property(e => e.Grade).HasColumnType("decimal(6, 3)");
 
                 entity.HasOne(d => d.Exercise)
@@ -567,6 +613,8 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<TeacherCourse>(entity =>
             {
                 entity.HasKey(e => new { e.TeacherId, e.CourseId });
+
+                entity.HasIndex(e => e.CourseId);
 
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.TeacherCourse)
@@ -602,6 +650,8 @@ namespace Phoenix.DataHandle.Main.Models
             modelBuilder.Entity<UserSchool>(entity =>
             {
                 entity.HasKey(e => new { e.AspNetUserId, e.SchoolId });
+
+                entity.HasIndex(e => e.SchoolId);
 
                 entity.Property(e => e.EnrolledOn).HasColumnType("datetimeoffset(0)");
 

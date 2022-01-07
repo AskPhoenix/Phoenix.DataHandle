@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Migrations
 {
     [DbContext(typeof(PhoenixContext))]
-    partial class PhoenixContextModelSnapshot : ModelSnapshot
+    [Migration("20220107181856_DeletableTables")]
+    partial class DeletableTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
