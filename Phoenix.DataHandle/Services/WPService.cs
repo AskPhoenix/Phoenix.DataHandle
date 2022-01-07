@@ -44,7 +44,10 @@ namespace Phoenix.DataHandle.Services
         public async Task<IEnumerable<Post>> GetAllPostsAsync()
         {
             if (this.SpecificSchoolOnly)
-                return await WordPressClientWrapper.GetPostsForSchoolAsync(this.CategoryId, this.SpecificSchool);
+            {
+                SchoolUnique schoolUnique = new SchoolUnique(this.SpecificSchool);
+                return (await WordPressClientWrapper.GetPostsAsync(this.CategoryId)).FilterPostsForSchool(schoolUnique);
+            }
             
             return await WordPressClientWrapper.GetPostsAsync(this.CategoryId);
         }

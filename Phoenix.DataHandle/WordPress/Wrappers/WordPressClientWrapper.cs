@@ -81,12 +81,9 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
             return posts;
         }
 
-        public static async Task<IEnumerable<Post>> GetPostsForSchoolAsync(int categoryId, string specificSchool, bool embed = false)
+        public static IEnumerable<Post> FilterPostsForSchool(this IEnumerable<Post> posts, SchoolUnique schoolUnique)
         {
-            SchoolUnique schoolUnique = new SchoolUnique(specificSchool);
-
-            return (await GetPostsAsync(categoryId, embed)).
-                Where(p => schoolUnique.Equals(new SchoolUnique(p.GetTitle())));
+            return posts.Where(p => schoolUnique.Equals(new SchoolUnique(p.GetTitle())));
         }
 
         public static async Task<AcfT> GetAcfAsync<AcfT>(int postId, bool embed = false) 
