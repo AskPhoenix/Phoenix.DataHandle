@@ -6,7 +6,7 @@ using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class CourseRepository : Repository<Course>
+    public class CourseRepository : ObviableRepository<Course>
     {
         public CourseRepository(PhoenixContext dbContext) : base(dbContext) { }
 
@@ -32,6 +32,12 @@ namespace Phoenix.DataHandle.Repositories
                 Include(tc => tc.Course).
                 Where(tc => tc.TeacherId == teacherId).
                 Select(tc => tc.Course);
+        }
+
+        public IQueryable<Schedule> FindSchedules(int id)
+        {
+            this.Include(a => a.Schedule);
+            return this.Find().Where(a => a.Id == id).SelectMany(a => a.Schedule);
         }
 
         public Course Update(Course tModel, Course tModelFrom)

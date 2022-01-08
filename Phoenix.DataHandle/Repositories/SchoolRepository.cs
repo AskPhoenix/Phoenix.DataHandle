@@ -4,7 +4,7 @@ using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class SchoolRepository : Repository<School>
+    public class SchoolRepository : ObviableRepository<School>
     {
         public SchoolRepository(PhoenixContext dbContext) : base(dbContext) { }
 

@@ -3,7 +3,7 @@ using System;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class ScheduleRepository : Repository<Schedule>
+    public class ScheduleRepository : ObviableRepository<Schedule>
     {
         public ScheduleRepository(PhoenixContext dbContext) : base(dbContext) { }
 

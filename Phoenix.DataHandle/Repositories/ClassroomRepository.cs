@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class ClassroomRepository : Repository<Classroom>
+    public class ClassroomRepository : ObviableRepository<Classroom>
     {
         public ClassroomRepository(PhoenixContext dbContext) : base(dbContext) { }
 

@@ -7,7 +7,7 @@ using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class AspNetUserRepository : Repository<AspNetUsers>
+    public class AspNetUserRepository : ObviableRepository<AspNetUsers>
     {
         public AspNetUserRepository(PhoenixContext dbContext) 
             : base(dbContext) { }
