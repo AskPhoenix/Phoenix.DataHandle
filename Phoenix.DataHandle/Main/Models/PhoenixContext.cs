@@ -48,8 +48,9 @@ namespace Phoenix.DataHandle.Main.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-            { 
-                throw new Exception("Connection string not specified for PhoenixContext."); 
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=.;Database=PhoenicopterusDB;Trusted_Connection=True;");
             }
         }
 
@@ -127,13 +128,13 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasColumnType("datetimeoffset(0)")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.DeletedAt).HasColumnType("datetimeoffset(0)");
-
                 entity.Property(e => e.Email).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
+
+                entity.Property(e => e.ObviatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.PhoneNumber)
                     .IsRequired()
@@ -253,8 +254,6 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasColumnType("datetimeoffset(0)")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.DeletedAt).HasColumnType("datetimeoffset(0)");
-
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
@@ -262,6 +261,8 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.NormalizedName)
                     .IsRequired()
                     .HasMaxLength(255);
+
+                entity.Property(e => e.ObviatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetimeoffset(0)");
 
@@ -281,8 +282,6 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasColumnType("datetimeoffset(0)")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.DeletedAt).HasColumnType("datetimeoffset(0)");
-
                 entity.Property(e => e.FirstDate).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.Group)
@@ -298,6 +297,8 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(150);
+
+                entity.Property(e => e.ObviatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.SubCourse).HasMaxLength(150);
 
@@ -463,9 +464,9 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetimeoffset(0)");
 
-                entity.Property(e => e.DeletedAt).HasColumnType("datetimeoffset(0)");
-
                 entity.Property(e => e.EndTime).HasColumnType("datetimeoffset(0)");
+
+                entity.Property(e => e.ObviatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.StartTime).HasColumnType("datetimeoffset(0)");
 
@@ -505,8 +506,6 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasColumnType("datetimeoffset(0)")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.DeletedAt).HasColumnType("datetimeoffset(0)");
-
                 entity.Property(e => e.FacebookPageId).HasMaxLength(20);
 
                 entity.Property(e => e.Name)
@@ -520,6 +519,8 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.NormalizedName)
                     .IsRequired()
                     .HasMaxLength(200);
+
+                entity.Property(e => e.ObviatedAt).HasColumnType("datetimeoffset(0)");
 
                 entity.Property(e => e.Slug)
                     .IsRequired()

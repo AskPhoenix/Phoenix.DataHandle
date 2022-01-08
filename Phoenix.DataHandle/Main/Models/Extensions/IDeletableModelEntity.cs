@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Phoenix.DataHandle.Main.Models.Extensions
 {
-    internal interface IDeletableModelEntity : IModelEntity
+    internal interface IObviableModelEntity : IModelEntity
     {
-        bool IsDeleted { get; set; }
-        DateTimeOffset? DeletedAt { get; set; }
+        bool IsObviated { get; set; }
+        DateTimeOffset? ObviatedAt { get; set; }
     }
 }

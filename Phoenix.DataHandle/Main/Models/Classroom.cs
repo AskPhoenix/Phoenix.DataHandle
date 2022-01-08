@@ -20,10 +20,10 @@ namespace Phoenix.DataHandle.Main.Models
         public string Name { get; set; }
         public string NormalizedName { get; set; }
         public string Info { get; set; }
-        public bool IsDeleted { get; set; }
+        public bool IsObviated { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
-        public DateTimeOffset? DeletedAt { get; set; }
+        public DateTimeOffset? ObviatedAt { get; set; }
 
         public virtual School School { get; set; }
         public virtual ICollection<Lecture> Lecture { get; set; }
