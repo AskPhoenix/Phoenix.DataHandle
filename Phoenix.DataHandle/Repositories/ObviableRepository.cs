@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Phoenix.DataHandle.Repositories
 {
@@ -13,15 +11,29 @@ namespace Phoenix.DataHandle.Repositories
         {
         }
 
-        public virtual TObviableModel Obviate(TObviableModel tObviableModel)
+        public virtual TObviableModel Obviate(TObviableModel obviableModel)
         {
-            if (tObviableModel == null)
-                throw new ArgumentNullException(nameof(tObviableModel));
+            if (obviableModel == null)
+                throw new ArgumentNullException(nameof(obviableModel));
 
-            tObviableModel.IsObviated = true;
-            tObviableModel.ObviatedAt = DateTimeOffset.Now;
+            obviableModel.IsObviated = true;
+            obviableModel.ObviatedAt = DateTimeOffset.Now;
 
-            return this.Update(tObviableModel);
+            return this.Update(obviableModel);
+        }
+
+        public virtual TObviableModel Restore(TObviableModel obviableModel)
+        {
+            if (obviableModel == null)
+                throw new ArgumentNullException(nameof(obviableModel));
+
+            if (!obviableModel.IsObviated)
+                return obviableModel;
+
+            obviableModel.IsObviated = false;
+            obviableModel.ObviatedAt = null;
+
+            return this.Update(obviableModel);
         }
     }
 }
