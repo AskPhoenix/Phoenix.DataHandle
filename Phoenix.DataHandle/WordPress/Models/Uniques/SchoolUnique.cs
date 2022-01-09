@@ -14,9 +14,7 @@ namespace Phoenix.DataHandle.WordPress.Models.Uniques
             if (string.IsNullOrEmpty(postTitle))
                 throw new ArgumentNullException(nameof(postTitle));
 
-            bool titleOk = postTitle.Contains(PostExtensions.PrimaryDelimiter)
-                && postTitle.Contains(PostExtensions.SecondaryDelimiter);
-            if (!titleOk)
+            if (!postTitle.Contains(PostExtensions.SecondaryDelimiter))
                 throw new ArgumentException("Post title is not well formed.");
 
             string[] uniqueParts = postTitle.Trim().
