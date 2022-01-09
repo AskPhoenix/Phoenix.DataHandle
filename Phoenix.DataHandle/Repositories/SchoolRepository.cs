@@ -56,6 +56,12 @@ namespace Phoenix.DataHandle.Repositories
             return this.Find().Where(a => a.Id == id).SelectMany(a => a.Classroom);
         }
 
+        public IQueryable<AspNetUsers> FindUsers(int id)
+        {
+            this.Include(a => a.UserSchool); //TODO: ThenInclude(b => b.AspNetUsers)
+            return this.Find().Where(a => a.Id == id).SelectMany(a => a.UserSchool).Select(a => a.AspNetUser);
+        }
+
         public SchoolSettings FindSchoolSettings(int id)
         {
             return this.dbContext.Set<SchoolSettings>().Single(a => a.SchoolId == id);
