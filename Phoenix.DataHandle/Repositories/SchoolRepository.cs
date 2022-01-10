@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Repositories
@@ -58,8 +60,26 @@ namespace Phoenix.DataHandle.Repositories
 
         public IQueryable<AspNetUsers> FindUsers(int id)
         {
-            this.Include(a => a.UserSchool); //TODO: ThenInclude(b => b.AspNetUsers)
-            return this.Find().Where(a => a.Id == id).SelectMany(a => a.UserSchool).Select(a => a.AspNetUser);
+            return this.Find()
+                .Include(a => a.UserSchool)
+                .ThenInclude(a => a.AspNetUser)
+                .Where(a => a.Id == id)
+                .SelectMany(a => a.UserSchool)
+                .Select(a => a.AspNetUser);
+        }
+
+        public IQueryable<AspNetUsers> FindPersonnel(int id)
+        {
+            var personnelRoles = RoleExtensions.GetPersonnelRoles();
+            return this.FindUsers(id)
+                .Where(u => u.AspNetUserRoles.Any(ur => personnelRoles.Contains(ur.Role.Type)));
+        }
+
+        public IQueryable<AspNetUsers> FindClients(int id)
+        {
+            var clientRoles = RoleExtensions.GetClientRoles();
+            return this.FindUsers(id)
+                .Where(u => u.AspNetUserRoles.Any(ur => clientRoles.Contains(ur.Role.Type)));
         }
 
         public SchoolSettings FindSchoolSettings(int id)

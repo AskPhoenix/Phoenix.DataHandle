@@ -6,6 +6,7 @@ namespace Phoenix.DataHandle.Main
 {
     public enum Role
     {
+        // Inactive roles
         Undefined = 0,
         None,
         
@@ -40,23 +41,18 @@ namespace Phoenix.DataHandle.Main
         public static bool IsStaff(this Role role) => (int)role >= RoleAttributes.StaffRolesBase && (int)role < RoleAttributes.BackendRolesBase;
         public static bool IsBackend(this Role role) => (int)role >= RoleAttributes.BackendRolesBase;
         public static bool IsSuper(this Role role) => (int)role >= RoleAttributes.SuperRolesBase;
-
-        //TODO: Is this needed?
         public static bool IsStaffAdmin(this Role role) => role.IsStaff() && role >= Role.SchoolAdmin;
+        public static bool IsPersonnel(this Role role) => !role.IsClient() && role.IsActive(); // Personnel != Staff
+        public static bool IsActive(this Role role) => role != Role.Undefined && role != Role.None;
         
-
         public static IEnumerable<Role> GetClientRoles() => GetAll().Where(r => r.IsClient());
-
         public static IEnumerable<Role> GetStaffRoles() => GetAll().Where(r => r.IsStaff());
-
         public static IEnumerable<Role> GetBackendRoles() => GetAll().Where(r => r.IsBackend());
-
         public static IEnumerable<Role> GetSuperRoles() => GetAll().Where(r => r.IsSuper());
-
         public static IEnumerable<Role> GetSchoolBackendRoles() => GetAll().Where(r => r.IsBackend() && !r.IsSuper());
-
         public static IEnumerable<Role> GetStaffAdminRoles() => GetAll().Where(r => r.IsStaffAdmin());
-
+        public static IEnumerable<Role> GetPersonnelRoles() => GetAll().Where(r =>r.IsPersonnel());
+        public static IEnumerable<Role> GetActiveRoles() => GetAll().Where(r => r.IsActive());
         public static IEnumerable<Role> GetAll() => Enum.GetValues(typeof(Role)).Cast<Role>();
 
         public static string ToString(this Role me)

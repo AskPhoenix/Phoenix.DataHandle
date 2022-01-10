@@ -10,8 +10,7 @@ namespace Phoenix.DataHandle.Tests.Repositories
     {
         private const int NUAGE_EXISTING_ASPNETUSER_ID = 68;
 
-        //private const string CONNECTION_STRING = "Server=.;Initial Catalog=PhoenixDB;Persist Security Info=False;User ID=sa;Password=root;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=True;Connection Timeout=30;";
-        private const string CONNECTION_STRING = "Server=tcp:askphoenix.database.windows.net,1433;Initial Catalog=NuageDB;Persist Security Info=False;User ID=phoenix;Password=20Ph0eniX20!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        private const string CONNECTION_STRING = "Server=.;Database=PhoenicopterusDB;Trusted_Connection=True;";
         private readonly PhoenixContext _phoenixContext;
 
         public RepositoryTests()
@@ -32,6 +31,22 @@ namespace Phoenix.DataHandle.Tests.Repositories
             SchoolRepository schoolRepository = new SchoolRepository(this._phoenixContext);
 
             _ = await schoolRepository.Find().ToListAsync();
+        }
+
+        [Fact]
+        public async void FetchPersonnel()
+        {
+            SchoolRepository schoolRepository = new SchoolRepository(_phoenixContext);
+
+            _ = await schoolRepository.FindPersonnel(1).ToListAsync();
+        }
+
+        [Fact]
+        public async void Fetchlients()
+        {
+            SchoolRepository schoolRepository = new SchoolRepository(_phoenixContext);
+
+            _ = await schoolRepository.FindClients(1).ToListAsync();
         }
 
         [Fact]
