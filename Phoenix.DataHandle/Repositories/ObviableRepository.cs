@@ -16,6 +16,9 @@ namespace Phoenix.DataHandle.Repositories
             if (obviableModel == null)
                 throw new ArgumentNullException(nameof(obviableModel));
 
+            if (obviableModel.IsObviated)
+                return obviableModel;
+
             obviableModel.IsObviated = true;
             obviableModel.ObviatedAt = DateTimeOffset.Now;
 
