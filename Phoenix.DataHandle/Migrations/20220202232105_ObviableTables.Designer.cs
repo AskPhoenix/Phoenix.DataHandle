@@ -10,8 +10,8 @@ using Phoenix.DataHandle.Main.Models;
 namespace Phoenix.DataHandle.Migrations
 {
     [DbContext(typeof(PhoenixContext))]
-    [Migration("20220107181856_DeletableTables")]
-    partial class DeletableTables
+    [Migration("20220202232105_ObviableTables")]
+    partial class ObviableTables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -29,19 +29,16 @@ namespace Phoenix.DataHandle.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset(0)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
@@ -78,7 +75,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("ProviderDisplayName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
@@ -120,7 +116,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CreatedApplicationType")
@@ -133,18 +128,11 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("datetimeoffset(0)")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset(0)");
-
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
@@ -154,17 +142,17 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NormalizedEmail")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedUserName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
+                    b.Property<DateTimeOffset?>("ObviatedAt")
+                        .HasColumnType("datetimeoffset(0)");
+
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
@@ -176,7 +164,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("PhoneNumberVerificationCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
@@ -184,7 +171,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("datetime2(0)");
 
                     b.Property<string>("SecurityStamp")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -194,7 +180,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("datetimeoffset(0)");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
@@ -242,7 +227,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.Property<string>("Info")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -256,7 +240,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasMaxLength(255);
 
                     b.Property<string>("Publisher")
-                        .IsRequired()
                         .HasColumnType("nvarchar(255)")
                         .HasMaxLength(255);
 
@@ -286,7 +269,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
@@ -377,15 +359,8 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("datetimeoffset(0)")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset(0)");
-
                     b.Property<string>("Info")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -396,6 +371,9 @@ namespace Phoenix.DataHandle.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(255)")
                         .HasMaxLength(255);
+
+                    b.Property<DateTimeOffset?>("ObviatedAt")
+                        .HasColumnType("datetimeoffset(0)");
 
                     b.Property<int>("SchoolId")
                         .HasColumnType("int");
@@ -427,9 +405,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("datetimeoffset(0)")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset(0)");
-
                     b.Property<DateTimeOffset>("FirstDate")
                         .HasColumnType("datetimeoffset(0)");
 
@@ -439,11 +414,7 @@ namespace Phoenix.DataHandle.Migrations
                         .HasMaxLength(50);
 
                     b.Property<string>("Info")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<DateTimeOffset>("LastDate")
                         .HasColumnType("datetimeoffset(0)");
@@ -458,11 +429,13 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("nvarchar(150)")
                         .HasMaxLength(150);
 
+                    b.Property<DateTimeOffset?>("ObviatedAt")
+                        .HasColumnType("datetimeoffset(0)");
+
                     b.Property<int>("SchoolId")
                         .HasColumnType("int");
 
                     b.Property<string>("SubCourse")
-                        .IsRequired()
                         .HasColumnType("nvarchar(150)")
                         .HasMaxLength(150);
 
@@ -501,7 +474,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Comments")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
@@ -511,7 +483,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
@@ -538,7 +509,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Comments")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
@@ -555,7 +525,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasMaxLength(256);
 
                     b.Property<string>("Page")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
@@ -596,11 +565,9 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("datetimeoffset(0)");
 
                     b.Property<string>("Info")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OnlineMeetingLink")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ScheduleId")
@@ -637,12 +604,10 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Chapter")
-                        .IsRequired()
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
                     b.Property<string>("Comments")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
@@ -652,7 +617,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Section")
-                        .IsRequired()
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
@@ -702,18 +666,14 @@ namespace Phoenix.DataHandle.Migrations
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset(0)");
-
                     b.Property<DateTimeOffset>("EndTime")
                         .HasColumnType("datetimeoffset(0)");
 
                     b.Property<string>("Info")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                    b.Property<DateTimeOffset?>("ObviatedAt")
+                        .HasColumnType("datetimeoffset(0)");
 
                     b.Property<DateTimeOffset>("StartTime")
                         .HasColumnType("datetimeoffset(0)");
@@ -754,20 +714,12 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("datetimeoffset(0)")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset(0)");
-
                     b.Property<string>("FacebookPageId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(20)")
                         .HasMaxLength(20);
 
                     b.Property<string>("Info")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -783,6 +735,9 @@ namespace Phoenix.DataHandle.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
+
+                    b.Property<DateTimeOffset?>("ObviatedAt")
+                        .HasColumnType("datetimeoffset(0)");
 
                     b.Property<string>("Slug")
                         .IsRequired()
@@ -905,12 +860,10 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(255)")
                         .HasMaxLength(255);
 
                     b.Property<string>("IdentifierCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(10)")
                         .HasMaxLength(10);
 
@@ -921,7 +874,6 @@ namespace Phoenix.DataHandle.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(255)")
                         .HasMaxLength(255);
 

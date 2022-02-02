@@ -26,7 +26,6 @@ namespace Phoenix.DataHandle.Main.Models
         public string AddressLine { get; set; }
         public string Info { get; set; }
         public string FacebookPageId { get; set; }
-        public bool IsObviated { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
         public DateTimeOffset? ObviatedAt { get; set; }

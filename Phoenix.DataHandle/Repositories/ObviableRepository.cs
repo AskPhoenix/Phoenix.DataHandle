@@ -19,7 +19,6 @@ namespace Phoenix.DataHandle.Repositories
             if (obviableModel.IsObviated)
                 return obviableModel;
 
-            obviableModel.IsObviated = true;
             obviableModel.ObviatedAt = DateTimeOffset.Now;
 
             return this.Update(obviableModel);
@@ -33,7 +32,6 @@ namespace Phoenix.DataHandle.Repositories
             if (!obviableModel.IsObviated)
                 return obviableModel;
 
-            obviableModel.IsObviated = false;
             obviableModel.ObviatedAt = null;
 
             return this.Update(obviableModel);

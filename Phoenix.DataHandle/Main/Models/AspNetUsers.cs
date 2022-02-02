@@ -43,7 +43,6 @@ namespace Phoenix.DataHandle.Main.Models
         public bool LockoutEnabled { get; set; }
         public int AccessFailedCount { get; set; }
         public ApplicationType CreatedApplicationType { get; set; }
-        public bool IsObviated { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
         public DateTimeOffset? ObviatedAt { get; set; }

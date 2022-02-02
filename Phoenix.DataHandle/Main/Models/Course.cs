@@ -29,7 +29,6 @@ namespace Phoenix.DataHandle.Main.Models
         public string Info { get; set; }
         public DateTimeOffset FirstDate { get; set; }
         public DateTimeOffset LastDate { get; set; }
-        public bool IsObviated { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
         public DateTimeOffset? ObviatedAt { get; set; }
