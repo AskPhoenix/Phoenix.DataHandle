@@ -9,7 +9,7 @@ using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class LectureRepository : RepositoryAsync<Lecture>
+    public class LectureRepository : Repository<Lecture>
     {
         public LectureRepository(PhoenixContext dbContext) : base(dbContext) { }
 

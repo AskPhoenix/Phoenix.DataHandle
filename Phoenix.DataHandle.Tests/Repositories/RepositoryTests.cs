@@ -10,13 +10,13 @@ namespace Phoenix.DataHandle.Tests.Repositories
     {
         private const int NUAGE_EXISTING_ASPNETUSER_ID = 68;
 
-        private const string CONNECTION_STRING = "Server=.;Database=PhoenicopterusDB;Trusted_Connection=True;";
+        private const string CONNECTION_STRING = "Server=localhost;Database=PhoenicopterusDB;Trusted_Connection=True;";
         private readonly PhoenixContext _phoenixContext;
 
         public RepositoryTests()
         {
-            var optionsBuilder = new DbContextOptionsBuilder<PhoenixContext>();
-            optionsBuilder.UseSqlServer(CONNECTION_STRING);
+            var optionsBuilder = new DbContextOptionsBuilder<PhoenixContext>()
+                .UseSqlServer(CONNECTION_STRING);
             this._phoenixContext = new PhoenixContext(optionsBuilder.Options);
         }
 
@@ -62,7 +62,7 @@ namespace Phoenix.DataHandle.Tests.Repositories
         {
             AspNetUserRepository aspNetUserRepository = new AspNetUserRepository(this._phoenixContext);
 
-            AspNetUsers aspNetUser = await aspNetUserRepository.Find(NUAGE_EXISTING_ASPNETUSER_ID);
+            AspNetUsers aspNetUser = await aspNetUserRepository.FindAsync(NUAGE_EXISTING_ASPNETUSER_ID);
 
             string signature = aspNetUser.GetHashSignature();
 
