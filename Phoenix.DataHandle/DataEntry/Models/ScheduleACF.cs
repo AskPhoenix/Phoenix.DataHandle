@@ -65,7 +65,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
             s.DayOfWeek == this.Day &&
             s.StartTime == GetStartTime(schoolTimeZone);
 
-        public DateTimeOffset GetStartTime(string schoolTimeZone) => CalendarExtensions.ParseExact(this.StartTimeString, "d/M/yyyy", schoolTimeZone);
-        public DateTimeOffset GetEndTime(string schoolTimeZone) => CalendarExtensions.ParseExact(this.EndTimeString, "d/M/yyyy", schoolTimeZone);
+        public DateTimeOffset GetStartTime(string schoolTimeZone) => CalendarExtensions.ParseTime(this.StartTimeString, schoolTimeZone);
+        public DateTimeOffset GetEndTime(string schoolTimeZone) => CalendarExtensions.ParseTime(this.EndTimeString, schoolTimeZone);
     }
 }
