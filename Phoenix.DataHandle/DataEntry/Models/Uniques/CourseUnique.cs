@@ -1,8 +1,7 @@
-﻿using Phoenix.DataHandle.WordPress.Utilities;
-using System;
+﻿using System;
 using System.Linq;
 
-namespace Phoenix.DataHandle.WordPress.Models.Uniques
+namespace Phoenix.DataHandle.DataEntry.Models.Uniques
 {
     public class CourseUnique
     {
@@ -19,7 +18,7 @@ namespace Phoenix.DataHandle.WordPress.Models.Uniques
             if (!titleOk)
                 throw new ArgumentException("Post title is not well formed.");
 
-            this.SchoolUnique = new SchoolUnique(postTitle);
+            this.SchoolUnique = new(postTitle);
 
             string codeStr = postTitle.Trim().
                 Split(PostExtensions.PrimaryDelimiter, StringSplitOptions.RemoveEmptyEntries).

@@ -1,28 +1,29 @@
 ﻿using Newtonsoft.Json.Linq;
-using Phoenix.DataHandle.WordPress.Models.Uniques;
-using Phoenix.DataHandle.WordPress.Utilities;
+using Phoenix.DataHandle.DataEntry.Models.Extensions;
+using Phoenix.DataHandle.DataEntry.Models.Uniques;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WordPressPCL;
 using WordPressPCL.Models;
+using WordPressPCL.Models.Exceptions;
 using WordPressPCL.Utility;
 
-namespace Phoenix.DataHandle.WordPress.Wrappers
+namespace Phoenix.DataHandle.DataEntry
 {
-    public static class WordPressClientWrapper
+    public static class WPClientWrapper
     {
         private const string WordpressEndpoint = "https://www.askphoenix.gr/";
         private const string PostsPath = "wp/v2/posts";
         private const string AcfPostsPath = "acf/v3/posts";
-
         private const int PostsPerPage = 10;
 
-        private static WordPressClient Client { get; set; }
+        private static WordPressClient Client { get; }
         public static bool AlwaysUseAuthentication { get; set; }
+        public static bool IsAuthenticated => !string.IsNullOrEmpty(Client.GetToken());
 
-        static WordPressClientWrapper()
+        static WPClientWrapper()
         {
             Client = new WordPressClient(new Uri(new Uri(WordpressEndpoint), "wp-json").ToString()) { AuthMethod = AuthMethod.JWT };
         }
@@ -31,18 +32,23 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
         {
             await Client.RequestJWToken(username, password);
             if (!await Client.IsValidJWToken())
-            {
-                string errorMsg = $"Cannot authenticate user '{username}' in WordPress because of invalid JWToken.";
-                throw new Exception(errorMsg);
-            }
+                throw new WPException($"Cannot authenticate user '{username}' in WordPress because of invalid JWToken.");
 
             return IsAuthenticated;
         }
 
-        public static bool IsAuthenticated { get => !string.IsNullOrEmpty(Client.GetToken()); }
+        public static async Task<IEnumerable<Category>> GetCategoriesAsync(bool embed = false)
+        {
+            return await Client.Categories.GetAll(embed, AlwaysUseAuthentication);
+        }
 
-        public static async Task<IEnumerable<Category>> GetCategoriesAsync(bool embed = false) 
-            => await Client.Categories.GetAll(embed, AlwaysUseAuthentication);
+        public static async Task<int> GetCategoryId(PostCategory category)
+        {
+            CategoriesQueryBuilder categoriesQueryBuilder = new() { Search = category.GetName() };
+            var matches = await Client.Categories.Query(categoriesQueryBuilder, AlwaysUseAuthentication);
+            
+            return matches.Single(c => c.Name == category.GetName()).Id;
+        }
 
         public static async Task<IEnumerable<Post>> GetPostsPageAsync(int categoryId, int page, bool embed = false, int perPage = PostsPerPage)
         {
@@ -53,19 +59,20 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
             try
             {
                 posts = await GetCustomAsync<IEnumerable<Post>>(route, embed);
+                posts = posts.Where(p => p.Status == Status.Publish);
             }
             catch (Exception) 
             {
                 posts = Enumerable.Empty<Post>();
             }
 
-            return posts.Where(p => p.Status == Status.Publish);
+            return posts;
         }
 
         public static async Task<IEnumerable<Post>> GetPostsAsync(int categoryId, bool embed = false)
         {
             int curPage = 1;
-            List<Post> posts = new List<Post>();
+            List<Post> posts = new();
             IEnumerable<Post> nextPosts;
 
             do
@@ -86,13 +93,13 @@ namespace Phoenix.DataHandle.WordPress.Wrappers
             return posts.Where(p => schoolUnique.Equals(new SchoolUnique(p.GetTitle())));
         }
 
-        public static async Task<AcfT> GetAcfAsync<AcfT>(int postId, bool embed = false) 
-            where AcfT : class
+        public static async Task<TModelACF> GetAcfAsync<TModelACF>(int postId, bool embed = false) 
+            where TModelACF : IModelACF
         {
             string route = AcfPostsPath + $"/{postId}";
             var response = await GetCustomAsync<JObject>(route, embed);
 
-            return response.GetValue("acf").ToObject<AcfT>();
+            return response.GetValue("acf").ToObject<TModelACF>();
         }
 
         public static async Task<T> GetCustomAsync<T>(string route, bool embed = false)

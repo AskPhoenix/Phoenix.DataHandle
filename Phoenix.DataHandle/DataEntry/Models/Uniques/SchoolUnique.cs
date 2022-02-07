@@ -1,8 +1,7 @@
-﻿using Phoenix.DataHandle.WordPress.Utilities;
-using System;
+﻿using System;
 using System.Linq;
 
-namespace Phoenix.DataHandle.WordPress.Models.Uniques
+namespace Phoenix.DataHandle.DataEntry.Models.Uniques
 {
     public class SchoolUnique
     {

@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <LangVersion>8.0</LangVersion>
-    <Description>A wrapper for operations on PhoenixDB</Description>
+    <TargetFramework>net6.0</TargetFramework>
+    <Description>A library for handling the backend of AskPhoenix</Description>
     <Copyright>AskPhoenix 2022</Copyright>
     <PackageProjectUrl>https://www.askphoenix.gr/</PackageProjectUrl>
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
@@ -12,40 +11,34 @@
   <PropertyGroup>
     <PackageId>Phoenix.DataHandle</PackageId>
     <Product>Phoenix.DataHandle</Product>
-    <Version>3.0.0-beta.10</Version>
+    <Version>3.0.0-beta.11</Version>
     <Authors>AskPhoenix</Authors>
     <Company>AskPhoenix</Company>
-    <PackageDescription>A wrapper for operations on PhoenixDB</PackageDescription>
+    <PackageDescription>A library for handling the backend of AskPhoenix</PackageDescription>
     <RepositoryUrl>https://github.com/AskPhoenix/Phoenix.DataHandle</RepositoryUrl>
-    <Nullable>disable</Nullable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Nexmo.Csharp.Client" Version="5.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.*" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.*" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.*" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.*" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
     <PackageReference Include="WordPressPCL" Version="1.9.0" />
   </ItemGroup>
 
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.*">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.*" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.11.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.VersionCheckAnalyzer" Version="3.3.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.0.1" />
   </ItemGroup>
 
 </Project>

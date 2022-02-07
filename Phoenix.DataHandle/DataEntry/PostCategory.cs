@@ -1,4 +1,4 @@
-﻿namespace Phoenix.DataHandle.WordPress
+﻿namespace Phoenix.DataHandle.DataEntry
 {
     public enum PostCategory
     {
@@ -24,7 +24,7 @@
                 PostCategory.Schedule           => "Schedule",
                 PostCategory.Personnel          => "Personnel",
                 PostCategory.Client             => "Client",
-                _                               => string.Empty
+                _                                 => string.Empty
             };
         }
     }
