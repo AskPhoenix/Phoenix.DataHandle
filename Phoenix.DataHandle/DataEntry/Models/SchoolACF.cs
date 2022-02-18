@@ -32,7 +32,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public string Address { get; }
 
         [JsonProperty(PropertyName = "comments")]
-        public string? Info { get; }
+        public string? Comments { get; }
 
         public string Locale { get; }
 
@@ -54,7 +54,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.Slug = (string.IsNullOrWhiteSpace(slug) ? name : slug).Trim().Truncate(64);
             this.City = city.Trim().Truncate(200).ToTitleCase();
             this.Address = address.Trim().Truncate(255);
-            this.Info = string.IsNullOrWhiteSpace(info) ? null : info.Trim();
+            this.Comments = string.IsNullOrWhiteSpace(info) ? null : info.Trim();
             this.Language = language;
 
             this.Locale = CultureInfo.GetCultures(CultureTypes.NeutralCultures).

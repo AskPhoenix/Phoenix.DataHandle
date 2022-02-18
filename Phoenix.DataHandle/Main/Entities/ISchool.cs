@@ -1,22 +1,21 @@
-﻿using Phoenix.DataHandle.Main.Relationships;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Main.Entities
 {
     public interface ISchool
     {
         string Name { get; set; }
-        string NormalizedName { get; set; }
         string Slug { get; set; }
         string City { get; set; }
-        public string NormalizedCity { get; set; }
         string AddressLine { get; set; }
-        string Info { get; set; }
-        string FacebookPageId { get; set; }
+        string? Description { get; set; }
         
-        ISchoolSettings SchoolSettings { get; }
+        ISchoolInfo SchoolInfo { get; }
+        IEnumerable<IBroadcast> Broadcasts { get; }
         IEnumerable<IClassroom> Classrooms { get; }
         IEnumerable<ICourse> Courses { get; }
-        IEnumerable<IUserSchool> UserSchools { get; }
+        IEnumerable<ISchoolLogin> SchoolLogins { get; }
+
+        IEnumerable<IAspNetUser> Users { get; }
     }
 }

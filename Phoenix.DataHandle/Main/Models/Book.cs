@@ -1,31 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 
-// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
-// If you have enabled NRTs for your project, then un-comment the following line:
-// #nullable disable
-
 namespace Phoenix.DataHandle.Main.Models
 {
     public partial class Book
     {
         public Book()
         {
-            CourseBook = new HashSet<CourseBook>();
-            Exercise = new HashSet<Exercise>();
-            Material = new HashSet<Material>();
+            Exercises = new HashSet<Exercise>();
+            Materials = new HashSet<Material>();
+            Courses = new HashSet<Course>();
         }
 
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string NormalizedName { get; set; }
-        public string Publisher { get; set; }
-        public string Info { get; set; }
+        public string Name { get; set; } = null!;
+        public string NormalizedName { get; set; } = null!;
+        public string? Publisher { get; set; }
+        public string? Comments { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
 
-        public virtual ICollection<CourseBook> CourseBook { get; set; }
-        public virtual ICollection<Exercise> Exercise { get; set; }
-        public virtual ICollection<Material> Material { get; set; }
+        public virtual ICollection<Exercise> Exercises { get; set; }
+        public virtual ICollection<Material> Materials { get; set; }
+
+        public virtual ICollection<Course> Courses { get; set; }
     }
 }

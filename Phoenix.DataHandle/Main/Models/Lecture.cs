@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 
-// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
-// If you have enabled NRTs for your project, then un-comment the following line:
-// #nullable disable
-
 namespace Phoenix.DataHandle.Main.Models
 {
     public partial class Lecture
     {
         public Lecture()
         {
-            Attendance = new HashSet<Attendance>();
-            Exercise = new HashSet<Exercise>();
+            Exams = new HashSet<Exam>();
+            Exercises = new HashSet<Exercise>();
+            Attendees = new HashSet<AspNetUser>();
         }
 
         public int Id { get; set; }
@@ -22,17 +19,19 @@ namespace Phoenix.DataHandle.Main.Models
         public DateTimeOffset StartDateTime { get; set; }
         public DateTimeOffset EndDateTime { get; set; }
         public LectureStatus Status { get; set; }
-        public string OnlineMeetingLink { get; set; }
-        public string Info { get; set; }
+        public string? OnlineMeetingLink { get; set; }
+        public bool AttendancesNoted { get; set; }
+        public string? Comments { get; set; }
         public LectureCreatedBy CreatedBy { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
 
-        public virtual Classroom Classroom { get; set; }
-        public virtual Course Course { get; set; }
-        public virtual Schedule Schedule { get; set; }
-        public virtual Exam Exam { get; set; }
-        public virtual ICollection<Attendance> Attendance { get; set; }
-        public virtual ICollection<Exercise> Exercise { get; set; }
+        public virtual Classroom? Classroom { get; set; }
+        public virtual Course Course { get; set; } = null!;
+        public virtual Schedule? Schedule { get; set; }
+        public virtual ICollection<Exam> Exams { get; set; }
+        public virtual ICollection<Exercise> Exercises { get; set; }
+
+        public virtual ICollection<AspNetUser> Attendees { get; set; }
     }
 }

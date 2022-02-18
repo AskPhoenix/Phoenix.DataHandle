@@ -10,26 +10,27 @@ dotnet ef dbcontext scaffold "%cs%" Microsoft.EntityFrameworkCore.SqlServer ^
 --table "dbo.AspNetUserLogins" ^
 --table "dbo.AspNetUserRoles" ^
 --table "dbo.AspNetUsers" ^
---table "dbo.Attendance" ^
---table "dbo.Book" ^
+--table "dbo.Attendances" ^
+--table "dbo.Books" ^
 --table "dbo.BotFeedback" ^
---table "dbo.Broadcast" ^
---table "dbo.Classroom" ^
---table "dbo.Course" ^
---table "dbo.CourseBook" ^
---table "dbo.Exam" ^
---table "dbo.Exercise" ^
---table "dbo.Lecture" ^
---table "dbo.Material" ^
---table "dbo.Parenthood" ^
---table "dbo.Schedule" ^
---table "dbo.School" ^
---table "dbo.SchoolSettings" ^
---table "dbo.StudentCourse" ^
---table "dbo.StudentExam" ^
---table "dbo.StudentExercise" ^
---table "dbo.TeacherCourse" ^
---table "dbo.User" ^
---table "dbo.UserSchool"
+--table "dbo.BroadcastCourses" ^
+--table "dbo.Broadcasts" ^
+--table "dbo.Channels" ^
+--table "dbo.Classrooms" ^
+--table "dbo.CourseBooks" ^
+--table "dbo.Courses" ^
+--table "dbo.Exams" ^
+--table "dbo.Exercises" ^
+--table "dbo.Grades" ^
+--table "dbo.Lectures" ^
+--table "dbo.Materials" ^
+--table "dbo.Parenthoods" ^
+--table "dbo.Schedules" ^
+--table "dbo.SchoolInfo" ^
+--table "dbo.SchoolLogins" ^
+--table "dbo.Schools" ^
+--table "dbo.SchoolUsers" ^
+--table "dbo.TeacherCourses" ^
+--table "dbo.Users"
 
 Pause

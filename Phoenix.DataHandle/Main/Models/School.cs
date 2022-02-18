@@ -1,39 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 
-// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
-// If you have enabled NRTs for your project, then un-comment the following line:
-// #nullable disable
-
 namespace Phoenix.DataHandle.Main.Models
 {
     public partial class School
     {
         public School()
         {
-            Broadcast = new HashSet<Broadcast>();
-            Classroom = new HashSet<Classroom>();
-            Course = new HashSet<Course>();
-            UserSchool = new HashSet<UserSchool>();
+            Broadcasts = new HashSet<Broadcast>();
+            Classrooms = new HashSet<Classroom>();
+            Courses = new HashSet<Course>();
+            SchoolLogins = new HashSet<SchoolLogin>();
+            Users = new HashSet<AspNetUser>();
         }
 
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string NormalizedName { get; set; }
-        public string Slug { get; set; }
-        public string City { get; set; }
-        public string NormalizedCity { get; set; }
-        public string AddressLine { get; set; }
-        public string Info { get; set; }
-        public string FacebookPageId { get; set; }
+        public string Name { get; set; } = null!;
+        public string NormalizedName { get; set; } = null!;
+        public string Slug { get; set; } = null!;
+        public string City { get; set; } = null!;
+        public string NormalizedCity { get; set; } = null!;
+        public string AddressLine { get; set; } = null!;
+        public string? Description { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
         public DateTimeOffset? ObviatedAt { get; set; }
 
-        public virtual SchoolSettings SchoolSettings { get; set; }
-        public virtual ICollection<Broadcast> Broadcast { get; set; }
-        public virtual ICollection<Classroom> Classroom { get; set; }
-        public virtual ICollection<Course> Course { get; set; }
-        public virtual ICollection<UserSchool> UserSchool { get; set; }
+        public virtual SchoolInfo SchoolInfo { get; set; } = null!;
+        public virtual ICollection<Broadcast> Broadcasts { get; set; }
+        public virtual ICollection<Classroom> Classrooms { get; set; }
+        public virtual ICollection<Course> Courses { get; set; }
+        public virtual ICollection<SchoolLogin> SchoolLogins { get; set; }
+
+        public virtual ICollection<AspNetUser> Users { get; set; }
     }
 }

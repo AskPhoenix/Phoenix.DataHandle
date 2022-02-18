@@ -38,7 +38,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 ToList();
         }
 
-        public Expression<Func<AspNetUsers, bool>> GetUniqueExpression() => u =>
+        public Expression<Func<AspNetUser, bool>> GetUniqueExpression() => u =>
             u.PhoneNumber == this.PhoneNumber && u.User.IsSelfDetermined;
 
         protected static string GetFirstName(string fullName, bool truncate = true)
