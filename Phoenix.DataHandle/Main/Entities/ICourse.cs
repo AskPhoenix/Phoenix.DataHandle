@@ -15,6 +15,7 @@ namespace Phoenix.DataHandle.Main.Entities
         DateTimeOffset FirstDate { get; set; }
         DateTimeOffset LastDate { get; set; }
 
+        IEnumerable<IGrade> Grades { get; }
         IEnumerable<ILecture> Lectures { get; }
         IEnumerable<ISchedule> Schedules { get; }
 

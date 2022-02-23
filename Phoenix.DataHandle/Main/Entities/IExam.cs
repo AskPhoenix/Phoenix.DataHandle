@@ -8,6 +8,7 @@ namespace Phoenix.DataHandle.Main.Entities
         string? Name { get; set; }
         string? Comments { get; set; }
 
+        IEnumerable<IGrade> Grades { get; }
         IEnumerable<IMaterial> Materials { get; }
     }
 }

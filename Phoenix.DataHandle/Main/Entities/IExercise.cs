@@ -9,5 +9,7 @@ namespace Phoenix.DataHandle.Main.Entities
         IBook? Book { get; }
         string? Page { get; set; }
         string? Comments { get; set; }
+
+        IEnumerable<IGrade> Grades { get; }
     }
 }

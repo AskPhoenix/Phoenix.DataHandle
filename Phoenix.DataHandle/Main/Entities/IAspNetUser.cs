@@ -6,11 +6,7 @@ namespace Phoenix.DataHandle.Main.Entities
     {
         string UserName { get; set; }
         string? Email { get; set; }
-        bool EmailConfirmed { get; set; }
         string PhoneNumber { get; set; }
-        int PhoneNumberDependanceOrder { get; set; }
-        bool PhoneNumberConfirmed { get; set; }
-        ApplicationType CreatedApplicationType { get; set; }
 
         IUser User { get; }
         IEnumerable<IAspNetUserLogin> AspNetUserLogins { get; }
