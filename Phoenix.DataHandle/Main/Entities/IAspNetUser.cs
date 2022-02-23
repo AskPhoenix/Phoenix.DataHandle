@@ -4,9 +4,9 @@ namespace Phoenix.DataHandle.Main.Entities
 {
     public interface IAspNetUser
     {
-        string UserName { get; set; }
-        string? Email { get; set; }
-        string PhoneNumber { get; set; }
+        string UserName { get; }
+        string? Email { get; }
+        string PhoneNumber { get; }
 
         IUser User { get; }
         IEnumerable<IAspNetUserLogin> AspNetUserLogins { get; }

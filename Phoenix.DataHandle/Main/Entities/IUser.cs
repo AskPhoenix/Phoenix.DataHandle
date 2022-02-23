@@ -3,10 +3,10 @@
     public interface IUser
     {
         IAspNetUser AspNetUser { get; }
-        string? FirstName { get; set; }
-        string? LastName { get; set; }
+        string? FirstName { get; }
+        string? LastName { get; }
         string? FullName { get; }
-        bool TermsAccepted { get; set; }
-        bool IsSelfDetermined { get; set; }
+        bool TermsAccepted { get; }
+        bool IsSelfDetermined { get; }
     }
 }

@@ -4,6 +4,6 @@
     {
         ISchool School { get; }
         IChannel Channel { get; }
-        string ProviderKey { get; set; }
+        string ProviderKey { get; }
     }
 }

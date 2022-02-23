@@ -6,8 +6,8 @@
         ICourse? Course { get; }
         IExam? Exam { get; }
         IExercise? Exercise { get; }
-        decimal Score { get; set; }
-        string? Topic { get; set; }
-        string? Justification { get; set; }
+        decimal Score { get; }
+        string? Topic { get; }
+        string? Justification { get; }
     }
 }

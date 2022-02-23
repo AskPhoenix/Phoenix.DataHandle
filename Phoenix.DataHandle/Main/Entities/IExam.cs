@@ -5,8 +5,8 @@ namespace Phoenix.DataHandle.Main.Entities
     public interface IExam
     {
         ILecture Lecture { get; }
-        string? Name { get; set; }
-        string? Comments { get; set; }
+        string? Name { get; }
+        string? Comments { get; }
 
         IEnumerable<IGrade> Grades { get; }
         IEnumerable<IMaterial> Materials { get; }

@@ -7,13 +7,13 @@ namespace Phoenix.DataHandle.Main.Entities
     {
         ISchool School { get; }
         IAspNetUser Author { get; }
-        string Message { get; set; }
-        DateTimeOffset ScheduledDate { get; set; }
-        Daypart Daypart { get; set; }
-        BroadcastAudience Audience { get; set; }
-        BroadcastVisibility Visibility { get; set; }
-        BroadcastStatus Status { get; set; }
-        DateTimeOffset? SentAt { get; set; }
+        string Message { get; }
+        DateTimeOffset ScheduledDate { get; }
+        Daypart Daypart { get; }
+        BroadcastAudience Audience { get; }
+        BroadcastVisibility Visibility { get; }
+        BroadcastStatus Status { get; }
+        DateTimeOffset? SentAt { get; }
 
         IEnumerable<ICourse> Courses { get; }
     }

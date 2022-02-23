@@ -4,8 +4,8 @@ namespace Phoenix.DataHandle.Main.Entities
 {
     public interface IAspNetRole
     {
-        Role Type { get; set; }
-        string? Name { get; set; }
+        Role Type { get; }
+        string? Name { get; }
 
         IEnumerable<IAspNetUser> Users { get; }
     }

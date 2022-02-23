@@ -4,8 +4,8 @@
     {
         IExam Exam { get; }
         IBook? Book { get; }
-        string? Chapter { get; set; }
-        string? Section { get; set; }
-        string? Comments { get; set; }
+        string? Chapter { get; }
+        string? Section { get; }
+        string? Comments { get; }
     }
 }

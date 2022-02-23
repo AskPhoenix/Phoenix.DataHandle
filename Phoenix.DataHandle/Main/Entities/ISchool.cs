@@ -4,11 +4,11 @@ namespace Phoenix.DataHandle.Main.Entities
 {
     public interface ISchool
     {
-        string Name { get; set; }
-        string Slug { get; set; }
-        string City { get; set; }
-        string AddressLine { get; set; }
-        string? Description { get; set; }
+        string Name { get; }
+        string Slug { get; }
+        string City { get; }
+        string AddressLine { get; }
+        string? Description { get; }
         
         ISchoolInfo SchoolInfo { get; }
         IEnumerable<IBroadcast> Broadcasts { get; }

@@ -5,15 +5,15 @@ namespace Phoenix.DataHandle.Main.Entities
 {
     public interface ICourse
     {
-        short Code { get; set; }
+        short Code { get; }
         ISchool School { get; }
-        string Name { get; set; }
-        string? SubCourse { get; set; }
-        string Level { get; set; }
-        string Group { get; set; }
-        string? Comments { get; set; }
-        DateTimeOffset FirstDate { get; set; }
-        DateTimeOffset LastDate { get; set; }
+        string Name { get; }
+        string? SubCourse { get; }
+        string Level { get; }
+        string Group { get; }
+        string? Comments { get; }
+        DateTimeOffset FirstDate { get; }
+        DateTimeOffset LastDate { get; }
 
         IEnumerable<IGrade> Grades { get; }
         IEnumerable<ILecture> Lectures { get; }

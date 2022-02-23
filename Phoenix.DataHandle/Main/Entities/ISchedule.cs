@@ -7,10 +7,10 @@ namespace Phoenix.DataHandle.Main.Entities
     {
         ICourse Course { get; }
         IClassroom? Classroom { get; }
-        DayOfWeek DayOfWeek { get; set; }
-        DateTimeOffset StartTime { get; set; }
-        DateTimeOffset EndTime { get; set; }
-        string? Comments { get; set; }
+        DayOfWeek DayOfWeek { get; }
+        DateTimeOffset StartTime { get; }
+        DateTimeOffset EndTime { get; }
+        string? Comments { get; }
 
         IEnumerable<ILecture> Lectures { get; }
     }

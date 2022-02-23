@@ -3,9 +3,9 @@
     public interface IBotFeedback
     {
         IAspNetUser Author { get; }
-        bool AskTriggered { get; set; }
-        BotFeedbackType Type { get; set; }
-        short? Rating { get; set; }
-        string? Comment { get; set; }
+        bool AskTriggered { get; }
+        BotFeedbackType Type { get; }
+        short? Rating { get; }
+        string? Comment { get; }
     }
 }
