@@ -99,6 +99,8 @@ namespace Phoenix.DataHandle.Main.Models
     {
         ISchool ICourse.School => this.School;
 
+        IEnumerable<IGrade> ICourse.Grades => this.Grades;
+
         IEnumerable<ILecture> ICourse.Lectures => this.Lectures;
 
         IEnumerable<ISchedule> ICourse.Schedules => this.Schedules;
@@ -126,11 +128,15 @@ namespace Phoenix.DataHandle.Main.Models
     {
         ILecture IExam.Lecture => this.Lecture;
 
+        IEnumerable<IGrade> IExam.Grades => this.Grades;
+
         IEnumerable<IMaterial> IExam.Materials => this.Materials;
     }
 
     public partial class Exercise : IExercise, IModelEntity
     {
+        IEnumerable<IGrade> IExercise.Grades => this.Grades;
+
         ILecture IExercise.Lecture => this.Lecture;
 
         IBook? IExercise.Book => this.Book;
