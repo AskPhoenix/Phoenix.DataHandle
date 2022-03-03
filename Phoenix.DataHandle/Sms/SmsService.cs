@@ -2,51 +2,62 @@
 using Nexmo.Api.Request;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Phoenix.DataHandle.Sms
 {
     public class SmsService : ISmsService
     {
-        private string _apiKey;
-        private string _apiSecret;
-        private string _from;
+        private string ApiKey { get; }
+        private string ApiSecret { get; }
+        public string From { get; set; }
 
-        public string ApiKey { set => this._apiKey = value; }
-        public string ApiSecret { set => this._apiSecret = value; }
-        public string From { set => this._from = value; }
+        private Client NexmoClient { get; set; }
 
         public SmsService(string apiKey, string apiSecret, string from = "AskPhoenix")
         {
-            this._apiKey = apiKey;
-            this._apiSecret = apiSecret;
-            this._from = from;
+            if (string.IsNullOrEmpty(apiKey))
+                throw new ArgumentNullException(nameof(apiKey));
+            if (string.IsNullOrEmpty(apiSecret))
+                throw new ArgumentNullException(nameof(apiSecret));
+            if (string.IsNullOrEmpty(from))
+                throw new ArgumentNullException(nameof(from));
+
+            this.ApiKey = apiKey;
+            this.ApiSecret = apiSecret;
+            this.From = from;
+
+            this.NexmoClient = new Client(new Credentials
+            {
+                ApiKey = this.ApiKey,
+                ApiSecret = this.ApiSecret
+            });
         }
 
-        public Task SendAsync(string destination, string body)
+        public void Send(string destination, string body)
         {
-            if (string.IsNullOrEmpty(this._apiKey) || string.IsNullOrEmpty(this._apiSecret))
-                throw new Exception("SMS API credentials not defined.");
+            if (string.IsNullOrEmpty(destination))
+                throw new ArgumentNullException(nameof(destination));
+            if (string.IsNullOrEmpty(body))
+                throw new ArgumentNullException(nameof(body));
 
             string phone;
-            if (destination.StartsWith("69"))
+            destination = destination.Trim();
+            destination.All(d => char.IsDigit(d) || d == '+');
+
+            if (destination.StartsWith("69") && destination.Length == 10)
                 phone = "+30" + destination;
-            else if (destination.StartsWith("30"))
+            else if (destination.StartsWith("3069"))
                 phone = "+" + destination;
-            else if (destination.StartsWith("+30"))
+            else if (destination.StartsWith("003069"))
+                phone = "+" + destination[2..];
+            else if (destination.StartsWith("+3069"))
                 phone = destination;
             else
                 throw new Exception("Invalid phone number. Either it is not a Greek phone number, or not a mobile one.");
 
-            var client = new Client(creds: new Credentials
+            var results = this.NexmoClient.SMS.Send(request: new SMS.SMSRequest
             {
-                ApiKey = this._apiKey,
-                ApiSecret = this._apiSecret
-            });
-
-            var results = client.SMS.Send(request: new SMS.SMSRequest
-            {
-                from = this._from,
+                from = this.From,
                 to = phone,
                 text = body,
                 type = "unicode"
@@ -54,9 +65,6 @@ namespace Phoenix.DataHandle.Sms
 
             if(results.messages.Any(m => m.status != "0"))
                 throw new Exception(results.messages.FirstOrDefault(m => !string.IsNullOrWhiteSpace(m.error_text))?.error_text);
-
-
-            return Task.CompletedTask;
         }
     }
 }
