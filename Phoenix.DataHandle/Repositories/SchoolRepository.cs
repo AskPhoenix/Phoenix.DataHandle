@@ -38,7 +38,7 @@ namespace Phoenix.DataHandle.Repositories
 
             tModel.SchoolSettings.Language = tModel2From.Language;
             tModel.SchoolSettings.Locale2 = tModel2From.Locale2;
-            tModel.SchoolSettings.TimeZone = tModel2From.TimeZone;
+            //tModel.SchoolSettings.TimeZone = tModel2From.TimeZone;
 
             return this.Update(tModel, tModelFrom);
         }

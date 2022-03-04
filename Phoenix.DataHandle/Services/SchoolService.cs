@@ -42,7 +42,10 @@ namespace Phoenix.DataHandle.Services
                         Logger.LogInformation($"Adding School: {schoolPost.GetTitle()}");
 
                     school = schoolAcf.ToContext();
+                    school.FacebookPageId = "";
+
                     school.SchoolSettings = schoolAcf.ExtractSchoolSettings();
+                    school.SchoolSettings.TimeZone = "E. Europe Standard Time";
 
                     this.SchoolRepository.Create(school);
                     this.IdsLog.Add(school.Id);
