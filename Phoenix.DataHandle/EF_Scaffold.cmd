@@ -19,6 +19,7 @@ dotnet ef dbcontext scaffold "%cs%" Microsoft.EntityFrameworkCore.SqlServer ^
 --table "dbo.Classrooms" ^
 --table "dbo.CourseBooks" ^
 --table "dbo.Courses" ^
+--table "dbo.CourseUsers" ^
 --table "dbo.Exams" ^
 --table "dbo.Exercises" ^
 --table "dbo.Grades" ^
@@ -30,7 +31,6 @@ dotnet ef dbcontext scaffold "%cs%" Microsoft.EntityFrameworkCore.SqlServer ^
 --table "dbo.SchoolLogins" ^
 --table "dbo.Schools" ^
 --table "dbo.SchoolUsers" ^
---table "dbo.TeacherCourses" ^
 --table "dbo.Users"
 
 Pause

@@ -108,20 +108,20 @@ namespace Phoenix.DataHandle.Main.Models
                         });
 
                 entity.HasMany(d => d.Courses)
-                    .WithMany(p => p.Teachers)
+                    .WithMany(p => p.Users)
                     .UsingEntity<Dictionary<string, object>>(
-                        "TeacherCourse",
-                        l => l.HasOne<Course>().WithMany().HasForeignKey("CourseId").HasConstraintName("FK_TeacherCourse_Course"),
-                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("TeacherId").HasConstraintName("FK_TeacherCourse_AspNetUsers"),
+                        "CourseUser",
+                        l => l.HasOne<Course>().WithMany().HasForeignKey("CourseId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_CourseUsers_Courses"),
+                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_CourseUsers_AspNetUsers"),
                         j =>
                         {
-                            j.HasKey("TeacherId", "CourseId").HasName("PK_TeacherCourse");
+                            j.HasKey("UserId", "CourseId");
 
-                            j.ToTable("TeacherCourses");
+                            j.ToTable("CourseUsers");
 
-                            j.HasIndex(new[] { "CourseId" }, "IX_TeacherCourse_CourseId");
+                            j.HasIndex(new[] { "CourseId" }, "IX_CourseUsers_CourseId");
 
-                            j.HasIndex(new[] { "TeacherId" }, "IX_TeacherCourse_TeacherId");
+                            j.HasIndex(new[] { "UserId" }, "IX_CourseUsers_UserId");
                         });
 
                 entity.HasMany(d => d.Lectures)
