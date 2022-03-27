@@ -53,8 +53,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         }
 
         public Expression<Func<Schedule, bool>> GetUniqueExpression(SchoolUnique schoolUnique, string schoolTimeZone) => s =>
-            s.Course.School.NormalizedName == schoolUnique.NormalizedSchoolName &&
-            s.Course.School.NormalizedCity == schoolUnique.NormalizedSchoolCity &&
+            s.Course.School.Code == schoolUnique.Code &&
             s.Course.Code == this.CourseCode &&
             s.DayOfWeek == this.Day &&
             s.StartTime == GetStartTime(schoolTimeZone);

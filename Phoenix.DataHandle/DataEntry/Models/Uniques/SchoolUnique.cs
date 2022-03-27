@@ -5,6 +5,7 @@ namespace Phoenix.DataHandle.DataEntry.Models.Uniques
 {
     public class SchoolUnique
     {
+        public int Code { get; }
         public string NormalizedSchoolName { get; }
         public string NormalizedSchoolCity { get; }
 

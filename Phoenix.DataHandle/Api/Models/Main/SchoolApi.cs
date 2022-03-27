@@ -21,7 +21,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         }
 
         [JsonConstructor]
-        public SchoolApi(int id, string name, string slug, string city, string address, string? description, 
+        public SchoolApi(int id, int code, string name, string slug, string city, string address, string? description, 
             SchoolInfoApi schoolInfo, List<ClassroomApi>? classrooms, List<CourseApi>? courses)
             : this()
         {
@@ -35,6 +35,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
                 throw new ArgumentNullException(nameof(address));
 
             this.Id = id;
+            this.Code = code;
             this.Name = name;
             this.Slug = slug;
             this.City = city;
@@ -49,7 +50,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         }
 
         public SchoolApi(ISchool school, bool include = false)
-            : this(0, school.Name, school.Slug, school.City, school.AddressLine, school.Description, 
+            : this(0, school.Code, school.Name, school.Slug, school.City, school.AddressLine, school.Description, 
                   null!, null, null)
         {
             if (school is School school1)
@@ -68,6 +69,9 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         [JsonProperty(PropertyName = "id")]
         public int Id { get; }
+
+        [JsonProperty(PropertyName = "code")]
+        public int Code { get; }
 
         [JsonProperty(PropertyName = "name")]
         public string Name { get; } = null!;

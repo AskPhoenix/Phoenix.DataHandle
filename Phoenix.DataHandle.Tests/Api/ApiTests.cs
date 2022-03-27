@@ -256,9 +256,7 @@ namespace Phoenix.DataHandle.Tests.Api
                 {
                     Name = "Sxoleio",
                     Slug = "Sxoleio",
-                    NormalizedName = "SXOLEIO",
                     City = "Poli",
-                    NormalizedCity = "POLI",
                     AddressLine = "Dieuthinsi",
                     SchoolInfo = new SchoolInfo
                     {

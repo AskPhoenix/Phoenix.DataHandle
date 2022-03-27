@@ -82,8 +82,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         }
 
         public Expression<Func<Course, bool>> GetUniqueExpression(SchoolUnique schoolUnique) => c =>
-            c.School.NormalizedName == schoolUnique.NormalizedSchoolName &&
-            c.School.NormalizedCity == schoolUnique.NormalizedSchoolCity &&
+            c.School.Code == schoolUnique.Code &&
             c.Code == this.Code;
 
         public Expression<Func<Course, bool>> GetUniqueExpression(int schoolId) => c =>

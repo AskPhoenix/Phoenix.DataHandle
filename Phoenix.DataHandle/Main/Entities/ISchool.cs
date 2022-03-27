@@ -4,6 +4,7 @@ namespace Phoenix.DataHandle.Main.Entities
 {
     public interface ISchool
     {
+        int Code { get; }
         string Name { get; }
         string Slug { get; }
         string City { get; }

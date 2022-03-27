@@ -15,11 +15,10 @@ namespace Phoenix.DataHandle.Main.Models
         }
 
         public int Id { get; set; }
+        public int Code { get; set; }
         public string Name { get; set; } = null!;
-        public string NormalizedName { get; set; } = null!;
         public string Slug { get; set; } = null!;
         public string City { get; set; } = null!;
-        public string NormalizedCity { get; set; } = null!;
         public string AddressLine { get; set; } = null!;
         public string? Description { get; set; }
         public DateTimeOffset CreatedAt { get; set; }

@@ -12,6 +12,9 @@ namespace Phoenix.DataHandle.DataEntry.Models
 {
     public class SchoolACF : IModelACF
     {
+        [JsonProperty(PropertyName = "code")]
+        public int Code { get; }
+
         [JsonProperty(PropertyName = "name")]
         public string Name { get; }
 
@@ -64,8 +67,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.SchoolUnique = new(this.Name, this.City);
         }
 
-        public Expression<Func<School, bool>> GetUniqueExpression() => s =>
-           s.NormalizedName == this.NormalizedName &&
-           s.NormalizedCity == this.NormalizedCity;
+        public Expression<Func<School, bool>> GetUniqueExpression() => s => s.Code == this.Code;
     }
 }

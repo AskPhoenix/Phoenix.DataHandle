@@ -548,7 +548,7 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<School>(entity =>
             {
-                entity.HasIndex(e => new { e.NormalizedName, e.NormalizedCity }, "IX_NameCity")
+                entity.HasIndex(e => e.Code, "IX_School")
                     .IsUnique();
 
                 entity.Property(e => e.AddressLine).HasMaxLength(255);
@@ -560,10 +560,6 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Name).HasMaxLength(200);
-
-                entity.Property(e => e.NormalizedCity).HasMaxLength(200);
-
-                entity.Property(e => e.NormalizedName).HasMaxLength(200);
 
                 entity.Property(e => e.ObviatedAt).HasPrecision(0);
 
