@@ -15,21 +15,18 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.Grades = new List<GradeApi>();
             this.Lectures = new List<LectureApi>();
             this.Schedules = new List<ScheduleApi>();
-            this.Teachers = new List<AspNetUserApi>();
+            this.Users = new List<AspNetUserApi>();
+            this.Books = new List<BookApi>();
 
-            this.Books = new List<IBook>();
             this.Broadcasts = new List<IBroadcast>();
         }
 
-        // TODO: Check if DateTimeOffset works with JSON
         [JsonConstructor]
         public CourseApi(int id, short code, SchoolApi school, string name, string? subcourse, string level, string group, string? comments,
             DateTimeOffset firstDate, DateTimeOffset lastDate, List<GradeApi>? grades, List<LectureApi>? lectures,
-            List<ScheduleApi>? schedules, List<AspNetUserApi>? teachers)
+            List<ScheduleApi>? schedules, List<AspNetUserApi>? users, List<BookApi>? books)
             : this()
         {
-            if (school is null)
-                throw new ArgumentNullException(nameof(school));
             if (name is null)
                 throw new ArgumentNullException(nameof(name));
             if (level is null)
@@ -54,23 +51,30 @@ namespace Phoenix.DataHandle.Api.Models.Main
                 this.Lectures = lectures;
             if (schedules is not null)
                 this.Schedules = schedules;
-            if (teachers is not null)
-                this.Teachers = teachers;
+            if (users is not null)
+                this.Users = users;
+            if (books is not null)
+                this.Books = books;
         }
 
-        public CourseApi(ICourse course, int id = 0)
-            : this(id, course.Code, new SchoolApi(course.School), course.Name, course.SubCourse, course.Level, course.Group, 
-                  course.Comments, course.FirstDate, course.LastDate, null, null, null, null)
+        public CourseApi(ICourse course, bool include = false)
+            : this(0, course.Code, null!, course.Name, course.SubCourse, course.Level, course.Group, 
+                  course.Comments, course.FirstDate, course.LastDate, null, null, null, null, null)
         {
+            if (course is Course course1)
+                this.Id = course1.Id;
+
+            if (!include)
+                return;
+
+            if (course.School is not null)
+                this.School = new SchoolApi(course.School);
+
             this.Grades = course.Grades.Select(g => new GradeApi(g)).ToList();
             this.Lectures = course.Lectures.Select(l => new LectureApi(l)).ToList();
             this.Schedules = course.Schedules.Select(s => new ScheduleApi(s)).ToList();
-            this.Teachers = course.Teachers.Select(t => new AspNetUserApi(t)).ToList();
-        }
-
-        public CourseApi(Course course)
-            : this(course, course.Id)
-        {
+            this.Users = course.Users.Select(t => new AspNetUserApi(t)).ToList();
+            this.Books = course.Books.Select(b => new BookApi(b)).ToList();
         }
 
         [JsonProperty(PropertyName = "id")]
@@ -112,8 +116,11 @@ namespace Phoenix.DataHandle.Api.Models.Main
         [JsonProperty(PropertyName = "schedules")]
         public List<ScheduleApi> Schedules { get; }
 
-        [JsonProperty(PropertyName = "teachers")]
-        public List<AspNetUserApi> Teachers { get; }
+        [JsonProperty(PropertyName = "users")]
+        public List<AspNetUserApi> Users { get; }
+
+        [JsonProperty(PropertyName = "books")]
+        public List<BookApi> Books { get; }
 
 
         ISchool ICourse.School => this.School;
@@ -123,13 +130,12 @@ namespace Phoenix.DataHandle.Api.Models.Main
         IEnumerable<ILecture> ICourse.Lectures => this.Lectures;
         
         IEnumerable<ISchedule> ICourse.Schedules => this.Schedules;
-        
-        [JsonIgnore]
-        public IEnumerable<IBook> Books { get; }
+
+        IEnumerable<IBook> ICourse.Books => this.Books;
         
         [JsonIgnore]
         public IEnumerable<IBroadcast> Broadcasts { get; }
         
-        IEnumerable<IAspNetUser> ICourse.Teachers => this.Teachers;
+        IEnumerable<IAspNetUser> ICourse.Users => this.Users;
     }
 }

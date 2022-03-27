@@ -33,8 +33,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
                 throw new ArgumentNullException(nameof(city));
             if (address is null)
                 throw new ArgumentNullException(nameof(address));
-            if (schoolInfo is null)
-                throw new ArgumentNullException(nameof(schoolInfo));
 
             this.Id = id;
             this.Name = name;
@@ -50,17 +48,22 @@ namespace Phoenix.DataHandle.Api.Models.Main
                 this.Courses = courses;
         }
 
-        public SchoolApi(ISchool school, int id = 0)
-            : this(id, school.Name, school.Slug, school.City, school.AddressLine, school.Description, 
-                  new SchoolInfoApi(school.SchoolInfo), null, null)
+        public SchoolApi(ISchool school, bool include = false)
+            : this(0, school.Name, school.Slug, school.City, school.AddressLine, school.Description, 
+                  null!, null, null)
         {
+            if (school is School school1)
+                this.Id = school1.Id;
+
+            if (school.SchoolInfo is not null)
+                this.SchoolInfo = new SchoolInfoApi(school.SchoolInfo);
+
+            // SchoolInfo is always included if it's not null
+            if (!include)
+                return;
+
             this.Classrooms = school.Classrooms.Select(c => new ClassroomApi(c)).ToList();
             this.Courses = school.Courses.Select(c => new CourseApi(c)).ToList();
-        }
-
-        public SchoolApi(School school)
-            : this(school, school.Id)
-        {
         }
 
         [JsonProperty(PropertyName = "id")]

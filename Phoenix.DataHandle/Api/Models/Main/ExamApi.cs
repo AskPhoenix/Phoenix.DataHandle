@@ -20,9 +20,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public ExamApi(int id, LectureApi lecture, string? name, string? comments, List<GradeApi>? grades, List<MaterialApi>? materials)
             : this()
         {
-            if (lecture is null)
-                throw new ArgumentNullException(nameof(lecture));
-
             this.Id = id;
             this.Lecture = lecture;
             this.Name = name;
@@ -34,16 +31,20 @@ namespace Phoenix.DataHandle.Api.Models.Main
                 this.Materials = materials;
         }
 
-        public ExamApi(IExam exam, int id = 0)
-            : this(id, new LectureApi(exam.Lecture), exam.Name, exam.Comments, null, null)
+        public ExamApi(IExam exam, bool include = false)
+            : this(0, null!, exam.Name, exam.Comments, null, null)
         {
+            if (exam is Exam exam1)
+                this.Id = exam1.Id;
+
+            if (!include)
+                return;
+
+            if (exam.Lecture is not null)
+                this.Lecture = new LectureApi(exam.Lecture);
+
             this.Grades = exam.Grades.Select(g => new GradeApi(g)).ToList();
             this.Materials = exam.Materials.Select(m => new MaterialApi(m)).ToList();
-        }
-
-        public ExamApi(Exam exam) 
-            : this(exam, exam.Id)
-        {
         }
 
         [JsonProperty(PropertyName = "id")]

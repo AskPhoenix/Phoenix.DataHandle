@@ -29,14 +29,11 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.Comments = comments;
         }
 
-        public BookApi(IBook book, int id = 0)
-            : this(id, book.Name, book.Publisher, book.Comments)
+        public BookApi(IBook book)
+            : this(0, book.Name, book.Publisher, book.Comments)
         {
-        }
-
-        public BookApi(Book book)
-            : this(book, book.Id)
-        {
+            if (book is Book book1)
+                this.Id = book1.Id;
         }
 
         [JsonProperty(PropertyName = "id")]

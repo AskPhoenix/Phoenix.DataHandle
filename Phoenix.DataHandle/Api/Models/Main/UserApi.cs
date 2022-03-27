@@ -1,20 +1,17 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.Api.Models.Extensions;
 using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Api.Models.Main
 {
     public class UserApi : IUser, IModelApi
     {
         [JsonConstructor]
-        public UserApi(AspNetUserApi aspNetUser, string? firstName, string? lastName, string? fullName,
+        public UserApi(int id, string? firstName, string? lastName, string? fullName,
             bool termsAccepted, bool isSelfDetermined)
         {
-            if (aspNetUser is null)
-                throw new ArgumentNullException(nameof(aspNetUser));
-
-            this.AspNetUser = aspNetUser;
+            this.Id = id;
             this.FirstName = firstName;
             this.LastName = lastName;
             this.FullName = fullName;
@@ -23,13 +20,15 @@ namespace Phoenix.DataHandle.Api.Models.Main
         }
 
         public UserApi(IUser user)
-            : this(new AspNetUserApi(user.AspNetUser), user.FirstName, user.LastName, user.FullName,
+            : this(0, user.FirstName, user.LastName, user.FullName,
                   user.TermsAccepted, user.IsSelfDetermined)
         {
+            if (user is User user1)
+                this.Id = user1.Id;
         }
 
-        [JsonProperty(PropertyName = "aspnet_user")]
-        public AspNetUserApi AspNetUser { get; } = null!;
+        [JsonProperty(PropertyName = "id")]
+        public int Id { get; }
 
         [JsonProperty(PropertyName = "first_name")]
         public string? FirstName { get; }
@@ -46,9 +45,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         [JsonProperty(PropertyName = "is_self_determined")]
         public bool IsSelfDetermined { get; }
 
-
-        int IModelApi.Id => AspNetUser.Id;
-
-        IAspNetUser IUser.AspNetUser => this.AspNetUser;
+        [JsonIgnore]
+        public IAspNetUser AspNetUser { get; } = null!;
     }
 }

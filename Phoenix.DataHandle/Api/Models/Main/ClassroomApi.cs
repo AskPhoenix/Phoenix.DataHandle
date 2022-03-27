@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using Phoenix.DataHandle.Api.Models.Extensions;
 using Phoenix.DataHandle.Main.Entities;
@@ -19,25 +18,23 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public ClassroomApi(int id, SchoolApi school, string name, string? comments)
             : this()
         {
-            // TODO: Make school property nullable?
-            if (school is null)
-                throw new ArgumentNullException(nameof(school));
-
             this.Id = id;
             this.School = school;
             this.Name = name;
             this.Comments = comments;
         }
 
-        // TODO: Check if classroom can be null in main db model
-        public ClassroomApi(IClassroom classroom, int id = 0)
-            : this(id, new SchoolApi(classroom.School), classroom.Name, classroom.Comments)
+        public ClassroomApi(IClassroom classroom, bool include = false)
+            : this(0, null!, classroom.Name, classroom.Comments)
         {
-        }
+            if (classroom is Classroom classroom1)
+                this.Id = classroom1.Id;
 
-        public ClassroomApi(Classroom classroom)
-            : this(classroom, classroom.Id)
-        {
+            if (!include)
+                return;
+
+            if (classroom.School is not null)
+                this.School = new SchoolApi(classroom.School);
         }
 
         [JsonProperty(PropertyName = "id")]

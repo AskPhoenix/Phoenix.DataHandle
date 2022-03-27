@@ -12,9 +12,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public GradeApi(int id, AspNetUserApi student, CourseApi? course, ExamApi? exam, ExerciseApi? exercise,
             decimal score, string? topic, string? justification)
         {
-            if (student is null)
-                throw new ArgumentNullException(nameof(student));
-
             this.Id = id;
             this.Student = student;
             this.Course = course;
@@ -25,20 +22,23 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.Justification = justification;
         }
 
-        public GradeApi(IGrade grade, int id = 0)
-            : this(id, new AspNetUserApi(grade.Student), null, null, null, grade.Score, grade.Topic, grade.Justification)
+        public GradeApi(IGrade grade, bool include = false)
+            : this(0, null!, null, null, null, grade.Score, grade.Topic, grade.Justification)
         {
+            if (grade is Grade grade1)
+                this.Id = grade1.Id;
+
+            if (!include)
+                return;
+
+            if (grade.Student is not null)
+                this.Student = new AspNetUserApi(grade.Student);
             if (grade.Course is not null)
                 this.Course = new CourseApi(grade.Course);
             if (grade.Exam is not null)
                 this.Exam = new ExamApi(grade.Exam);
             if (grade.Exercise is not null)
                 this.Exercise = new ExerciseApi(grade.Exercise);
-        }
-
-        public GradeApi(Grade grade)
-            : this(grade, grade.Id)
-        {
         }
 
         [JsonProperty(PropertyName = "id")]

@@ -13,7 +13,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         private AspNetUserApi()
         {
             this.Courses = new List<CourseApi>();
-
+            
             this.AspNetUserLogins = new List<IAspNetUserLogin>();
             this.BotFeedbacks = new List<IBotFeedback>();
             this.Broadcasts = new List<IBroadcast>();
@@ -29,14 +29,10 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public AspNetUserApi(int id, string username, string? email, string phoneNumber, UserApi user, List<CourseApi>? courses)
             : this()
         {
-            // TODO: Check what happens when a string property is null ( i. "prop": null, ii. "prop": "", iii. not included at all)
-            // TODO: Use string.IsNullOrEmpty() instead?
             if (username is null)
                 throw new ArgumentNullException(nameof(username));
             if (phoneNumber is null)
                 throw new ArgumentNullException(nameof(phoneNumber));
-            if (user is null)
-                throw new ArgumentNullException(nameof(user));
 
             this.Id = id;
             this.UserName = username;
@@ -48,17 +44,20 @@ namespace Phoenix.DataHandle.Api.Models.Main
                 this.Courses = courses;
         }
 
-        // TODO: Check if User can be null
-        public AspNetUserApi(IAspNetUser aspNetUser, int id = 0)
-            : this(id, aspNetUser.UserName, aspNetUser.Email, aspNetUser.PhoneNumber, new UserApi(aspNetUser.User), null)
+        public AspNetUserApi(IAspNetUser aspNetUser, bool include = false)
+            : this(0, aspNetUser.UserName, aspNetUser.Email, aspNetUser.PhoneNumber, null!, null)
         {
-            // TODO: Check if the controller in the Select method calls the correct overload: CourseApi(Course c)
-            this.Courses = aspNetUser.Courses.Select(c => new CourseApi(c)).ToList();
-        }
+            if (aspNetUser is AspNetUser aspNetUser1)
+                this.Id = aspNetUser1.Id;
 
-        public AspNetUserApi(AspNetUser aspNetUser)
-            : this(aspNetUser, aspNetUser.Id)
-        {
+            if (aspNetUser.User is not null)
+                this.User = new UserApi(aspNetUser.User);
+
+            // User is always included if it's not null
+            if (!include)
+                return;
+
+            this.Courses = aspNetUser.Courses.Select(c => new CourseApi(c)).ToList();
         }
 
         [JsonProperty(PropertyName = "id")]
@@ -79,7 +78,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
         [JsonProperty(PropertyName = "courses")]
         public List<CourseApi> Courses { get; }
 
-        // TODO: Make sure that this doesn't need [JsonIgnore]
         IUser IAspNetUser.User => this.User;
 
         [JsonIgnore] 

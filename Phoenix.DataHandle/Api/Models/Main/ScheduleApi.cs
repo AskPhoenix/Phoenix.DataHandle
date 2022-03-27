@@ -19,9 +19,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
             DateTimeOffset startTime, DateTimeOffset endTime, string? comments)
             : this()
         {
-            if (course is null)
-                throw new ArgumentNullException(nameof(course));
-
             this.Id = id;
             this.Course = course;
             this.Classroom = classroom;
@@ -31,16 +28,19 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.Comments = comments;
         }
 
-        public ScheduleApi(ISchedule schedule, int id = 0)
-            : this(id, new CourseApi(schedule.Course), null, schedule.DayOfWeek, schedule.StartTime, schedule.EndTime, schedule.Comments)
+        public ScheduleApi(ISchedule schedule, bool include = false)
+            : this(0, null!, null, schedule.DayOfWeek, schedule.StartTime, schedule.EndTime, schedule.Comments)
         {
+            if (schedule is Schedule schedule1)
+                this.Id = schedule1.Id;
+
+            if (!include)
+                return;
+
+            if (schedule.Comments is not null)
+                this.Course = new CourseApi(schedule.Course);
             if (schedule.Classroom is not null)
                 this.Classroom = new ClassroomApi(schedule.Classroom);
-        }
-
-        public ScheduleApi(Schedule schedule)
-            : this(schedule, schedule.Id)
-        {
         }
 
         [JsonProperty(PropertyName = "id")]

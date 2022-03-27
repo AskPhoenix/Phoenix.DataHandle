@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.Api.Models.Extensions;
 using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Main.Models;
 using System;
 
 namespace Phoenix.DataHandle.Api.Models.Main
@@ -8,11 +9,9 @@ namespace Phoenix.DataHandle.Api.Models.Main
     public class SchoolInfoApi : ISchoolInfo, IModelApi
     {
         [JsonConstructor]
-        public SchoolInfoApi(SchoolApi school, string country, string primaryLanguage, string primaryLocale,
+        public SchoolInfoApi(int id, string country, string primaryLanguage, string primaryLocale,
             string secondaryLanguage, string secondaryLocale, string timeZone, string phoneCode)
         {
-            if (school is null)
-                throw new ArgumentNullException(nameof(school));
             if (country is null)
                 throw new ArgumentNullException(nameof(country));
             if (primaryLanguage is null)
@@ -28,7 +27,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
             if (phoneCode is null)
                 throw new ArgumentNullException(nameof(phoneCode));
 
-            this.School = school;
+            this.Id = id;
             this.Country = country;
             this.PrimaryLanguage = primaryLanguage;
             this.PrimaryLocale = primaryLocale;
@@ -39,14 +38,15 @@ namespace Phoenix.DataHandle.Api.Models.Main
         }
 
         public SchoolInfoApi(ISchoolInfo schoolInfo)
-            : this(new SchoolApi(schoolInfo.School), schoolInfo.Country, schoolInfo.PrimaryLanguage, schoolInfo.PrimaryLocale,
+            : this(0, schoolInfo.Country, schoolInfo.PrimaryLanguage, schoolInfo.PrimaryLocale,
                   schoolInfo.SecondaryLanguage, schoolInfo.SecondaryLocale, schoolInfo.TimeZone, schoolInfo.PhoneCode)
         {
+            if (schoolInfo is SchoolInfo schoolInfo1)
+                this.Id = schoolInfo1.Id;
         }
 
-
-        [JsonProperty(PropertyName = "school")]
-        public SchoolApi School { get; } = null!;
+        [JsonProperty(PropertyName = "id")]
+        public int Id { get; }
 
         [JsonProperty(PropertyName = "country")]
         public string Country { get; } = null!;
@@ -69,9 +69,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         [JsonProperty(PropertyName = "phone_code")]
         public string PhoneCode { get; } = null!;
 
-        
-        int IModelApi.Id => this.School.Id;
-
-        ISchool ISchoolInfo.School => this.School;
+        [JsonIgnore]
+        public ISchool School { get; } = null!;
     }
 }

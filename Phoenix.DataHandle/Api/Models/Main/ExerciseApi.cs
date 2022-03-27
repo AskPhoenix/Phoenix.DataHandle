@@ -4,6 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Phoenix.DataHandle.Api.Models.Extensions;
 using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Api.Models.Main
 {
@@ -18,8 +19,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public ExerciseApi(int id, LectureApi lecture, string name, BookApi? book, string? page, string? comments, List<GradeApi>? grades)
             : this()
         {
-            if (lecture is null)
-                throw new ArgumentNullException(nameof(lecture));
             if (name is null)
                 throw new ArgumentNullException(nameof(name));
 
@@ -34,9 +33,17 @@ namespace Phoenix.DataHandle.Api.Models.Main
                 this.Grades = grades;
         }
 
-        public ExerciseApi(IExercise exercise, int id = 0)
-            : this(id, new LectureApi(exercise.Lecture), exercise.Name, null, exercise.Page, exercise.Comments, null)
+        public ExerciseApi(IExercise exercise, bool include = false)
+            : this(0, null!, exercise.Name, null, exercise.Page, exercise.Comments, null)
         {
+            if (exercise is Exercise exercise1)
+                this.Id = exercise1.Id;
+
+            if (!include)
+                return;
+
+            if (exercise.Lecture is not null)
+                this.Lecture = new LectureApi(exercise.Lecture);
             if (exercise.Book is not null)
                 this.Book = new BookApi(exercise.Book);
 

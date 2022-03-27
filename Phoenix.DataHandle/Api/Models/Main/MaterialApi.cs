@@ -11,9 +11,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
         [JsonConstructor]
         public MaterialApi(int id, ExamApi exam, BookApi? book, string? chapter, string? section, string? comments)
         {
-            if (exam is null)
-                throw new ArgumentNullException(nameof(exam));
-
             this.Id = id;
             this.Exam = exam;
             this.Book = book;
@@ -22,16 +19,19 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.Comments = comments;
         }
 
-        public MaterialApi(IMaterial material, int id = 0)
-            : this(id, new ExamApi(material.Exam), null, material.Chapter, material.Section, material.Comments)
+        public MaterialApi(IMaterial material, bool include = false)
+            : this(0, null!, null, material.Chapter, material.Section, material.Comments)
         {
+            if (material is Material material1)
+                this.Id = material1.Id;
+
+            if (!include)
+                return;
+
+            if (material.Exam is not null)
+                this.Exam = new ExamApi(material.Exam);
             if (material.Book is not null)
                 this.Book = new BookApi(material.Book);
-        }
-
-        public MaterialApi(Material material)
-            : this(material, material.Id)
-        {
         }
 
         [JsonProperty(PropertyName = "id")]
