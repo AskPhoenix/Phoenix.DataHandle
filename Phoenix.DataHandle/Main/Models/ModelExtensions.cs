@@ -109,7 +109,7 @@ namespace Phoenix.DataHandle.Main.Models
 
         IEnumerable<IBroadcast> ICourse.Broadcasts => this.Broadcasts;
 
-        IEnumerable<IAspNetUser> ICourse.Teachers => this.Teachers;
+        IEnumerable<IAspNetUser> ICourse.Users => this.Users;
 
         public string NameWithSubcourse
         {
@@ -198,15 +198,11 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IAspNetUser> ISchool.Users => this.Users;
     }
 
-    public partial class SchoolInfo : ISchoolInfo, IObviableModelEntity
+    public partial class SchoolInfo : ISchoolInfo
     {
         ISchool ISchoolInfo.School => this.School;
 
-        public int Id => this.School.Id;
-
-        public DateTimeOffset CreatedAt { get => this.School.CreatedAt; set => this.School.CreatedAt = value; }
-        public DateTimeOffset? UpdatedAt { get => this.School.UpdatedAt; set => this.School.UpdatedAt = value; }
-        public DateTimeOffset? ObviatedAt { get => this.School.ObviatedAt; set => this.School.ObviatedAt = value; }
+        public int Id => this.SchoolId;
     }
 
     public partial class SchoolLogin : ISchoolLogin
@@ -216,15 +212,11 @@ namespace Phoenix.DataHandle.Main.Models
         IChannel ISchoolLogin.Channel => this.Channel;
     }
 
-    public partial class User : IUser, IObviableModelEntity
+    public partial class User : IUser
     {
-        public string FullName => (this.LastName + " " + this.FirstName).Trim();
+        public string FullName => (this.FirstName + " " + this.LastName).Trim();
         IAspNetUser IUser.AspNetUser => this.AspNetUser;
 
-        public int Id => this.AspNetUser.Id;
-
-        public DateTimeOffset CreatedAt { get => this.AspNetUser.CreatedAt; set => this.AspNetUser.CreatedAt = value; }
-        public DateTimeOffset? UpdatedAt { get => this.AspNetUser.UpdatedAt; set => this.AspNetUser.UpdatedAt = value; }
-        public DateTimeOffset? ObviatedAt { get => this.AspNetUser.ObviatedAt; set => this.AspNetUser.ObviatedAt = value; }
+        public int Id => this.AspNetUserId;
     }
 }
