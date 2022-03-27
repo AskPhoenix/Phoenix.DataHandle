@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
+    <Compile Remove="Identity\AppicationStoreTests.cs" />
+    <Compile Remove="Repositories\RepositoryTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +26,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Phoenix.DataHandle\Phoenix.DataHandle.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Identity\" />
+    <Folder Include="Repositories\" />
   </ItemGroup>
 
 </Project>

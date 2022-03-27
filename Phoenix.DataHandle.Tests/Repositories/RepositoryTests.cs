@@ -62,7 +62,7 @@ namespace Phoenix.DataHandle.Tests.Repositories
         {
             AspNetUserRepository aspNetUserRepository = new AspNetUserRepository(this._phoenixContext);
 
-            AspNetUsers aspNetUser = await aspNetUserRepository.FindAsync(NUAGE_EXISTING_ASPNETUSER_ID);
+            AspNetUser aspNetUser = await aspNetUserRepository.FindAsync(NUAGE_EXISTING_ASPNETUSER_ID);
 
             string signature = aspNetUser.GetHashSignature();
 
