@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Web;
 using WordPressPCL.Models;
 
@@ -6,8 +7,14 @@ namespace Phoenix.DataHandle.DataEntry
 {
     public static class PostExtensions
     {
-        public const string PrimaryDelimiter = "~_~";
-        public const string SecondaryDelimiter = "~-~";
+        private const string businessUQRgxStr = @"^[SP][0-9]+";
+
+        public static readonly Regex BusinessUQRgx = new(businessUQRgxStr);
+        public static readonly Regex CourseUQRgx = new(businessUQRgxStr + @"_Course[0-9]+");
+
+        public static readonly int BusinessCodePos = 1;
+        public static readonly int CourseCodePos = 6;
+
 
         public static string GetTitle(this Post post)
         {

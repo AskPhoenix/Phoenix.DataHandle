@@ -24,7 +24,7 @@
                 PostCategory.Schedule           => "Schedule",
                 PostCategory.Personnel          => "Personnel",
                 PostCategory.Client             => "Client",
-                _                                 => string.Empty
+                _                               => string.Empty
             };
         }
     }

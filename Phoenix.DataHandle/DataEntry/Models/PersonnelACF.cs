@@ -1,11 +1,12 @@
 ﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
 using Phoenix.DataHandle.Main;
+using Phoenix.DataHandle.Main.Entities;
 using System;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
-    public class PersonnelACF : UserACF, IModelACF
+    public class PersonnelACF : UserACF, IModelACF, IAspNetUser, IUser
     {
         [JsonProperty(PropertyName = "full_name")]
         public override string FullName { get; }
@@ -23,9 +24,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         
 
         [JsonConstructor]
-#pragma warning disable CS8618 // Non-nullable properties (FullName, CourseCodesString) must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public PersonnelACF(string fullName, string roleString, string phoneNumber, string courseCodesString)
-#pragma warning restore CS8618
             : base(fullName, courseCodesString)
         {
             if (string.IsNullOrWhiteSpace(roleString))

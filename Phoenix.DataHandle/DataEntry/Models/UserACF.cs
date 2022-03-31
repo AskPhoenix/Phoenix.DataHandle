@@ -1,4 +1,6 @@
-﻿using Phoenix.DataHandle.Main.Models;
+﻿using Newtonsoft.Json;
+using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,14 +12,61 @@ namespace Phoenix.DataHandle.DataEntry.Models
 {
     public abstract class UserACF
     {
+        // TODO: Check if JsonProperty names are inherited to children classes
+        [JsonProperty(PropertyName = "full_name")]
         public virtual string FullName { get; }
+
+        [JsonProperty(PropertyName = "course_codes")]
         public virtual string CourseCodesString { get; }
 
+        [JsonProperty(PropertyName = "phone")]
         public abstract string PhoneNumber { get; }
+
+        [JsonProperty(PropertyName = "course_codes_list")]
         public List<short> CourseCodes { get; }
 
+        [JsonProperty(PropertyName = "first_name")]
         public string FirstName { get; }
+        
+        [JsonProperty(PropertyName = "last_name")]
         public string LastName { get; }
+
+        [JsonProperty(PropertyName = "dependance_order")]
+        public int? DependanceOrder { get; set; }
+
+        [JsonProperty(PropertyName = "user")]
+        public IUser User { get; }
+
+
+        [JsonIgnore]
+        public IEnumerable<IAspNetUserLogin> AspNetUserLogins { get; }
+
+        [JsonIgnore]
+        public IEnumerable<IBotFeedback> BotFeedbacks { get; }
+
+        [JsonIgnore]
+        public IEnumerable<IBroadcast> Broadcasts { get; }
+
+        [JsonIgnore]
+        public IEnumerable<IGrade> Grades { get; }
+
+        [JsonIgnore]
+        public IEnumerable<IAspNetUser> Children { get; }
+
+        [JsonIgnore]
+        public IEnumerable<ICourse> Courses { get; }
+
+        [JsonIgnore]
+        public IEnumerable<ILecture> Lectures { get; }
+
+        [JsonIgnore]
+        public IEnumerable<IAspNetUser> Parents { get; }
+
+        [JsonIgnore]
+        public IEnumerable<IAspNetRole> Roles { get; }
+
+        [JsonIgnore]
+        public IEnumerable<ISchool> Schools { get; }
 
         public UserACF(string fullName, string courseCodesString)
         {
@@ -29,37 +78,45 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.FullName = fullName.ToTitleCase();
             this.CourseCodesString = courseCodesString;
 
-            this.FirstName = GetFirstName(this.FullName);
-            this.LastName = GetLastName(this.FullName);
+            this.FirstName = GetName(this.FullName, selFirstName: true);
+            this.LastName = GetName(this.FullName, selFirstName: false);
 
             this.CourseCodes = courseCodesString.
                 Split(',', StringSplitOptions.RemoveEmptyEntries).
                 Select(cc => short.Parse(cc.Trim(), CultureInfo.InvariantCulture)).
                 ToList();
+
+            this.User = new User
+            {
+                FirstName = this.FirstName,
+                LastName = this.LastName
+            };
         }
 
-        public Expression<Func<AspNetUser, bool>> GetUniqueExpression() => u =>
-            u.PhoneNumber == this.PhoneNumber && u.User.IsSelfDetermined;
+        public Expression<Func<AspNetUser, bool>> GetUniqueExpression(int dependanceOrder) => u =>
+            u.PhoneNumber == this.PhoneNumber && u.PhoneNumberDependanceOrder == dependanceOrder;
 
-        protected static string GetFirstName(string fullName, bool truncate = true)
+        // TODO: Check if this can be translated to SQL query. If yes, delete the other GetUniqueExpression method
+        public Expression<Func<AspNetUser, bool>> GetUniqueExpression()
         {
-            var names = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            
-            string tore = string.Join(' ', names.Take((int)Math.Ceiling(names.Length / 2.0)));
+            if (this.DependanceOrder is null)
+                throw new InvalidOperationException("");
 
-            if (truncate)
-                tore = tore.Truncate(255);
-
-            return tore;
+            return GetUniqueExpression(this.DependanceOrder.Value);
         }
 
-        protected static string GetLastName(string fullName, bool truncate = true)
+        protected static string GetName(string fullName, bool selFirstName, bool truncate = true)
         {
             var names = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (names.Length == 1)
+
+            if (!selFirstName && names.Length == 1)
                 return string.Empty;
 
-            string tore = string.Join(' ', names.TakeLast(names.Length / 2));
+            string tore;
+            if (selFirstName)
+                tore = string.Join(' ', names.Take((int)Math.Ceiling(names.Length / 2.0)));
+            else
+                tore = string.Join(' ', names.TakeLast(names.Length / 2));
 
             if (truncate)
                 tore = tore.Truncate(255);
@@ -67,11 +124,13 @@ namespace Phoenix.DataHandle.DataEntry.Models
             return tore;
         }
 
-        public string GetUserName(int schoolId, int dependanceNum) // Dependance number separates non-self-dependent users. The phone owner takes a value of 0.
+        // Dependance order separates non-self-dependent users. The phone owner takes a value of 0.
+        public string GetUserName(int schoolCode)
         {
-            var firstNameSub = this.FirstName[..Math.Min(3, this.FirstName.Length)];
+            if (this.DependanceOrder is null)
+                throw new InvalidOperationException("User's dependance order number must be set first.");
 
-            return "S" + schoolId + "_P" + this.PhoneNumber + "_N" + firstNameSub + "." + this.LastName + "_O" + dependanceNum;
+            return "S" + schoolCode + "_P" + this.PhoneNumber + "_N" + this.FirstName + "_O" + this.DependanceOrder;
         }
     }
 }

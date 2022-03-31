@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace Phoenix.DataHandle.DataEntry.Models.Uniques
 {
@@ -13,24 +12,13 @@ namespace Phoenix.DataHandle.DataEntry.Models.Uniques
             if (string.IsNullOrEmpty(postTitle))
                 throw new ArgumentNullException(nameof(postTitle));
 
-            bool titleOk = postTitle.Contains(PostExtensions.PrimaryDelimiter)
-                && postTitle.Contains(PostExtensions.SecondaryDelimiter);
-            if (!titleOk)
+            if (!PostExtensions.CourseUQRgx.IsMatch(postTitle))
                 throw new ArgumentException("Post title is not well formed.");
 
-            this.SchoolUnique = new(postTitle);
+            string[] uqParts = postTitle.Split('_');
 
-            string codeStr = postTitle.Trim().
-                Split(PostExtensions.PrimaryDelimiter, StringSplitOptions.RemoveEmptyEntries).
-                Last().
-                Split(PostExtensions.SecondaryDelimiter, StringSplitOptions.RemoveEmptyEntries).
-                Last();
-
-            bool codeParsed = short.TryParse(codeStr, out short code);
-            if (!codeParsed)
-                throw new InvalidOperationException($"The course code \"{codeStr}\" in the title of the post is not valid.");
-
-            this.Code = code;
+            this.SchoolUnique = new(uqParts[0]);
+            this.Code = short.Parse(uqParts[1][PostExtensions.CourseCodePos..]);
         }
 
         public CourseUnique(SchoolUnique schoolUnique, short code)
@@ -42,19 +30,18 @@ namespace Phoenix.DataHandle.DataEntry.Models.Uniques
         public override bool Equals(object? other)
         {
             return other is CourseUnique courseUnique &&
-                   SchoolUnique.Equals(courseUnique.SchoolUnique) &&
-                   Code == courseUnique.Code;
+                   this.SchoolUnique.Equals(courseUnique.SchoolUnique) &&
+                   this.Code == courseUnique.Code;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(SchoolUnique, Code);
+            return HashCode.Combine(this.SchoolUnique, this.Code);
         }
 
         public override string ToString()
         {
-            return SchoolUnique.ToString() + PostExtensions.PrimaryDelimiter +
-                "Course" + PostExtensions.SecondaryDelimiter + Code;
+            return this.SchoolUnique.ToString() + "_Course" + Code;
         }
     }
 }
