@@ -11,9 +11,9 @@ using Phoenix.DataHandle.Main.Entities;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
-    public class CourseACF : IModelACF, ICourse
+    public class CourseAcf : IModelAcf, ICourse
     {
-        private CourseACF()
+        private CourseAcf()
         {
             this.Books = new List<IBook>();
 
@@ -25,7 +25,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         }
 
         [JsonConstructor]
-        public CourseACF(short code, string name, string? subcourse, string level, string group, string? comments,
+        public CourseAcf(short code, string name, string? subcourse, string level, string group, string? comments,
             string firstDateString, string lastdateString, string booksString)
             : this()
         {

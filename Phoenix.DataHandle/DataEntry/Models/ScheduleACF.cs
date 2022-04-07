@@ -11,15 +11,15 @@ using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
-    public class ScheduleACF : IModelACF, ISchedule
+    public class ScheduleAcf : IModelAcf, ISchedule
     {
-        private ScheduleACF()
+        private ScheduleAcf()
         {
             this.Lectures = new List<ILecture>();
         }
 
         [JsonConstructor]
-        public ScheduleACF(short courseCode, string? classroomName, string dayName, string startTimeString, string endTimeString, string? comments)
+        public ScheduleAcf(short courseCode, string? classroomName, string dayName, string startTimeString, string endTimeString, string? comments)
             : this()
         {
             if (string.IsNullOrWhiteSpace(dayName))

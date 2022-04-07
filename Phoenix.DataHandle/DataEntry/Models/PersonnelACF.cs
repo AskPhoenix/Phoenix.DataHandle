@@ -5,10 +5,10 @@ using System;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
-    public class PersonnelACF : UserACF, IModelACF
+    public class PersonnelAcf : UserAcf, IModelAcf
     {
         [JsonConstructor]
-        public PersonnelACF(string fullName, string role, string phone, string? courseCodes)
+        public PersonnelAcf(string fullName, string role, string phone, string? courseCodes)
             : base(fullName, phone, courseCodes)
         {
             if (string.IsNullOrWhiteSpace(role))

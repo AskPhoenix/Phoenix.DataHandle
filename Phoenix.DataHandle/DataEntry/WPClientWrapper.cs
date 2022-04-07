@@ -94,7 +94,7 @@ namespace Phoenix.DataHandle.DataEntry
         }
 
         public static async Task<TModelACF> GetAcfAsync<TModelACF>(int postId, bool embed = false) 
-            where TModelACF : IModelACF
+            where TModelACF : IModelAcf
         {
             string route = AcfPostsPath + $"/{postId}";
             var response = await GetCustomAsync<JObject>(route, embed);

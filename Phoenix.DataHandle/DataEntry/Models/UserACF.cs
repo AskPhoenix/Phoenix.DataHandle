@@ -11,14 +11,14 @@ using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
-    public abstract class UserACF : IUser
+    public abstract class UserAcf : IUser
     {
-        private UserACF()
+        private UserAcf()
         {
             this.CourseCodes = new List<short>();
         }
 
-        public UserACF(string fullName, string? phone)
+        public UserAcf(string fullName, string? phone)
             : this()
         {
             if (string.IsNullOrWhiteSpace(fullName))
@@ -29,7 +29,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.FullName = fullName.ToTitleCase();
         }
 
-        public UserACF(string fullName, string? phone, string? courseCodes)
+        public UserAcf(string fullName, string? phone, string? courseCodes)
             : this(fullName, phone)
         {
             // Accept empty course codes string in order to register the user

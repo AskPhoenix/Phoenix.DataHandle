@@ -12,9 +12,9 @@ using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
-    public class SchoolACF : IModelACF, ISchool
+    public class SchoolAcf : IModelAcf, ISchool
     {
-        private SchoolACF()
+        private SchoolAcf()
         {
             this.Classrooms = new List<IClassroom>();
             this.Courses = new List<ICourse>();
@@ -24,7 +24,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         }
 
         [JsonConstructor]
-        public SchoolACF(int? code, string name, string? slug, string city, string address, string? comments, string language)
+        public SchoolAcf(int? code, string name, string? slug, string city, string address, string? comments, string language)
             : this()
         {
             if (string.IsNullOrWhiteSpace(name))

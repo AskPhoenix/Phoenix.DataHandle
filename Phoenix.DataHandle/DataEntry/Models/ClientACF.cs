@@ -5,13 +5,13 @@ using System;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
-    public class ClientACF : UserACF, IModelACF
+    public class ClientAcf : UserAcf, IModelAcf
     {
         [JsonIgnore]
-        public ClientACF? Parent1 { get; }
+        public ClientAcf? Parent1 { get; }
 
         [JsonIgnore]
-        public ClientACF? Parent2 { get; }
+        public ClientAcf? Parent2 { get; }
 
         [JsonIgnore]
         public bool HasParent1 => this.Parent1 != null;
@@ -20,7 +20,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public bool HasParent2 => this.Parent2 != null;
 
         // Constructor for Parent Client
-        private ClientACF(string fullName, string phone)
+        private ClientAcf(string fullName, string phone)
             : base(fullName, phone)
         {
             this.Role = Role.Parent;
@@ -30,7 +30,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         // Constructor for Student Client
         [JsonConstructor]
-        public ClientACF(string studentFullName, string? courseCodes, string needsParentAuthorization, string? studentPhone,
+        public ClientAcf(string studentFullName, string? courseCodes, string needsParentAuthorization, string? studentPhone,
             string? parent1FullName, string? parent1Phone, string? parent2FullName, string? parent2Phone)
             : base(studentFullName, studentPhone, courseCodes)
         {
@@ -38,9 +38,9 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 throw new ArgumentNullException(nameof(needsParentAuthorization));
 
             if (!string.IsNullOrWhiteSpace(parent1FullName) && !string.IsNullOrWhiteSpace(parent1Phone))
-                this.Parent1 = new ClientACF(parent1FullName, parent1Phone);
+                this.Parent1 = new ClientAcf(parent1FullName, parent1Phone);
             if (!string.IsNullOrWhiteSpace(parent2FullName) && !string.IsNullOrWhiteSpace(parent2Phone))
-                this.Parent2 = new ClientACF(parent2FullName, parent2Phone);
+                this.Parent2 = new ClientAcf(parent2FullName, parent2Phone);
 
             this.IsSelfDetermined = needsParentAuthorization.Equals("No", StringComparison.InvariantCultureIgnoreCase);
 
