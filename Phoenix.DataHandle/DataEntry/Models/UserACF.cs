@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
@@ -10,101 +11,57 @@ using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
-    public abstract class UserACF
+    public abstract class UserACF : IUser
     {
-        // TODO: Check if JsonProperty names are inherited to children classes
-        [JsonProperty(PropertyName = "full_name")]
-        public virtual string FullName { get; }
+        private UserACF()
+        {
+            this.CourseCodes = new List<short>();
+        }
 
-        [JsonProperty(PropertyName = "course_codes")]
-        public virtual string CourseCodesString { get; }
-
-        [JsonProperty(PropertyName = "phone")]
-        public abstract string PhoneNumber { get; }
-
-        [JsonProperty(PropertyName = "course_codes_list")]
-        public List<short> CourseCodes { get; }
-
-        [JsonProperty(PropertyName = "first_name")]
-        public string FirstName { get; }
-        
-        [JsonProperty(PropertyName = "last_name")]
-        public string LastName { get; }
-
-        [JsonProperty(PropertyName = "dependance_order")]
-        public int? DependanceOrder { get; set; }
-
-        [JsonProperty(PropertyName = "user")]
-        public IUser User { get; }
-
-
-        [JsonIgnore]
-        public IEnumerable<IAspNetUserLogin> AspNetUserLogins { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IBotFeedback> BotFeedbacks { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IBroadcast> Broadcasts { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IGrade> Grades { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IAspNetUser> Children { get; }
-
-        [JsonIgnore]
-        public IEnumerable<ICourse> Courses { get; }
-
-        [JsonIgnore]
-        public IEnumerable<ILecture> Lectures { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IAspNetUser> Parents { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IAspNetRole> Roles { get; }
-
-        [JsonIgnore]
-        public IEnumerable<ISchool> Schools { get; }
-
-        public UserACF(string fullName, string courseCodesString)
+        public UserACF(string fullName, string? phone)
+            : this()
         {
             if (string.IsNullOrWhiteSpace(fullName))
                 throw new ArgumentNullException(nameof(fullName));
-            if (string.IsNullOrWhiteSpace(courseCodesString))
-                throw new ArgumentNullException(nameof(courseCodesString));
-
-            this.FullName = fullName.ToTitleCase();
-            this.CourseCodesString = courseCodesString;
 
             this.FirstName = GetName(this.FullName, selFirstName: true);
             this.LastName = GetName(this.FullName, selFirstName: false);
+            this.FullName = fullName.ToTitleCase();
+        }
 
-            this.CourseCodes = courseCodesString.
-                Split(',', StringSplitOptions.RemoveEmptyEntries).
-                Select(cc => short.Parse(cc.Trim(), CultureInfo.InvariantCulture)).
-                ToList();
-
-            this.User = new User
+        public UserACF(string fullName, string? phone, string? courseCodes)
+            : this(fullName, phone)
+        {
+            // Accept empty course codes string in order to register the user
+            // in all the courses of their school
+            if (!string.IsNullOrWhiteSpace(courseCodes))
             {
-                FirstName = this.FirstName,
-                LastName = this.LastName
+                this.CourseCodes = courseCodes.
+                    Split(',', StringSplitOptions.RemoveEmptyEntries).
+                    Select(cc => short.Parse(cc.Trim(), CultureInfo.InvariantCulture)).
+                    ToList();
+            }
+
+            this.AspNetUser = new AspNetUser
+            {
+                PhoneNumber = phone
             };
         }
 
+        // Unique expression is linked with the AspNetUser object
         public Expression<Func<AspNetUser, bool>> GetUniqueExpression(int dependanceOrder) => u =>
-            u.PhoneNumber == this.PhoneNumber && u.PhoneNumberDependanceOrder == dependanceOrder;
+            u.PhoneNumber == this.AspNetUser.PhoneNumber && u.PhoneNumberDependanceOrder == dependanceOrder;
 
         // TODO: Check if this can be translated to SQL query. If yes, delete the other GetUniqueExpression method
         public Expression<Func<AspNetUser, bool>> GetUniqueExpression()
         {
-            if (this.DependanceOrder is null)
+            if (!this.IsSelfDetermined && this.DependanceOrder is null)
                 throw new InvalidOperationException("");
 
-            return GetUniqueExpression(this.DependanceOrder.Value);
+            return GetUniqueExpression(this.DependanceOrder ?? 0);
         }
 
+        // TODO: Move these in IUser
         protected static string GetName(string fullName, bool selFirstName, bool truncate = true)
         {
             var names = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -130,7 +87,59 @@ namespace Phoenix.DataHandle.DataEntry.Models
             if (this.DependanceOrder is null)
                 throw new InvalidOperationException("User's dependance order number must be set first.");
 
-            return "S" + schoolCode + "_P" + this.PhoneNumber + "_N" + this.FirstName + "_O" + this.DependanceOrder;
+            return "S" + schoolCode + "_P" + this.AspNetUser.PhoneNumber + "_N" + this.FirstName + "_O" + this.DependanceOrder;
         }
+
+
+        // TODO: Check if JsonProperty names are inherited to children classes
+
+        [JsonIgnore]
+        public string FirstName { get; } = null!;
+
+        [JsonIgnore]
+        public string LastName { get; } = null!;
+
+        [JsonProperty(PropertyName = "full_name")]
+        public string FullName { get; } = null!;
+
+        [JsonIgnore]
+        public Role Role { get; protected set; }
+
+        [JsonIgnore]
+        public bool IsSelfDetermined { get; protected set; }
+
+        [JsonIgnore]
+        public List<short> CourseCodes { get; }
+
+        [JsonIgnore]
+        public IAspNetUser AspNetUser { get; private set; } = null!;
+
+        [JsonIgnore]
+        public int? DependanceOrder {
+            get 
+            {
+                if (this.IsSelfDetermined)
+                    return 0;
+
+                return dependanceOrder;
+            }
+            set
+            {
+                if (this.IsSelfDetermined && value != 0)
+                    throw new InvalidOperationException("Cannot set Dependance Order to a non-zero value for a Self-Determined user");
+
+                dependanceOrder = value;
+
+                if (dependanceOrder != null)
+                {
+                    this.AspNetUser = new AspNetUser
+                    {
+                        PhoneNumber = this.AspNetUser.PhoneNumber,
+                        PhoneNumberDependanceOrder = dependanceOrder.Value
+                    };
+                }
+            }
+        }
+        private int? dependanceOrder = null;
     }
 }

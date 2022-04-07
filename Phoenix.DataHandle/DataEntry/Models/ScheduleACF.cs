@@ -30,18 +30,23 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 throw new ArgumentNullException(nameof(endTimeString));
 
             this.CourseCode = courseCode;
-            this.ClassroomName = string.IsNullOrWhiteSpace(classroomName) ? null : classroomName.Trim().Truncate(255).ToTitleCase();
-            this.DayName = dayName;
-            this.StartTimeString = startTimeString;
-            this.EndTimeString = endTimeString;
             this.Comments = string.IsNullOrWhiteSpace(comments) ? null : comments.Trim();
 
             this.DayOfWeek = (DayOfWeek)Array.FindIndex(
                 CultureInfo.InvariantCulture.DateTimeFormat.DayNames, 
-                d => d.Equals(this.DayName, StringComparison.InvariantCultureIgnoreCase));
+                d => d.Equals(dayName, StringComparison.InvariantCultureIgnoreCase));
 
-            this.StartTime = GetScheduleTime(selStartTime: true);
-            this.EndTime = GetScheduleTime(selStartTime: false);
+            this.StartTime = CalendarExtensions.ParseTime(startTimeString, this.TimeZone);
+            this.EndTime = CalendarExtensions.ParseTime(endTimeString, this.TimeZone);
+
+            if (!string.IsNullOrWhiteSpace(classroomName))
+            {
+                this.Classroom = new Classroom
+                {
+                    Name = classroomName.Trim().Truncate(255).ToTitleCase(),
+                    NormalizedName = classroomName.ToUpper()
+                };
+            }
         }
 
         public Expression<Func<Schedule, bool>> GetUniqueExpression(SchoolUnique schoolUnique) => s =>
@@ -56,40 +61,25 @@ namespace Phoenix.DataHandle.DataEntry.Models
             s.DayOfWeek == this.DayOfWeek &&
             s.StartTime == this.StartTime;
 
-        private DateTimeOffset GetScheduleTime(bool selStartTime)
-        {
-            var timeString = selStartTime ? this.StartTimeString : this.EndTimeString;
-            return CalendarExtensions.ParseTime(timeString, this.TimeZone);
-        }
-
 
         [JsonProperty(PropertyName = "course_code")]
         public short CourseCode { get; }
 
-        [JsonProperty(PropertyName = "classroom")]
-        // TODO: Create IClassroom object too
-        public string? ClassroomName { get; }
-
-        [JsonProperty(PropertyName = "day")]
-        public string DayName { get; } = null!;
+        [JsonIgnore]
+        public IClassroom Classroom { get; } = null!;
 
         [JsonIgnore]
         public DayOfWeek DayOfWeek { get; }
 
-        [JsonProperty(PropertyName = "start_time")]
-        public string StartTimeString { get; } = null!;
-
         [JsonIgnore]
         public DateTimeOffset StartTime { get; private set; }
-
-        [JsonProperty(PropertyName = "end_time")]
-        private string EndTimeString { get; } = null!;
 
         [JsonIgnore]
         public DateTimeOffset EndTime { get; private set; }
 
         [JsonProperty(PropertyName = "comments")]
         public string? Comments { get; }
+
 
         [JsonIgnore]
         public string TimeZone
@@ -102,8 +92,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
                 timezone = value;
 
-                this.StartTime = GetScheduleTime(selStartTime: true);
-                this.EndTime = GetScheduleTime(selStartTime: false);
+                this.StartTime = this.StartTime.SetOffsetFromTimeZone(timezone);
+                this.EndTime = this.EndTime.SetOffsetFromTimeZone(timezone);
             }
         }
         private string timezone = "UTC";
@@ -111,9 +101,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         [JsonIgnore]
         public ICourse Course { get; } = null!;
-
-        [JsonIgnore]
-        public IClassroom Classroom { get; } = null!;
 
         [JsonIgnore]
         public IEnumerable<ILecture> Lectures { get; set; }

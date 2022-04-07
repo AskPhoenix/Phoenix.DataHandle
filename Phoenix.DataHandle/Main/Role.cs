@@ -102,14 +102,22 @@ namespace Phoenix.DataHandle.Main
 
         public static Role ToRole(this string me)
         {
+            return GetAll().SingleOrDefault(a => string.Equals(a.ToString(), me, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public static bool TryToRole(this string me, out Role role)
+        {
             try
             {
-                return GetAll().SingleOrDefault(a => string.Equals(a.ToString(), me, StringComparison.OrdinalIgnoreCase));
+                role = me.ToRole();
+                return true;
             }
             catch(InvalidOperationException)
             {
-                return Role.Undefined;
+                role = Role.Undefined;
             }
+
+            return false;
         }
 
         public static Role ToRoleFromNormalized(this string me)

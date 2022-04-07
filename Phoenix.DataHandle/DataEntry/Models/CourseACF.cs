@@ -48,11 +48,11 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.Level = level.Trim().Truncate(50).ToTitleCase();
             this.Group = group.Trim().Truncate(50);
             this.Comments = string.IsNullOrWhiteSpace(comments) ? null : comments.Trim();
-            this.FirstDateString = firstDateString;
-            this.LastDateString = lastdateString;
-            this.BooksString = booksString;
             
-            this.Books = this.BooksString
+            this.FirstDate = GetCourseDate(firstDateString, selFirstDate: true);
+            this.LastDate = GetCourseDate(lastdateString, selFirstDate: false);
+
+            this.Books = booksString
                 .Split(',')
                 .Select(s => s.Trim())
                 .Distinct()
@@ -61,9 +61,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
                     Name = b.Truncate(255)
                 })
                 .ToList();
-
-            this.FirstDate = GetCourseDate(selFirstDate: true);
-            this.LastDate = GetCourseDate(selFirstDate: false);
         }
 
         public Expression<Func<Course, bool>> GetUniqueExpression(SchoolUnique schoolUnique) => c =>
@@ -76,13 +73,10 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         public CourseUnique GetCourseUnique(SchoolUnique schoolUnique) => new(schoolUnique, this.Code);
 
-        private DateTimeOffset GetCourseDate(bool selFirstDate)
-        {
-            var dateString = selFirstDate ? this.FirstDateString : this.LastDateString;
-            return CalendarExtensions.ParseExact(dateString, "d/M/yyyy", this.TimeZone);
-        }
+        private DateTimeOffset GetCourseDate(string dateString, bool selFirstDate) => 
+            CalendarExtensions.ParseExact(dateString, "d/M/yyyy", this.TimeZone);
 
-        
+
         [JsonProperty(PropertyName = "code")]
         public short Code { get; }
 
@@ -101,24 +95,16 @@ namespace Phoenix.DataHandle.DataEntry.Models
         [JsonProperty(PropertyName = "comments")]
         public string? Comments { get; }
 
-        [JsonProperty(PropertyName = "first_date")]
-        public string FirstDateString { get; } = null!;
-
         [JsonIgnore]
         public DateTimeOffset FirstDate { get; private set; }
-
-        [JsonProperty(PropertyName = "last_date")]
-        public string LastDateString { get; } = null!;
 
         [JsonIgnore]
         public DateTimeOffset LastDate { get; private set; }
 
-        [JsonProperty(PropertyName = "books")]
-        public string BooksString { get; } = null!;
-
-        [JsonProperty(PropertyName = "books_list")]
+        [JsonIgnore]
         public List<IBook> Books { get; }
 
+        // TODO: Check that when TimeZone is set, the First/Last Date properties have already a value
         [JsonIgnore]
         public string TimeZone
         {
@@ -130,8 +116,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
                 timezone = value;
 
-                this.FirstDate = GetCourseDate(selFirstDate: true);
-                this.LastDate = GetCourseDate(selFirstDate: false);
+                this.FirstDate = this.FirstDate.SetOffsetFromTimeZone(timezone);
+                this.LastDate = this.LastDate.SetOffsetFromTimeZone(timezone);
             }
         }
         private string timezone = "UTC";

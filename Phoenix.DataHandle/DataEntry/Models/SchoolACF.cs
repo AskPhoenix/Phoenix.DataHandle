@@ -42,16 +42,15 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.City = city.Trim().Truncate(200).ToTitleCase();
             this.AddressLine = address.Trim().Truncate(255);
             this.Description = string.IsNullOrWhiteSpace(comments) ? null : comments.Trim();
-            this.Language = language;
 
-            this.Locale = CultureInfo.GetCultures(CultureTypes.NeutralCultures).
-                First(c => c.EnglishName.Equals(this.Language, StringComparison.InvariantCultureIgnoreCase)).
+            var locale = CultureInfo.GetCultures(CultureTypes.NeutralCultures).
+                First(c => c.EnglishName.Equals(language, StringComparison.InvariantCultureIgnoreCase)).
                 TwoLetterISOLanguageName;
 
             this.SchoolInfo = new SchoolInfo
             {
-                PrimaryLanguage = this.Language,
-                PrimaryLocale = this.Locale
+                PrimaryLanguage = language,
+                PrimaryLocale = locale
             };
         }
 
@@ -59,8 +58,9 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         public SchoolUnique GetSchoolUnique() => new(this.Code);
 
-        
-        [JsonProperty(PropertyName = "code")]
+        // TODO: Remove all Json Attributes (use only the JsonConstructor)
+
+        [JsonIgnore]
         public int Code { get; }
 
         [JsonProperty(PropertyName = "name")]
@@ -78,14 +78,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         [JsonProperty(PropertyName = "comments")]
         public string? Description { get; }
 
-        [JsonProperty(PropertyName = "language")]
-        public string Language { get; } = null!;
-
-
-        [JsonProperty(PropertyName = "locale")]
-        public string Locale { get; } = null!;
-
-        [JsonProperty(PropertyName = "school_info")]
+        [JsonIgnore]
         // TODO: Check in repository what happens with CreatedAt and other properties when creating/updating the object
         public ISchoolInfo SchoolInfo { get; } = null!;
 
