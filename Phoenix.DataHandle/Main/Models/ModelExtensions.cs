@@ -21,6 +21,8 @@ namespace Phoenix.DataHandle.Main.Models
 
         IEnumerable<IBroadcast> IAspNetUser.Broadcasts => this.Broadcasts;
 
+        IEnumerable<IGrade> IAspNetUser.Grades => this.Grades;
+
         IEnumerable<IAspNetUser> IAspNetUser.Children => this.Children;
 
         IEnumerable<ICourse> IAspNetUser.Courses => this.Courses;

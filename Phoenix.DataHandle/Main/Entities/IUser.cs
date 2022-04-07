@@ -6,7 +6,6 @@
         string? FirstName { get; }
         string? LastName { get; }
         string? FullName { get; }
-        bool TermsAccepted { get; }
         bool IsSelfDetermined { get; }
     }
 }

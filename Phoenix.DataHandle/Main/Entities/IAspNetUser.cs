@@ -7,12 +7,14 @@ namespace Phoenix.DataHandle.Main.Entities
         string UserName { get; }
         string? Email { get; }
         string PhoneNumber { get; }
+        int PhoneNumberDependanceOrder { get; }
 
         IUser User { get; }
         IEnumerable<IAspNetUserLogin> AspNetUserLogins { get; }
         IEnumerable<IBotFeedback> BotFeedbacks { get; }
         IEnumerable<IBroadcast> Broadcasts { get; }
-        
+        IEnumerable<IGrade> Grades { get; }
+
         IEnumerable<IAspNetUser> Children { get; }
         IEnumerable<ICourse> Courses { get; }
         IEnumerable<ILecture> Lectures { get; }

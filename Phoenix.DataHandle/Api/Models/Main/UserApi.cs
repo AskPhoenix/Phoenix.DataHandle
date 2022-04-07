@@ -9,19 +9,18 @@ namespace Phoenix.DataHandle.Api.Models.Main
     {
         [JsonConstructor]
         public UserApi(int id, string? firstName, string? lastName, string? fullName,
-            bool termsAccepted, bool isSelfDetermined)
+            bool isSelfDetermined)
         {
             this.Id = id;
             this.FirstName = firstName;
             this.LastName = lastName;
             this.FullName = fullName;
-            this.TermsAccepted = termsAccepted;
             this.IsSelfDetermined = isSelfDetermined;
         }
 
         public UserApi(IUser user)
             : this(0, user.FirstName, user.LastName, user.FullName,
-                  user.TermsAccepted, user.IsSelfDetermined)
+                  user.IsSelfDetermined)
         {
             if (user is User user1)
                 this.Id = user1.Id;
@@ -38,9 +37,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         [JsonProperty(PropertyName = "full_name")]
         public string? FullName { get; }
-
-        [JsonProperty(PropertyName = "terms_accepted")]
-        public bool TermsAccepted { get; }
 
         [JsonProperty(PropertyName = "is_self_determined")]
         public bool IsSelfDetermined { get; }
