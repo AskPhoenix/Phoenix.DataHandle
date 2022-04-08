@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Phoenix.DataHandle.DataEntry;
 using Phoenix.DataHandle.DataEntry.Models;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
 using Phoenix.DataHandle.DataEntry.Models.Uniques;
+using Phoenix.DataHandle.Tests.Utilities;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -12,11 +15,13 @@ namespace Phoenix.DataHandle.Tests
 {
     public class DataEntryTests
     {
-        public IConfiguration _configuration { get; }
-        private bool IsAuthenticated { get; set; }
-
+        private readonly IConfiguration _configuration;
         private readonly string WPUsername;
         private readonly string WPPassword;
+
+        private const string OutDirName = "dataentry_tests";
+
+        private bool IsAuthenticated { get; set; }
 
         public DataEntryTests()
         {
@@ -81,7 +86,7 @@ namespace Phoenix.DataHandle.Tests
             Assert.Equal(new SchoolUnique(1), new SchoolUnique(filteredSchoolPosts.Single().GetTitle()));
         }
 
-        private async Task AcfTestAsync<TAcf>(PostCategory cat)
+        private async Task<TAcf> AcfTestAsync<TAcf>(PostCategory cat)
             where TAcf : IModelAcf
         {
             await AuthenticationTestAsync();
@@ -94,9 +99,11 @@ namespace Phoenix.DataHandle.Tests
             var acf = await WPClientWrapper.GetAcfAsync<TAcf>(posts.Single());
             Assert.NotNull(acf);
 
+            JsonUtilities.SaveToFile(acf, OutDirName, cat.ToString());
+
             // TODO: Test when WP import is updated to use the school code in the post title
 
-            return;
+            return acf;
 
             var posts2 = await WPClientWrapper.GetPostsPageAsync(1, cat, new SchoolUnique(1));
             Assert.Single(posts2);
@@ -108,31 +115,31 @@ namespace Phoenix.DataHandle.Tests
         [Fact]
         public async void SchoolAcfTestAsync()
         {
-            await AcfTestAsync<SchoolAcf>(PostCategory.SchoolInformation);
+            var acf = await AcfTestAsync<SchoolAcf>(PostCategory.SchoolInformation);
         }
 
         [Fact]
         public async void CourseAcfTestAsync()
         {
-            await AcfTestAsync<CourseAcf>(PostCategory.Course);
+            var acf = await AcfTestAsync<CourseAcf>(PostCategory.Course);
         }
 
         [Fact]
         public async void ScheduleAcfTestAsync()
         {
-            await AcfTestAsync<ScheduleAcf>(PostCategory.Schedule);
+            var acf = await AcfTestAsync<ScheduleAcf>(PostCategory.Schedule);
         }
 
         [Fact]
         public async void PersonnelAcfTestAsync()
         {
-            await AcfTestAsync<PersonnelAcf>(PostCategory.Personnel);
+            var acf = await AcfTestAsync<PersonnelAcf>(PostCategory.Personnel);
         }
 
         [Fact]
         public async void ClientAcfTestAsync()
         {
-            await AcfTestAsync<ClientAcf>(PostCategory.Client);
+            var acf = await AcfTestAsync<ClientAcf>(PostCategory.Client);
         }
     }
 }
