@@ -1,46 +1,40 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Phoenix.DataHandle.Api.Models.Extensions;
+using Microsoft.Extensions.Configuration;
 using Phoenix.DataHandle.Api.Models.Main;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Tests.Utilities;
 using System;
-using System.IO;
 using Xunit;
 
-namespace Phoenix.DataHandle.Tests.Api
+namespace Phoenix.DataHandle.Tests
 {
     public class ApiTests : IDisposable
     {
-        private const string CONNECTION_STRING = "Server=localhost;Database=PhoenicopterusDB;Trusted_Connection=True;";
-        
+        private readonly IConfiguration _configuration;
         private readonly PhoenixContext _phoenixContext;
+
+        private const string OutDirName = "api_tests";
 
         public ApiTests()
         {
-            _phoenixContext = new PhoenixContext(new DbContextOptionsBuilder<PhoenixContext>().UseSqlServer(CONNECTION_STRING).Options);
+            _configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            string phoenixConnection = _configuration.GetConnectionString("PhoenixConnection");
+            var dbBuilder = new DbContextOptionsBuilder<PhoenixContext>()
+                .UseLazyLoadingProxies()
+                .UseSqlServer(phoenixConnection);
+
+            _phoenixContext = new PhoenixContext(dbBuilder.Options);
         }
         public void Dispose()
         {
             _phoenixContext.Dispose();
         }
 
-        private static void SaveJson(IModelApi modelApi, string filename = "test")
-        {
-            Directory.CreateDirectory("api_tests");
-
-            string json = JsonConvert.SerializeObject(modelApi, Formatting.Indented);
-            File.WriteAllText($"api_tests/{filename}.json", json);
-        }
-
-        private static IModelApi ReadJson<ModelApiT>(string filename = "test")
-            where ModelApiT : IModelApi
-        {
-            string json = File.ReadAllText($"api_tests/{filename}.json");
-            return JsonConvert.DeserializeObject<ModelApiT>(json);
-        }
-
         [Fact]
-        public async void AspNetUserApiTest()
+        public async void AspNetUserApiTestAsync()
         {
             var aspNetUser = await _phoenixContext.AspNetUsers.Include(u => u.User)
                 .Include(u => u.Courses)
@@ -61,12 +55,12 @@ namespace Phoenix.DataHandle.Tests.Api
 
             var aspNetUserApi = new AspNetUserApi(aspNetUser);
 
-            SaveJson(aspNetUserApi, nameof(aspNetUser));
-            var aspNetUser2 = ReadJson<AspNetUserApi>(nameof(aspNetUser));
+            JsonUtilities.SaveToFile(aspNetUserApi, OutDirName, nameof(aspNetUser));
+            var aspNetUser2 = JsonUtilities.ReadFromFile<AspNetUserApi>(OutDirName, nameof(aspNetUser));
         }
 
         [Fact]
-        public async void BookApiTest()
+        public async void BookApiTestAsync()
         {
             var book = await _phoenixContext.Books.FirstOrDefaultAsync()
                 ?? new Book
@@ -78,12 +72,12 @@ namespace Phoenix.DataHandle.Tests.Api
 
             var bookApi = new BookApi(book);
 
-            SaveJson(bookApi, nameof(book));
-            var bookApi2 = ReadJson<BookApi>(nameof(book));
+            JsonUtilities.SaveToFile(bookApi, OutDirName, nameof(book));
+            var bookApi2 = JsonUtilities.ReadFromFile<BookApi>(OutDirName, nameof(book));
         }
 
         [Fact]
-        public async void ClassroomApiTest()
+        public async void ClassroomApiTestAsync()
         {
             var classroom = await _phoenixContext.Classrooms.Include(c => c.School)
                 .FirstOrDefaultAsync()
@@ -95,12 +89,12 @@ namespace Phoenix.DataHandle.Tests.Api
 
             var classroomApi = new ClassroomApi(classroom, include: true);
 
-            SaveJson(classroomApi, nameof(classroom));
-            var classroomApi2 = ReadJson<ClassroomApi>(nameof(classroom));
+            JsonUtilities.SaveToFile(classroomApi, OutDirName, nameof(classroom));
+            var classroomApi2 = JsonUtilities.ReadFromFile<ClassroomApi>(OutDirName, nameof(classroom));
         }
 
         [Fact]
-        public async void CourseApiTest()
+        public async void CourseApiTestAsync()
         {
             var course = await _phoenixContext.Courses.Include(c => c.Grades)
                 .Include(c => c.Lectures)
@@ -121,12 +115,12 @@ namespace Phoenix.DataHandle.Tests.Api
 
             var courseApi = new CourseApi(course, include: true);
 
-            SaveJson(courseApi, nameof(course));
-            var courseApi2 = ReadJson<CourseApi>(nameof(course));
+            JsonUtilities.SaveToFile(courseApi, OutDirName, nameof(course));
+            var courseApi2 = JsonUtilities.ReadFromFile<CourseApi>(OutDirName, nameof(course));
         }
 
         [Fact]
-        public async void ExamApiTest()
+        public async void ExamApiTestAsync()
         {
             var exam = await _phoenixContext.Exams.Include(e => e.Grades)
                 .Include(e => e.Materials)
@@ -140,12 +134,12 @@ namespace Phoenix.DataHandle.Tests.Api
 
             var examApi = new ExamApi(exam, include: true);
 
-            SaveJson(examApi, nameof(exam));
-            var examApi2 = ReadJson<ExamApi>(nameof(exam));
+            JsonUtilities.SaveToFile(examApi, OutDirName, nameof(exam));
+            var examApi2 = JsonUtilities.ReadFromFile<ExamApi>(OutDirName, nameof(exam));
         }
 
         [Fact]
-        public async void ExerciseApiTest()
+        public async void ExerciseApiTestAsync()
         {
             var exercise = await _phoenixContext.Exercises.Include(e => e.Grades)
                 .Include(e => e.Lecture)
@@ -160,12 +154,12 @@ namespace Phoenix.DataHandle.Tests.Api
 
             var exerciseApi = new ExerciseApi(exercise, include: true);
 
-            SaveJson(exerciseApi, nameof(exercise));
-            var exerciseApi2 = ReadJson<ExerciseApi>(nameof(exercise));
+            JsonUtilities.SaveToFile(exerciseApi, OutDirName, nameof(exercise));
+            var exerciseApi2 = JsonUtilities.ReadFromFile<ExerciseApi>(OutDirName, nameof(exercise));
         }
 
         [Fact]
-        public async void GradeApiTest()
+        public async void GradeApiTestAsync()
         {
             var grade = await _phoenixContext.Grades.Include(g => g.Student)
                 .Include(g => g.Course)
@@ -181,12 +175,12 @@ namespace Phoenix.DataHandle.Tests.Api
 
             var gradeApi = new GradeApi(grade, include: true);
 
-            SaveJson(gradeApi, nameof(grade));
-            var exerciseApi2 = ReadJson<GradeApi>(nameof(grade));
+            JsonUtilities.SaveToFile(gradeApi, OutDirName, nameof(grade));
+            var exerciseApi2 = JsonUtilities.ReadFromFile<GradeApi>(OutDirName, nameof(grade));
         }
 
         [Fact]
-        public async void LectureApiTest()
+        public async void LectureApiTestAsync()
         {
             var lecture = await _phoenixContext.Lectures.Include(l => l.Exams)
                 .Include(l => l.Exercises)
@@ -203,12 +197,12 @@ namespace Phoenix.DataHandle.Tests.Api
 
             var lectureApi = new LectureApi(lecture, include: true);
 
-            SaveJson(lectureApi, nameof(lecture));
-            var lectureApi2 = ReadJson<LectureApi>(nameof(lecture));
+            JsonUtilities.SaveToFile(lectureApi, OutDirName, nameof(lecture));
+            var lectureApi2 = JsonUtilities.ReadFromFile<LectureApi>(OutDirName, nameof(lecture));
         }
 
         [Fact]
-        public async void MaterialApiTest()
+        public async void MaterialApiTestAsync()
         {
             var material = await _phoenixContext.Materials.Include(m => m.Exam)
                 .Include(m => m.Book)
@@ -222,12 +216,12 @@ namespace Phoenix.DataHandle.Tests.Api
 
             var materialApi = new MaterialApi(material, include: true);
 
-            SaveJson(materialApi, nameof(material));
-            var materialApi2 = ReadJson<LectureApi>(nameof(material));
+            JsonUtilities.SaveToFile(materialApi, OutDirName, nameof(material));
+            var materialApi2 = JsonUtilities.ReadFromFile<LectureApi>(OutDirName, nameof(material));
         }
 
         [Fact]
-        public async void ScheduleApiTest()
+        public async void ScheduleApiTestAsync()
         {
             var schedule = await _phoenixContext.Schedules.Include(s => s.Course)
                 .Include(s => s.Classroom)
@@ -241,12 +235,12 @@ namespace Phoenix.DataHandle.Tests.Api
 
             var scheduleApi = new ScheduleApi(schedule, include: true);
 
-            SaveJson(scheduleApi, nameof(schedule));
-            var scheduleApi2 = ReadJson<ScheduleApi>(nameof(schedule));
+            JsonUtilities.SaveToFile(scheduleApi, OutDirName, nameof(schedule));
+            var scheduleApi2 = JsonUtilities.ReadFromFile<ScheduleApi>(OutDirName, nameof(schedule));
         }
 
         [Fact]
-        public async void SchoolApiTest()
+        public async void SchoolApiTestAsync()
         {
             var school = await _phoenixContext.Schools.Include(s => s.Classrooms)
                 .Include(s => s.Courses)
@@ -272,8 +266,8 @@ namespace Phoenix.DataHandle.Tests.Api
 
             var schoolApi = new SchoolApi(school, include: true);
 
-            SaveJson(schoolApi, nameof(school));
-            var schoolApi2 = ReadJson<SchoolApi>(nameof(school));
+            JsonUtilities.SaveToFile(schoolApi, OutDirName, nameof(school));
+            var schoolApi2 = JsonUtilities.ReadFromFile<SchoolApi>(OutDirName, nameof(school));
         }
     }
 }
