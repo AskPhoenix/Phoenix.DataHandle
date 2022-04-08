@@ -47,7 +47,13 @@ namespace Phoenix.DataHandle.DataEntry.Models
                     Name = classroom.Trim().Truncate(255).ToTitleCase(),
                     NormalizedName = classroom.ToUpper()
                 };
+
+                this.ClassroomName = this.Classroom.Name;
             }
+
+            this.DayString = day;
+            this.StartTimeString = start_time;
+            this.EndTimeString = end_time;
         }
 
         public Expression<Func<Schedule, bool>> GetUniqueExpression(SchoolUnique schoolUnique) => s =>
@@ -69,6 +75,21 @@ namespace Phoenix.DataHandle.DataEntry.Models
         [JsonProperty(PropertyName = "course_code")]
         public short CourseCode { get; }
 
+        [JsonProperty(PropertyName = "day")]
+        public string DayString { get; } = null!;
+
+        [JsonProperty(PropertyName = "start_time")]
+        public string StartTimeString { get; } = null!;
+
+        [JsonProperty(PropertyName = "end_time")]
+        public string EndTimeString { get; } = null!;
+
+        [JsonProperty(PropertyName = "classroom")]
+        public string ClassroomName { get; } = null!;
+
+        [JsonProperty(PropertyName = "comments")]
+        public string? Comments { get; }
+        
         [JsonIgnore]
         public IClassroom Classroom { get; } = null!;
 
@@ -80,9 +101,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         [JsonIgnore]
         public DateTimeOffset EndTime { get; private set; }
-
-        [JsonProperty(PropertyName = "comments")]
-        public string? Comments { get; }
 
 
         [JsonIgnore]

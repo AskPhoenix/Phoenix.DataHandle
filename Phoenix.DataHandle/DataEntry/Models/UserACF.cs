@@ -30,8 +30,11 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
             this.AspNetUser = new AspNetUser
             {
+                // TODO: Add DependancePhoneNumber property to distinguish
                 PhoneNumber = phone
             };
+
+            this.PhoneString = this.AspNetUser.PhoneNumber;
         }
 
         public UserAcf(string fullName, string? phone, string? courseCodes)
@@ -45,6 +48,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
                     Split(',', StringSplitOptions.RemoveEmptyEntries).
                     Select(cc => short.Parse(cc.Trim(), CultureInfo.InvariantCulture)).
                     ToList();
+
+                this.CourseCodesString = courseCodes;
             }
         }
 
@@ -101,6 +106,12 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         [JsonProperty(PropertyName = "full_name")]
         public string FullName { get; } = null!;
+
+        [JsonProperty(PropertyName = "phone")]
+        public string PhoneString { get; } = null!;
+
+        [JsonProperty(PropertyName = "course_codes")]
+        public string CourseCodesString { get; } = string.Empty;
 
         [JsonIgnore]
         public Role Role { get; protected set; }

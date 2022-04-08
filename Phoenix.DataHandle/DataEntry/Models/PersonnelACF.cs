@@ -22,6 +22,11 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
             this.IsSelfDetermined = true;
             this.DependanceOrder = 0;
+
+            this.RoleString = role;
         }
+
+        [JsonProperty(PropertyName = "role")]
+        public string RoleString { get; }
     }
 }

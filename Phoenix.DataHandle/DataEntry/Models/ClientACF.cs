@@ -7,6 +7,27 @@ namespace Phoenix.DataHandle.DataEntry.Models
 {
     public class ClientAcf : UserAcf, IModelAcf
     {
+        [JsonProperty(PropertyName = "student_full_name")]
+        public string StudentFullName => FullName;
+
+        [JsonProperty(PropertyName = "needs_parent_authorization")]
+        public string NeedsParentAuthorization { get; } = null!;
+
+        [JsonProperty(PropertyName = "student_phone")]
+        public string StudentPhoneString => PhoneString;
+
+        [JsonProperty(PropertyName = "parent1_full_name")]
+        public string? Parent1FullName => HasParent1 ? Parent1!.FullName : null;
+
+        [JsonProperty(PropertyName = "parent1_phone")]
+        public string? Parent1Phone => HasParent1 ? Parent1!.PhoneString : null;
+
+        [JsonProperty(PropertyName = "parent2_full_name")]
+        public string? Parent2FullName => HasParent2 ? Parent2!.FullName : null;
+
+        [JsonProperty(PropertyName = "parent2_phone")]
+        public string? Parent2Phone => HasParent2 ? Parent2!.PhoneString : null;
+
         [JsonIgnore]
         public ClientAcf? Parent1 { get; }
 
@@ -51,6 +72,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 throw new ArgumentException("Cannot create self-determined student without a student phone number.");
 
             this.Role = Role.Student;
+
+            this.NeedsParentAuthorization = needs_parent_authorization;
 
             // Cannot set Dependance Order here
         }

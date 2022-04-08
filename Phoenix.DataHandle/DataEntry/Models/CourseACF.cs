@@ -63,6 +63,10 @@ namespace Phoenix.DataHandle.DataEntry.Models
                     NormalizedName = b.Truncate(255).ToUpperInvariant(),
                 })
                 .ToList();
+
+            this.BooksString = books;
+            this.FirstDateString = first_date;
+            this.LastDateString = last_date;
         }
 
         public Expression<Func<Course, bool>> GetUniqueExpression(SchoolUnique schoolUnique) => c =>
@@ -93,6 +97,15 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         [JsonProperty(PropertyName = "group")]
         public string Group { get; } = null!;
+
+        [JsonProperty(PropertyName = "books")]
+        public string BooksString { get; }
+
+        [JsonProperty(PropertyName = "first_date")]
+        public string FirstDateString { get; }
+
+        [JsonProperty(PropertyName = "last_date")]
+        public string LastDateString { get; }
 
         [JsonProperty(PropertyName = "comments")]
         public string? Comments { get; }

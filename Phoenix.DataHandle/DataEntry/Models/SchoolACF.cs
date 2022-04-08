@@ -33,8 +33,9 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 throw new ArgumentNullException(nameof(city));
             if (string.IsNullOrWhiteSpace(address))
                 throw new ArgumentNullException(nameof(address));
+            
             if (string.IsNullOrWhiteSpace(language))
-                throw new ArgumentNullException(nameof(language));
+                language = "English";
 
             this.Code = code ?? 0;
             this.Name = name.Trim().Truncate(200);
@@ -52,13 +53,13 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 PrimaryLanguage = language,
                 PrimaryLocale = locale
             };
+
+            this.BotLanguage = this.SchoolInfo.PrimaryLanguage;
         }
 
         public Expression<Func<School, bool>> GetUniqueExpression() => s => s.Code == this.Code;
 
         public SchoolUnique GetSchoolUnique() => new(this.Code);
-
-        // TODO: Remove all Json Attributes (use only the JsonConstructor)
 
         [JsonIgnore]
         public int Code { get; }
@@ -68,6 +69,9 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         [JsonProperty(PropertyName = "slug")]
         public string Slug { get; } = null!;
+
+        [JsonProperty(PropertyName = "language")]
+        public string BotLanguage { get; }
 
         [JsonProperty(PropertyName = "city")]
         public string City { get; } = null!;
