@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
 using Phoenix.DataHandle.Main.Entities;
+using System.Globalization;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
@@ -49,8 +50,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.Group = group.Trim().Truncate(50);
             this.Comments = string.IsNullOrWhiteSpace(comments) ? null : comments.Trim();
             
-            this.FirstDate = GetCourseDate(first_date, selFirstDate: true);
-            this.LastDate = GetCourseDate(last_date, selFirstDate: false);
+            this.FirstDate = GetCourseDate(first_date);
+            this.LastDate = GetCourseDate(last_date);
 
             this.Books = books
                 .Split(',')
@@ -74,8 +75,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         public CourseUnique GetCourseUnique(SchoolUnique schoolUnique) => new(schoolUnique, this.Code);
 
-        private DateTimeOffset GetCourseDate(string dateString, bool selFirstDate) => 
-            CalendarExtensions.ParseExact(dateString, "d/M/yyyy", this.TimeZone);
+        private DateTimeOffset GetCourseDate(string dateString) =>
+            DateTime.ParseExact(dateString, "d/M/yyyy", CultureInfo.InvariantCulture);
 
 
         [JsonProperty(PropertyName = "code")]
@@ -104,24 +105,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         [JsonIgnore]
         public List<IBook> Books { get; }
-
-        // TODO: Check that when TimeZone is set, the First/Last Date properties have already a value
-        [JsonIgnore]
-        public string TimeZone
-        {
-            get => timezone;
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                    throw new ArgumentNullException(nameof(TimeZone));
-
-                timezone = value;
-
-                this.FirstDate = this.FirstDate.SetOffsetFromTimeZone(timezone);
-                this.LastDate = this.LastDate.SetOffsetFromTimeZone(timezone);
-            }
-        }
-        private string timezone = "UTC";
 
 
         [JsonIgnore]

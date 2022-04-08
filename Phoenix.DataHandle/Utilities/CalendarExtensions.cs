@@ -20,7 +20,8 @@ namespace Phoenix.DataHandle.Utilities
 
         public static DateTimeOffset SetOffsetFromTimeZone(this DateTimeOffset dateTimeOffset, string timeZone)
         {
-            return new DateTimeOffset(dateTimeOffset.Date, CalculateTimeZoneOffset(timeZone, dateTimeOffset.Date));
+            DateTime dt = dateTimeOffset.DateTime;
+            return new DateTimeOffset(dt, CalculateTimeZoneOffset(timeZone, dt));
         }
 
         public static DateTimeOffset ParseExact(string input, string format, string timeZone)

@@ -37,8 +37,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 CultureInfo.InvariantCulture.DateTimeFormat.DayNames, 
                 d => d.Equals(day, StringComparison.InvariantCultureIgnoreCase));
 
-            this.StartTime = CalendarExtensions.ParseTime(start_time, this.TimeZone);
-            this.EndTime = CalendarExtensions.ParseTime(end_time, this.TimeZone);
+            this.StartTime = GetScheduleTime(start_time);
+            this.EndTime = GetScheduleTime(end_time);
 
             if (!string.IsNullOrWhiteSpace(classroom))
             {
@@ -62,6 +62,9 @@ namespace Phoenix.DataHandle.DataEntry.Models
             s.DayOfWeek == this.DayOfWeek &&
             s.StartTime == this.StartTime;
 
+        private DateTimeOffset GetScheduleTime(string timeString) =>
+            DateTime.ParseExact(timeString, "H:m", CultureInfo.InvariantCulture);
+
 
         [JsonProperty(PropertyName = "course_code")]
         public short CourseCode { get; }
@@ -80,24 +83,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         [JsonProperty(PropertyName = "comments")]
         public string? Comments { get; }
-
-
-        [JsonIgnore]
-        public string TimeZone
-        {
-            get => timezone;
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                    throw new ArgumentNullException(nameof(TimeZone));
-
-                timezone = value;
-
-                this.StartTime = this.StartTime.SetOffsetFromTimeZone(timezone);
-                this.EndTime = this.EndTime.SetOffsetFromTimeZone(timezone);
-            }
-        }
-        private string timezone = "UTC";
 
 
         [JsonIgnore]
