@@ -24,9 +24,14 @@ namespace Phoenix.DataHandle.DataEntry.Models
             if (string.IsNullOrWhiteSpace(fullName))
                 throw new ArgumentNullException(nameof(fullName));
 
+            this.FullName = fullName.ToTitleCase();
             this.FirstName = GetName(this.FullName, selFirstName: true);
             this.LastName = GetName(this.FullName, selFirstName: false);
-            this.FullName = fullName.ToTitleCase();
+
+            this.AspNetUser = new AspNetUser
+            {
+                PhoneNumber = phone
+            };
         }
 
         public UserAcf(string fullName, string? phone, string? courseCodes)
@@ -41,11 +46,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
                     Select(cc => short.Parse(cc.Trim(), CultureInfo.InvariantCulture)).
                     ToList();
             }
-
-            this.AspNetUser = new AspNetUser
-            {
-                PhoneNumber = phone
-            };
         }
 
         // Unique expression is linked with the AspNetUser object

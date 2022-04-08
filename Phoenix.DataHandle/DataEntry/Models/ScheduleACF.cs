@@ -19,32 +19,33 @@ namespace Phoenix.DataHandle.DataEntry.Models
         }
 
         [JsonConstructor]
-        public ScheduleAcf(short courseCode, string? classroomName, string dayName, string startTimeString, string endTimeString, string? comments)
+        public ScheduleAcf(short course_code, string? classroom, string day,
+            string start_time, string end_time, string? comments)
             : this()
         {
-            if (string.IsNullOrWhiteSpace(dayName))
-                throw new ArgumentNullException(nameof(dayName));
-            if (string.IsNullOrWhiteSpace(startTimeString))
-                throw new ArgumentNullException(nameof(startTimeString));
-            if (string.IsNullOrWhiteSpace(endTimeString))
-                throw new ArgumentNullException(nameof(endTimeString));
+            if (string.IsNullOrWhiteSpace(day))
+                throw new ArgumentNullException(nameof(day));
+            if (string.IsNullOrWhiteSpace(start_time))
+                throw new ArgumentNullException(nameof(start_time));
+            if (string.IsNullOrWhiteSpace(end_time))
+                throw new ArgumentNullException(nameof(end_time));
 
-            this.CourseCode = courseCode;
+            this.CourseCode = course_code;
             this.Comments = string.IsNullOrWhiteSpace(comments) ? null : comments.Trim();
 
             this.DayOfWeek = (DayOfWeek)Array.FindIndex(
                 CultureInfo.InvariantCulture.DateTimeFormat.DayNames, 
-                d => d.Equals(dayName, StringComparison.InvariantCultureIgnoreCase));
+                d => d.Equals(day, StringComparison.InvariantCultureIgnoreCase));
 
-            this.StartTime = CalendarExtensions.ParseTime(startTimeString, this.TimeZone);
-            this.EndTime = CalendarExtensions.ParseTime(endTimeString, this.TimeZone);
+            this.StartTime = CalendarExtensions.ParseTime(start_time, this.TimeZone);
+            this.EndTime = CalendarExtensions.ParseTime(end_time, this.TimeZone);
 
-            if (!string.IsNullOrWhiteSpace(classroomName))
+            if (!string.IsNullOrWhiteSpace(classroom))
             {
                 this.Classroom = new Classroom
                 {
-                    Name = classroomName.Trim().Truncate(255).ToTitleCase(),
-                    NormalizedName = classroomName.ToUpper()
+                    Name = classroom.Trim().Truncate(255).ToTitleCase(),
+                    NormalizedName = classroom.ToUpper()
                 };
             }
         }

@@ -25,8 +25,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
         }
 
         [JsonConstructor]
-        public CourseAcf(short code, string name, string? subcourse, string level, string group, string? comments,
-            string firstDateString, string lastdateString, string booksString)
+        public CourseAcf(short code, string name, string? subcourse, string level, string group,
+            string? comments, string first_date, string last_date, string books)
             : this()
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -35,12 +35,12 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 throw new ArgumentNullException(nameof(level));
             if (string.IsNullOrWhiteSpace(group))
                 throw new ArgumentNullException(nameof(group));
-            if (string.IsNullOrWhiteSpace(firstDateString))
-                throw new ArgumentNullException(nameof(firstDateString));
-            if (string.IsNullOrWhiteSpace(lastdateString))
-                throw new ArgumentNullException(nameof(lastdateString));
-            if (string.IsNullOrWhiteSpace(booksString))
-                throw new ArgumentNullException(nameof(booksString));
+            if (string.IsNullOrWhiteSpace(first_date))
+                throw new ArgumentNullException(nameof(first_date));
+            if (string.IsNullOrWhiteSpace(last_date))
+                throw new ArgumentNullException(nameof(last_date));
+            if (string.IsNullOrWhiteSpace(books))
+                throw new ArgumentNullException(nameof(books));
 
             this.Code = code;
             this.Name = name.Trim().Truncate(150).ToTitleCase();
@@ -49,16 +49,17 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.Group = group.Trim().Truncate(50);
             this.Comments = string.IsNullOrWhiteSpace(comments) ? null : comments.Trim();
             
-            this.FirstDate = GetCourseDate(firstDateString, selFirstDate: true);
-            this.LastDate = GetCourseDate(lastdateString, selFirstDate: false);
+            this.FirstDate = GetCourseDate(first_date, selFirstDate: true);
+            this.LastDate = GetCourseDate(last_date, selFirstDate: false);
 
-            this.Books = booksString
+            this.Books = books
                 .Split(',')
                 .Select(s => s.Trim())
                 .Distinct()
                 .Select(b => (IBook)new Book()
                 {
-                    Name = b.Truncate(255)
+                    Name = b.Truncate(255),
+                    NormalizedName = b.Truncate(255).ToUpperInvariant(),
                 })
                 .ToList();
         }

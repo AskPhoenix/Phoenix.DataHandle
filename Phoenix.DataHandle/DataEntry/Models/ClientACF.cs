@@ -30,23 +30,24 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         // Constructor for Student Client
         [JsonConstructor]
-        public ClientAcf(string studentFullName, string? courseCodes, string needsParentAuthorization, string? studentPhone,
-            string? parent1FullName, string? parent1Phone, string? parent2FullName, string? parent2Phone)
-            : base(studentFullName, studentPhone, courseCodes)
+        public ClientAcf(string student_full_name, string? course_codes, string needs_parent_authorization,
+            string? student_phone, string? parent1_full_name, string? parent1_phone, 
+            string? parent2_full_name, string? parent2_phone)
+            : base(student_full_name, student_phone, course_codes)
         {
-            if (string.IsNullOrWhiteSpace(needsParentAuthorization))
-                throw new ArgumentNullException(nameof(needsParentAuthorization));
+            if (string.IsNullOrWhiteSpace(needs_parent_authorization))
+                throw new ArgumentNullException(nameof(needs_parent_authorization));
 
-            if (!string.IsNullOrWhiteSpace(parent1FullName) && !string.IsNullOrWhiteSpace(parent1Phone))
-                this.Parent1 = new ClientAcf(parent1FullName, parent1Phone);
-            if (!string.IsNullOrWhiteSpace(parent2FullName) && !string.IsNullOrWhiteSpace(parent2Phone))
-                this.Parent2 = new ClientAcf(parent2FullName, parent2Phone);
+            if (!string.IsNullOrWhiteSpace(parent1_full_name) && !string.IsNullOrWhiteSpace(parent1_phone))
+                this.Parent1 = new ClientAcf(parent1_full_name, parent1_phone);
+            if (!string.IsNullOrWhiteSpace(parent2_full_name) && !string.IsNullOrWhiteSpace(parent2_phone))
+                this.Parent2 = new ClientAcf(parent2_full_name, parent2_phone);
 
-            this.IsSelfDetermined = needsParentAuthorization.Equals("No", StringComparison.InvariantCultureIgnoreCase);
+            this.IsSelfDetermined = needs_parent_authorization.Equals("No", StringComparison.InvariantCultureIgnoreCase);
 
             if (!this.IsSelfDetermined && !this.HasParent1 && !this.HasParent2)
                 throw new InvalidOperationException("Cannot create non self-determined student without any parent");
-            if (this.IsSelfDetermined && string.IsNullOrWhiteSpace(studentPhone))
+            if (this.IsSelfDetermined && string.IsNullOrWhiteSpace(student_phone))
                 throw new ArgumentException("Cannot create self-determined student without a student phone number.");
 
             this.Role = Role.Student;

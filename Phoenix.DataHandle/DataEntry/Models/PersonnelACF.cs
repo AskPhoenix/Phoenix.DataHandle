@@ -8,8 +8,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
     public class PersonnelAcf : UserAcf, IModelAcf
     {
         [JsonConstructor]
-        public PersonnelAcf(string fullName, string role, string phone, string? courseCodes)
-            : base(fullName, phone, courseCodes)
+        public PersonnelAcf(string full_name, string role, string phone, string? course_codes)
+            : base(full_name, phone, course_codes)
         {
             if (string.IsNullOrWhiteSpace(role))
                 throw new ArgumentNullException(nameof(role));
