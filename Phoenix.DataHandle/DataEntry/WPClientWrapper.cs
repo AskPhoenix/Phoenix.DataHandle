@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Phoenix.DataHandle.DataEntry.Models;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
 using Phoenix.DataHandle.DataEntry.Models.Uniques;
 using System;
@@ -17,11 +18,12 @@ namespace Phoenix.DataHandle.DataEntry
         private const string WordpressEndpoint = "https://www.askphoenix.gr/";
         private const string PostsPath = "wp/v2/posts";
         private const string AcfPostsPath = "acf/v3/posts";
-        private const int PostsPerPage = 10;
 
         private static WordPressClient Client { get; }
         public static bool AlwaysUseAuthentication { get; set; }
         public static bool IsAuthenticated => !string.IsNullOrEmpty(Client.GetToken());
+        public static bool Embed { get; set; }
+        public static int PostsPerPage { get; set; } = 10;
 
         static WPClientWrapper()
         {
@@ -30,6 +32,9 @@ namespace Phoenix.DataHandle.DataEntry
 
         public static async Task<bool> AuthenticateAsync(string username, string password)
         {
+            if (IsAuthenticated)
+                return true;
+
             await Client.RequestJWToken(username, password);
             if (!await Client.IsValidJWToken())
                 throw new WPException($"Cannot authenticate user '{username}' in WordPress because of invalid JWToken.");
@@ -37,31 +42,38 @@ namespace Phoenix.DataHandle.DataEntry
             return IsAuthenticated;
         }
 
-        public static async Task<IEnumerable<Category>> GetCategoriesAsync(bool embed = false)
+        public static async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
-            return await Client.Categories.GetAll(embed, AlwaysUseAuthentication);
+            return await Client.Categories.GetAll(Embed, AlwaysUseAuthentication);
         }
 
-        public static async Task<int> GetCategoryId(PostCategory category)
+        public static async Task<int> GetCategoryIdAsync(PostCategory category)
         {
-            CategoriesQueryBuilder categoriesQueryBuilder = new() { Search = category.GetName() };
+            CategoriesQueryBuilder categoriesQueryBuilder = new() 
+            {
+                Search = category.GetName(),
+                Embed = Embed 
+            };
+            
             var matches = await Client.Categories.Query(categoriesQueryBuilder, AlwaysUseAuthentication);
             
             return matches.Single(c => c.Name == category.GetName()).Id;
         }
 
-        public static async Task<IEnumerable<Post>> GetPostsPageAsync(int categoryId, int page, bool embed = false, int perPage = PostsPerPage)
+        public static async Task<IEnumerable<Post>> GetPostsPageAsync(PostsQueryBuilder queryBuilder)
         {
-            var queryBuilder = new PostsQueryBuilder() { Page = page, PerPage = perPage, Categories = new int[1] { categoryId } };
+            queryBuilder.PerPage = PostsPerPage;
+            queryBuilder.Embed = Embed;
+
             string route = PostsPath + queryBuilder.BuildQueryURL();
 
             IEnumerable<Post> posts;
             try
             {
-                posts = await GetCustomAsync<IEnumerable<Post>>(route, embed);
+                posts = await GetCustomAsync<IEnumerable<Post>>(route);
                 posts = posts.Where(p => p.Status == Status.Publish);
             }
-            catch (Exception) 
+            catch (Exception)
             {
                 posts = Enumerable.Empty<Post>();
             }
@@ -69,23 +81,112 @@ namespace Phoenix.DataHandle.DataEntry
             return posts;
         }
 
-        public static async Task<IEnumerable<Post>> GetPostsAsync(int categoryId, bool embed = false)
+        public static async Task<IEnumerable<Post>> GetPostsPageAsync(int page, int categoryId, string search)
         {
-            int curPage = 1;
+            var queryBuilder = new PostsQueryBuilder()
+            {
+                Page = page,
+                Categories = new int[1] { categoryId },
+                Search = search
+            };
+
+            return await GetPostsPageAsync(queryBuilder);
+        }
+
+        public static async Task<IEnumerable<Post>> GetPostsPageAsync(int page, PostCategory category, string search)
+        {
+            int categoryId = await GetCategoryIdAsync(category);
+            return await GetPostsPageAsync(page, categoryId, search);
+        }
+
+        public static async Task<IEnumerable<Post>> GetPostsPageAsync(int page, PostCategory category, BusinessUnique uq)
+        {
+            int categoryId = await GetCategoryIdAsync(category);
+            return await GetPostsPageAsync(page, categoryId, uq.ToString());
+        }
+
+        public static async Task<IEnumerable<Post>> GetPostsPageAsync(int page, int categoryId)
+        {
+            return await GetPostsPageAsync(page, categoryId, null!);
+        }
+
+        public static async Task<IEnumerable<Post>> GetPostsPageAsync(int page, PostCategory category)
+        {
+            int categoryId = await GetCategoryIdAsync(category);
+            return await GetPostsPageAsync(page, categoryId);
+        }
+
+        public static async Task<IEnumerable<Post>> GetPostsPageAsync(int page, string search)
+        {
+            var queryBuilder = new PostsQueryBuilder()
+            {
+                Page = page,
+                Search = search
+            };
+
+            return await GetPostsPageAsync(queryBuilder);
+        }
+
+        public static async Task<IEnumerable<Post>> GetPostsPageAsync(int page, BusinessUnique uq)
+        {
+            return await GetPostsAsync(page, uq.ToString());
+        }
+
+        public static async Task<IEnumerable<Post>> GetPostsAsync(PostsQueryBuilder queryBuilder)
+        {
             List<Post> posts = new();
             IEnumerable<Post> nextPosts;
 
+            queryBuilder.Page = 1;
+            queryBuilder.PerPage = PostsPerPage;
+            queryBuilder.Embed = Embed;
+
             do
             {
-                nextPosts = await GetPostsPageAsync(categoryId, curPage++, embed);
+                nextPosts = await GetPostsPageAsync(queryBuilder);
 
                 if (!nextPosts.Any())
                     break;
 
                 posts.AddRange(nextPosts);
+
+                queryBuilder.Page++;
             } while (nextPosts.Count() % PostsPerPage == 0);
 
             return posts;
+        }
+
+        public static async Task<IEnumerable<Post>> GetPostsAsync(int categoryId, string search)
+        {
+            var queryBuilder = new PostsQueryBuilder()
+            {
+                Categories = new int[1] { categoryId },
+                Search = search
+            };
+
+            return await GetPostsAsync(queryBuilder);
+        }
+
+        public static async Task<IEnumerable<Post>> GetPostsAsync(PostCategory category, string search)
+        {
+            int categoryId = await GetCategoryIdAsync(category);
+            return await GetPostsAsync(categoryId, search);
+        }
+
+        public static async Task<IEnumerable<Post>> GetPostsAsync(int categoryId)
+        {
+            return await GetPostsAsync(categoryId, null!);
+        }
+
+        public static async Task<IEnumerable<Post>> GetPostsAsync(PostCategory category)
+        {
+            int categoryId = await GetCategoryIdAsync(category);
+            return await GetPostsAsync(categoryId);
+        }
+
+        public static async Task<IEnumerable<Post>> GetPostsAsync(string search)
+        {
+            return await GetPostsAsync(new PostsQueryBuilder() { Search = search });
         }
 
         public static IEnumerable<Post> FilterPostsForSchool(this IEnumerable<Post> posts, SchoolUnique schoolUnique)
@@ -93,19 +194,75 @@ namespace Phoenix.DataHandle.DataEntry
             return posts.Where(p => schoolUnique.Equals(new SchoolUnique(p.GetTitle())));
         }
 
-        public static async Task<TModelACF> GetAcfAsync<TModelACF>(int postId, bool embed = false) 
+        public static async Task<T> GetCustomAsync<T>(string route)
+            where T : class
+        {
+            return await Client.CustomRequest.Get<T>(route, Embed, AlwaysUseAuthentication);
+        }
+
+        public static async Task<TModelACF> GetAcfAsync<TModelACF>(int postId)
             where TModelACF : IModelAcf
         {
             string route = AcfPostsPath + $"/{postId}";
-            var response = await GetCustomAsync<JObject>(route, embed);
+            var response = await GetCustomAsync<JObject>(route);
 
             return response.GetValue("acf").ToObject<TModelACF>();
         }
 
-        public static async Task<T> GetCustomAsync<T>(string route, bool embed = false)
-            where T : class
+        public static async Task<TModelACF> GetAcfAsync<TModelACF>(Post post)
+            where TModelACF : IModelAcf
         {
-            return await Client.CustomRequest.Get<T>(route, embed, AlwaysUseAuthentication);
+            return await GetAcfAsync<TModelACF>(post.Id);
+        }
+
+        public static async Task<SchoolAcf> GetSchoolAcfAsync(int postId)
+        {
+            return await GetAcfAsync<SchoolAcf>(postId);
+        }
+
+        public static async Task<SchoolAcf> GetSchoolAcfAsync(Post post)
+        {
+            return await GetAcfAsync<SchoolAcf>(post);
+        }
+
+        public static async Task<CourseAcf> GetCourseAcfAsync(int postId)
+        {
+            return await GetAcfAsync<CourseAcf>(postId);
+        }
+
+        public static async Task<CourseAcf> GetCourseAcfAsync(Post post)
+        {
+            return await GetAcfAsync<CourseAcf>(post);
+        }
+
+        public static async Task<ScheduleAcf> GetScheduleAcfAsync(int postId)
+        {
+            return await GetAcfAsync<ScheduleAcf>(postId);
+        }
+
+        public static async Task<ScheduleAcf> GetScheduleAcfAsync(Post post)
+        {
+            return await GetAcfAsync<ScheduleAcf>(post);
+        }
+
+        public static async Task<PersonnelAcf> GetPersonnelAcfAsync(int postId)
+        {
+            return await GetAcfAsync<PersonnelAcf>(postId);
+        }
+
+        public static async Task<PersonnelAcf> GetPersonnelAcfAsync(Post post)
+        {
+            return await GetAcfAsync<PersonnelAcf>(post);
+        }
+
+        public static async Task<ClientAcf> GetClientAcfAsync(int postId)
+        {
+            return await GetAcfAsync<ClientAcf>(postId);
+        }
+
+        public static async Task<ClientAcf> GetClientAcfAsync(Post post)
+        {
+            return await GetAcfAsync<ClientAcf>(post);
         }
     }
 }
