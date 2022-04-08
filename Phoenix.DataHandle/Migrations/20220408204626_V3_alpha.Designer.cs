@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Phoenix.DataHandle.Main.Models;
 
@@ -11,9 +12,10 @@ using Phoenix.DataHandle.Main.Models;
 namespace Phoenix.DataHandle.Migrations
 {
     [DbContext(typeof(PhoenixContext))]
-    partial class PhoenixContextModelSnapshot : ModelSnapshot
+    [Migration("20220408204626_V3_alpha")]
+    partial class V3_alpha
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -160,7 +162,7 @@ namespace Phoenix.DataHandle.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("AspNetRoles");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.AspNetUser", b =>
@@ -259,7 +261,7 @@ namespace Phoenix.DataHandle.Migrations
                     b.HasIndex(new[] { "UserName" }, "UQ_AspNetUsers_UserName")
                         .IsUnique();
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("AspNetUsers");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.AspNetUserLogin", b =>
@@ -291,7 +293,7 @@ namespace Phoenix.DataHandle.Migrations
                     b.HasIndex(new[] { "ChannelId", "ProviderKey" }, "IX_AspNetUserLogins")
                         .IsUnique();
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("AspNetUserLogins");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.Book", b =>
@@ -334,7 +336,7 @@ namespace Phoenix.DataHandle.Migrations
                     b.HasIndex(new[] { "NormalizedName" }, "IX_Book")
                         .IsUnique();
 
-                    b.ToTable("Books", (string)null);
+                    b.ToTable("Books");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.BotFeedback", b =>
@@ -429,7 +431,7 @@ namespace Phoenix.DataHandle.Migrations
 
                     b.HasIndex(new[] { "SchoolId", "ScheduledDate" }, "IX_Broadcast_SchoolId_Date");
 
-                    b.ToTable("Broadcasts", (string)null);
+                    b.ToTable("Broadcasts");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.Channel", b =>
@@ -461,7 +463,7 @@ namespace Phoenix.DataHandle.Migrations
                     b.HasIndex(new[] { "Provider" }, "UQ_Channel_Provider")
                         .IsUnique();
 
-                    b.ToTable("Channels", (string)null);
+                    b.ToTable("Channels");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.Classroom", b =>
@@ -507,7 +509,7 @@ namespace Phoenix.DataHandle.Migrations
                     b.HasIndex(new[] { "SchoolId", "NormalizedName" }, "IX_Classroom")
                         .IsUnique();
 
-                    b.ToTable("Classrooms", (string)null);
+                    b.ToTable("Classrooms");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.Course", b =>
@@ -573,7 +575,7 @@ namespace Phoenix.DataHandle.Migrations
                     b.HasIndex(new[] { "SchoolId", "Code" }, "IX_Course")
                         .IsUnique();
 
-                    b.ToTable("Courses", (string)null);
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.Exam", b =>
@@ -606,7 +608,7 @@ namespace Phoenix.DataHandle.Migrations
 
                     b.HasIndex(new[] { "LectureId" }, "IX_Exam");
 
-                    b.ToTable("Exams", (string)null);
+                    b.ToTable("Exams");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.Exercise", b =>
@@ -651,7 +653,7 @@ namespace Phoenix.DataHandle.Migrations
 
                     b.HasIndex(new[] { "LectureId" }, "IX_Exercise_LectureId");
 
-                    b.ToTable("Exercises", (string)null);
+                    b.ToTable("Exercises");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.Grade", b =>
@@ -699,7 +701,7 @@ namespace Phoenix.DataHandle.Migrations
 
                     b.HasIndex(new[] { "StudentId" }, "IX_Grades_Student");
 
-                    b.ToTable("Grades", (string)null);
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.Lecture", b =>
@@ -760,7 +762,7 @@ namespace Phoenix.DataHandle.Migrations
 
                     b.HasIndex(new[] { "ScheduleId" }, "IX_Lecture_ScheduleId");
 
-                    b.ToTable("Lectures", (string)null);
+                    b.ToTable("Lectures");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.Material", b =>
@@ -802,7 +804,7 @@ namespace Phoenix.DataHandle.Migrations
 
                     b.HasIndex(new[] { "ExamId" }, "IX_Material_ExamId");
 
-                    b.ToTable("Materials", (string)null);
+                    b.ToTable("Materials");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.Schedule", b =>
@@ -852,7 +854,7 @@ namespace Phoenix.DataHandle.Migrations
                     b.HasIndex(new[] { "CourseId", "DayOfWeek", "StartTime" }, "IX_Schedule")
                         .IsUnique();
 
-                    b.ToTable("Schedules", (string)null);
+                    b.ToTable("Schedules");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.School", b =>
@@ -908,7 +910,7 @@ namespace Phoenix.DataHandle.Migrations
                     b.HasIndex(new[] { "Code" }, "IX_School")
                         .IsUnique();
 
-                    b.ToTable("Schools", (string)null);
+                    b.ToTable("Schools");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.SchoolInfo", b =>
@@ -988,7 +990,7 @@ namespace Phoenix.DataHandle.Migrations
                     b.HasIndex(new[] { "ChannelId", "ProviderKey" }, "IX_SchoolChannel")
                         .IsUnique();
 
-                    b.ToTable("SchoolLogins", (string)null);
+                    b.ToTable("SchoolLogins");
                 });
 
             modelBuilder.Entity("Phoenix.DataHandle.Main.Models.User", b =>
@@ -1021,7 +1023,7 @@ namespace Phoenix.DataHandle.Migrations
                     b.HasKey("AspNetUserId")
                         .HasName("PK_User");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("SchoolUser", b =>
