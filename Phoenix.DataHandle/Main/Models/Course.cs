@@ -23,11 +23,11 @@ namespace Phoenix.DataHandle.Main.Models
         public string Level { get; set; } = null!;
         public string Group { get; set; } = null!;
         public string? Comments { get; set; }
-        public DateTimeOffset FirstDate { get; set; }
-        public DateTimeOffset LastDate { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset? UpdatedAt { get; set; }
-        public DateTimeOffset? ObviatedAt { get; set; }
+        public DateTime FirstDate { get; set; }
+        public DateTime LastDate { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? ObviatedAt { get; set; }
 
         public virtual School School { get; set; } = null!;
         public virtual ICollection<Grade> Grades { get; set; }

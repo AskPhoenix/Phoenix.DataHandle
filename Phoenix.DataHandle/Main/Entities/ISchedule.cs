@@ -8,8 +8,8 @@ namespace Phoenix.DataHandle.Main.Entities
         ICourse Course { get; }
         IClassroom? Classroom { get; }
         DayOfWeek DayOfWeek { get; }
-        DateTimeOffset StartTime { get; }
-        DateTimeOffset EndTime { get; }
+        DateTime StartTime { get; }
+        DateTime EndTime { get; }
         string? Comments { get; }
 
         IEnumerable<ILecture> Lectures { get; }

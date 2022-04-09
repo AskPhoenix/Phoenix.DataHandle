@@ -15,8 +15,8 @@ namespace Phoenix.DataHandle.Main.Models
         public int LectureId { get; set; }
         public string? Name { get; set; }
         public string? Comments { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public virtual Lecture Lecture { get; set; } = null!;
         public virtual ICollection<Grade> Grades { get; set; }

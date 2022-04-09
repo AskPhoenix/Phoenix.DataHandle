@@ -23,8 +23,8 @@ namespace Phoenix.DataHandle.Main.Models
         public bool AttendancesNoted { get; set; }
         public string? Comments { get; set; }
         public LectureCreatedBy CreatedBy { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public virtual Classroom? Classroom { get; set; }
         public virtual Course Course { get; set; } = null!;

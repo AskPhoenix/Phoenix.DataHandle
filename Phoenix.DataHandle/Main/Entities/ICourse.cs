@@ -12,8 +12,8 @@ namespace Phoenix.DataHandle.Main.Entities
         string Level { get; }
         string Group { get; }
         string? Comments { get; }
-        DateTimeOffset FirstDate { get; }
-        DateTimeOffset LastDate { get; }
+        DateTime FirstDate { get; }
+        DateTime LastDate { get; }
 
         IEnumerable<IGrade> Grades { get; }
         IEnumerable<ILecture> Lectures { get; }

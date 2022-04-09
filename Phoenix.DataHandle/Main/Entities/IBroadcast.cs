@@ -8,12 +8,12 @@ namespace Phoenix.DataHandle.Main.Entities
         ISchool School { get; }
         IAspNetUser Author { get; }
         string Message { get; }
-        DateTimeOffset ScheduledDate { get; }
+        DateTimeOffset ScheduledFor { get; }
         Daypart Daypart { get; }
         BroadcastAudience Audience { get; }
         BroadcastVisibility Visibility { get; }
         BroadcastStatus Status { get; }
-        DateTimeOffset? SentAt { get; }
+        DateTime? SentAt { get; }
 
         IEnumerable<ICourse> Courses { get; }
     }

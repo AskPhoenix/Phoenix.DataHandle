@@ -12,6 +12,7 @@ namespace Phoenix.DataHandle.Main.Entities
         DateTimeOffset EndDateTime { get; }
         LectureStatus Status { get; }
         string? OnlineMeetingLink { get; }
+        bool AttendancesNoted { get; }
         string? Comments { get; }
         LectureCreatedBy CreatedBy { get; }
 

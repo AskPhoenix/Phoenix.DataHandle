@@ -23,7 +23,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         [JsonConstructor]
         public CourseApi(int id, short code, SchoolApi school, string name, string? subcourse, string level, string group, string? comments,
-            DateTimeOffset firstDate, DateTimeOffset lastDate, List<GradeApi>? grades, List<LectureApi>? lectures,
+            DateTime firstDate, DateTime lastDate, List<GradeApi>? grades, List<LectureApi>? lectures,
             List<ScheduleApi>? schedules, List<AspNetUserApi>? users, List<BookApi>? books)
             : this()
         {
@@ -102,10 +102,10 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public string? Comments { get; }
 
         [JsonProperty(PropertyName = "first_date")]
-        public DateTimeOffset FirstDate { get; }
+        public DateTime FirstDate { get; }
 
         [JsonProperty(PropertyName = "last_date")]
-        public DateTimeOffset LastDate { get; }
+        public DateTime LastDate { get; }
 
         [JsonProperty(PropertyName = "grades")]
         public List<GradeApi> Grades { get; }

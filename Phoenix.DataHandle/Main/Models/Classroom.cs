@@ -16,9 +16,9 @@ namespace Phoenix.DataHandle.Main.Models
         public string Name { get; set; } = null!;
         public string NormalizedName { get; set; } = null!;
         public string? Comments { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset? UpdatedAt { get; set; }
-        public DateTimeOffset? ObviatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? ObviatedAt { get; set; }
 
         public virtual School School { get; set; } = null!;
         public virtual ICollection<Lecture> Lectures { get; set; }

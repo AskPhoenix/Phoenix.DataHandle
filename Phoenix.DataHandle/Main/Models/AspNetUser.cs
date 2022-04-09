@@ -29,18 +29,18 @@ namespace Phoenix.DataHandle.Main.Models
         public string? SecurityStamp { get; set; }
         public string? ConcurrencyStamp { get; set; }
         public string PhoneNumber { get; set; } = null!;
-        public int PhoneNumberDependanceOrder { get; set; }
         public bool PhoneNumberConfirmed { get; set; }
         public string? PhoneNumberVerificationCode { get; set; }
-        public DateTimeOffset? PhoneNumberVerificationCodeCreatedAt { get; set; }
         public bool TwoFactorEnabled { get; set; }
-        public DateTimeOffset? LockoutEnd { get; set; }
+        public DateTime? LockoutEnd { get; set; }
         public bool LockoutEnabled { get; set; }
         public int AccessFailedCount { get; set; }
         public ApplicationType CreatedApplicationType { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset? UpdatedAt { get; set; }
-        public DateTimeOffset? ObviatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? ObviatedAt { get; set; }
+        public int PhoneNumberDependanceOrder { get; set; }
+        public DateTime? PhoneNumberVerificationCodeCreatedAt { get; set; }
 
         public virtual User User { get; set; } = null!;
         public virtual ICollection<AspNetUserLogin> AspNetUserLogins { get; set; }

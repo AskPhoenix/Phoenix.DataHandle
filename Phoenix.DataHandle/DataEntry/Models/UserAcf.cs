@@ -30,7 +30,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
             this.AspNetUser = new AspNetUser
             {
-                // TODO: Add DependancePhoneNumber property to distinguish
+                // TODO: Add DependancePhoneNumber property in DB to distinguish
                 PhoneNumber = phone
             };
 
@@ -95,8 +95,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
             return "S" + schoolCode + "_P" + this.AspNetUser.PhoneNumber + "_N" + this.FirstName + "_O" + this.DependanceOrder;
         }
 
-
-        // TODO: Check if JsonProperty names are inherited to children classes
 
         [JsonIgnore]
         public string FirstName { get; } = null!;

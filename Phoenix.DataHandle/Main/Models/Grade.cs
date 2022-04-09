@@ -13,8 +13,8 @@ namespace Phoenix.DataHandle.Main.Models
         public decimal Score { get; set; }
         public string? Topic { get; set; }
         public string? Justification { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public virtual Course? Course { get; set; }
         public virtual Exam? Exam { get; set; }

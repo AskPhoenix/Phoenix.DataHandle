@@ -68,7 +68,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
             s.DayOfWeek == this.DayOfWeek &&
             s.StartTime == this.StartTime;
 
-        private DateTimeOffset GetScheduleTime(string timeString) =>
+        private DateTime GetScheduleTime(string timeString) =>
             DateTime.ParseExact(timeString, "H:m", CultureInfo.InvariantCulture);
 
 
@@ -97,10 +97,10 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public DayOfWeek DayOfWeek { get; }
 
         [JsonIgnore]
-        public DateTimeOffset StartTime { get; private set; }
+        public DateTime StartTime { get; private set; }
 
         [JsonIgnore]
-        public DateTimeOffset EndTime { get; private set; }
+        public DateTime EndTime { get; private set; }
 
 
         [JsonIgnore]

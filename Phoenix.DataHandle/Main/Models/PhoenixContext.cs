@@ -41,7 +41,7 @@ namespace Phoenix.DataHandle.Main.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=localhost;Database=PhoenicopterusDB;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=.;Database=PhoenicopterusDB;Trusted_Connection=True;");
             }
         }
 
@@ -49,13 +49,14 @@ namespace Phoenix.DataHandle.Main.Models
         {
             modelBuilder.Entity<AspNetRole>(entity =>
             {
-                entity.Property(e => e.CreatedAt).HasPrecision(0);
+                entity.HasIndex(e => e.Type, "UQ_AspNetRoles_Type")
+                    .IsUnique();
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(256);
 
-                entity.Property(e => e.NormalizedName).HasMaxLength(256);
-
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<AspNetUser>(entity =>
@@ -63,48 +64,54 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasIndex(e => new { e.PhoneNumber, e.PhoneNumberDependanceOrder }, "IX_AspNetUsers_Phone")
                     .IsUnique();
 
-                entity.HasIndex(e => e.UserName, "UQ_AspNetUsers_UserName")
+                entity.HasIndex(e => e.NormalizedUserName, "UQ_AspNetUsers_UserName")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedApplicationType).HasDefaultValueSql("((-1))");
 
                 entity.Property(e => e.CreatedAt)
-                    .HasPrecision(0)
+                    .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Email).HasMaxLength(256);
 
+                entity.Property(e => e.LockoutEnd).HasColumnType("datetime");
+
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
 
-                entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
+                entity.Property(e => e.NormalizedUserName)
+                    .HasMaxLength(256)
+                    .HasDefaultValueSql("(N'')");
 
-                entity.Property(e => e.ObviatedAt).HasPrecision(0);
+                entity.Property(e => e.ObviatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.PhoneNumber).HasMaxLength(50);
+                entity.Property(e => e.PhoneNumber).HasMaxLength(64);
 
-                entity.Property(e => e.PhoneNumberVerificationCode).HasMaxLength(50);
+                entity.Property(e => e.PhoneNumberVerificationCode).HasMaxLength(64);
 
-                entity.Property(e => e.PhoneNumberVerificationCodeCreatedAt).HasPrecision(0);
+                entity.Property(e => e.PhoneNumberVerificationCodeCreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.UserName).HasMaxLength(256);
+                entity.Property(e => e.UserName)
+                    .HasMaxLength(256)
+                    .HasDefaultValueSql("(N'')");
 
                 entity.HasMany(d => d.Children)
                     .WithMany(p => p.Parents)
                     .UsingEntity<Dictionary<string, object>>(
                         "Parenthood",
-                        l => l.HasOne<AspNetUser>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthood_AspNetUsers_Child"),
-                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("ParentId").HasConstraintName("FK_Parenthood_AspNetUsers_Parent"),
+                        l => l.HasOne<AspNetUser>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_AspNetUsers_Child"),
+                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("ParentId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_AspNetUsers_Parent"),
                         j =>
                         {
-                            j.HasKey("ParentId", "ChildId").HasName("PK_Parenthood");
+                            j.HasKey("ParentId", "ChildId");
 
                             j.ToTable("Parenthoods");
 
-                            j.HasIndex(new[] { "ChildId" }, "IX_Parenthood_ChildId");
+                            j.HasIndex(new[] { "ChildId" }, "IX_Parenthoods_Child");
 
-                            j.HasIndex(new[] { "ParentId" }, "IX_Parenthood_ParentId");
+                            j.HasIndex(new[] { "ParentId" }, "IX_Parenthoods_Parent");
                         });
 
                 entity.HasMany(d => d.Courses)
@@ -119,43 +126,41 @@ namespace Phoenix.DataHandle.Main.Models
 
                             j.ToTable("CourseUsers");
 
-                            j.HasIndex(new[] { "CourseId" }, "IX_CourseUsers_CourseId");
+                            j.HasIndex(new[] { "CourseId" }, "IX_CourseUsers_Course");
 
-                            j.HasIndex(new[] { "UserId" }, "IX_CourseUsers_UserId");
+                            j.HasIndex(new[] { "UserId" }, "IX_CourseUsers_User");
                         });
 
                 entity.HasMany(d => d.Lectures)
                     .WithMany(p => p.Attendees)
                     .UsingEntity<Dictionary<string, object>>(
                         "Attendance",
-                        l => l.HasOne<Lecture>().WithMany().HasForeignKey("LectureId").HasConstraintName("FK_Attendance_Lecture"),
-                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("AttendeeId").HasConstraintName("FK_Attendance_AspNetUsers"),
+                        l => l.HasOne<Lecture>().WithMany().HasForeignKey("LectureId").HasConstraintName("FK_Attendances_Lectures"),
+                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("AttendeeId").HasConstraintName("FK_Attendances_AspNetUsers"),
                         j =>
                         {
-                            j.HasKey("AttendeeId", "LectureId").HasName("PK_Attendance");
+                            j.HasKey("AttendeeId", "LectureId");
 
                             j.ToTable("Attendances");
 
-                            j.HasIndex(new[] { "LectureId" }, "IX_Attendance_LectureId");
-
-                            j.HasIndex(new[] { "AttendeeId" }, "IX_Attendance_StudentId");
+                            j.HasIndex(new[] { "LectureId" }, "IX_Attendances_Lecture");
                         });
 
                 entity.HasMany(d => d.Parents)
                     .WithMany(p => p.Children)
                     .UsingEntity<Dictionary<string, object>>(
                         "Parenthood",
-                        l => l.HasOne<AspNetUser>().WithMany().HasForeignKey("ParentId").HasConstraintName("FK_Parenthood_AspNetUsers_Parent"),
-                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthood_AspNetUsers_Child"),
+                        l => l.HasOne<AspNetUser>().WithMany().HasForeignKey("ParentId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_AspNetUsers_Parent"),
+                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_AspNetUsers_Child"),
                         j =>
                         {
-                            j.HasKey("ParentId", "ChildId").HasName("PK_Parenthood");
+                            j.HasKey("ParentId", "ChildId");
 
                             j.ToTable("Parenthoods");
 
-                            j.HasIndex(new[] { "ChildId" }, "IX_Parenthood_ChildId");
+                            j.HasIndex(new[] { "ChildId" }, "IX_Parenthoods_Child");
 
-                            j.HasIndex(new[] { "ParentId" }, "IX_Parenthood_ParentId");
+                            j.HasIndex(new[] { "ParentId" }, "IX_Parenthoods_Parent");
                         });
 
                 entity.HasMany(d => d.Roles)
@@ -170,22 +175,22 @@ namespace Phoenix.DataHandle.Main.Models
 
                             j.ToTable("AspNetUserRoles");
 
-                            j.HasIndex(new[] { "UserId" }, "IX_AspNetUserRoles");
+                            j.HasIndex(new[] { "UserId" }, "IX_AspNetUserRoles_AspNetUsers");
                         });
 
                 entity.HasMany(d => d.Schools)
                     .WithMany(p => p.Users)
                     .UsingEntity<Dictionary<string, object>>(
                         "SchoolUser",
-                        l => l.HasOne<School>().WithMany().HasForeignKey("SchoolId").HasConstraintName("FK_UserSchool_School"),
-                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_UserSchool_AspNetUsers"),
+                        l => l.HasOne<School>().WithMany().HasForeignKey("SchoolId").HasConstraintName("FK_SchoolUsers_Schools"),
+                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_SchoolUsers_AspNetUsers"),
                         j =>
                         {
-                            j.HasKey("UserId", "SchoolId").HasName("PK_UserSchool");
+                            j.HasKey("UserId", "SchoolId");
 
                             j.ToTable("SchoolUsers");
 
-                            j.HasIndex(new[] { "SchoolId" }, "IX_UserSchool_SchoolId");
+                            j.HasIndex(new[] { "SchoolId" }, "IX_SchoolUsers_School");
                         });
             });
 
@@ -193,20 +198,20 @@ namespace Phoenix.DataHandle.Main.Models
             {
                 entity.HasKey(e => new { e.UserId, e.ChannelId });
 
-                entity.HasIndex(e => new { e.ChannelId, e.ProviderKey }, "IX_AspNetUserLogins")
+                entity.HasIndex(e => new { e.ChannelId, e.ProviderKey }, "IX_AspNetUserLogins_Channel_ProviderKey")
                     .IsUnique();
 
-                entity.Property(e => e.CreatedAt).HasPrecision(0);
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.ProviderKey).HasMaxLength(256);
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Channel)
                     .WithMany(p => p.AspNetUserLogins)
                     .HasForeignKey(d => d.ChannelId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_AspNetUserLogins_Channel");
+                    .HasConstraintName("FK_AspNetUserLogins_Channels");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.AspNetUserLogins)
@@ -216,29 +221,31 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Book>(entity =>
             {
-                entity.HasIndex(e => e.NormalizedName, "IX_Book")
+                entity.HasIndex(e => e.NormalizedName, "IX_Books_NormalizedName")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt)
-                    .HasPrecision(0)
+                    .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.Name).HasMaxLength(255);
+                entity.Property(e => e.Name).HasMaxLength(256);
 
-                entity.Property(e => e.NormalizedName).HasMaxLength(255);
+                entity.Property(e => e.NormalizedName).HasMaxLength(256);
 
-                entity.Property(e => e.Publisher).HasMaxLength(255);
+                entity.Property(e => e.Publisher).HasMaxLength(256);
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<BotFeedback>(entity =>
             {
                 entity.ToTable("BotFeedback");
 
-                entity.Property(e => e.CreatedAt).HasPrecision(0);
+                entity.HasIndex(e => e.AuthorId, "IX_BotFeedback_Author");
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Author)
                     .WithMany(p => p.BotFeedbacks)
@@ -249,174 +256,174 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Broadcast>(entity =>
             {
-                entity.HasIndex(e => new { e.AuthorId, e.ScheduledDate }, "IX_Broadcast_AuthorId_Date");
+                entity.HasIndex(e => new { e.AuthorId, e.ScheduledFor }, "IX_Broadcasts_Author_ScheduledFor");
 
-                entity.HasIndex(e => new { e.ScheduledDate, e.Daypart }, "IX_Broadcast_Date_Daypart");
+                entity.HasIndex(e => new { e.ScheduledFor, e.Daypart }, "IX_Broadcasts_ScheduledFor_Daypart");
 
-                entity.HasIndex(e => new { e.SchoolId, e.ScheduledDate }, "IX_Broadcast_SchoolId_Date");
+                entity.HasIndex(e => new { e.SchoolId, e.ScheduledFor }, "IX_Broadcasts_School_ScheduledFor");
 
-                entity.Property(e => e.CreatedAt).HasPrecision(0);
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.ScheduledDate).HasPrecision(0);
+                entity.Property(e => e.ScheduledFor).HasPrecision(0);
 
-                entity.Property(e => e.SentAt).HasPrecision(0);
+                entity.Property(e => e.SentAt).HasColumnType("datetime");
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Author)
                     .WithMany(p => p.Broadcasts)
                     .HasForeignKey(d => d.AuthorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Broadcast_AspNetUsers");
+                    .HasConstraintName("FK_Broadcasts_AspNetUsers");
 
                 entity.HasOne(d => d.School)
                     .WithMany(p => p.Broadcasts)
                     .HasForeignKey(d => d.SchoolId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Broadcast_School");
+                    .HasConstraintName("FK_Broadcasts_Schools");
 
                 entity.HasMany(d => d.Courses)
                     .WithMany(p => p.Broadcasts)
                     .UsingEntity<Dictionary<string, object>>(
                         "BroadcastCourse",
-                        l => l.HasOne<Course>().WithMany().HasForeignKey("CourseId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_BroadcastCourse_Course"),
-                        r => r.HasOne<Broadcast>().WithMany().HasForeignKey("BroadcastId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_BroadcastCourse_Broadcast"),
+                        l => l.HasOne<Course>().WithMany().HasForeignKey("CourseId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_BroadcastCourses_Courses"),
+                        r => r.HasOne<Broadcast>().WithMany().HasForeignKey("BroadcastId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_BroadcastCourses_Broadcasts"),
                         j =>
                         {
-                            j.HasKey("BroadcastId", "CourseId").HasName("PK_BroadcastCourse");
+                            j.HasKey("BroadcastId", "CourseId");
 
                             j.ToTable("BroadcastCourses");
 
-                            j.HasIndex(new[] { "BroadcastId" }, "IX_BroadcastCourse");
+                            j.HasIndex(new[] { "BroadcastId" }, "IX_BroadcastCourses_Broadcast");
                         });
             });
 
             modelBuilder.Entity<Channel>(entity =>
             {
-                entity.HasIndex(e => e.Code, "UQ_Channel_Code")
+                entity.HasIndex(e => e.Code, "UQ_Channels_Code")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Provider, "UQ_Channel_Provider")
+                entity.HasIndex(e => e.Provider, "UQ_Channels_Provider")
                     .IsUnique();
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.CreatedAt).HasPrecision(0);
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.Provider).HasMaxLength(50);
+                entity.Property(e => e.Provider).HasMaxLength(256);
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Classroom>(entity =>
             {
-                entity.HasIndex(e => new { e.SchoolId, e.NormalizedName }, "IX_Classroom")
+                entity.HasIndex(e => new { e.SchoolId, e.NormalizedName }, "IX_Classrooms_School_NormalizedName")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt)
-                    .HasPrecision(0)
+                    .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.Name).HasMaxLength(255);
+                entity.Property(e => e.Name).HasMaxLength(256);
 
-                entity.Property(e => e.NormalizedName).HasMaxLength(255);
+                entity.Property(e => e.NormalizedName).HasMaxLength(256);
 
-                entity.Property(e => e.ObviatedAt).HasPrecision(0);
+                entity.Property(e => e.ObviatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.School)
                     .WithMany(p => p.Classrooms)
                     .HasForeignKey(d => d.SchoolId)
-                    .HasConstraintName("FK_Classroom_School");
+                    .HasConstraintName("FK_Classrooms_Schools");
             });
 
             modelBuilder.Entity<Course>(entity =>
             {
-                entity.HasIndex(e => new { e.SchoolId, e.Code }, "IX_Course")
+                entity.HasIndex(e => new { e.SchoolId, e.Code }, "IX_Courses_School_Code")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt)
-                    .HasPrecision(0)
+                    .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.FirstDate).HasPrecision(0);
+                entity.Property(e => e.FirstDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Group).HasMaxLength(50);
+                entity.Property(e => e.Group).HasMaxLength(64);
 
-                entity.Property(e => e.LastDate).HasPrecision(0);
+                entity.Property(e => e.LastDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Level).HasMaxLength(50);
+                entity.Property(e => e.Level).HasMaxLength(64);
 
-                entity.Property(e => e.Name).HasMaxLength(150);
+                entity.Property(e => e.Name).HasMaxLength(128);
 
-                entity.Property(e => e.ObviatedAt).HasPrecision(0);
+                entity.Property(e => e.ObviatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.SubCourse).HasMaxLength(150);
+                entity.Property(e => e.SubCourse).HasMaxLength(128);
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.School)
                     .WithMany(p => p.Courses)
                     .HasForeignKey(d => d.SchoolId)
-                    .HasConstraintName("FK_Course_School");
+                    .HasConstraintName("FK_Courses_Schools");
 
                 entity.HasMany(d => d.Books)
                     .WithMany(p => p.Courses)
                     .UsingEntity<Dictionary<string, object>>(
                         "CourseBook",
-                        l => l.HasOne<Book>().WithMany().HasForeignKey("BookId").HasConstraintName("FK_CourseBook_Book"),
-                        r => r.HasOne<Course>().WithMany().HasForeignKey("CourseId").HasConstraintName("FK_CourseBook_Course"),
+                        l => l.HasOne<Book>().WithMany().HasForeignKey("BookId").HasConstraintName("FK_CourseBooks_Books"),
+                        r => r.HasOne<Course>().WithMany().HasForeignKey("CourseId").HasConstraintName("FK_CourseBooks_Courses"),
                         j =>
                         {
-                            j.HasKey("CourseId", "BookId").HasName("PK_CourseBook");
+                            j.HasKey("CourseId", "BookId");
 
                             j.ToTable("CourseBooks");
 
-                            j.HasIndex(new[] { "CourseId" }, "IX_CourseBook_CourseId");
+                            j.HasIndex(new[] { "CourseId" }, "IX_CourseBooks_Course");
                         });
             });
 
             modelBuilder.Entity<Exam>(entity =>
             {
-                entity.HasIndex(e => e.LectureId, "IX_Exam");
+                entity.HasIndex(e => e.LectureId, "IX_Exams_Lecture");
 
-                entity.Property(e => e.CreatedAt).HasPrecision(0);
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(256);
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Lecture)
                     .WithMany(p => p.Exams)
                     .HasForeignKey(d => d.LectureId)
-                    .HasConstraintName("FK_Exam_Lecture");
+                    .HasConstraintName("FK_Exams_Lectures");
             });
 
             modelBuilder.Entity<Exercise>(entity =>
             {
-                entity.HasIndex(e => e.LectureId, "IX_Exercise_LectureId");
+                entity.HasIndex(e => e.LectureId, "IX_Exercises_Lecture");
 
                 entity.Property(e => e.CreatedAt)
-                    .HasPrecision(0)
+                    .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Name).HasMaxLength(256);
 
-                entity.Property(e => e.Page).HasMaxLength(256);
+                entity.Property(e => e.Page).HasMaxLength(32);
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Book)
                     .WithMany(p => p.Exercises)
                     .HasForeignKey(d => d.BookId)
                     .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("FK_Exercise_Book");
+                    .HasConstraintName("FK_Exercises_Books");
 
                 entity.HasOne(d => d.Lecture)
                     .WithMany(p => p.Exercises)
                     .HasForeignKey(d => d.LectureId)
-                    .HasConstraintName("FK_Exercise_Lecture");
+                    .HasConstraintName("FK_Exercises_Lectures");
             });
 
             modelBuilder.Entity<Grade>(entity =>
@@ -431,13 +438,13 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.CreatedAt).HasPrecision(0);
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Score).HasColumnType("decimal(9, 3)");
 
                 entity.Property(e => e.Topic).HasMaxLength(256);
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Grades)
@@ -463,109 +470,109 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Lecture>(entity =>
             {
-                entity.HasIndex(e => e.CourseId, "IX_Lecture_CourseId");
-
-                entity.HasIndex(e => e.ScheduleId, "IX_Lecture_ScheduleId");
+                entity.HasIndex(e => new { e.CourseId, e.ScheduleId }, "IX_Lectures_Course_Schedule");
 
                 entity.Property(e => e.CreatedAt)
-                    .HasPrecision(0)
+                    .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.EndDateTime).HasPrecision(0);
 
                 entity.Property(e => e.StartDateTime).HasPrecision(0);
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Classroom)
                     .WithMany(p => p.Lectures)
                     .HasForeignKey(d => d.ClassroomId)
-                    .HasConstraintName("FK_Lecture_Classroom");
+                    .HasConstraintName("FK_Lectures_Classrooms");
 
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Lectures)
                     .HasForeignKey(d => d.CourseId)
-                    .HasConstraintName("FK_Lecture_Course");
+                    .HasConstraintName("FK_Lectures_Courses");
 
                 entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.Lectures)
                     .HasForeignKey(d => d.ScheduleId)
                     .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("FK_Lecture_Schedule");
+                    .HasConstraintName("FK_Lectures_Schedules");
             });
 
             modelBuilder.Entity<Material>(entity =>
             {
-                entity.HasIndex(e => e.ExamId, "IX_Material_ExamId");
+                entity.HasIndex(e => e.ExamId, "IX_Materials_Exam");
 
-                entity.Property(e => e.Chapter).HasMaxLength(50);
+                entity.Property(e => e.Chapter).HasMaxLength(64);
 
-                entity.Property(e => e.CreatedAt).HasPrecision(0);
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.Section).HasMaxLength(50);
+                entity.Property(e => e.Section).HasMaxLength(64);
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Book)
                     .WithMany(p => p.Materials)
                     .HasForeignKey(d => d.BookId)
                     .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("FK_Material_Book");
+                    .HasConstraintName("FK_Materials_Books");
 
                 entity.HasOne(d => d.Exam)
                     .WithMany(p => p.Materials)
                     .HasForeignKey(d => d.ExamId)
-                    .HasConstraintName("FK_Material_Exam");
+                    .HasConstraintName("FK_Materials_Exams");
             });
 
             modelBuilder.Entity<Schedule>(entity =>
             {
-                entity.HasIndex(e => new { e.CourseId, e.DayOfWeek, e.StartTime }, "IX_Schedule")
+                entity.HasIndex(e => e.CourseId, "IX_Schedules_Course");
+
+                entity.HasIndex(e => new { e.CourseId, e.DayOfWeek, e.StartTime }, "UQ_Schedules_Course_DayOfWeek_StartTime")
                     .IsUnique();
 
-                entity.Property(e => e.CreatedAt).HasPrecision(0);
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.EndTime).HasPrecision(0);
+                entity.Property(e => e.EndTime).HasColumnType("datetime");
 
-                entity.Property(e => e.ObviatedAt).HasPrecision(0);
+                entity.Property(e => e.ObviatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.StartTime).HasPrecision(0);
+                entity.Property(e => e.StartTime).HasColumnType("datetime");
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Classroom)
                     .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.ClassroomId)
                     .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("FK_Schedule_Classroom");
+                    .HasConstraintName("FK_Schedules_Classrooms");
 
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.CourseId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Schedule_Course");
+                    .HasConstraintName("FK_Schedules_Courses");
             });
 
             modelBuilder.Entity<School>(entity =>
             {
-                entity.HasIndex(e => e.Code, "IX_School")
+                entity.HasIndex(e => e.Code, "IX_Schools_Code")
                     .IsUnique();
 
-                entity.Property(e => e.AddressLine).HasMaxLength(255);
+                entity.Property(e => e.AddressLine).HasMaxLength(256);
 
-                entity.Property(e => e.City).HasMaxLength(200);
+                entity.Property(e => e.City).HasMaxLength(256);
 
                 entity.Property(e => e.CreatedAt)
-                    .HasPrecision(0)
+                    .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.Name).HasMaxLength(200);
+                entity.Property(e => e.Name).HasMaxLength(256);
 
-                entity.Property(e => e.ObviatedAt).HasPrecision(0);
+                entity.Property(e => e.ObviatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Slug).HasMaxLength(64);
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<SchoolInfo>(entity =>
@@ -578,31 +585,31 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.SchoolId).ValueGeneratedNever();
 
                 entity.Property(e => e.Country)
-                    .HasMaxLength(10)
+                    .HasMaxLength(16)
                     .IsFixedLength();
 
                 entity.Property(e => e.PhoneCode)
-                    .HasMaxLength(5)
+                    .HasMaxLength(8)
                     .IsFixedLength();
 
-                entity.Property(e => e.PrimaryLanguage).HasMaxLength(50);
+                entity.Property(e => e.PrimaryLanguage).HasMaxLength(64);
 
                 entity.Property(e => e.PrimaryLocale)
-                    .HasMaxLength(5)
+                    .HasMaxLength(8)
                     .IsFixedLength();
 
-                entity.Property(e => e.SecondaryLanguage).HasMaxLength(50);
+                entity.Property(e => e.SecondaryLanguage).HasMaxLength(64);
 
                 entity.Property(e => e.SecondaryLocale)
-                    .HasMaxLength(5)
+                    .HasMaxLength(8)
                     .IsFixedLength();
 
-                entity.Property(e => e.TimeZone).HasMaxLength(50);
+                entity.Property(e => e.TimeZone).HasMaxLength(64);
 
                 entity.HasOne(d => d.School)
                     .WithOne(p => p.SchoolInfo)
                     .HasForeignKey<SchoolInfo>(d => d.SchoolId)
-                    .HasConstraintName("FK_SchoolSettings_School");
+                    .HasConstraintName("FK_SchoolSettings_Schools");
             });
 
             modelBuilder.Entity<SchoolLogin>(entity =>
@@ -610,47 +617,46 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasKey(e => new { e.SchoolId, e.ChannelId })
                     .HasName("PK_SchoolChannel");
 
-                entity.HasIndex(e => new { e.ChannelId, e.ProviderKey }, "IX_SchoolChannel")
+                entity.HasIndex(e => new { e.ChannelId, e.ProviderKey }, "UQ_SchoolChannels_Channel_ProviderKey")
                     .IsUnique();
 
-                entity.Property(e => e.CreatedAt).HasPrecision(0);
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.ProviderKey).HasMaxLength(256);
 
-                entity.Property(e => e.UpdatedAt).HasPrecision(0);
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Channel)
                     .WithMany(p => p.SchoolLogins)
                     .HasForeignKey(d => d.ChannelId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SchoolLogins_Channel");
+                    .HasConstraintName("FK_SchoolLogins_Channels");
 
                 entity.HasOne(d => d.School)
                     .WithMany(p => p.SchoolLogins)
                     .HasForeignKey(d => d.SchoolId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SchoolLogins_School");
+                    .HasConstraintName("FK_SchoolLogins_Schools");
             });
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasKey(e => e.AspNetUserId)
-                    .HasName("PK_User");
+                entity.HasKey(e => e.AspNetUserId);
 
                 entity.Property(e => e.AspNetUserId).ValueGeneratedNever();
 
-                entity.Property(e => e.FirstName).HasMaxLength(255);
+                entity.Property(e => e.FirstName).HasMaxLength(256);
 
-                entity.Property(e => e.IdentifierCode).HasMaxLength(10);
+                entity.Property(e => e.IdentifierCode).HasMaxLength(16);
 
-                entity.Property(e => e.IdentifierCodeCreatedAt).HasPrecision(0);
+                entity.Property(e => e.IdentifierCodeCreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.LastName).HasMaxLength(255);
+                entity.Property(e => e.LastName).HasMaxLength(256);
 
                 entity.HasOne(d => d.AspNetUser)
                     .WithOne(p => p.User)
                     .HasForeignKey<User>(d => d.AspNetUserId)
-                    .HasConstraintName("FK_User_AspNetUsers");
+                    .HasConstraintName("FK_Users_AspNetUsers");
             });
 
             OnModelCreatingPartial(modelBuilder);

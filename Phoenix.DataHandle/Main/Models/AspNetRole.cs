@@ -12,11 +12,10 @@ namespace Phoenix.DataHandle.Main.Models
 
         public int Id { get; set; }
         public Role Type { get; set; }
-        public string? Name { get; set; }
-        public string? NormalizedName { get; set; }
+        public string Name { get; set; } = null!;
         public string? ConcurrencyStamp { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public virtual ICollection<AspNetUser> Users { get; set; }
     }

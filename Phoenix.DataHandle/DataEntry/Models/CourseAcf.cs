@@ -79,7 +79,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         public CourseUnique GetCourseUnique(SchoolUnique schoolUnique) => new(schoolUnique, this.Code);
 
-        private DateTimeOffset GetCourseDate(string dateString) =>
+        private DateTime GetCourseDate(string dateString) =>
             DateTime.ParseExact(dateString, "d/M/yyyy", CultureInfo.InvariantCulture);
 
 
@@ -99,22 +99,22 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public string Group { get; } = null!;
 
         [JsonProperty(PropertyName = "books")]
-        public string BooksString { get; }
+        public string BooksString { get; } = null!;
 
         [JsonProperty(PropertyName = "first_date")]
-        public string FirstDateString { get; }
+        public string FirstDateString { get; } = null!;
 
         [JsonProperty(PropertyName = "last_date")]
-        public string LastDateString { get; }
+        public string LastDateString { get; } = null!;
 
         [JsonProperty(PropertyName = "comments")]
         public string? Comments { get; }
 
         [JsonIgnore]
-        public DateTimeOffset FirstDate { get; private set; }
+        public DateTime FirstDate { get; private set; }
 
         [JsonIgnore]
-        public DateTimeOffset LastDate { get; private set; }
+        public DateTime LastDate { get; private set; }
 
         [JsonIgnore]
         public List<IBook> Books { get; }

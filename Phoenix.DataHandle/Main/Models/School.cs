@@ -21,9 +21,9 @@ namespace Phoenix.DataHandle.Main.Models
         public string City { get; set; } = null!;
         public string AddressLine { get; set; } = null!;
         public string? Description { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset? UpdatedAt { get; set; }
-        public DateTimeOffset? ObviatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? ObviatedAt { get; set; }
 
         public virtual SchoolInfo SchoolInfo { get; set; } = null!;
         public virtual ICollection<Broadcast> Broadcasts { get; set; }

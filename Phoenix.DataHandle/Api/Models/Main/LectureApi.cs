@@ -21,8 +21,8 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         [JsonConstructor]
         public LectureApi(int id, CourseApi course, ClassroomApi? classroom, ScheduleApi? schedule, DateTimeOffset startDateTime, 
-            DateTimeOffset endDateTime, LectureStatus status, string? onlineMeetingLink, string? comments, LectureCreatedBy createdBy,
-            List<ExamApi>? exams, List<ExerciseApi>? exercises)
+            DateTimeOffset endDateTime, LectureStatus status, string? onlineMeetingLink, bool attendancesNoted,
+            string? comments, LectureCreatedBy createdBy, List<ExamApi>? exams, List<ExerciseApi>? exercises)
             : this()
         {
             this.Id = id;
@@ -33,6 +33,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.EndDateTime = endDateTime;
             this.Status = status;
             this.OnlineMeetingLink = onlineMeetingLink;
+            this.AttendancesNoted = attendancesNoted;
             this.Comments = comments;
             this.CreatedBy = createdBy;
 
@@ -44,7 +45,8 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         public LectureApi(ILecture lecture, bool include = false)
             : this(0, null!, null, null, lecture.StartDateTime, lecture.EndDateTime, lecture.Status,
-                  lecture.OnlineMeetingLink, lecture.Comments, lecture.CreatedBy, null, null)
+                  lecture.OnlineMeetingLink, lecture.AttendancesNoted, lecture.Comments,
+                  lecture.CreatedBy, null, null)
         {
             if (lecture is Lecture lecture1)
                 this.Id = lecture1.Id;
@@ -86,6 +88,9 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         [JsonProperty(PropertyName = "online_meeting_link")]
         public string? OnlineMeetingLink { get; }
+
+        [JsonProperty(PropertyName = "attendances_noted")]
+        public bool AttendancesNoted { get; }
 
         [JsonProperty(PropertyName = "comments")]
         public string? Comments { get; }

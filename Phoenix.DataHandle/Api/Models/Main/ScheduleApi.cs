@@ -16,7 +16,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         [JsonConstructor]
         public ScheduleApi(int id, CourseApi course, ClassroomApi? classroom, DayOfWeek dayOfWeek, 
-            DateTimeOffset startTime, DateTimeOffset endTime, string? comments)
+            DateTime startTime, DateTime endTime, string? comments)
             : this()
         {
             this.Id = id;
@@ -56,10 +56,10 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public DayOfWeek DayOfWeek { get; }
 
         [JsonProperty(PropertyName = "start_time")]
-        public DateTimeOffset StartTime { get; }
+        public DateTime StartTime { get; }
 
         [JsonProperty(PropertyName = "end_time")]
-        public DateTimeOffset EndTime { get; }
+        public DateTime EndTime { get; }
 
         [JsonProperty(PropertyName = "comments")]
         public string? Comments { get; }
