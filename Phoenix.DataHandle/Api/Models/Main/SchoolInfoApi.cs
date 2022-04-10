@@ -34,12 +34,12 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.SecondaryLanguage = secondaryLanguage;
             this.SecondaryLocale = secondaryLocale;
             this.TimeZone = timeZone;
-            this.PhoneCode = phoneCode;
+            this.PhoneCountryCode = phoneCode;
         }
 
         public SchoolInfoApi(ISchoolInfo schoolInfo)
             : this(0, schoolInfo.Country, schoolInfo.PrimaryLanguage, schoolInfo.PrimaryLocale,
-                  schoolInfo.SecondaryLanguage, schoolInfo.SecondaryLocale, schoolInfo.TimeZone, schoolInfo.PhoneCode)
+                  schoolInfo.SecondaryLanguage, schoolInfo.SecondaryLocale, schoolInfo.TimeZone, schoolInfo.PhoneCountryCode)
         {
             if (schoolInfo is SchoolInfo schoolInfo1)
                 this.Id = schoolInfo1.Id;
@@ -67,7 +67,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public string TimeZone { get; } = null!;
 
         [JsonProperty(PropertyName = "phone_code")]
-        public string PhoneCode { get; } = null!;
+        public string PhoneCountryCode { get; } = null!;
 
         [JsonIgnore]
         public ISchool School { get; } = null!;

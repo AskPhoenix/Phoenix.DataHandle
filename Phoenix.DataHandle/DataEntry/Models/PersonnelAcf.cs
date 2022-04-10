@@ -21,7 +21,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 throw new ArgumentOutOfRangeException(nameof(role));
 
             this.IsSelfDetermined = true;
-            this.DependanceOrder = 0;
+            this.DependenceOrder = 0;
 
             this.RoleString = role;
         }

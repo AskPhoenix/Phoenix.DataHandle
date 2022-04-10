@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Phoenix.DataHandle.Main.Models;
 
@@ -11,9 +12,10 @@ using Phoenix.DataHandle.Main.Models;
 namespace Phoenix.DataHandle.Migrations
 {
     [DbContext(typeof(PhoenixContext))]
-    partial class PhoenixContextModelSnapshot : ModelSnapshot
+    [Migration("20220410005344_V3_alpha3")]
+    partial class V3_alpha3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

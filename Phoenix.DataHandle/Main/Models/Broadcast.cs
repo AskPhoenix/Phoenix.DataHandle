@@ -14,7 +14,7 @@ namespace Phoenix.DataHandle.Main.Models
         public int SchoolId { get; set; }
         public int AuthorId { get; set; }
         public string Message { get; set; } = null!;
-        public DateTimeOffset ScheduledFor { get; set; }
+        public DateTime ScheduledFor { get; set; }
         public Daypart Daypart { get; set; }
         public BroadcastAudience Audience { get; set; }
         public BroadcastVisibility Visibility { get; set; }

@@ -18,7 +18,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.CourseCodes = new List<short>();
         }
 
-        public UserAcf(string fullName, string? phone)
+        public UserAcf(string fullName, string phone)
             : this()
         {
             if (string.IsNullOrWhiteSpace(fullName))
@@ -30,14 +30,13 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
             this.AspNetUser = new AspNetUser
             {
-                // TODO: Add DependancePhoneNumber property in DB to distinguish
                 PhoneNumber = phone
             };
 
             this.PhoneString = this.AspNetUser.PhoneNumber;
         }
 
-        public UserAcf(string fullName, string? phone, string? courseCodes)
+        public UserAcf(string fullName, string phone, string? courseCodes)
             : this(fullName, phone)
         {
             // Accept empty course codes string in order to register the user
@@ -53,17 +52,21 @@ namespace Phoenix.DataHandle.DataEntry.Models
             }
         }
 
-        // Unique expression is linked with the AspNetUser object
-        public Expression<Func<AspNetUser, bool>> GetUniqueExpression(int dependanceOrder) => u =>
-            u.PhoneNumber == this.AspNetUser.PhoneNumber && u.PhoneNumberDependanceOrder == dependanceOrder;
-
         // TODO: Check if this can be translated to SQL query. If yes, delete the other GetUniqueExpression method
+        // Unique expression is linked with the AspNetUser object
+        public Expression<Func<AspNetUser, bool>> GetUniqueExpression(string phoneCountryCode, int dependanceOrder) => u =>
+            u.PhoneCountryCode == phoneCountryCode &&
+            u.PhoneNumber == this.AspNetUser.PhoneNumber && 
+            u.DependenceOrder == dependanceOrder;
+        
         public Expression<Func<AspNetUser, bool>> GetUniqueExpression()
         {
-            if (!this.IsSelfDetermined && this.DependanceOrder is null)
-                throw new InvalidOperationException("");
+            if (!this.IsSelfDetermined && this.DependenceOrder is null)
+                throw new InvalidOperationException("User's Dependence Order must be set first.");
+            if (this.PhoneCountryCode is null)
+                throw new InvalidOperationException("User's Phone Country Code must be set first.");
 
-            return GetUniqueExpression(this.DependanceOrder ?? 0);
+            return GetUniqueExpression(this.PhoneCountryCode, this.DependenceOrder ?? 0);
         }
 
         // TODO: Move these in IUser
@@ -86,13 +89,14 @@ namespace Phoenix.DataHandle.DataEntry.Models
             return tore;
         }
 
+        // TODO: Move to IAspNetUsers
         // Dependance order separates non-self-dependent users. The phone owner takes a value of 0.
         public string GetUserName(int schoolCode)
         {
-            if (this.DependanceOrder is null)
+            if (this.DependenceOrder is null)
                 throw new InvalidOperationException("User's dependance order number must be set first.");
 
-            return "S" + schoolCode + "_P" + this.AspNetUser.PhoneNumber + "_N" + this.FirstName + "_O" + this.DependanceOrder;
+            return "S" + schoolCode + "_P" + this.AspNetUser.PhoneNumber + "_N" + this.FirstName + "_O" + this.DependenceOrder;
         }
 
 
@@ -124,7 +128,32 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public IAspNetUser AspNetUser { get; private set; } = null!;
 
         [JsonIgnore]
-        public int? DependanceOrder {
+        public string? PhoneCountryCode 
+        {
+            get
+            {
+                return phoneCountryCode;
+            }
+            set
+            {
+                if (value is null)
+                    return;
+
+                phoneCountryCode = value;
+
+                this.AspNetUser = new AspNetUser
+                {
+                    PhoneNumber = this.AspNetUser.PhoneNumber,
+                    PhoneCountryCode = value,
+                    DependenceOrder = this.AspNetUser.DependenceOrder
+                };
+            }
+        }
+        private string? phoneCountryCode = null;
+
+        [JsonIgnore]
+        public int? DependenceOrder 
+        {
             get 
             {
                 if (this.IsSelfDetermined)
@@ -144,7 +173,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
                     this.AspNetUser = new AspNetUser
                     {
                         PhoneNumber = this.AspNetUser.PhoneNumber,
-                        PhoneNumberDependanceOrder = dependanceOrder.Value
+                        PhoneCountryCode= this.AspNetUser.PhoneCountryCode,
+                        DependenceOrder = dependanceOrder.Value
                     };
                 }
             }

@@ -1,4 +1,6 @@
-﻿namespace Phoenix.DataHandle.Main.Entities
+﻿using System;
+
+namespace Phoenix.DataHandle.Main.Entities
 {
     public interface IAspNetUserLogin
     {
@@ -6,5 +8,6 @@
         IChannel Channel { get; }
         string ProviderKey { get; }
         bool IsActive { get; }
+        DateTime ActivatedAt { get; }
     }
 }

@@ -216,7 +216,6 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class User : IUser
     {
-        public string FullName => (this.FirstName + " " + this.LastName).Trim();
         IAspNetUser IUser.AspNetUser => this.AspNetUser;
 
         public int Id => this.AspNetUserId;

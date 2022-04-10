@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Phoenix.DataHandle.Main.Models
 {
@@ -29,8 +30,9 @@ namespace Phoenix.DataHandle.Main.Models
         public string? SecurityStamp { get; set; }
         public string? ConcurrencyStamp { get; set; }
         public string PhoneNumber { get; set; } = null!;
+        public string PhoneCountryCode { get; set; } = null!;
         public bool PhoneNumberConfirmed { get; set; }
-        public string? PhoneNumberVerificationCode { get; set; }
+        public int DependenceOrder { get; set; }
         public bool TwoFactorEnabled { get; set; }
         public DateTime? LockoutEnd { get; set; }
         public bool LockoutEnabled { get; set; }
@@ -39,8 +41,6 @@ namespace Phoenix.DataHandle.Main.Models
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? ObviatedAt { get; set; }
-        public int PhoneNumberDependanceOrder { get; set; }
-        public DateTime? PhoneNumberVerificationCodeCreatedAt { get; set; }
 
         public virtual User User { get; set; } = null!;
         public virtual ICollection<AspNetUserLogin> AspNetUserLogins { get; set; }

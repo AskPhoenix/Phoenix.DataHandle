@@ -7,7 +7,9 @@ namespace Phoenix.DataHandle.Main.Entities
         string UserName { get; }
         string? Email { get; }
         string PhoneNumber { get; }
-        int PhoneNumberDependanceOrder { get; }
+        string PhoneCountryCode { get; }
+        string FullPhoneNumber => PhoneCountryCode + PhoneNumber;
+        int DependenceOrder { get; }
 
         IUser User { get; }
         IEnumerable<IAspNetUserLogin> AspNetUserLogins { get; }

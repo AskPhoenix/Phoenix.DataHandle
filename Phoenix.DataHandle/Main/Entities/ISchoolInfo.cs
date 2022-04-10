@@ -9,6 +9,6 @@
         string SecondaryLanguage { get; }
         string SecondaryLocale { get; }
         string TimeZone { get; }
-        string PhoneCode { get; }
+        string PhoneCountryCode { get; }
     }
 }

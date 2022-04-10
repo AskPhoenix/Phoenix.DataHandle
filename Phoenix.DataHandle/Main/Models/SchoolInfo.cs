@@ -12,7 +12,7 @@ namespace Phoenix.DataHandle.Main.Models
         public string SecondaryLanguage { get; set; } = null!;
         public string SecondaryLocale { get; set; } = null!;
         public string TimeZone { get; set; } = null!;
-        public string PhoneCode { get; set; } = null!;
+        public string PhoneCountryCode { get; set; } = null!;
 
         public virtual School School { get; set; } = null!;
     }

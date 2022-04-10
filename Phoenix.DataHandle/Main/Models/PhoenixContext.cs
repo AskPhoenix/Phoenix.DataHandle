@@ -54,24 +54,24 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.Name).HasMaxLength(256);
+                entity.Property(e => e.Name)
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<AspNetUser>(entity =>
             {
-                entity.HasIndex(e => new { e.PhoneNumber, e.PhoneNumberDependanceOrder }, "IX_AspNetUsers_Phone")
+                entity.HasIndex(e => new { e.PhoneCountryCode, e.PhoneNumber, e.DependenceOrder }, "IX_AspNetUsers_CountryCode_PhoneNumber_DependenceOrder")
                     .IsUnique();
 
-                entity.HasIndex(e => e.NormalizedUserName, "UQ_AspNetUsers_UserName")
+                entity.HasIndex(e => e.NormalizedUserName, "UQ_AspNetUsers_NormalizedUserName")
                     .IsUnique();
 
-                entity.Property(e => e.CreatedApplicationType).HasDefaultValueSql("((-1))");
+                entity.Property(e => e.CreatedApplicationType);
 
                 entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
+                    .HasColumnType("datetime");
 
                 entity.Property(e => e.Email).HasMaxLength(256);
 
@@ -80,22 +80,18 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedUserName)
-                    .HasMaxLength(256)
-                    .HasDefaultValueSql("(N'')");
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.ObviatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.PhoneNumber).HasMaxLength(64);
+                entity.Property(e => e.PhoneCountryCode).HasMaxLength(8);
 
-                entity.Property(e => e.PhoneNumberVerificationCode).HasMaxLength(64);
-
-                entity.Property(e => e.PhoneNumberVerificationCodeCreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.PhoneNumber).HasMaxLength(16);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UserName)
-                    .HasMaxLength(256)
-                    .HasDefaultValueSql("(N'')");
+                    .HasMaxLength(256);
 
                 entity.HasMany(d => d.Children)
                     .WithMany(p => p.Parents)
@@ -176,6 +172,8 @@ namespace Phoenix.DataHandle.Main.Models
                             j.ToTable("AspNetUserRoles");
 
                             j.HasIndex(new[] { "UserId" }, "IX_AspNetUserRoles_AspNetUsers");
+
+                            j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
                         });
 
                 entity.HasMany(d => d.Schools)
@@ -201,11 +199,17 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasIndex(e => new { e.ChannelId, e.ProviderKey }, "IX_AspNetUserLogins_Channel_ProviderKey")
                     .IsUnique();
 
+                entity.Property(e => e.ActivatedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.ProviderKey).HasMaxLength(256);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.VerificationCode).HasMaxLength(64);
+
+                entity.Property(e => e.VerificationCodeExpiresAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Channel)
                     .WithMany(p => p.AspNetUserLogins)
@@ -225,8 +229,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
+                    .HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(256);
 
@@ -264,7 +267,7 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.ScheduledFor).HasPrecision(0);
+                entity.Property(e => e.ScheduledFor).HasColumnType("datetime");
 
                 entity.Property(e => e.SentAt).HasColumnType("datetime");
 
@@ -295,6 +298,8 @@ namespace Phoenix.DataHandle.Main.Models
                             j.ToTable("BroadcastCourses");
 
                             j.HasIndex(new[] { "BroadcastId" }, "IX_BroadcastCourses_Broadcast");
+
+                            j.HasIndex(new[] { "CourseId" }, "IX_BroadcastCourses_CourseId");
                         });
             });
 
@@ -321,8 +326,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
+                    .HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(256);
 
@@ -344,8 +348,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
+                    .HasColumnType("datetime");
 
                 entity.Property(e => e.FirstDate).HasColumnType("datetime");
 
@@ -380,6 +383,8 @@ namespace Phoenix.DataHandle.Main.Models
 
                             j.ToTable("CourseBooks");
 
+                            j.HasIndex(new[] { "BookId" }, "IX_CourseBooks_BookId");
+
                             j.HasIndex(new[] { "CourseId" }, "IX_CourseBooks_Course");
                         });
             });
@@ -402,11 +407,12 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Exercise>(entity =>
             {
+                entity.HasIndex(e => e.BookId, "IX_Exercises_BookId");
+
                 entity.HasIndex(e => e.LectureId, "IX_Exercises_Lecture");
 
                 entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
+                    .HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(256);
 
@@ -470,11 +476,14 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Lecture>(entity =>
             {
+                entity.HasIndex(e => e.ClassroomId, "IX_Lectures_ClassroomId");
+
                 entity.HasIndex(e => new { e.CourseId, e.ScheduleId }, "IX_Lectures_Course_Schedule");
 
+                entity.HasIndex(e => e.ScheduleId, "IX_Lectures_ScheduleId");
+
                 entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
+                    .HasColumnType("datetime");
 
                 entity.Property(e => e.EndDateTime).HasPrecision(0);
 
@@ -501,6 +510,8 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Material>(entity =>
             {
+                entity.HasIndex(e => e.BookId, "IX_Materials_BookId");
+
                 entity.HasIndex(e => e.ExamId, "IX_Materials_Exam");
 
                 entity.Property(e => e.Chapter).HasMaxLength(64);
@@ -525,6 +536,8 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Schedule>(entity =>
             {
+                entity.HasIndex(e => e.ClassroomId, "IX_Schedules_ClassroomId");
+
                 entity.HasIndex(e => e.CourseId, "IX_Schedules_Course");
 
                 entity.HasIndex(e => new { e.CourseId, e.DayOfWeek, e.StartTime }, "UQ_Schedules_Course_DayOfWeek_StartTime")
@@ -563,8 +576,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.City).HasMaxLength(256);
 
                 entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
+                    .HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(256);
 
@@ -588,7 +600,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasMaxLength(16)
                     .IsFixedLength();
 
-                entity.Property(e => e.PhoneCode)
+                entity.Property(e => e.PhoneCountryCode)
                     .HasMaxLength(8)
                     .IsFixedLength();
 
@@ -645,13 +657,15 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.AspNetUserId).ValueGeneratedNever();
 
-                entity.Property(e => e.FirstName).HasMaxLength(256);
+                entity.Property(e => e.FirstName)
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.IdentifierCode).HasMaxLength(16);
 
-                entity.Property(e => e.IdentifierCodeCreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.IdentifierCodeExpiresAt).HasColumnType("datetime");
 
-                entity.Property(e => e.LastName).HasMaxLength(256);
+                entity.Property(e => e.LastName)
+                    .HasMaxLength(256);
 
                 entity.HasOne(d => d.AspNetUser)
                     .WithOne(p => p.User)

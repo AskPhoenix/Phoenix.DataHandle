@@ -27,19 +27,21 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         [JsonConstructor]
         public AspNetUserApi(int id, string username, string? email, string phoneNumber,
-            int phoneNumberDependanceOrder, UserApi user, List<CourseApi>? courses)
+            string phoneCountryCode, int dependenceOrder, UserApi user, List<CourseApi>? courses)
             : this()
         {
             if (username is null)
                 throw new ArgumentNullException(nameof(username));
             if (phoneNumber is null)
                 throw new ArgumentNullException(nameof(phoneNumber));
+            if (phoneCountryCode is null)
+                throw new ArgumentNullException(nameof(phoneCountryCode));
 
             this.Id = id;
             this.UserName = username;
             this.Email = email;
             this.PhoneNumber = phoneNumber;
-            this.PhoneNumberDependanceOrder = phoneNumberDependanceOrder;
+            this.DependenceOrder = dependenceOrder;
             this.User = user;
 
             if (courses is not null)
@@ -48,7 +50,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         public AspNetUserApi(IAspNetUser aspNetUser, bool include = false)
             : this(0, aspNetUser.UserName, aspNetUser.Email, aspNetUser.PhoneNumber,
-                  aspNetUser.PhoneNumberDependanceOrder, null!, null)
+                  aspNetUser.PhoneCountryCode, aspNetUser.DependenceOrder, null!, null)
         {
             if (aspNetUser is AspNetUser aspNetUser1)
                 this.Id = aspNetUser1.Id;
@@ -75,8 +77,11 @@ namespace Phoenix.DataHandle.Api.Models.Main
         [JsonProperty(PropertyName = "phone_number")]
         public string PhoneNumber { get; } = null!;
 
+        [JsonProperty(PropertyName = "phone_country_code")]
+        public string PhoneCountryCode { get; } = null!;
+
         [JsonProperty(PropertyName = "dependance_order")]
-        public int PhoneNumberDependanceOrder { get; }
+        public int DependenceOrder { get; }
 
         [JsonProperty(PropertyName = "user")]
         public UserApi User { get; } = null!;

@@ -11,7 +11,7 @@ namespace Phoenix.DataHandle.Main.Models
         public bool TermsAccepted { get; set; }
         public bool IsSelfDetermined { get; set; }
         public string? IdentifierCode { get; set; }
-        public DateTime? IdentifierCodeCreatedAt { get; set; }
+        public DateTime? IdentifierCodeExpiresAt { get; set; }
 
         public virtual AspNetUser AspNetUser { get; set; } = null!;
     }

@@ -255,7 +255,7 @@ namespace Phoenix.DataHandle.Tests
                     SchoolInfo = new SchoolInfo
                     {
                         Country = "Ellada",
-                        PhoneCode = "0030",
+                        PhoneCountryCode = "0030",
                         PrimaryLanguage = "Greek",
                         PrimaryLocale = "el-GR",
                         SecondaryLanguage = "English",
