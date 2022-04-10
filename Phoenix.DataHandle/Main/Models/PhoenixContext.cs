@@ -68,8 +68,6 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasIndex(e => e.NormalizedUserName, "UQ_AspNetUsers_NormalizedUserName")
                     .IsUnique();
 
-                entity.Property(e => e.CreatedApplicationType);
-
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime");
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Phoenix.DataHandle.Main.Types;
+using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Main.Entities
 {

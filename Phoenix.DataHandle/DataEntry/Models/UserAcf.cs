@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Main.Types;
 using Phoenix.DataHandle.Utilities;
 using System;
 using System.Collections.Generic;

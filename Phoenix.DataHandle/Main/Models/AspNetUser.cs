@@ -37,7 +37,6 @@ namespace Phoenix.DataHandle.Main.Models
         public DateTime? LockoutEnd { get; set; }
         public bool LockoutEnabled { get; set; }
         public int AccessFailedCount { get; set; }
-        public ApplicationType CreatedApplicationType { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? ObviatedAt { get; set; }

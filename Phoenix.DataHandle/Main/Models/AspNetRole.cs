@@ -11,7 +11,7 @@ namespace Phoenix.DataHandle.Main.Models
         }
 
         public int Id { get; set; }
-        public Role Type { get; set; }
+        public Types.Role Type { get; set; }
         public string Name { get; set; } = null!;
         public string? ConcurrencyStamp { get; set; }
         public DateTime CreatedAt { get; set; }

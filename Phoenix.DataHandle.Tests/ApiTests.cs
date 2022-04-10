@@ -191,8 +191,7 @@ namespace Phoenix.DataHandle.Tests
                 ?? new Lecture
                 {
                     StartDateTime = DateTime.Now,
-                    EndDateTime = DateTime.Now.AddHours(2),
-                    Status = Main.LectureStatus.Scheduled
+                    EndDateTime = DateTime.Now.AddHours(2)
                 };
 
             var lectureApi = new LectureApi(lecture, include: true);

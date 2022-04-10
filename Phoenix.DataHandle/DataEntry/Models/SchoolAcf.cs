@@ -71,7 +71,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public string Slug { get; } = null!;
 
         [JsonProperty(PropertyName = "language")]
-        public string BotLanguage { get; }
+        public string BotLanguage { get; } = null!;
 
         [JsonProperty(PropertyName = "city")]
         public string City { get; } = null!;

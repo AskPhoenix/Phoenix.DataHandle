@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Phoenix.DataHandle.Api.Models.Extensions;
-using Phoenix.DataHandle.Main;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 
@@ -20,9 +19,9 @@ namespace Phoenix.DataHandle.Api.Models.Main
         }
 
         [JsonConstructor]
-        public LectureApi(int id, CourseApi course, ClassroomApi? classroom, ScheduleApi? schedule, DateTimeOffset startDateTime, 
-            DateTimeOffset endDateTime, LectureStatus status, string? onlineMeetingLink, bool attendancesNoted,
-            string? comments, LectureCreatedBy createdBy, List<ExamApi>? exams, List<ExerciseApi>? exercises)
+        public LectureApi(int id, CourseApi course, ClassroomApi? classroom, ScheduleApi? schedule,
+            DateTimeOffset startDateTime, DateTimeOffset endDateTime, string? onlineMeetingLink,
+            bool attendancesNoted, string? comments, List<ExamApi>? exams, List<ExerciseApi>? exercises)
             : this()
         {
             this.Id = id;
@@ -31,11 +30,9 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.Schedule = schedule;
             this.StartDateTime = startDateTime;
             this.EndDateTime = endDateTime;
-            this.Status = status;
             this.OnlineMeetingLink = onlineMeetingLink;
             this.AttendancesNoted = attendancesNoted;
             this.Comments = comments;
-            this.CreatedBy = createdBy;
 
             if (exams is not null)
                 this.Exams = exams;
@@ -44,9 +41,9 @@ namespace Phoenix.DataHandle.Api.Models.Main
         }
 
         public LectureApi(ILecture lecture, bool include = false)
-            : this(0, null!, null, null, lecture.StartDateTime, lecture.EndDateTime, lecture.Status,
-                  lecture.OnlineMeetingLink, lecture.AttendancesNoted, lecture.Comments,
-                  lecture.CreatedBy, null, null)
+            : this(0, null!, null, null,
+                  lecture.StartDateTime, lecture.EndDateTime, lecture.OnlineMeetingLink,
+                  lecture.AttendancesNoted, lecture.Comments, null, null)
         {
             if (lecture is Lecture lecture1)
                 this.Id = lecture1.Id;
@@ -83,9 +80,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
         [JsonProperty(PropertyName = "end_datetime")]
         public DateTimeOffset EndDateTime { get; }
 
-        [JsonProperty(PropertyName = "status")]
-        public LectureStatus Status { get; }
-
         [JsonProperty(PropertyName = "online_meeting_link")]
         public string? OnlineMeetingLink { get; }
 
@@ -94,9 +88,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         [JsonProperty(PropertyName = "comments")]
         public string? Comments { get; }
-
-        [JsonProperty(PropertyName = "created_by")]
-        public LectureCreatedBy CreatedBy { get; }
 
         [JsonProperty(PropertyName = "exams")]
         public List<ExamApi> Exams { get; }

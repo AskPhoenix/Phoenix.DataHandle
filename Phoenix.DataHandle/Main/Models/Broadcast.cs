@@ -15,10 +15,10 @@ namespace Phoenix.DataHandle.Main.Models
         public int AuthorId { get; set; }
         public string Message { get; set; } = null!;
         public DateTime ScheduledFor { get; set; }
-        public Daypart Daypart { get; set; }
-        public BroadcastAudience Audience { get; set; }
-        public BroadcastVisibility Visibility { get; set; }
-        public BroadcastStatus Status { get; set; }
+        public Types.Daypart Daypart { get; set; }
+        public Types.BroadcastAudience Audience { get; set; }
+        public Types.BroadcastVisibility Visibility { get; set; }
+        public Types.BroadcastStatus Status { get; set; }
         public DateTime? SentAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

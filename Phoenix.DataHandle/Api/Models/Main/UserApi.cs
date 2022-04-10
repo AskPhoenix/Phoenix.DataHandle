@@ -8,7 +8,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
     public class UserApi : IUser, IModelApi
     {
         [JsonConstructor]
-        public UserApi(int id, string firstName, string lastName, string? fullName,
+        public UserApi(int id, string firstName, string lastName, string fullName,
             bool isSelfDetermined)
         {
             this.Id = id;
@@ -36,7 +36,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public string LastName { get; }
 
         [JsonProperty(PropertyName = "full_name")]
-        public string? FullName { get; }
+        public string FullName { get; }
 
         [JsonProperty(PropertyName = "is_self_determined")]
         public bool IsSelfDetermined { get; }

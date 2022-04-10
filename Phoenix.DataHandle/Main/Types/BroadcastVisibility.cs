@@ -1,4 +1,6 @@
-﻿namespace Phoenix.DataHandle.Main
+﻿using Phoenix.Language.Types;
+
+namespace Phoenix.DataHandle.Main.Types
 {
     public enum BroadcastVisibility
     {
@@ -13,9 +15,9 @@
         {
             return me switch
             {
-                BroadcastVisibility.Group => "Τμήμα",
-                BroadcastVisibility.Global => "Όλο το φροντιστήριο",
-                _ => string.Empty
+                BroadcastVisibility.Group   => BroadcastVisibilityResources.Group,
+                BroadcastVisibility.Global  => BroadcastVisibilityResources.Global,
+                _                           => string.Empty
             };
         }
     }

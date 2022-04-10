@@ -10,11 +10,9 @@ namespace Phoenix.DataHandle.Main.Entities
         ISchedule? Schedule { get; }
         DateTimeOffset StartDateTime { get; }
         DateTimeOffset EndDateTime { get; }
-        LectureStatus Status { get; }
         string? OnlineMeetingLink { get; }
         bool AttendancesNoted { get; }
         string? Comments { get; }
-        LectureCreatedBy CreatedBy { get; }
 
         IEnumerable<IExam> Exams { get; }
         IEnumerable<IExercise> Exercises { get; }

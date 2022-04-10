@@ -1,10 +1,10 @@
-﻿namespace Phoenix.DataHandle.Main
+﻿namespace Phoenix.DataHandle.Main.Types
 {
     public enum BroadcastStatus
     {
-        Pending = 0,
+        Uknown = 0,
+        Pending,
         Processing,
-
         Succeeded,
         Failed,
         Cancelled

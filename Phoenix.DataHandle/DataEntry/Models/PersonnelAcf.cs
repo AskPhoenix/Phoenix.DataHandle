@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
-using Phoenix.DataHandle.Main;
+using Phoenix.DataHandle.Main.Types;
 using System;
 
 namespace Phoenix.DataHandle.DataEntry.Models
@@ -17,7 +17,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 throw new ArgumentNullException(nameof(phone));
 
             this.Role = role.Replace(" ", "").ToRole();
-            if (!this.Role.IsPersonnel())
+            if (!this.Role.IsStaffOrBackend())
                 throw new ArgumentOutOfRangeException(nameof(role));
 
             this.IsSelfDetermined = true;
