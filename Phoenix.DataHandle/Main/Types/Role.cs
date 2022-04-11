@@ -1,7 +1,7 @@
 ﻿using Phoenix.Language.Types;
 using System;
 using System.Linq;
-
+using System.Threading;
 namespace Phoenix.DataHandle.Main.Types
 {
     public enum Role
@@ -71,6 +71,14 @@ namespace Phoenix.DataHandle.Main.Types
                 Role.SuperAdmin     => RoleResources.SuperAdmin,
                 _                   => string.Empty
             };
+        }
+
+        public static string[] GetFriendlyStrings()
+        {
+            return Enum.GetValues<Role>()
+                .Select(v => v.ToFriendlyString())
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .ToArray();
         }
 
         public static Role ToRole(this string me)

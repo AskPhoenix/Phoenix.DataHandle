@@ -1,4 +1,6 @@
 ﻿using Phoenix.Language.Types;
+using System;
+using System.Linq;
 
 namespace Phoenix.DataHandle.Main.Types
 {
@@ -26,6 +28,14 @@ namespace Phoenix.DataHandle.Main.Types
                 Daypart.Evening     => DaypartResources.Evening,
                 _                   => string.Empty
             };
+        }
+
+        public static string[] GetFriendlyStrings()
+        {
+            return Enum.GetValues<Daypart>()
+                .Select(v => v.ToFriendlyString())
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .ToArray();
         }
     }
 }

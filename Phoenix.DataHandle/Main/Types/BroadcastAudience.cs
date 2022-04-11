@@ -1,4 +1,6 @@
 ﻿using Phoenix.Language.Types;
+using System;
+using System.Linq;
 
 namespace Phoenix.DataHandle.Main.Types
 {
@@ -29,6 +31,14 @@ namespace Phoenix.DataHandle.Main.Types
                 BroadcastAudience.Everyone          => BroadcastAudienceResources.Everyone,
                 _                                   => string.Empty
             };
+        }
+
+        public static string[] GetFriendlyStrings()
+        {
+            return Enum.GetValues<BroadcastAudience>()
+                .Select(v => v.ToFriendlyString())
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .ToArray();
         }
     }
 }
