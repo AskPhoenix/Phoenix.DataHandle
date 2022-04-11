@@ -8,7 +8,7 @@ namespace Phoenix.DataHandle.Main.Models
         public int Id { get; set; }
         public int AuthorId { get; set; }
         public bool AskTriggered { get; set; }
-        public Types.BotFeedbackCategory Category { get; set; }
+        public int Category { get; set; }
         public short? Rating { get; set; }
         public string? Comment { get; set; }
         public DateTime CreatedAt { get; set; }

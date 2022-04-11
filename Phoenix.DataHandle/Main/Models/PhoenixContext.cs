@@ -68,8 +68,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasIndex(e => e.NormalizedUserName, "UQ_AspNetUsers_NormalizedUserName")
                     .IsUnique();
 
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Email).HasMaxLength(256);
 
@@ -77,8 +76,7 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
 
-                entity.Property(e => e.NormalizedUserName)
-                    .HasMaxLength(256);
+                entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
 
                 entity.Property(e => e.ObviatedAt).HasColumnType("datetime");
 
@@ -88,8 +86,7 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.UserName)
-                    .HasMaxLength(256);
+                entity.Property(e => e.UserName).HasMaxLength(256);
 
                 entity.HasMany(d => d.Children)
                     .WithMany(p => p.Parents)
@@ -197,7 +194,8 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasIndex(e => new { e.ChannelId, e.ProviderKey }, "IX_AspNetUserLogins_Channel_ProviderKey")
                     .IsUnique();
 
-                entity.Property(e => e.ActivatedAt).HasColumnType("datetime");
+                entity.Property(e => e.ActivatedAt)
+                    .HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -226,8 +224,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasIndex(e => e.NormalizedName, "IX_Books_NormalizedName")
                     .IsUnique();
 
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(256);
 
@@ -323,8 +320,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasIndex(e => new { e.SchoolId, e.NormalizedName }, "IX_Classrooms_School_NormalizedName")
                     .IsUnique();
 
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(256);
 
@@ -345,8 +341,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasIndex(e => new { e.SchoolId, e.Code }, "IX_Courses_School_Code")
                     .IsUnique();
 
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.FirstDate).HasColumnType("datetime");
 
@@ -409,8 +404,7 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.HasIndex(e => e.LectureId, "IX_Exercises_Lecture");
 
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(256);
 
@@ -480,8 +474,10 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.HasIndex(e => e.ScheduleId, "IX_Lectures_ScheduleId");
 
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime");
+                entity.Property(e => e.AttendancesNoted)
+                    .IsRequired();
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.EndDateTime).HasPrecision(0);
 
@@ -498,6 +494,11 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.Lectures)
                     .HasForeignKey(d => d.CourseId)
                     .HasConstraintName("FK_Lectures_Courses");
+
+                entity.HasOne(d => d.ReplacementLecture)
+                    .WithMany(p => p.InverseReplacementLecture)
+                    .HasForeignKey(d => d.ReplacementLectureId)
+                    .HasConstraintName("FK_Lectures_Lectures");
 
                 entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.Lectures)
@@ -573,8 +574,7 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.City).HasMaxLength(256);
 
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(256);
 
