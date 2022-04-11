@@ -70,7 +70,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         }
 
         // TODO: Move these in IUser
-        protected static string GetName(string fullName, bool selFirstName, bool truncate = true)
+        protected static string GetName(string fullName, bool selFirstName)
         {
             var names = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
@@ -82,9 +82,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 tore = string.Join(' ', names.Take((int)Math.Ceiling(names.Length / 2.0)));
             else
                 tore = string.Join(' ', names.TakeLast(names.Length / 2));
-
-            if (truncate)
-                tore = tore.Truncate(255);
 
             return tore;
         }

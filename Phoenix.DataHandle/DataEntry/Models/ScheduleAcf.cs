@@ -44,7 +44,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
             {
                 this.Classroom = new Classroom
                 {
-                    Name = classroom.Trim().Truncate(255).ToTitleCase(),
+                    Name = classroom.Trim().ToTitleCase(),
                     NormalizedName = classroom.ToUpper()
                 };
 

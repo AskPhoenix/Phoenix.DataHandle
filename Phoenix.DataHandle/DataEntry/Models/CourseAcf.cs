@@ -44,10 +44,10 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 throw new ArgumentNullException(nameof(books));
 
             this.Code = code;
-            this.Name = name.Trim().Truncate(150).ToTitleCase();
-            this.SubCourse = string.IsNullOrWhiteSpace(subcourse) ? null : subcourse.Trim().Truncate(150).ToTitleCase();
-            this.Level = level.Trim().Truncate(50).ToTitleCase();
-            this.Group = group.Trim().Truncate(50);
+            this.Name = name.Trim().ToTitleCase();
+            this.SubCourse = string.IsNullOrWhiteSpace(subcourse) ? null : subcourse.Trim().ToTitleCase();
+            this.Level = level.Trim().ToTitleCase();
+            this.Group = group.Trim();
             this.Comments = string.IsNullOrWhiteSpace(comments) ? null : comments.Trim();
             
             this.FirstDate = GetCourseDate(first_date);
@@ -59,8 +59,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 .Distinct()
                 .Select(b => (IBook)new Book()
                 {
-                    Name = b.Truncate(255),
-                    NormalizedName = b.Truncate(255).ToUpperInvariant(),
+                    Name = b,
+                    NormalizedName = b.ToUpperInvariant(),
                 })
                 .ToList();
 

@@ -38,10 +38,10 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 language = "English";
 
             this.Code = code ?? 0;
-            this.Name = name.Trim().Truncate(200);
-            this.Slug = (string.IsNullOrWhiteSpace(slug) ? name : slug).Trim().Truncate(64);
-            this.City = city.Trim().Truncate(200).ToTitleCase();
-            this.AddressLine = address.Trim().Truncate(255);
+            this.Name = name.Trim();
+            this.Slug = (string.IsNullOrWhiteSpace(slug) ? name : slug).Trim();
+            this.City = city.Trim().ToTitleCase();
+            this.AddressLine = address.Trim();
             this.Description = string.IsNullOrWhiteSpace(comments) ? null : comments.Trim();
 
             var locale = CultureInfo.GetCultures(CultureTypes.NeutralCultures).
