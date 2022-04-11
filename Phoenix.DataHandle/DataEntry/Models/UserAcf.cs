@@ -25,8 +25,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 throw new ArgumentNullException(nameof(fullName));
 
             this.FullName = fullName.ToTitleCase();
-            this.FirstName = GetName(this.FullName, selFirstName: true);
-            this.LastName = GetName(this.FullName, selFirstName: false);
+            this.FirstName = this.ResolveFirstName();
+            this.LastName = this.ResolveLastName();
 
             this.AspNetUser = new AspNetUser
             {
@@ -61,41 +61,12 @@ namespace Phoenix.DataHandle.DataEntry.Models
         
         public Expression<Func<AspNetUser, bool>> GetUniqueExpression()
         {
-            if (!this.IsSelfDetermined && this.DependenceOrder is null)
-                throw new InvalidOperationException("User's Dependence Order must be set first.");
-            if (this.PhoneCountryCode is null)
-                throw new InvalidOperationException("User's Phone Country Code must be set first.");
+            if (this.AspNetUser is null)
+                throw new InvalidOperationException(
+                    $"Properties {nameof(PhoneCountryCode)} and {nameof(DependenceOrder)} must be set first.");
 
-            return GetUniqueExpression(this.PhoneCountryCode, this.DependenceOrder ?? 0);
+            return GetUniqueExpression(this.AspNetUser.PhoneCountryCode, this.AspNetUser.DependenceOrder);
         }
-
-        // TODO: Move these in IUser
-        protected static string GetName(string fullName, bool selFirstName)
-        {
-            var names = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-            if (!selFirstName && names.Length == 1)
-                return string.Empty;
-
-            string tore;
-            if (selFirstName)
-                tore = string.Join(' ', names.Take((int)Math.Ceiling(names.Length / 2.0)));
-            else
-                tore = string.Join(' ', names.TakeLast(names.Length / 2));
-
-            return tore;
-        }
-
-        // TODO: Move to IAspNetUsers
-        // Dependance order separates non-self-dependent users. The phone owner takes a value of 0.
-        public string GetUserName(int schoolCode)
-        {
-            if (this.DependenceOrder is null)
-                throw new InvalidOperationException("User's dependance order number must be set first.");
-
-            return "S" + schoolCode + "_P" + this.AspNetUser.PhoneNumber + "_N" + this.FirstName + "_O" + this.DependenceOrder;
-        }
-
 
         [JsonIgnore]
         public string FirstName { get; } = null!;
@@ -122,7 +93,18 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public List<short> CourseCodes { get; }
 
         [JsonIgnore]
-        public IAspNetUser AspNetUser { get; private set; } = null!;
+        public IAspNetUser AspNetUser 
+        {
+            get 
+            {
+                if (this.PhoneCountryCode is null || this.DependenceOrder is null)
+                    return null!;
+
+                return aspNetUser!;
+            }
+            private set { aspNetUser = value; }
+        }
+        private IAspNetUser? aspNetUser = null;
 
         [JsonIgnore]
         public string? PhoneCountryCode 
@@ -156,26 +138,29 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 if (this.IsSelfDetermined)
                     return 0;
 
-                return dependanceOrder;
+                return dependenceOrder;
             }
             set
             {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(DependenceOrder));
                 if (this.IsSelfDetermined && value != 0)
-                    throw new InvalidOperationException("Cannot set Dependance Order to a non-zero value for a Self-Determined user");
+                    throw new InvalidOperationException(
+                        $"Cannot set {nameof(DependenceOrder)} to a non-zero value for a self-setermined user.");
 
-                dependanceOrder = value;
+                dependenceOrder = value;
 
-                if (dependanceOrder != null)
+                if (dependenceOrder != null)
                 {
                     this.AspNetUser = new AspNetUser
                     {
                         PhoneNumber = this.AspNetUser.PhoneNumber,
                         PhoneCountryCode= this.AspNetUser.PhoneCountryCode,
-                        DependenceOrder = dependanceOrder.Value
+                        DependenceOrder = dependenceOrder.Value
                     };
                 }
             }
         }
-        private int? dependanceOrder = null;
+        private int? dependenceOrder = null;
     }
 }

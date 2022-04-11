@@ -5,7 +5,7 @@
         IAspNetUser AspNetUser { get; }
         string FirstName { get; }
         string LastName { get; }
-        string FullName => FirstName + " " + LastName;
+        string FullName { get; }
         bool IsSelfDetermined { get; }
     }
 }

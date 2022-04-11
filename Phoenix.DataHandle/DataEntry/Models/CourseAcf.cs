@@ -8,12 +8,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
 using Phoenix.DataHandle.Main.Entities;
-using System.Globalization;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
     public class CourseAcf : IModelAcf, ICourse
     {
+        private const string DateFormat = "d/M/yyyy";
+
         private CourseAcf()
         {
             this.Books = new List<IBook>();
@@ -49,9 +50,9 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.Level = level.Trim().ToTitleCase();
             this.Group = group.Trim();
             this.Comments = string.IsNullOrWhiteSpace(comments) ? null : comments.Trim();
-            
-            this.FirstDate = GetCourseDate(first_date);
-            this.LastDate = GetCourseDate(last_date);
+
+            this.FirstDate = CalendarExtensions.ParseExact(first_date, DateFormat);
+            this.LastDate = CalendarExtensions.ParseExact(last_date, DateFormat);
 
             this.Books = books
                 .Split(',')
@@ -79,10 +80,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         public CourseUnique GetCourseUnique(SchoolUnique schoolUnique) => new(schoolUnique, this.Code);
 
-        private DateTime GetCourseDate(string dateString) =>
-            DateTime.ParseExact(dateString, "d/M/yyyy", CultureInfo.InvariantCulture);
-
-
+        
         [JsonProperty(PropertyName = "code")]
         public short Code { get; }
 

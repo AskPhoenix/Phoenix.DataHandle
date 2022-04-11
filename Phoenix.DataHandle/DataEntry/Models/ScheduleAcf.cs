@@ -13,6 +13,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
 {
     public class ScheduleAcf : IModelAcf, ISchedule
     {
+        private const string TimeFormat = "H:m";
+
         private ScheduleAcf()
         {
             this.Lectures = new List<ILecture>();
@@ -37,8 +39,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 CultureInfo.InvariantCulture.DateTimeFormat.DayNames, 
                 d => d.Equals(day, StringComparison.InvariantCultureIgnoreCase));
 
-            this.StartTime = GetScheduleTime(start_time);
-            this.EndTime = GetScheduleTime(end_time);
+            this.StartTime = CalendarExtensions.ParseExact(start_time, TimeFormat);
+            this.EndTime = CalendarExtensions.ParseExact(end_time, TimeFormat);
 
             if (!string.IsNullOrWhiteSpace(classroom))
             {
@@ -67,9 +69,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
             s.Course.Code == this.CourseCode &&
             s.DayOfWeek == this.DayOfWeek &&
             s.StartTime == this.StartTime;
-
-        private DateTime GetScheduleTime(string timeString) =>
-            DateTime.ParseExact(timeString, "H:m", CultureInfo.InvariantCulture);
 
 
         [JsonProperty(PropertyName = "course_code")]

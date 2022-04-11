@@ -8,8 +8,7 @@ namespace Phoenix.DataHandle.Main.Entities
         string? Email { get; }
         string PhoneNumber { get; }
         string PhoneCountryCode { get; }
-        string FullPhoneNumber => PhoneCountryCode + PhoneNumber;
-        int DependenceOrder { get; }
+        int DependenceOrder { get; } // Dependance order separates non-self-dependent users. The phone owner takes the order 0.
 
         IUser User { get; }
         IEnumerable<IAspNetUserLogin> AspNetUserLogins { get; }

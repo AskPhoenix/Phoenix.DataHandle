@@ -112,18 +112,6 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IBroadcast> ICourse.Broadcasts => this.Broadcasts;
 
         IEnumerable<IAspNetUser> ICourse.Users => this.Users;
-
-        public string NameWithSubcourse
-        {
-            get
-            {
-                string tore = this.Name;
-                if (!string.IsNullOrEmpty(this.SubCourse))
-                    tore += " - " + this.SubCourse;
-
-                return tore;
-            }
-        }
     }
 
     public partial class Exam : IExam, IModelEntity
@@ -216,6 +204,7 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class User : IUser
     {
+        public string FullName => this.BuildFullName();
         IAspNetUser IUser.AspNetUser => this.AspNetUser;
 
         public int Id => this.AspNetUserId;

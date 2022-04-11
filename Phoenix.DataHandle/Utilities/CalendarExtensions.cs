@@ -26,8 +26,13 @@ namespace Phoenix.DataHandle.Utilities
 
         public static DateTimeOffset ParseExact(string input, string format, string timeZone)
         {
-            var dateTime = DateTime.ParseExact(input, format, CultureInfo.InvariantCulture);
+            var dateTime = CalendarExtensions.ParseExact(input, format);
             return new DateTimeOffset(dateTime, CalculateTimeZoneOffset(timeZone, dateTime));
+        }
+
+        public static DateTime ParseExact(string input, string format)
+        {
+            return DateTime.ParseExact(input, format, CultureInfo.InvariantCulture);
         }
 
         public static DateTimeOffset ParseTime(string input, string timeZone)
