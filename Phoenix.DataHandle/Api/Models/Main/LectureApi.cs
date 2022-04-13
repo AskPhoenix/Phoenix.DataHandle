@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Phoenix.DataHandle.Api.Models.Extensions;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Main.Types;
 
 namespace Phoenix.DataHandle.Api.Models.Main
 {
@@ -14,8 +15,9 @@ namespace Phoenix.DataHandle.Api.Models.Main
         {
             this.Exams = new List<ExamApi>();
             this.Exercises = new List<ExerciseApi>();
-
-            this.Attendees = new List<IAspNetUser>();
+            
+            this.InverseReplacementLecture = new List<ILecture>();
+            this.Attendees = new List<IUser>();
         }
 
         [JsonConstructor]
@@ -83,8 +85,17 @@ namespace Phoenix.DataHandle.Api.Models.Main
         [JsonProperty(PropertyName = "online_meeting_link")]
         public string? OnlineMeetingLink { get; }
 
+        [JsonProperty(PropertyName = "occasion")]
+        public LectureOccasion Occasion { get; }
+
         [JsonProperty(PropertyName = "attendances_noted")]
         public bool AttendancesNoted { get; }
+
+        [JsonProperty(PropertyName = "is_cancelled")]
+        public bool IsCancelled { get; }
+
+        [JsonProperty(PropertyName = "replacement_lecture")]
+        public LectureApi? ReplacementLecture { get; }
 
         [JsonProperty(PropertyName = "comments")]
         public string? Comments { get; }
@@ -98,6 +109,8 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         ICourse ILecture.Course => this.Course;
 
+        ILecture? ILecture.ReplacementLecture => this.ReplacementLecture;
+
         IClassroom? ILecture.Classroom => this.Classroom;
 
         ISchedule? ILecture.Schedule => this.Schedule;
@@ -107,6 +120,9 @@ namespace Phoenix.DataHandle.Api.Models.Main
         IEnumerable<IExercise> ILecture.Exercises => this.Exercises;
 
         [JsonIgnore]
-        public IEnumerable<IAspNetUser> Attendees { get; }
+        public IEnumerable<ILecture> InverseReplacementLecture { get; }
+
+        [JsonIgnore]
+        public IEnumerable<IUser> Attendees { get; }
     }
 }

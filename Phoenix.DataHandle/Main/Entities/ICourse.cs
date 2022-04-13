@@ -21,6 +21,6 @@ namespace Phoenix.DataHandle.Main.Entities
 
         IEnumerable<IBook> Books { get; }
         IEnumerable<IBroadcast> Broadcasts { get; }
-        IEnumerable<IAspNetUser> Users { get; }
+        IEnumerable<IUser> Users { get; }
     }
 }

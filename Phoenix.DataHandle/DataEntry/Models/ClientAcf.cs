@@ -11,7 +11,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         private ClientAcf(string fullName, string phone)
             : base(fullName, phone)
         {
-            this.Role = Role.Parent;
+            this.Role = RoleRank.Parent;
             this.IsSelfDetermined = true;
             this.DependenceOrder = 0;
         }
@@ -41,7 +41,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
             if (this.IsSelfDetermined && string.IsNullOrWhiteSpace(student_phone))
                 throw new ArgumentException("Cannot create self-determined student without a student phone number.");
 
-            this.Role = Role.Student;
+            this.Role = RoleRank.Student;
 
             this.NeedsParentAuthorization = needs_parent_authorization;
 

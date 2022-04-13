@@ -16,9 +16,6 @@ namespace Phoenix.DataHandle.Main.Models
         {
         }
 
-        public virtual DbSet<AspNetRole> AspNetRoles { get; set; } = null!;
-        public virtual DbSet<AspNetUser> AspNetUsers { get; set; } = null!;
-        public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; } = null!;
         public virtual DbSet<Book> Books { get; set; } = null!;
         public virtual DbSet<BotFeedback> BotFeedbacks { get; set; } = null!;
         public virtual DbSet<Broadcast> Broadcasts { get; set; } = null!;
@@ -30,11 +27,15 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<Grade> Grades { get; set; } = null!;
         public virtual DbSet<Lecture> Lectures { get; set; } = null!;
         public virtual DbSet<Material> Materials { get; set; } = null!;
+        public virtual DbSet<OneTimeCode> OneTimeCodes { get; set; } = null!;
+        public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Schedule> Schedules { get; set; } = null!;
         public virtual DbSet<School> Schools { get; set; } = null!;
         public virtual DbSet<SchoolInfo> SchoolInfos { get; set; } = null!;
         public virtual DbSet<SchoolLogin> SchoolLogins { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
+        public virtual DbSet<UserInfo> UserInfos { get; set; } = null!;
+        public virtual DbSet<UserLogin> UserLogins { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -47,178 +48,6 @@ namespace Phoenix.DataHandle.Main.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AspNetRole>(entity =>
-            {
-                entity.HasIndex(e => e.Type, "UQ_AspNetRoles_Type")
-                    .IsUnique();
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Name)
-                    .HasMaxLength(256);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<AspNetUser>(entity =>
-            {
-                entity.HasIndex(e => new { e.PhoneCountryCode, e.PhoneNumber, e.DependenceOrder }, "IX_AspNetUsers_CountryCode_PhoneNumber_DependenceOrder")
-                    .IsUnique();
-
-                entity.HasIndex(e => e.NormalizedUserName, "UQ_AspNetUsers_NormalizedUserName")
-                    .IsUnique();
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Email).HasMaxLength(256);
-
-                entity.Property(e => e.LockoutEnd).HasColumnType("datetime");
-
-                entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
-
-                entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
-
-                entity.Property(e => e.ObviatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.PhoneCountryCode).HasMaxLength(8);
-
-                entity.Property(e => e.PhoneNumber).HasMaxLength(16);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UserName).HasMaxLength(256);
-
-                entity.HasMany(d => d.Children)
-                    .WithMany(p => p.Parents)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "Parenthood",
-                        l => l.HasOne<AspNetUser>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_AspNetUsers_Child"),
-                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("ParentId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_AspNetUsers_Parent"),
-                        j =>
-                        {
-                            j.HasKey("ParentId", "ChildId");
-
-                            j.ToTable("Parenthoods");
-
-                            j.HasIndex(new[] { "ChildId" }, "IX_Parenthoods_Child");
-
-                            j.HasIndex(new[] { "ParentId" }, "IX_Parenthoods_Parent");
-                        });
-
-                entity.HasMany(d => d.Courses)
-                    .WithMany(p => p.Users)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "CourseUser",
-                        l => l.HasOne<Course>().WithMany().HasForeignKey("CourseId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_CourseUsers_Courses"),
-                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_CourseUsers_AspNetUsers"),
-                        j =>
-                        {
-                            j.HasKey("UserId", "CourseId");
-
-                            j.ToTable("CourseUsers");
-
-                            j.HasIndex(new[] { "CourseId" }, "IX_CourseUsers_Course");
-
-                            j.HasIndex(new[] { "UserId" }, "IX_CourseUsers_User");
-                        });
-
-                entity.HasMany(d => d.Lectures)
-                    .WithMany(p => p.Attendees)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "Attendance",
-                        l => l.HasOne<Lecture>().WithMany().HasForeignKey("LectureId").HasConstraintName("FK_Attendances_Lectures"),
-                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("AttendeeId").HasConstraintName("FK_Attendances_AspNetUsers"),
-                        j =>
-                        {
-                            j.HasKey("AttendeeId", "LectureId");
-
-                            j.ToTable("Attendances");
-
-                            j.HasIndex(new[] { "LectureId" }, "IX_Attendances_Lecture");
-                        });
-
-                entity.HasMany(d => d.Parents)
-                    .WithMany(p => p.Children)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "Parenthood",
-                        l => l.HasOne<AspNetUser>().WithMany().HasForeignKey("ParentId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_AspNetUsers_Parent"),
-                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_AspNetUsers_Child"),
-                        j =>
-                        {
-                            j.HasKey("ParentId", "ChildId");
-
-                            j.ToTable("Parenthoods");
-
-                            j.HasIndex(new[] { "ChildId" }, "IX_Parenthoods_Child");
-
-                            j.HasIndex(new[] { "ParentId" }, "IX_Parenthoods_Parent");
-                        });
-
-                entity.HasMany(d => d.Roles)
-                    .WithMany(p => p.Users)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "AspNetUserRole",
-                        l => l.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId").HasConstraintName("FK_AspNetUserRoles_AspNetRoles"),
-                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_AspNetUserRoles_AspNetUsers"),
-                        j =>
-                        {
-                            j.HasKey("UserId", "RoleId");
-
-                            j.ToTable("AspNetUserRoles");
-
-                            j.HasIndex(new[] { "UserId" }, "IX_AspNetUserRoles_AspNetUsers");
-
-                            j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
-                        });
-
-                entity.HasMany(d => d.Schools)
-                    .WithMany(p => p.Users)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "SchoolUser",
-                        l => l.HasOne<School>().WithMany().HasForeignKey("SchoolId").HasConstraintName("FK_SchoolUsers_Schools"),
-                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_SchoolUsers_AspNetUsers"),
-                        j =>
-                        {
-                            j.HasKey("UserId", "SchoolId");
-
-                            j.ToTable("SchoolUsers");
-
-                            j.HasIndex(new[] { "SchoolId" }, "IX_SchoolUsers_School");
-                        });
-            });
-
-            modelBuilder.Entity<AspNetUserLogin>(entity =>
-            {
-                entity.HasKey(e => new { e.UserId, e.ChannelId });
-
-                entity.HasIndex(e => new { e.ChannelId, e.ProviderKey }, "IX_AspNetUserLogins_Channel_ProviderKey")
-                    .IsUnique();
-
-                entity.Property(e => e.ActivatedAt)
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.ProviderKey).HasMaxLength(256);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.VerificationCode).HasMaxLength(64);
-
-                entity.Property(e => e.VerificationCodeExpiresAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Channel)
-                    .WithMany(p => p.AspNetUserLogins)
-                    .HasForeignKey(d => d.ChannelId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_AspNetUserLogins_Channels");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.AspNetUserLogins)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK_AspNetUserLogins_AspNetUsers");
-            });
-
             modelBuilder.Entity<Book>(entity =>
             {
                 entity.HasIndex(e => e.NormalizedName, "IX_Books_NormalizedName")
@@ -249,7 +78,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.BotFeedbacks)
                     .HasForeignKey(d => d.AuthorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_BotFeedback_AspNetUsers");
+                    .HasConstraintName("FK_BotFeedback_Users");
             });
 
             modelBuilder.Entity<Broadcast>(entity =>
@@ -272,7 +101,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.Broadcasts)
                     .HasForeignKey(d => d.AuthorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Broadcasts_AspNetUsers");
+                    .HasConstraintName("FK_Broadcasts_Users");
 
                 entity.HasOne(d => d.School)
                     .WithMany(p => p.Broadcasts)
@@ -294,23 +123,23 @@ namespace Phoenix.DataHandle.Main.Models
 
                             j.HasIndex(new[] { "BroadcastId" }, "IX_BroadcastCourses_Broadcast");
 
-                            j.HasIndex(new[] { "CourseId" }, "IX_BroadcastCourses_CourseId");
+                            j.HasIndex(new[] { "CourseId" }, "IX_BroadcastCourses_Course");
                         });
             });
 
             modelBuilder.Entity<Channel>(entity =>
             {
-                entity.HasIndex(e => e.Code, "UQ_Channels_Code")
+                entity.HasIndex(e => e.Provider, "IX_Channels_Provider")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Provider, "UQ_Channels_Provider")
+                entity.HasIndex(e => e.ProviderName, "IX_Channels_ProviderName")
                     .IsUnique();
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.Provider).HasMaxLength(256);
+                entity.Property(e => e.ProviderName).HasMaxLength(256);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
@@ -376,7 +205,7 @@ namespace Phoenix.DataHandle.Main.Models
 
                             j.ToTable("CourseBooks");
 
-                            j.HasIndex(new[] { "BookId" }, "IX_CourseBooks_BookId");
+                            j.HasIndex(new[] { "BookId" }, "IX_CourseBooks_Book");
 
                             j.HasIndex(new[] { "CourseId" }, "IX_CourseBooks_Course");
                         });
@@ -400,7 +229,7 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Exercise>(entity =>
             {
-                entity.HasIndex(e => e.BookId, "IX_Exercises_BookId");
+                entity.HasIndex(e => e.BookId, "IX_Exercises_Book");
 
                 entity.HasIndex(e => e.LectureId, "IX_Exercises_Lecture");
 
@@ -463,19 +292,23 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.Grades)
                     .HasForeignKey(d => d.StudentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Grades_AspNetUsers");
+                    .HasConstraintName("FK_Grades_Users");
             });
 
             modelBuilder.Entity<Lecture>(entity =>
             {
-                entity.HasIndex(e => e.ClassroomId, "IX_Lectures_ClassroomId");
+                entity.HasIndex(e => e.ClassroomId, "IX_Lectures_Classroom");
 
                 entity.HasIndex(e => new { e.CourseId, e.ScheduleId }, "IX_Lectures_Course_Schedule");
 
-                entity.HasIndex(e => e.ScheduleId, "IX_Lectures_ScheduleId");
+                entity.HasIndex(e => e.ScheduleId, "IX_Lectures_Schedule");
+
+                entity.HasIndex(e => e.Id, "UQ_Lectures_Course_StartDateTime")
+                    .IsUnique();
 
                 entity.Property(e => e.AttendancesNoted)
-                    .IsRequired();
+                    .IsRequired()
+                    .HasDefaultValueSql("(CONVERT([bit],(0)))");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -509,7 +342,7 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<Material>(entity =>
             {
-                entity.HasIndex(e => e.BookId, "IX_Materials_BookId");
+                entity.HasIndex(e => e.BookId, "IX_Materials_Book");
 
                 entity.HasIndex(e => e.ExamId, "IX_Materials_Exam");
 
@@ -533,9 +366,36 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasConstraintName("FK_Materials_Exams");
             });
 
+            modelBuilder.Entity<OneTimeCode>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.ExpiresAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Token).HasMaxLength(16);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.HasIndex(e => e.Rank, "UQ_Roles_Type")
+                    .IsUnique();
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(256)
+                    .HasDefaultValueSql("(N'')");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<Schedule>(entity =>
             {
-                entity.HasIndex(e => e.ClassroomId, "IX_Schedules_ClassroomId");
+                entity.HasIndex(e => e.ClassroomId, "IX_Schedules_Classroom");
 
                 entity.HasIndex(e => e.CourseId, "IX_Schedules_Course");
 
@@ -587,8 +447,7 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<SchoolInfo>(entity =>
             {
-                entity.HasKey(e => e.SchoolId)
-                    .HasName("PK_SchoolSettings");
+                entity.HasKey(e => e.SchoolId);
 
                 entity.ToTable("SchoolInfo");
 
@@ -624,11 +483,15 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<SchoolLogin>(entity =>
             {
-                entity.HasKey(e => new { e.SchoolId, e.ChannelId })
-                    .HasName("PK_SchoolChannel");
-
-                entity.HasIndex(e => new { e.ChannelId, e.ProviderKey }, "UQ_SchoolChannels_Channel_ProviderKey")
+                entity.HasIndex(e => new { e.ChannelId, e.ProviderKey }, "IX_SchoolChannels_Channel_ProviderKey")
                     .IsUnique();
+
+                entity.HasIndex(e => e.Id, "UQ_SchoolLogins_School_Channel")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.ActivatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
@@ -651,24 +514,192 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasKey(e => e.AspNetUserId);
+                entity.HasIndex(e => new { e.PhoneCountryCode, e.PhoneNumber, e.DependenceOrder }, "IX_Users_CountryCode_PhoneNumber_DependenceOrder")
+                    .IsUnique();
 
-                entity.Property(e => e.AspNetUserId).ValueGeneratedNever();
+                entity.HasIndex(e => e.NormalizedUserName, "UQ_Users_NormalizedUserName")
+                    .IsUnique();
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Email).HasMaxLength(256);
+
+                entity.Property(e => e.LockoutEnd).HasColumnType("datetime");
+
+                entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
+
+                entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
+
+                entity.Property(e => e.ObviatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.PhoneCountryCode).HasMaxLength(8);
+
+                entity.Property(e => e.PhoneNumber).HasMaxLength(16);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UserName).HasMaxLength(256);
+
+                entity.HasMany(d => d.Children)
+                    .WithMany(p => p.Parents)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "Parenthood",
+                        l => l.HasOne<User>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Child"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("ParentId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Parent"),
+                        j =>
+                        {
+                            j.HasKey("ParentId", "ChildId");
+
+                            j.ToTable("Parenthoods");
+
+                            j.HasIndex(new[] { "ChildId" }, "IX_Parenthoods_Child");
+
+                            j.HasIndex(new[] { "ParentId" }, "IX_Parenthoods_Parent");
+                        });
+
+                entity.HasMany(d => d.Courses)
+                    .WithMany(p => p.Users)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "CourseUser",
+                        l => l.HasOne<Course>().WithMany().HasForeignKey("CourseId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_CourseUsers_Courses"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_CourseUsers_Users"),
+                        j =>
+                        {
+                            j.HasKey("UserId", "CourseId");
+
+                            j.ToTable("CourseUsers");
+
+                            j.HasIndex(new[] { "CourseId" }, "IX_CourseUsers_Course");
+
+                            j.HasIndex(new[] { "UserId" }, "IX_CourseUsers_User");
+                        });
+
+                entity.HasMany(d => d.Lectures)
+                    .WithMany(p => p.Attendees)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "Attendance",
+                        l => l.HasOne<Lecture>().WithMany().HasForeignKey("LectureId").HasConstraintName("FK_Attendances_Lectures"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("AttendeeId").HasConstraintName("FK_Attendances_Users"),
+                        j =>
+                        {
+                            j.HasKey("AttendeeId", "LectureId");
+
+                            j.ToTable("Attendances");
+
+                            j.HasIndex(new[] { "LectureId" }, "IX_Attendances_Lecture");
+                        });
+
+                entity.HasMany(d => d.Parents)
+                    .WithMany(p => p.Children)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "Parenthood",
+                        l => l.HasOne<User>().WithMany().HasForeignKey("ParentId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Parent"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Child"),
+                        j =>
+                        {
+                            j.HasKey("ParentId", "ChildId");
+
+                            j.ToTable("Parenthoods");
+
+                            j.HasIndex(new[] { "ChildId" }, "IX_Parenthoods_Child");
+
+                            j.HasIndex(new[] { "ParentId" }, "IX_Parenthoods_Parent");
+                        });
+
+                entity.HasMany(d => d.Roles)
+                    .WithMany(p => p.Users)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "UserRole",
+                        l => l.HasOne<Role>().WithMany().HasForeignKey("RoleId").HasConstraintName("FK_UserRoles_Roles"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_UserRoles_Users"),
+                        j =>
+                        {
+                            j.HasKey("UserId", "RoleId");
+
+                            j.ToTable("UserRoles");
+
+                            j.HasIndex(new[] { "RoleId" }, "IX_UserRoles_Role");
+
+                            j.HasIndex(new[] { "UserId" }, "IX_UserRoles_Users");
+                        });
+
+                entity.HasMany(d => d.Schools)
+                    .WithMany(p => p.Users)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "SchoolUser",
+                        l => l.HasOne<School>().WithMany().HasForeignKey("SchoolId").HasConstraintName("FK_SchoolUsers_Schools"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_SchoolUsers_Users"),
+                        j =>
+                        {
+                            j.HasKey("UserId", "SchoolId");
+
+                            j.ToTable("SchoolUsers");
+
+                            j.HasIndex(new[] { "SchoolId" }, "IX_SchoolUsers_School");
+                        });
+            });
+
+            modelBuilder.Entity<UserInfo>(entity =>
+            {
+                entity.HasKey(e => e.UserId);
+
+                entity.ToTable("UserInfo");
+
+                entity.Property(e => e.UserId).ValueGeneratedNever();
 
                 entity.Property(e => e.FirstName)
-                    .HasMaxLength(256);
-
-                entity.Property(e => e.IdentifierCode).HasMaxLength(16);
-
-                entity.Property(e => e.IdentifierCodeExpiresAt).HasColumnType("datetime");
+                    .HasMaxLength(256)
+                    .HasDefaultValueSql("(N'')");
 
                 entity.Property(e => e.LastName)
-                    .HasMaxLength(256);
+                    .HasMaxLength(256)
+                    .HasDefaultValueSql("(N'')");
 
-                entity.HasOne(d => d.AspNetUser)
-                    .WithOne(p => p.User)
-                    .HasForeignKey<User>(d => d.AspNetUserId)
-                    .HasConstraintName("FK_Users_AspNetUsers");
+                entity.HasOne(d => d.IdentificationOneTimeCode)
+                    .WithMany(p => p.UserInfos)
+                    .HasForeignKey(d => d.IdentificationOneTimeCodeId)
+                    .HasConstraintName("FK_UserInfo_OneTimeCodes");
+
+                entity.HasOne(d => d.User)
+                    .WithOne(p => p.UserInfo)
+                    .HasForeignKey<UserInfo>(d => d.UserId)
+                    .HasConstraintName("FK_UserInfo_Users");
+            });
+
+            modelBuilder.Entity<UserLogin>(entity =>
+            {
+                entity.HasIndex(e => new { e.ChannelId, e.ProviderKey }, "IX_UserLogins_Channel_ProviderKey")
+                    .IsUnique();
+
+                entity.HasIndex(e => new { e.UserId, e.ChannelId }, "UQ_UserLogins_User_Channel")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.ActivatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.ProviderKey).HasMaxLength(256);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Channel)
+                    .WithMany(p => p.UserLogins)
+                    .HasForeignKey(d => d.ChannelId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserLogins_Channels");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserLogins)
+                    .HasForeignKey(d => d.UserId)
+                    .HasConstraintName("FK_UserLogins_Users");
+
+                entity.HasOne(d => d.VerificationOneTimeCode)
+                    .WithMany(p => p.UserLogins)
+                    .HasForeignKey(d => d.VerificationOneTimeCodeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserLogins_OneTimeCodes");
             });
 
             OnModelCreatingPartial(modelBuilder);

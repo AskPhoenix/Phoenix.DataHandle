@@ -1,39 +1,160 @@
-﻿using System;
+﻿using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Main.Models.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using Phoenix.DataHandle.Main.Entities;
-using Phoenix.DataHandle.Main.Models.Extensions;
 
 namespace Phoenix.DataHandle.Main.Models
 {
-    public partial class AspNetRole : IAspNetRole, IModelEntity
+    public partial class Book : IBook, IModelEntity
     {
-        IEnumerable<IAspNetUser> IAspNetRole.Users => this.Users;
+        IEnumerable<IExercise> IBook.Exercises => this.Exercises;
+        IEnumerable<IMaterial> IBook.Materials => this.Materials;
+        
+        IEnumerable<ICourse> IBook.Courses => this.Courses;
     }
 
-    public partial class AspNetUser : IAspNetUser, IObviableModelEntity
+    public partial class BotFeedback : IBotFeedback, IModelEntity
     {
-        IUser IAspNetUser.User => this.User;
+        IUser IBotFeedback.Author => this.Author;
+    }
 
-        IEnumerable<IAspNetUserLogin> IAspNetUser.AspNetUserLogins => this.AspNetUserLogins;
+    public partial class Broadcast : IBroadcast, IModelEntity
+    {
+        ISchool IBroadcast.School => this.School;
+        IUser IBroadcast.Author => this.Author;
 
-        IEnumerable<IBotFeedback> IAspNetUser.BotFeedbacks => this.BotFeedbacks;
+        IEnumerable<ICourse> IBroadcast.Courses => this.Courses;
+    }
 
-        IEnumerable<IBroadcast> IAspNetUser.Broadcasts => this.Broadcasts;
+    public partial class Channel : IChannel, IModelEntity
+    {
+        IEnumerable<ISchoolLogin> IChannel.SchoolLogins => this.SchoolLogins;
+        IEnumerable<IUserLogin> IChannel.UserLogins => this.UserLogins;
+    }
 
-        IEnumerable<IGrade> IAspNetUser.Grades => this.Grades;
+    public partial class Classroom : IClassroom, IObviableModelEntity
+    {
+        ISchool IClassroom.School => this.School;
 
-        IEnumerable<IAspNetUser> IAspNetUser.Children => this.Children;
+        IEnumerable<ILecture> IClassroom.Lectures => this.Lectures;
+        IEnumerable<ISchedule> IClassroom.Schedules => this.Schedules;
+    }
 
-        IEnumerable<ICourse> IAspNetUser.Courses => this.Courses;
-        
-        IEnumerable<ILecture> IAspNetUser.Lectures => this.Lectures;
+    public partial class Course : ICourse, IObviableModelEntity
+    {
+        ISchool ICourse.School => this.School;
 
-        IEnumerable<IAspNetUser> IAspNetUser.Parents => this.Parents;
+        IEnumerable<IGrade> ICourse.Grades => this.Grades;
+        IEnumerable<ILecture> ICourse.Lectures => this.Lectures;
+        IEnumerable<ISchedule> ICourse.Schedules => this.Schedules;
 
-        IEnumerable<IAspNetRole> IAspNetUser.Roles => this.Roles;
+        IEnumerable<IBook> ICourse.Books => this.Books;
+        IEnumerable<IBroadcast> ICourse.Broadcasts => this.Broadcasts;
+        IEnumerable<IUser> ICourse.Users => this.Users;
+    }
 
-        IEnumerable<ISchool> IAspNetUser.Schools => this.Schools;
+    public partial class Exam : IExam, IModelEntity
+    {
+        ILecture IExam.Lecture => this.Lecture;
+
+        IEnumerable<IGrade> IExam.Grades => this.Grades;
+        IEnumerable<IMaterial> IExam.Materials => this.Materials;
+    }
+
+    public partial class Exercise : IExercise, IModelEntity
+    {
+        ILecture IExercise.Lecture => this.Lecture;
+        IBook? IExercise.Book => this.Book;
+
+        IEnumerable<IGrade> IExercise.Grades => this.Grades;
+    }
+
+    public partial class Grade : IGrade, IModelEntity
+    {
+        IUser IGrade.Student => this.Student;
+        ICourse? IGrade.Course => this.Course;
+        IExam? IGrade.Exam => this.Exam;
+        IExercise? IGrade.Exercise => this.Exercise;
+    }
+
+    public partial class Lecture : ILecture, IModelEntity
+    {
+        ICourse ILecture.Course => this.Course;
+        IClassroom? ILecture.Classroom => this.Classroom;
+        ISchedule? ILecture.Schedule => this.Schedule;
+        ILecture? ILecture.ReplacementLecture => this.ReplacementLecture;
+
+        IEnumerable<IExam> ILecture.Exams => this.Exams;
+        IEnumerable<IExercise> ILecture.Exercises => this.Exercises;
+        IEnumerable<ILecture> ILecture.InverseReplacementLecture => this.InverseReplacementLecture;
+
+        IEnumerable<IUser> ILecture.Attendees => this.Attendees;
+    }
+
+    public partial class Material : IMaterial, IModelEntity
+    {
+        IExam IMaterial.Exam => this.Exam;
+        IBook? IMaterial.Book => this.Book;
+    }
+
+    public partial class OneTimeCode : IOneTimeCode, IModelEntity
+    {
+        IEnumerable<IUserInfo> IOneTimeCode.UserInfos => this.UserInfos;
+        IEnumerable<IUserLogin> IOneTimeCode.UserLogins => this.UserLogins;
+    }
+
+    public partial class Schedule : ISchedule, IObviableModelEntity
+    {
+        ICourse ISchedule.Course => this.Course;
+        IClassroom? ISchedule.Classroom => this.Classroom;
+
+        IEnumerable<ILecture> ISchedule.Lectures => this.Lectures;
+    }
+
+    public partial class Role : IRole, IModelEntity
+    {
+        IEnumerable<IUser> IRole.Users => this.Users;
+    }
+
+    public partial class School : ISchool, IObviableModelEntity
+    {
+        ISchoolInfo ISchool.SchoolInfo => this.SchoolInfo;
+        IEnumerable<IBroadcast> ISchool.Broadcasts => this.Broadcasts;
+        IEnumerable<IClassroom> ISchool.Classrooms => this.Classrooms;
+        IEnumerable<ICourse> ISchool.Courses => this.Courses;
+        IEnumerable<ISchoolLogin> ISchool.SchoolLogins => this.SchoolLogins;
+
+        IEnumerable<IUser> ISchool.Users => this.Users;
+    }
+
+    public partial class SchoolInfo : ISchoolInfo
+    {
+        ISchool ISchoolInfo.School => this.School;
+    }
+
+    public partial class SchoolLogin : ISchoolLogin, ILoginEntity
+    {
+        ISchool ISchoolLogin.School => this.School;
+
+        IChannel ILoginEntity.Channel => this.Channel;
+    }
+
+    public partial class User : IUser, IObviableModelEntity
+    {
+        IUserInfo IUser.UserInfo => this.UserInfo;
+        IEnumerable<IBotFeedback> IUser.BotFeedbacks => this.BotFeedbacks;
+        IEnumerable<IBroadcast> IUser.Broadcasts => this.Broadcasts;
+        IEnumerable<IGrade> IUser.Grades => this.Grades;
+        IEnumerable<IUserLogin> IUser.UserLogins => this.UserLogins;
+
+        IEnumerable<IUser> IUser.Children => this.Children;
+        IEnumerable<ICourse> IUser.Courses => this.Courses;
+        IEnumerable<ILecture> IUser.Lectures => this.Lectures;
+        IEnumerable<IUser> IUser.Parents => this.Parents;
+        IEnumerable<IRole> IUser.Roles => this.Roles;
+        IEnumerable<ISchool> IUser.Schools => this.Schools;
+
 
         public string GetHashSignature()
         {
@@ -51,162 +172,17 @@ namespace Phoenix.DataHandle.Main.Models
         }
     }
 
-    public partial class AspNetUserLogin : IAspNetUserLogin
+    public partial class UserInfo : IUserInfo
     {
-        IAspNetUser IAspNetUserLogin.User => this.User;
-
-        IChannel IAspNetUserLogin.Channel => this.Channel;
-    }
-
-    public partial class Book : IBook, IModelEntity
-    {
-        IEnumerable<IExercise> IBook.Exercises => this.Exercises;
-
-        IEnumerable<IMaterial> IBook.Materials => this.Materials;
-        
-        IEnumerable<ICourse> IBook.Courses => this.Courses;
-    }
-
-    public partial class BotFeedback : IBotFeedback, IModelEntity
-    {
-        IAspNetUser IBotFeedback.Author => this.Author;
-    }
-
-    public partial class Broadcast : IBroadcast, IModelEntity
-    {
-        ISchool IBroadcast.School => this.School;
-
-        IAspNetUser IBroadcast.Author => this.Author;
-
-        IEnumerable<ICourse> IBroadcast.Courses => this.Courses;
-    }
-
-    public partial class Channel : IChannel, IModelEntity
-    {
-        IEnumerable<IAspNetUserLogin> IChannel.AspNetUserLogins => this.AspNetUserLogins;
-
-        IEnumerable<ISchoolLogin> IChannel.SchoolLogins => this.SchoolLogins;
-    }
-
-    public partial class Classroom : IClassroom, IObviableModelEntity
-    {
-        ISchool IClassroom.School => this.School;
-
-        IEnumerable<ILecture> IClassroom.Lectures => this.Lectures;
-
-        IEnumerable<ISchedule> IClassroom.Schedules => this.Schedules;
-    }
-
-    public partial class Course : ICourse, IObviableModelEntity
-    {
-        ISchool ICourse.School => this.School;
-
-        IEnumerable<IGrade> ICourse.Grades => this.Grades;
-
-        IEnumerable<ILecture> ICourse.Lectures => this.Lectures;
-
-        IEnumerable<ISchedule> ICourse.Schedules => this.Schedules;
-
-        IEnumerable<IBook> ICourse.Books => this.Books;
-
-        IEnumerable<IBroadcast> ICourse.Broadcasts => this.Broadcasts;
-
-        IEnumerable<IAspNetUser> ICourse.Users => this.Users;
-    }
-
-    public partial class Exam : IExam, IModelEntity
-    {
-        ILecture IExam.Lecture => this.Lecture;
-
-        IEnumerable<IGrade> IExam.Grades => this.Grades;
-
-        IEnumerable<IMaterial> IExam.Materials => this.Materials;
-    }
-
-    public partial class Exercise : IExercise, IModelEntity
-    {
-        IEnumerable<IGrade> IExercise.Grades => this.Grades;
-
-        ILecture IExercise.Lecture => this.Lecture;
-
-        IBook? IExercise.Book => this.Book;
-    }
-
-    public partial class Grade : IGrade, IModelEntity
-    {
-        IAspNetUser IGrade.Student => this.Student;
-
-        ICourse? IGrade.Course => this.Course;
-
-        IExam? IGrade.Exam => this.Exam;
-
-        IExercise? IGrade.Exercise => this.Exercise;
-    }
-
-    public partial class Lecture : ILecture, IModelEntity
-    {
-        ICourse ILecture.Course => this.Course;
-
-        IClassroom? ILecture.Classroom => this.Classroom;
-
-        ISchedule? ILecture.Schedule => this.Schedule;
-
-        IEnumerable<IExam> ILecture.Exams => this.Exams;
-
-        IEnumerable<IExercise> ILecture.Exercises => this.Exercises;
-
-        IEnumerable<IAspNetUser> ILecture.Attendees => this.Attendees;
-    }
-
-    public partial class Material : IMaterial, IModelEntity
-    {
-        IExam IMaterial.Exam => this.Exam;
-
-        IBook? IMaterial.Book => this.Book;
-    }
-
-    public partial class Schedule : ISchedule, IObviableModelEntity
-    {
-        ICourse ISchedule.Course => this.Course;
-
-        IClassroom? ISchedule.Classroom => this.Classroom;
-
-        IEnumerable<ILecture> ISchedule.Lectures => this.Lectures;
-    }
-
-    public partial class School : ISchool, IObviableModelEntity
-    {
-        ISchoolInfo ISchool.SchoolInfo => this.SchoolInfo;
-        IEnumerable<IBroadcast> ISchool.Broadcasts => this.Broadcasts;
-
-        IEnumerable<IClassroom> ISchool.Classrooms => this.Classrooms;
-
-        IEnumerable<ICourse> ISchool.Courses => this.Courses;
-
-        IEnumerable<ISchoolLogin> ISchool.SchoolLogins => this.SchoolLogins;
-
-        IEnumerable<IAspNetUser> ISchool.Users => this.Users;
-    }
-
-    public partial class SchoolInfo : ISchoolInfo
-    {
-        ISchool ISchoolInfo.School => this.School;
-
-        public int Id => this.SchoolId;
-    }
-
-    public partial class SchoolLogin : ISchoolLogin
-    {
-        ISchool ISchoolLogin.School => this.School;
-
-        IChannel ISchoolLogin.Channel => this.Channel;
-    }
-
-    public partial class User : IUser
-    {
+        IUser IUserInfo.User => this.User;
         public string FullName => this.BuildFullName();
-        IAspNetUser IUser.AspNetUser => this.AspNetUser;
+    }
 
-        public int Id => this.AspNetUserId;
+    public partial class UserLogin : IUserLogin, ILoginEntity
+    {
+        IUser IUserLogin.User => this.User;
+        IOneTimeCode IUserLogin.VerificationOneTimeCode => this.VerificationOneTimeCode;
+
+        IChannel ILoginEntity.Channel => this.Channel;
     }
 }

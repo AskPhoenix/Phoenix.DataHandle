@@ -10,7 +10,7 @@ namespace Phoenix.DataHandle.Main.Models
             Exams = new HashSet<Exam>();
             Exercises = new HashSet<Exercise>();
             InverseReplacementLecture = new HashSet<Lecture>();
-            Attendees = new HashSet<AspNetUser>();
+            Attendees = new HashSet<User>();
         }
 
         public int Id { get; set; }
@@ -22,12 +22,12 @@ namespace Phoenix.DataHandle.Main.Models
         public string? OnlineMeetingLink { get; set; }
         public Types.LectureOccasion Occasion { get; set; }
         public bool AttendancesNoted { get; set; }
-        public string? Comments { get; set; }
         public bool IsCancelled { get; set; }
         public int? ReplacementLectureId { get; set; }
+        public string? Comments { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        
+
         public virtual Classroom? Classroom { get; set; }
         public virtual Course Course { get; set; } = null!;
         public virtual Lecture? ReplacementLecture { get; set; }
@@ -36,6 +36,6 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual ICollection<Exercise> Exercises { get; set; }
         public virtual ICollection<Lecture> InverseReplacementLecture { get; set; }
 
-        public virtual ICollection<AspNetUser> Attendees { get; set; }
+        public virtual ICollection<User> Attendees { get; set; }
     }
 }

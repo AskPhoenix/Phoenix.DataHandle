@@ -11,7 +11,7 @@ using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
-    public abstract class UserAcf : IUser
+    public abstract class UserAcf : IUserInfo
     {
         private UserAcf()
         {
@@ -28,12 +28,12 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.FirstName = this.ResolveFirstName();
             this.LastName = this.ResolveLastName();
 
-            this.AspNetUser = new AspNetUser
+            this.User = new User
             {
                 PhoneNumber = phone
             };
 
-            this.PhoneString = this.AspNetUser.PhoneNumber;
+            this.PhoneString = this.User.PhoneNumber;
         }
 
         public UserAcf(string fullName, string phone, string? courseCodes)
@@ -53,19 +53,19 @@ namespace Phoenix.DataHandle.DataEntry.Models
         }
 
         // TODO: Check if this can be translated to SQL query. If yes, delete the other GetUniqueExpression method
-        // Unique expression is linked with the AspNetUser object
-        public Expression<Func<AspNetUser, bool>> GetUniqueExpression(string phoneCountryCode, int dependanceOrder) => u =>
+        // Unique expression is linked with the User object
+        public Expression<Func<User, bool>> GetUniqueExpression(string phoneCountryCode, int dependanceOrder) => u =>
             u.PhoneCountryCode == phoneCountryCode &&
-            u.PhoneNumber == this.AspNetUser.PhoneNumber && 
+            u.PhoneNumber == this.User.PhoneNumber && 
             u.DependenceOrder == dependanceOrder;
         
-        public Expression<Func<AspNetUser, bool>> GetUniqueExpression()
+        public Expression<Func<User, bool>> GetUniqueExpression()
         {
-            if (this.AspNetUser is null)
+            if (this.User is null)
                 throw new InvalidOperationException(
                     $"Properties {nameof(PhoneCountryCode)} and {nameof(DependenceOrder)} must be set first.");
 
-            return GetUniqueExpression(this.AspNetUser.PhoneCountryCode, this.AspNetUser.DependenceOrder);
+            return GetUniqueExpression(this.User.PhoneCountryCode, this.User.DependenceOrder);
         }
 
         [JsonIgnore]
@@ -84,7 +84,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public string CourseCodesString { get; } = string.Empty;
 
         [JsonIgnore]
-        public Role Role { get; protected set; }
+        public RoleRank Role { get; protected set; }
 
         [JsonIgnore]
         public bool IsSelfDetermined { get; protected set; }
@@ -93,18 +93,18 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public List<short> CourseCodes { get; }
 
         [JsonIgnore]
-        public IAspNetUser AspNetUser 
+        public IUser User 
         {
             get 
             {
                 if (this.PhoneCountryCode is null || this.DependenceOrder is null)
                     return null!;
 
-                return aspNetUser!;
+                return user!;
             }
-            private set { aspNetUser = value; }
+            private set { user = value; }
         }
-        private IAspNetUser? aspNetUser = null;
+        private IUser? user = null;
 
         [JsonIgnore]
         public string? PhoneCountryCode 
@@ -120,11 +120,11 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
                 phoneCountryCode = value;
 
-                this.AspNetUser = new AspNetUser
+                this.User = new User
                 {
-                    PhoneNumber = this.AspNetUser.PhoneNumber,
+                    PhoneNumber = this.User.PhoneNumber,
                     PhoneCountryCode = value,
-                    DependenceOrder = this.AspNetUser.DependenceOrder
+                    DependenceOrder = this.User.DependenceOrder
                 };
             }
         }
@@ -152,10 +152,10 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
                 if (dependenceOrder != null)
                 {
-                    this.AspNetUser = new AspNetUser
+                    this.User = new User
                     {
-                        PhoneNumber = this.AspNetUser.PhoneNumber,
-                        PhoneCountryCode= this.AspNetUser.PhoneCountryCode,
+                        PhoneNumber = this.User.PhoneNumber,
+                        PhoneCountryCode= this.User.PhoneCountryCode,
                         DependenceOrder = dependenceOrder.Value
                     };
                 }

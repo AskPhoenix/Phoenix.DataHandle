@@ -3,21 +3,22 @@ using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Main.Models
 {
-    public partial class Channel
+    public partial class OneTimeCode
     {
-        public Channel()
+        public OneTimeCode()
         {
-            SchoolLogins = new HashSet<SchoolLogin>();
+            UserInfos = new HashSet<UserInfo>();
             UserLogins = new HashSet<UserLogin>();
         }
 
         public int Id { get; set; }
-        public Types.ChannelProvider Provider { get; set; }
-        public string ProviderName { get; set; } = null!;
+        public string Token { get; set; } = null!;
+        public Types.OneTimeCodePurpose Purpose { get; set; }
+        public DateTime ExpiresAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual ICollection<SchoolLogin> SchoolLogins { get; set; }
+        public virtual ICollection<UserInfo> UserInfos { get; set; }
         public virtual ICollection<UserLogin> UserLogins { get; set; }
     }
 }

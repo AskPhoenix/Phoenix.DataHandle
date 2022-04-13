@@ -19,6 +19,6 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual Course? Course { get; set; }
         public virtual Exam? Exam { get; set; }
         public virtual Exercise? Exercise { get; set; }
-        public virtual AspNetUser Student { get; set; } = null!;
+        public virtual User Student { get; set; } = null!;
     }
 }

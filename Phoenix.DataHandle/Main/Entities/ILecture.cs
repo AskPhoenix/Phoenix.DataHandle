@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Phoenix.DataHandle.Main.Types;
+using System;
 using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Main.Entities
@@ -11,12 +12,16 @@ namespace Phoenix.DataHandle.Main.Entities
         DateTimeOffset StartDateTime { get; }
         DateTimeOffset EndDateTime { get; }
         string? OnlineMeetingLink { get; }
+        LectureOccasion Occasion { get; }
         bool AttendancesNoted { get; }
+        bool IsCancelled { get; }
+        ILecture? ReplacementLecture { get; }
         string? Comments { get; }
 
         IEnumerable<IExam> Exams { get; }
         IEnumerable<IExercise> Exercises { get; }
+        IEnumerable<ILecture> InverseReplacementLecture { get; }
 
-        IEnumerable<IAspNetUser> Attendees { get; }
+        IEnumerable<IUser> Attendees { get; }
     }
 }

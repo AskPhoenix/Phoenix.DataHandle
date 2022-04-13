@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IAspNetRole
+    public interface IRole
     {
-        Role Type { get; }
+        RoleRank Rank { get; }
         string? Name { get; }
 
-        IEnumerable<IAspNetUser> Users { get; }
+        IEnumerable<IUser> Users { get; }
     }
 }

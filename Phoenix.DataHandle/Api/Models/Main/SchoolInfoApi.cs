@@ -42,7 +42,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
                   schoolInfo.SecondaryLanguage, schoolInfo.SecondaryLocale, schoolInfo.TimeZone, schoolInfo.PhoneCountryCode)
         {
             if (schoolInfo is SchoolInfo schoolInfo1)
-                this.Id = schoolInfo1.Id;
+                this.Id = schoolInfo1.SchoolId;
         }
 
         [JsonProperty(PropertyName = "id")]

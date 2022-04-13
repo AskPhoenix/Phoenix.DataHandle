@@ -16,7 +16,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
             if (string.IsNullOrWhiteSpace(phone))
                 throw new ArgumentNullException(nameof(phone));
 
-            this.Role = role.Replace(" ", "").ToRole();
+            this.Role = role.Replace(" ", "").ToRoleRank();
             if (!this.Role.IsStaffOrBackend())
                 throw new ArgumentOutOfRangeException(nameof(role));
 

@@ -6,10 +6,6 @@ dotnet ef dbcontext scaffold "%cs%" Microsoft.EntityFrameworkCore.SqlServer ^
 --output-dir "Main\Models" ^
 --use-database-names ^
 --force ^
---table "dbo.AspNetRoles" ^
---table "dbo.AspNetUserLogins" ^
---table "dbo.AspNetUserRoles" ^
---table "dbo.AspNetUsers" ^
 --table "dbo.Attendances" ^
 --table "dbo.Books" ^
 --table "dbo.BotFeedback" ^
@@ -25,12 +21,17 @@ dotnet ef dbcontext scaffold "%cs%" Microsoft.EntityFrameworkCore.SqlServer ^
 --table "dbo.Grades" ^
 --table "dbo.Lectures" ^
 --table "dbo.Materials" ^
+--table "dbo.OneTimeCodes" ^
 --table "dbo.Parenthoods" ^
+--table "dbo.Roles" ^
 --table "dbo.Schedules" ^
 --table "dbo.SchoolInfo" ^
 --table "dbo.SchoolLogins" ^
 --table "dbo.Schools" ^
 --table "dbo.SchoolUsers" ^
+--table "dbo.UserInfo" ^
+--table "dbo.UserLogins" ^
+--table "dbo.UserRoles" ^
 --table "dbo.Users"
 
 Pause

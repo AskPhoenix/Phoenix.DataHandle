@@ -14,9 +14,9 @@ namespace Phoenix.DataHandle.Main.Entities
         }
     }
 
-    public static class UserExtensions
+    public static class UserInfoExtensions
     {
-        private static string ResolveName(this IUser me, bool selFirstName)
+        private static string ResolveName(this IUserInfo me, bool selFirstName)
         {
             var names = me.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
@@ -32,30 +32,30 @@ namespace Phoenix.DataHandle.Main.Entities
             return tore;
         }
 
-        public static string ResolveFirstName(this IUser me)
+        public static string ResolveFirstName(this IUserInfo me)
         {
             return me.ResolveName(selFirstName: true);
         }
 
-        public static string ResolveLastName(this IUser me)
+        public static string ResolveLastName(this IUserInfo me)
         {
             return me.ResolveName(selFirstName: false);
         }
 
-        public static string BuildFullName(this IUser me)
+        public static string BuildFullName(this IUserInfo me)
         {
             return me.FirstName + " " + me.LastName;
         }
     }
 
-    public static class AspNetUserExtensions
+    public static class UserExtensions
     {
-        public static string GetUserName(this IAspNetUser me, int schoolCode)
+        public static string GetUserName(this IUser me, int schoolCode)
         {
-            return "S" + schoolCode + "_P" + me.PhoneNumber + "_N" + me.User.FirstName + "_O" + me.DependenceOrder;
+            return "S" + schoolCode + "_P" + me.PhoneNumber + "_N" + me.UserInfo.FirstName + "_O" + me.DependenceOrder;
         }
 
-        public static string GetFullPhoneNumber(this IAspNetUser me)
+        public static string GetFullPhoneNumber(this IUser me)
         {
             return me.PhoneCountryCode + me.PhoneNumber;
         }

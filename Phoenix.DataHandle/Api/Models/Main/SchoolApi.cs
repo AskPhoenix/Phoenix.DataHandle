@@ -17,7 +17,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
             this.Broadcasts = new List<IBroadcast>();
             this.SchoolLogins = new List<ISchoolLogin>();
-            this.Users = new List<IAspNetUser>();
+            this.Users = new List<IUser>();
         }
 
         [JsonConstructor]
@@ -111,6 +111,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public IEnumerable<ISchoolLogin> SchoolLogins { get; }
 
         [JsonIgnore]
-        public IEnumerable<IAspNetUser> Users { get; }
+        public IEnumerable<IUser> Users { get; }
     }
 }

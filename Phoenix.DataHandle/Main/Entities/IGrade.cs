@@ -2,7 +2,7 @@
 {
     public interface IGrade
     {
-        IAspNetUser Student { get; }
+        IUser Student { get; }
         ICourse? Course { get; }
         IExam? Exam { get; }
         IExercise? Exercise { get; }

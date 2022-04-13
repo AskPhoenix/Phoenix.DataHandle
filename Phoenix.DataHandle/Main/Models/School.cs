@@ -11,7 +11,7 @@ namespace Phoenix.DataHandle.Main.Models
             Classrooms = new HashSet<Classroom>();
             Courses = new HashSet<Course>();
             SchoolLogins = new HashSet<SchoolLogin>();
-            Users = new HashSet<AspNetUser>();
+            Users = new HashSet<User>();
         }
 
         public int Id { get; set; }
@@ -24,13 +24,13 @@ namespace Phoenix.DataHandle.Main.Models
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? ObviatedAt { get; set; }
-
+        
         public virtual SchoolInfo SchoolInfo { get; set; } = null!;
         public virtual ICollection<Broadcast> Broadcasts { get; set; }
         public virtual ICollection<Classroom> Classrooms { get; set; }
         public virtual ICollection<Course> Courses { get; set; }
         public virtual ICollection<SchoolLogin> SchoolLogins { get; set; }
 
-        public virtual ICollection<AspNetUser> Users { get; set; }
+        public virtual ICollection<User> Users { get; set; }
     }
 }
