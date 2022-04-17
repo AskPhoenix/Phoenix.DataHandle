@@ -5,8 +5,6 @@ VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Phoenix.DataHandle", "Phoenix.DataHandle\Phoenix.DataHandle.csproj", "{3CD55F9E-0045-4E2B-BD88-2B94DEB2FC99}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E8B07192-05EB-4371-B78B-2C61947A6609}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Phoenix.DataHandle.Tests", "Phoenix.DataHandle.Tests\Phoenix.DataHandle.Tests.csproj", "{A420B8B6-5C0E-4F37-AAF0-6899697C8A43}"
 EndProject
 Global
@@ -26,9 +24,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{A420B8B6-5C0E-4F37-AAF0-6899697C8A43} = {E8B07192-05EB-4371-B78B-2C61947A6609}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C20559F6-326F-4ABA-B77F-6B60746AD21D}

@@ -36,15 +36,15 @@ namespace Phoenix.DataHandle.Tests
         [Fact]
         public async void AspNetUserApiTestAsync()
         {
-            var aspNetUser = await _phoenixContext.AspNetUsers.Include(u => u.User)
+            var aspNetUser = await _phoenixContext.Users.Include(u => u.UserInfo)
                 .Include(u => u.Courses)
                 .FirstOrDefaultAsync()
-                ?? new AspNetUser
+                ?? new User
                 {
                     PhoneNumber = "0000000000",
                     Email = "kati@kapou.com",
                     UserName = "kapoios",
-                    User = new User
+                    UserInfo = new UserInfo
                     {
                         FirstName = "Kapoios",
                         LastName = "Kapoiou",
@@ -53,10 +53,10 @@ namespace Phoenix.DataHandle.Tests
                     }
                 };
 
-            var aspNetUserApi = new AspNetUserApi(aspNetUser);
+            var aspNetUserApi = new UserApi(aspNetUser);
 
             JsonUtilities.SaveToFile(aspNetUserApi, OutDirName, nameof(aspNetUser));
-            var aspNetUser2 = JsonUtilities.ReadFromFile<AspNetUserApi>(OutDirName, nameof(aspNetUser));
+            var aspNetUser2 = JsonUtilities.ReadFromFile<UserApi>(OutDirName, nameof(aspNetUser));
         }
 
         [Fact]
