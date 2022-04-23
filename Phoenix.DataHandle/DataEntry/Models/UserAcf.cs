@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
@@ -50,22 +49,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
                 this.CourseCodesString = courseCodes;
             }
-        }
-
-        // TODO: Check if this can be translated to SQL query. If yes, delete the other GetUniqueExpression method
-        // Unique expression is linked with the User object
-        public Expression<Func<User, bool>> GetUniqueExpression(string phoneCountryCode, int dependanceOrder) => u =>
-            u.PhoneCountryCode == phoneCountryCode &&
-            u.PhoneNumber == this.User.PhoneNumber && 
-            u.DependenceOrder == dependanceOrder;
-        
-        public Expression<Func<User, bool>> GetUniqueExpression()
-        {
-            if (this.User is null)
-                throw new InvalidOperationException(
-                    $"Properties {nameof(PhoneCountryCode)} and {nameof(DependenceOrder)} must be set first.");
-
-            return GetUniqueExpression(this.User.PhoneCountryCode, this.User.DependenceOrder);
         }
 
         [JsonIgnore]

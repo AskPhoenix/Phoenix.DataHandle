@@ -1,14 +1,13 @@
 ﻿using Newtonsoft.Json;
+using Phoenix.DataHandle.DataEntry.Models.Extensions;
+using Phoenix.DataHandle.DataEntry.Models.Uniques;
+using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
-using Phoenix.DataHandle.DataEntry.Models.Uniques;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
-using Phoenix.DataHandle.DataEntry.Models.Extensions;
-using Phoenix.DataHandle.Main.Entities;
-using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
@@ -56,8 +55,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
             this.BotLanguage = this.SchoolInfo.PrimaryLanguage;
         }
-
-        public Expression<Func<School, bool>> GetUniqueExpression() => s => s.Code == this.Code;
 
         public SchoolUnique GetSchoolUnique() => new(this.Code);
 

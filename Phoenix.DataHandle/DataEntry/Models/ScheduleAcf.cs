@@ -1,13 +1,11 @@
-﻿using System;
-using Newtonsoft.Json;
-using System.Globalization;
-using Phoenix.DataHandle.Utilities;
-using Phoenix.DataHandle.Main.Models;
-using System.Linq.Expressions;
-using Phoenix.DataHandle.DataEntry.Models.Uniques;
+﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
 using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Utilities;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
@@ -57,19 +55,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.StartTimeString = start_time;
             this.EndTimeString = end_time;
         }
-
-        public Expression<Func<Schedule, bool>> GetUniqueExpression(SchoolUnique schoolUnique) => s =>
-            s.Course.School.Code == schoolUnique.Code &&
-            s.Course.Code == this.CourseCode &&
-            s.DayOfWeek == this.DayOfWeek &&
-            s.StartTime == this.StartTime;
-
-        public Expression<Func<Schedule, bool>> GetUniqueExpression(int schoolId) => s =>
-            s.Course.School.Id == schoolId &&
-            s.Course.Code == this.CourseCode &&
-            s.DayOfWeek == this.DayOfWeek &&
-            s.StartTime == this.StartTime;
-
 
         [JsonProperty(PropertyName = "course_code")]
         public short CourseCode { get; }

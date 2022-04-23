@@ -1,13 +1,12 @@
 ﻿using Newtonsoft.Json;
+using Phoenix.DataHandle.DataEntry.Models.Extensions;
+using Phoenix.DataHandle.DataEntry.Models.Uniques;
+using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
-using Phoenix.DataHandle.DataEntry.Models.Uniques;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using Phoenix.DataHandle.DataEntry.Models.Extensions;
-using Phoenix.DataHandle.Main.Entities;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
@@ -69,14 +68,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.FirstDateString = first_date;
             this.LastDateString = last_date;
         }
-
-        public Expression<Func<Course, bool>> GetUniqueExpression(SchoolUnique schoolUnique) => c =>
-            c.School.Code == schoolUnique.Code &&
-            c.Code == this.Code;
-
-        public Expression<Func<Course, bool>> GetUniqueExpression(int schoolId) => c =>
-            c.School.Id == schoolId &&
-            c.Code == this.Code;
 
         public CourseUnique GetCourseUnique(SchoolUnique schoolUnique) => new(schoolUnique, this.Code);
 
