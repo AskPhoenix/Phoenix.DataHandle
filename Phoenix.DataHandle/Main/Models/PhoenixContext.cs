@@ -41,7 +41,6 @@ namespace Phoenix.DataHandle.Main.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseSqlServer("Server=.;Database=PhoenicopterusDB;Trusted_Connection=True;");
             }
         }
@@ -390,8 +389,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Name)
-                    .HasMaxLength(256)
-                    .HasDefaultValueSql("(N'')");
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
@@ -651,12 +649,10 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.UserId).ValueGeneratedNever();
 
                 entity.Property(e => e.FirstName)
-                    .HasMaxLength(256)
-                    .HasDefaultValueSql("(N'')");
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.LastName)
-                    .HasMaxLength(256)
-                    .HasDefaultValueSql("(N'')");
+                    .HasMaxLength(256);
 
                 entity.HasOne(d => d.User)
                     .WithOne(p => p.UserInfo)
