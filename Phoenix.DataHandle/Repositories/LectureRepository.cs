@@ -10,7 +10,7 @@ using Phoenix.DataHandle.Main.Types;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public sealed class LectureRepository : Repository<Lecture>
+    public sealed class LectureRepository : ObviableRepository<Lecture>
     {
         public bool SearchNonCancelledOnly { get; set; } = true;
 

@@ -1,6 +1,5 @@
 ﻿using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models.Extensions;
-using Phoenix.DataHandle.Main.Types;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -96,7 +95,7 @@ namespace Phoenix.DataHandle.Main.Models
         IExercise? IGrade.Exercise => this.Exercise;
     }
 
-    public partial class Lecture : ILecture, IModelEntity
+    public partial class Lecture : ILecture, IObviableModelEntity
     {
         ICourse ILecture.Course => this.Course;
         IClassroom? ILecture.Classroom => this.Classroom;

@@ -307,6 +307,8 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.EndDateTime).HasPrecision(0);
 
+                entity.Property(e => e.ObviatedAt).HasColumnType("datetime");
+
                 entity.Property(e => e.StartDateTime).HasPrecision(0);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");

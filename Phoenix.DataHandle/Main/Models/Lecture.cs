@@ -27,6 +27,7 @@ namespace Phoenix.DataHandle.Main.Models
         public string? Comments { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public DateTime? ObviatedAt { get; set; }
 
         public virtual Classroom? Classroom { get; set; }
         public virtual Course Course { get; set; } = null!;
