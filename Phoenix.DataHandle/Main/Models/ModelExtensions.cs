@@ -120,15 +120,7 @@ namespace Phoenix.DataHandle.Main.Models
     {
         IUser IOneTimeCode.User => this.User;
     }
-
-    public partial class Schedule : ISchedule, IObviableModelEntity
-    {
-        ICourse ISchedule.Course => this.Course;
-        IClassroom? ISchedule.Classroom => this.Classroom;
-
-        IEnumerable<ILecture> ISchedule.Lectures => this.Lectures;
-    }
-
+    
     public partial class Role : IRole, INormalizableEntity
     {
         IEnumerable<IUser> IRole.Users => this.Users;
@@ -137,6 +129,14 @@ namespace Phoenix.DataHandle.Main.Models
         {
             this.Name = this.Rank.ToString();
         }
+    }
+
+    public partial class Schedule : ISchedule, IObviableModelEntity
+    {
+        ICourse ISchedule.Course => this.Course;
+        IClassroom? ISchedule.Classroom => this.Classroom;
+
+        IEnumerable<ILecture> ISchedule.Lectures => this.Lectures;
     }
 
     public partial class School : ISchool, IObviableModelEntity

@@ -5,12 +5,8 @@ using Xunit;
 
 namespace Phoenix.DataHandle.Tests
 {
-    public class UtilityTests
+    public class UtilityTests : TestsBase
     {
-        public UtilityTests()
-        {
-        }
-
         [Fact]
         public void EnumExtensionsTest()
         {

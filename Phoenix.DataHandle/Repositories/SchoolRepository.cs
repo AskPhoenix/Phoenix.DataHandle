@@ -1,90 +1,97 @@
 ﻿using System;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Phoenix.DataHandle.Main;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using Phoenix.DataHandle.DataEntry.Models.Uniques;
+using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Utilities;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class SchoolRepository : ObviableRepository<School>
+    public sealed class SchoolRepository : ObviableRepository<School>
     {
-        public SchoolRepository(PhoenixContext dbContext) : base(dbContext) { }
-
-        // TODO: Remove and use method: TModel Update(TModel model)
-        public School Update(School tModel, School tModelFrom)
+        public SchoolRepository(PhoenixContext dbContext) 
+            : base(dbContext) 
         {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-            if (tModelFrom == null)
-                throw new ArgumentNullException(nameof(tModelFrom));
-
-            tModel.Name = tModelFrom.Name;
-            tModel.Slug = tModelFrom.Slug;
-            tModel.City = tModelFrom.City;
-            tModel.AddressLine = tModelFrom.AddressLine;
-            tModel.Info = tModelFrom.Info;
-
-            //The columns of the unique keys should not be copied
-
-            if (!string.IsNullOrWhiteSpace(tModelFrom.FacebookPageId))
-                tModel.FacebookPageId = tModelFrom.FacebookPageId;
-
-            return this.Update(tModel);
+            Include(s => s.SchoolInfo);
         }
 
-        public School Update(School tModel, School tModelFrom, SchoolSettings tModel2From)
+        public static Expression<Func<School, bool>> GetUniqueExpression(int schoolCode)
         {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-            if (tModel2From == null)
-                throw new ArgumentNullException(nameof(tModel2From));
-
-            tModel.SchoolSettings.Language = tModel2From.Language;
-            tModel.SchoolSettings.Locale2 = tModel2From.Locale2;
-            tModel.SchoolSettings.TimeZone = tModel2From.TimeZone;
-
-            return this.Update(tModel, tModelFrom);
+            return s => s.Code == schoolCode;
         }
 
-        public IQueryable<Course> FindCourses(int id)
+        #region Find Unique
+
+        public School? FindUnique(int schoolCode)
         {
-            this.Include(a => a.Course);
-            return this.Find().Where(a => a.Id == id).SelectMany(a => a.Course);
+            return FindUnique(GetUniqueExpression(schoolCode));
         }
 
-        public IQueryable<Classroom> FindClassrooms(int id)
+        public School? FindUnique(ISchool school)
         {
-            this.Include(a => a.Classroom);
-            return this.Find().Where(a => a.Id == id).SelectMany(a => a.Classroom);
+            if (school is null)
+                throw new ArgumentNullException(nameof(school));
+
+            return FindUnique(school.Code);
         }
 
-        public IQueryable<AspNetUsers> FindUsers(int id)
+        public School? FindUnique(SchoolUnique schoolUnique)
         {
-            return this.Find()
-                .Include(a => a.UserSchool)
-                .ThenInclude(a => a.AspNetUser)
-                .Where(a => a.Id == id)
-                .SelectMany(a => a.UserSchool)
-                .Select(a => a.AspNetUser);
+            return FindUnique(schoolUnique.Code);
         }
 
-        public IQueryable<AspNetUsers> FindPersonnel(int id)
+        public async Task<School?> FindUniqueAsync(int schoolCode,
+            CancellationToken cancellationToken = default)
         {
-            var personnelRoles = RoleExtensions.GetPersonnelRoles();
-            return this.FindUsers(id)
-                .Where(u => u.AspNetUserRoles.Any(ur => personnelRoles.Contains(ur.Role.Type)));
+            return await FindUniqueAsync(GetUniqueExpression(schoolCode), cancellationToken);
         }
 
-        public IQueryable<AspNetUsers> FindClients(int id)
+        public async Task<School?> FindUniqueAsync(ISchool school,
+            CancellationToken cancellationToken = default)
         {
-            var clientRoles = RoleExtensions.GetClientRoles();
-            return this.FindUsers(id)
-                .Where(u => u.AspNetUserRoles.Any(ur => clientRoles.Contains(ur.Role.Type)));
+            if (school is null)
+                throw new ArgumentNullException(nameof(school));
+
+            return await FindUniqueAsync(school.Code, cancellationToken);
         }
 
-        public SchoolSettings FindSchoolSettings(int id)
+        public async Task<School?> FindUniqueAsync(SchoolUnique schoolUnique,
+            CancellationToken cancellationToken = default)
         {
-            return this.dbContext.Set<SchoolSettings>().Single(a => a.SchoolId == id);
+            return await FindUniqueAsync(schoolUnique.Code, cancellationToken);
         }
+
+        #endregion
+
+        #region Update
+
+        public School UpdateWithSchoolInfo(School school, ISchool schoolFrom)
+        {
+            CopySchoolInfo(school.SchoolInfo, schoolFrom.SchoolInfo);
+            return Update(school, schoolFrom);
+        }
+
+        public async Task<School> UpdateWithSchoolInfoAsync(School school, ISchool schoolFrom,
+            CancellationToken cancellationToken = default)
+        {
+            CopySchoolInfo(school.SchoolInfo, schoolFrom.SchoolInfo);
+            return await UpdateAsync(school, schoolFrom, cancellationToken);
+        }
+
+        public SchoolInfo CopySchoolInfo(SchoolInfo schoolInfo, ISchoolInfo schoolInfoFrom)
+        {
+            if (schoolInfoFrom is null)
+                throw new ArgumentNullException(nameof(schoolInfoFrom));
+            if (schoolInfo is null)
+                schoolInfo = new();
+
+            PropertyCopier.CopyFromBase(schoolInfo, schoolInfoFrom);
+
+            return schoolInfo;
+        }
+
+        #endregion
     }
 }

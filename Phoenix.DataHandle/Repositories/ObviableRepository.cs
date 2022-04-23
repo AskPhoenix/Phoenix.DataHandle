@@ -1,84 +1,124 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class ObviableRepository<TObviableModel> : Repository<TObviableModel> where TObviableModel : class, IObviableModelEntity
+    public abstract class ObviableRepository<TObviableModel> : Repository<TObviableModel> 
+        where TObviableModel : class, IObviableModelEntity
     {
-        public ObviableRepository(DbContext dbContext) : base(dbContext)
+        public ObviableRepository(DbContext dbContext)
+            : base(dbContext)
         {
         }
 
-        public virtual TObviableModel Obviate(TObviableModel obviableModel)
+        #region Obviate
+
+        private TObviableModel ObviatePrepare(TObviableModel obviableModel)
         {
-            if (obviableModel == null)
+            if (obviableModel is null)
                 throw new ArgumentNullException(nameof(obviableModel));
 
             if (obviableModel.IsObviated)
                 return obviableModel;
 
-            obviableModel.ObviatedAt = DateTimeOffset.Now;
+            obviableModel.ObviatedAt = DateTime.UtcNow;
 
-            return this.Update(obviableModel);
+            return obviableModel;
         }
 
-        public virtual async Task<TObviableModel> ObviateAsync(TObviableModel obviableModel, CancellationToken cancellationToken = default)
+        private IEnumerable<TObviableModel> ObviateRangePrepare(IEnumerable<TObviableModel> obviableModels)
         {
-            if (obviableModel == null)
-                throw new ArgumentNullException(nameof(obviableModel));
+            if (obviableModels is null)
+                throw new ArgumentNullException(nameof(obviableModels));
 
-            if (obviableModel.IsObviated)
-                return obviableModel;
-
-            obviableModel.ObviatedAt = DateTimeOffset.Now;
-
-            return await this.UpdateAsync(obviableModel, cancellationToken);
+            return obviableModels.Select(m => ObviatePrepare(m));
         }
 
-        public virtual TObviableModel Restore(TObviableModel obviableModel)
+        public TObviableModel Obviate(TObviableModel obviableModel)
         {
-            if (obviableModel == null)
-                throw new ArgumentNullException(nameof(obviableModel));
+            return Update(ObviatePrepare(obviableModel));
+        }
 
-            if (!obviableModel.IsObviated)
-                return obviableModel;
+        public IEnumerable<TObviableModel> ObviateRange(IEnumerable<TObviableModel> obviableModels)
+        {
+            return UpdateRange(ObviateRangePrepare(obviableModels));
+        }
+
+        public async Task<TObviableModel> ObviateAsync(TObviableModel obviableModel,
+            CancellationToken cancellationToken = default)
+        {
+            return await UpdateAsync(ObviatePrepare(obviableModel), cancellationToken);
+        }
+
+        public async Task<IEnumerable<TObviableModel>> ObviateRangeAsync(IEnumerable<TObviableModel> obviableModels,
+            CancellationToken cancellationToken = default)
+        {
+            return await UpdateRangeAsync(ObviateRangePrepare(obviableModels), cancellationToken);
+        }
+
+        #endregion
+
+        #region Restore
+
+        private TObviableModel RestorePrepare(TObviableModel obviableModel)
+        {
+            if (obviableModel is null)
+                throw new ArgumentNullException(nameof(obviableModel));
 
             obviableModel.ObviatedAt = null;
 
-            return this.Update(obviableModel);
+            return obviableModel;
         }
 
-        public virtual async Task<TObviableModel> RestoreAsync(TObviableModel obviableModel, CancellationToken cancellationToken = default)
+        private IEnumerable<TObviableModel> RestoreRangePrepare(IEnumerable<TObviableModel> obviableModels)
         {
-            if (obviableModel == null)
-                throw new ArgumentNullException(nameof(obviableModel));
+            if (obviableModels is null)
+                throw new ArgumentNullException(nameof(obviableModels));
 
-            if (!obviableModel.IsObviated)
-                return obviableModel;
-
-            obviableModel.ObviatedAt = null;
-
-            return await this.UpdateAsync(obviableModel, cancellationToken);
+            return obviableModels.Select(m => RestorePrepare(m));
         }
 
-        public virtual void RemoveAllObviated()
+        public TObviableModel Restore(TObviableModel obviableModel)
         {
-            IQueryable<TObviableModel> toRemove = this.Find().Where(a => a.IsObviated);
-
-            this.dbContext.Set<TObviableModel>().RemoveRange(toRemove);
-            this.dbContext.SaveChanges();
+            return Update(RestorePrepare(obviableModel));
         }
 
-        public virtual async Task RemoveAllObviatedAsync(CancellationToken cancellationToken = default)
+        public IEnumerable<TObviableModel> RestoreRange(IEnumerable<TObviableModel> obviableModels)
         {
-            IQueryable<TObviableModel> toRemove = this.Find().Where(a => a.IsObviated);
-
-            this.dbContext.Set<TObviableModel>().RemoveRange(toRemove);
-            await this.dbContext.SaveChangesAsync(cancellationToken);
+            return UpdateRange(RestoreRangePrepare(obviableModels));
         }
+
+        public async Task<TObviableModel> RestoreAsync(TObviableModel obviableModel,
+            CancellationToken cancellationToken = default)
+        {
+            return await UpdateAsync(RestorePrepare(obviableModel), cancellationToken);
+        }
+
+        public async Task<IEnumerable<TObviableModel>> RestoreRangeAsync(IEnumerable<TObviableModel> obviableModels,
+            CancellationToken cancellationToken = default)
+        {
+            return await UpdateRangeAsync(RestoreRangePrepare(obviableModels), cancellationToken);
+        }
+
+        #endregion
+
+        #region Delete
+
+        public void DeleteAllObviated()
+        {
+            DeleteRange(Find().Where(m => m.IsObviated));
+        }
+
+        public async Task DeleteAllObviatedAsync(CancellationToken cancellationToken = default)
+        {
+            await DeleteRangeAsync(Find().Where(m => m.IsObviated), cancellationToken);
+        }
+
+        #endregion
     }
 }

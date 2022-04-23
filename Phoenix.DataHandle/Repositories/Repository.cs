@@ -6,158 +6,356 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models.Extensions;
+using Phoenix.DataHandle.Utilities;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class Repository<TModel> where TModel : class, IModelEntity
+    public abstract class Repository<TModel> : IDisposable
+        where TModel : class, IModelEntity
     {
-        protected DbContext dbContext { get; }
-        protected ICollection<Func<IQueryable<TModel>, IQueryable<TModel>>> includes { get; }
+        protected DbContext DbContext { get; }
+        protected DbSet<TModel> Set => this.DbContext.Set<TModel>();
+        protected ICollection<Func<IQueryable<TModel>, IQueryable<TModel>>> Includes { get; }
 
         public Repository(DbContext dbContext)
         {
-            this.dbContext = dbContext;
-            this.includes = new List<Func<IQueryable<TModel>, IQueryable<TModel>>>();
+            this.DbContext = dbContext;
+            this.Includes = new List<Func<IQueryable<TModel>, IQueryable<TModel>>>();
         }
 
-        public virtual IQueryable<TModel> Find()
+        public void Dispose()
         {
-            IQueryable<TModel> x = this.dbContext.Set<TModel>();
-            var kati = dbContext.Set<TModel>();
+            IncludeClear();
+            this.DbContext.Dispose();
 
-            foreach (var include in this.includes)
-                x = include(x);
-
-            return x;
+            GC.SuppressFinalize(this);
         }
 
-        public virtual TModel Find(int id)
+        #region Find
+
+        public IQueryable<TModel> Find()
         {
-            return this.Find().Single(a => a.Id == id);
+            IQueryable<TModel> q = this.Set;
+
+            foreach (var include in this.Includes)
+                q = include(q);
+
+            return q;
         }
 
-        public virtual TModel Find(Expression<Func<TModel, bool>> unique)
+        public TModel? FindPrimary(int id)
         {
-            return this.Find().SingleOrDefault(unique);
+            return Find()
+                .SingleOrDefault(a => a.Id == id);
         }
 
-        public virtual Task<TModel> FindAsync(int id, CancellationToken cancellationToken = default)
+        protected TModel? FindUnique(Expression<Func<TModel, bool>> unique)
         {
-            return this.Find().SingleAsync(a => a.Id == id, cancellationToken);
+            return Find()
+                .SingleOrDefault(unique);
         }
 
-        public virtual Task<TModel> FindAsync(Expression<Func<TModel, bool>> unique, CancellationToken cancellationToken = default)
+        public Task<TModel?> FindPrimaryAsync(int id,
+            CancellationToken cancellationToken = default)
         {
-            return this.Find().SingleOrDefaultAsync(unique, cancellationToken);
+            return Find()
+                .SingleOrDefaultAsync(a => a.Id == id, cancellationToken);
         }
 
-        private static void create(TModel model)
+        protected Task<TModel?> FindUniqueAsync(Expression<Func<TModel, bool>> unique,
+            CancellationToken cancellationToken = default)
         {
-            if (model == null)
+            return Find()
+                .SingleOrDefaultAsync(unique, cancellationToken);
+        }
+
+        #endregion
+
+        #region Create
+
+        private TModel CreatePrepare(TModel model)
+        {
+            if (model is null)
                 throw new ArgumentNullException(nameof(model));
 
-            model.CreatedAt = DateTimeOffset.UtcNow;
+            model.CreatedAt = DateTime.UtcNow;
+
+            if (typeof(TModel) is INormalizableEntity)
+                ((INormalizableEntity)model).Normalize();
+
+            return model;
+        }
+
+        private IEnumerable<TModel> CreateRangePrepare(IEnumerable<TModel> models)
+        {
+            if (models is null)
+                throw new ArgumentNullException(nameof(models));
+
+            return models.Select(m => CreatePrepare(m));
         }
 
         public virtual TModel Create(TModel model)
         {
-            create(model);
+            CreatePrepare(model);
 
-            this.dbContext.Set<TModel>().Add(model);
-            this.dbContext.SaveChanges();
-
-            return model;
-        }
-
-        public virtual async Task<TModel> CreateAsync(TModel model, CancellationToken cancellationToken = default)
-        {
-            create(model);
-
-            await this.dbContext.Set<TModel>().AddAsync(model, cancellationToken);
-            await this.dbContext.SaveChangesAsync(cancellationToken);
+            this.Set.Add(model);
+            this.DbContext.SaveChanges();
 
             return model;
         }
 
-        private static void update(TModel model)
+        public virtual IEnumerable<TModel> CreateRange(IEnumerable<TModel> models)
         {
-            if (model == null)
+            var createdModels = CreateRangePrepare(models);
+            if (!createdModels.Any())
+                return Enumerable.Empty<TModel>();
+
+            this.Set.AddRange(createdModels);
+            this.DbContext.SaveChanges();
+
+            return createdModels;
+        }
+
+        public virtual async Task<TModel> CreateAsync(TModel model,
+            CancellationToken cancellationToken = default)
+        {
+            CreatePrepare(model);
+
+            await this.Set.AddAsync(model, cancellationToken);
+            await this.DbContext.SaveChangesAsync(cancellationToken);
+
+            return model;
+        }
+
+        public virtual async Task<IEnumerable<TModel>> CreateRangeAsync(IEnumerable<TModel> models,
+            CancellationToken cancellationToken = default)
+        {
+            IEnumerable<TModel> createdModels = CreateRangePrepare(models);
+            if (!createdModels.Any())
+                return await Task.FromResult(Enumerable.Empty<TModel>());
+
+            await this.Set.AddRangeAsync(createdModels, cancellationToken);
+            await this.DbContext.SaveChangesAsync(cancellationToken);
+
+            return createdModels;
+        }
+
+        #endregion
+
+        #region Update
+
+        private TModel UpdatePrepare(TModel model)
+        {
+            if (model is null)
                 throw new ArgumentNullException(nameof(model));
 
-            model.UpdatedAt = DateTimeOffset.UtcNow;
+            model.UpdatedAt = DateTime.UtcNow;
+
+            if (typeof(TModel) is INormalizableEntity)
+                ((INormalizableEntity)model).Normalize();
+
+            this.DbContext.Entry(model).State = EntityState.Modified;
+
+            return model;
+        }
+
+        private IEnumerable<TModel> UpdateRangePrepare(IEnumerable<TModel> models)
+        {
+            if (models is null)
+                throw new ArgumentNullException(nameof(models));
+
+            return models.Select(m => UpdatePrepare(m));
         }
 
         public virtual TModel Update(TModel model)
         {
-            update(model);
+            UpdatePrepare(model);
 
-            this.dbContext.Entry(model).State = EntityState.Modified;
-            this.dbContext.SaveChanges();
+            this.DbContext.SaveChanges();
+
+            return model;
+        }
+        public virtual TModel Update<TTo, TFrom>(TTo model, TFrom modelFrom)
+            where TTo : TModel, TFrom
+        {
+            PropertyCopier.CopyFromBase(model, modelFrom);
+            return Update(model);
+        }
+
+        public virtual IEnumerable<TModel> UpdateRange(IEnumerable<TModel> models)
+        {
+            var updatedModels = UpdateRangePrepare(models);
+            if (!updatedModels.Any())
+                return Enumerable.Empty<TModel>();
+
+            this.DbContext.SaveChanges();
+
+            return updatedModels;
+        }
+
+        public virtual async Task<TModel> UpdateAsync(TModel model,
+            CancellationToken cancellationToken = default)
+        {
+            UpdatePrepare(model);
+
+            await this.DbContext.SaveChangesAsync(cancellationToken);
 
             return model;
         }
 
-        public virtual async Task<TModel> UpdateAsync(TModel model, CancellationToken cancellationToken = default)
+        public virtual async Task<TModel> UpdateAsync<TTo, TFrom>(TTo model, TFrom modelFrom,
+            CancellationToken cancellationToken = default)
+            where TTo : TModel, TFrom
         {
-            update(model);
+            PropertyCopier.CopyFromBase(model, modelFrom);
+            return await UpdateAsync(model, cancellationToken);
+        }
 
-            this.dbContext.Entry(model).State = EntityState.Modified;
-            await this.dbContext.SaveChangesAsync(cancellationToken);
+        public virtual async Task<IEnumerable<TModel>> UpdateRangeAsync(IEnumerable<TModel> models,
+            CancellationToken cancellationToken = default)
+        {
+            var updatedModels = UpdateRangePrepare(models);
+            if (!updatedModels.Any())
+                return await Task.FromResult(Enumerable.Empty<TModel>());
+
+            await this.DbContext.SaveChangesAsync(cancellationToken);
+
+            return updatedModels;
+        }
+
+        #endregion
+
+        #region Delete
+
+        private TModel DeletePrepare(TModel model)
+        {
+            if (model is null)
+                throw new ArgumentNullException(nameof(model));
+
+            // This is included here because there is no async remove method
+            this.Set.Remove(model);
 
             return model;
+        }
+
+        private IEnumerable<TModel> DeleteRangePrepare(IEnumerable<TModel> models)
+        {
+            if (models is null)
+                throw new ArgumentNullException(nameof(models));
+            if (!models.Any())
+                return Enumerable.Empty<TModel>();
+
+            // This is included here because there is no async remove-range method
+            this.Set.RemoveRange(models);
+
+            return models;
+        }
+
+        private IEnumerable<TModel> DeleteRangePrepare(IEnumerable<int> ids)
+        {
+            if (ids is null)
+                throw new ArgumentNullException(nameof(ids));
+            if (!ids.Any())
+                return Enumerable.Empty<TModel>();
+
+            return Find().Where(m => ids.Contains(m.Id));
         }
 
         public virtual TModel Delete(TModel model)
         {
-            this.dbContext.Set<TModel>().Remove(model);
-            this.dbContext.SaveChanges();
+            DeletePrepare(model);
+
+            this.DbContext.SaveChanges();
 
             return model;
         }
 
         public virtual TModel Delete(int id)
         {
-            TModel toRemove = this.Find(id);
+            TModel? toRemove = FindPrimary(id);
+            if (toRemove is null)
+                throw new InvalidOperationException($"There is no entry with id {id}.");
 
-            return this.Delete(toRemove);
+            return Delete(toRemove);
         }
 
-        public virtual async Task<TModel> DeleteAsync(TModel model, CancellationToken cancellationToken = default)
+        public virtual IEnumerable<TModel> DeleteRange(IEnumerable<TModel> models)
         {
-            this.dbContext.Set<TModel>().Remove(model);
-            await this.dbContext.SaveChangesAsync(cancellationToken);
+            DeleteRangePrepare(models);
+
+            this.DbContext.SaveChanges();
+
+            return models;
+        }
+
+        public virtual IEnumerable<TModel> DeleteRange(IEnumerable<int> ids)
+        {
+            return DeleteRange(DeleteRangePrepare(ids));
+        }
+
+        public virtual async Task<TModel> DeleteAsync(TModel model,
+            CancellationToken cancellationToken = default)
+        {
+            DeletePrepare(model);
+
+            await this.DbContext.SaveChangesAsync(cancellationToken);
 
             return model;
         }
 
-        public virtual async Task<TModel> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        public virtual async Task<TModel> DeleteAsync(int id,
+            CancellationToken cancellationToken = default)
         {
-            TModel toRemove = await this.FindAsync(id, cancellationToken);
+            TModel? toRemove = await FindPrimaryAsync(id, cancellationToken);
+            if (toRemove is null)
+                throw new InvalidOperationException($"There is no entry with id {id}.");
 
-            return await this.DeleteAsync(toRemove, cancellationToken);
+            return await DeleteAsync(toRemove, cancellationToken);
         }
 
-        public virtual void Include(params Expression<Func<TModel, object>>[] paths)
+        public virtual async Task<IEnumerable<TModel>> DeleteRangeAsync(IEnumerable<TModel> models,
+            CancellationToken cancellationToken = default)
+        {
+            DeleteRangePrepare(models);
+
+            await this.DbContext.SaveChangesAsync(cancellationToken);
+
+            return models;
+        }
+
+        public virtual async Task<IEnumerable<TModel>> DeleteRangeAsync(IEnumerable<int> ids,
+            CancellationToken cancellationToken = default)
+        {
+            return await DeleteRangeAsync(DeleteRangePrepare(ids), cancellationToken);
+        }
+
+        #endregion
+
+        #region Include
+
+        public void Include(params Expression<Func<TModel, object>>[] paths)
         {
             if (paths is null)
                 throw new ArgumentNullException(nameof(paths));
 
             foreach (var path in paths)
-                this.includes.Add(models => models.Include(path));
+                this.Includes.Add(models => models.Include(path));
         }
 
-        public virtual void Include(params Func<IQueryable<TModel>, IQueryable<TModel>>[] includes)
+        public void Include(params Func<IQueryable<TModel>, IQueryable<TModel>>[] includes)
         {
             if (includes is null)
                 throw new ArgumentNullException(nameof(includes));
 
             foreach (var include in includes)
-                this.includes.Add(include);
+                this.Includes.Add(include);
         }
 
-        public virtual void IncludeClear()
+        public void IncludeClear()
         {
-            this.includes.Clear();
+            this.Includes.Clear();
         }
+
+        #endregion
     }
 }

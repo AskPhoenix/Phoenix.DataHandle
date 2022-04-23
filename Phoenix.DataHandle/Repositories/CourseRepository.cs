@@ -1,102 +1,106 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using Phoenix.DataHandle.DataEntry.Models.Uniques;
+using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class CourseRepository : ObviableRepository<Course>
+    public sealed class CourseRepository : ObviableRepository<Course>
     {
-        public CourseRepository(PhoenixContext dbContext) : base(dbContext) { }
-
-        public IQueryable<Course> FindForUser(int userId, bool findForStaff)
+        public CourseRepository(PhoenixContext phoenixContext)
+            : base(phoenixContext)
         {
-            if (findForStaff)
-                return FindForTeacher(userId);
-
-            return FindForStudent(userId);
         }
 
-        public IQueryable<Course> FindForStudent(int studentId)
+        public static Expression<Func<Course, bool>> GetUniqueExpression(
+            int schoolId, short courseCode)
         {
-            return this.dbContext.Set<StudentCourse>().
-                Include(sc => sc.Course).
-                Where(sc => sc.StudentId == studentId).
-                Select(sc => sc.Course);
+            return c => c.SchoolId == schoolId && c.Code == courseCode;
         }
 
-        public IQueryable<Course> FindForTeacher(int teacherId)
+        public static Expression<Func<Course, bool>> GetUniqueExpression(
+            SchoolUnique schoolUq, short courseCode)
         {
-            return this.dbContext.Set<TeacherCourse>().
-                Include(tc => tc.Course).
-                Where(tc => tc.TeacherId == teacherId).
-                Select(tc => tc.Course);
+            return c => c.School.Code == schoolUq.Code && c.Code == courseCode;
         }
 
-        public IQueryable<Schedule> FindSchedules(int id)
+        #region Find Unique
+
+        public Course? FindUnique(int schoolId, short courseCode)
         {
-            this.Include(a => a.Schedule);
-            return this.Find().Where(a => a.Id == id).SelectMany(a => a.Schedule);
+            return FindUnique(GetUniqueExpression(schoolId, courseCode));
         }
 
-        public Course Update(Course tModel, Course tModelFrom)
+        public Course? FindUnique(SchoolUnique schoolUq, short courseCode)
         {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-            if (tModelFrom == null)
-                throw new ArgumentNullException(nameof(tModelFrom));
-
-            //The columns of the unique keys should not be copied
-
-            tModel.Name = tModelFrom.Name;
-            tModel.SubCourse = tModelFrom.SubCourse;
-            tModel.Group = tModelFrom.Group;
-            tModel.Level = tModelFrom.Level;
-            tModel.FirstDate = tModelFrom.FirstDate;
-            tModel.LastDate = tModelFrom.LastDate;
-            tModel.Info = tModelFrom.Info;
-
-            return this.Update(tModel);
+            return FindUnique(GetUniqueExpression(schoolUq, courseCode));
         }
 
-        public void LinkBook(Course tModel, int bookId)
+        public Course? FindUnique(int schoolId, ICourse course)
         {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
+            if (course is null)
+                throw new ArgumentNullException(nameof(course));
 
-            this.dbContext.Set<CourseBook>().Add(new CourseBook() { CourseId = tModel.Id, BookId = bookId });
-            this.dbContext.SaveChanges();
+            return FindUnique(schoolId, course.Code);
         }
 
-        public void LinkBooks(Course tModel, IEnumerable<int> bookIds, bool deleteAdditionalLinks = false)
+        public Course? FindUnique(SchoolUnique schoolUq, ICourse course)
         {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-            if (bookIds == null)
-                throw new ArgumentNullException(nameof(bookIds));
+            if (course is null)
+                throw new ArgumentNullException(nameof(course));
 
-            var courseBookSet = this.dbContext.Set<CourseBook>();
-
-            var alreadyLinkedBookIds = this.GetLinkedBooks(tModel).Select(b => b.Id);
-            var newBookIdsToLink = bookIds.Where(id => !alreadyLinkedBookIds.Contains(id));
-
-            if (deleteAdditionalLinks)
-            {
-                var courseBooksToRemove = courseBookSet.Where(cb => cb.CourseId == tModel.Id && !bookIds.Contains(cb.BookId));
-                courseBookSet.RemoveRange(courseBooksToRemove);
-            }
-
-            courseBookSet.AddRange(newBookIdsToLink.Select(bId => new CourseBook() { CourseId = tModel.Id, BookId = bId }));
-            this.dbContext.SaveChanges();
+            return FindUnique(schoolUq, course.Code);
         }
 
-        public IEnumerable<Book> GetLinkedBooks(Course tModel)
+        public Course? FindUnique(CourseUnique courseUnique)
         {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-
-            return this.dbContext.Set<CourseBook>().Include(cb => cb.Book).Where(cb => cb.CourseId == tModel.Id).Select(cb => cb.Book).AsEnumerable();
+            return FindUnique(courseUnique.SchoolUnique, courseUnique.Code);
         }
+
+        public async Task<Course?> FindUniqueAsync(int schoolId, short courseCode,
+            CancellationToken cancellationToken = default)
+        {
+            return await FindUniqueAsync(GetUniqueExpression(schoolId, courseCode),
+                cancellationToken);
+        }
+
+        public async Task<Course?> FindUniqueAsync(SchoolUnique schoolUq, short courseCode,
+            CancellationToken cancellationToken = default)
+        {
+            return await FindUniqueAsync(GetUniqueExpression(schoolUq, courseCode),
+                cancellationToken);
+        }
+
+        public async Task<Course?> FindUniqueAsync(int schoolId, ICourse course,
+            CancellationToken cancellationToken = default)
+        {
+            if (course is null)
+                throw new ArgumentNullException(nameof(course));
+
+            return await FindUniqueAsync(schoolId, course.Code,
+                cancellationToken);
+        }
+
+        public async Task<Course?> FindUniqueAsync(SchoolUnique schoolUq, ICourse course,
+            CancellationToken cancellationToken = default)
+        {
+            if (course is null)
+                throw new ArgumentNullException(nameof(course));
+
+            return await FindUniqueAsync(schoolUq, course.Code,
+                cancellationToken);
+        }
+
+        public async Task<Course?> FindUniqueAsync(CourseUnique courseUnique,
+            CancellationToken cancellationToken = default)
+        {
+            return await FindUniqueAsync(courseUnique.SchoolUnique, courseUnique.Code,
+                cancellationToken);
+        }
+
+        #endregion
     }
 }

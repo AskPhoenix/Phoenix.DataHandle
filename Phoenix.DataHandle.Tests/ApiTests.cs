@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Phoenix.DataHandle.Api.Models.Main;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Tests.Utilities;
@@ -8,30 +7,9 @@ using Xunit;
 
 namespace Phoenix.DataHandle.Tests
 {
-    public class ApiTests : IDisposable
+    public class ApiTests : TestsBase
     {
-        private readonly IConfiguration _configuration;
-        private readonly PhoenixContext _phoenixContext;
-
         private const string OutDirName = "api_tests";
-
-        public ApiTests()
-        {
-            _configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            string phoenixConnection = _configuration.GetConnectionString("PhoenixConnection");
-            var dbBuilder = new DbContextOptionsBuilder<PhoenixContext>()
-                .UseLazyLoadingProxies()
-                .UseSqlServer(phoenixConnection);
-
-            _phoenixContext = new PhoenixContext(dbBuilder.Options);
-        }
-        public void Dispose()
-        {
-            _phoenixContext.Dispose();
-        }
 
         [Fact]
         public async void AspNetUserApiTestAsync()

@@ -1,98 +1,147 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Phoenix.DataHandle.Main;
+using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Main.Types;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class LectureRepository : Repository<Lecture>
+    public sealed class LectureRepository : Repository<Lecture>
     {
-        public LectureRepository(PhoenixContext dbContext) : base(dbContext) { }
+        public bool SearchNonCancelledOnly { get; set; } = true;
 
-        public Task<Lecture> FindSingle(int courseId, DateTime day, TimeSpan time, CancellationToken cancellationToken)
-        {
-            return this
-                .Find()
-                .Where(a => a.CourseId == courseId)
-                .Where(a => a.StartDateTime.Date == day)
-                .SingleOrDefaultAsync(a => a.StartDateTime.TimeOfDay == time, cancellationToken: cancellationToken);
+        public LectureRepository(PhoenixContext phoenixContext)
+            : base(phoenixContext) 
+        { 
         }
 
-        public IEnumerable<Lecture> FindMany(int courseId, DateTime day, bool scheduledOnly = false, bool withExamsOnly = false)
+        public static Expression<Func<Lecture, bool>> GetUniqueExpression(
+            int courseId, DateTimeOffset startDateTime)
         {
-            var lectures = this.Find().
-                Where(l => l.CourseId == courseId).
-                Where(l => l.StartDateTime.Date == day.Date);
+            return l => l.CourseId == courseId && l.StartDateTime == startDateTime;
+        }
 
-            if (scheduledOnly)
-                lectures = lectures.Where(l => l.Status == LectureStatus.Scheduled);
-            if (withExamsOnly)
-                lectures = lectures.Where(l => l.Exam != null);
+        #region Find Unique
+
+        public Lecture? FindUnique(int courseId, DateTimeOffset startDateTime)
+        {
+            return FindUnique(GetUniqueExpression(courseId, startDateTime));
+        }
+
+        public Lecture? FindUnique(int courseId, ILecture lecture)
+        {
+            if (lecture is null)
+                throw new ArgumentNullException(nameof(lecture));
+
+            return FindUnique(courseId, lecture.StartDateTime);
+        }
+
+        public async Task<Lecture?> FindUniqueAsync(int courseId, DateTimeOffset startDateTime, 
+            CancellationToken cancellationToken = default)
+        {
+            return await FindUniqueAsync(GetUniqueExpression(courseId, startDateTime), 
+                cancellationToken);
+        }
+
+        public async Task<Lecture?> FindUniqueAsync(int courseId, ILecture lecture,
+            CancellationToken cancellationToken = default)
+        {
+            if (lecture is null)
+                throw new ArgumentNullException(nameof(lecture));
+
+            return await FindUniqueAsync(courseId, lecture.StartDateTime,
+                cancellationToken);
+        }
+
+        #endregion
+
+        #region Search
+
+        public IQueryable<Lecture> Search(int? courseId = null, int? classroomId = null, int? scheduleId = null)
+        {
+            var lectures = Find();
+
+            if (courseId.HasValue)
+                lectures = lectures.Where(l => l.CourseId == courseId);
+            if (classroomId.HasValue)
+                lectures = lectures.Where(l => l.ClassroomId == classroomId);
+            if (scheduleId.HasValue)
+                lectures = lectures.Where(l => l.ScheduleId == scheduleId);
+
+            if (SearchNonCancelledOnly)
+                lectures = lectures.Where(l => !l.IsCancelled);
 
             return lectures;
         }
 
-        public IEnumerable<Lecture> FindMany(int[] courseIds, DateTime day, bool scheduledOnly = false, bool withExamsOnly = false)
+        public IQueryable<Lecture> Search(int courseId, DateTime day)
+        {
+            var lectures = Find().
+                Where(l => l.CourseId == courseId && l.StartDateTime.Date == day);
+
+            if (SearchNonCancelledOnly)
+                lectures = lectures.Where(l => !l.IsCancelled);
+
+            return lectures;
+        }
+
+        // This is not a wrapper of Search for each course
+        public IQueryable<Lecture> Search(int[] courseIds, DateTime day)
         {
             if (courseIds == null)
                 throw new ArgumentNullException(nameof(courseIds));
 
-            var lectures = new List<Lecture>();
+            var lectures = Find().
+                Where(l => courseIds.Contains(l.CourseId) && l.StartDateTime.Date == day);
 
-            foreach (int courseId in courseIds)
-                lectures.AddRange(this.FindMany(courseId, day, scheduledOnly, withExamsOnly));
+            if (SearchNonCancelledOnly)
+                lectures = lectures.Where(l => !l.IsCancelled);
 
             return lectures;
         }
 
-        public IEnumerable<DateTime> FindClosestLectureDates(int courseId, Tense tense, DateTime? referenceDate = null,
-            int dayRange = 5, bool scheduledOnly = false, bool withExamsOnly = false)
+        public IQueryable<Lecture> Search(int courseId, Tense tense,
+            DateTimeOffset reference, int max = 5)
         {
-            var lectures = this.Find().
+            var lectures = Find().
                 Where(l => l.CourseId == courseId);
 
-            if (tense == Tense.Past)
-                lectures = lectures.Where(l => l.StartDateTime < DateTimeOffset.UtcNow);
-            else if (tense == Tense.Future)
-                lectures = lectures.Where(l => l.StartDateTime >= DateTimeOffset.UtcNow);
-            if (scheduledOnly)
-                lectures = lectures.Where(l => l.Status == LectureStatus.Scheduled);
-            if (withExamsOnly)
-                lectures = lectures.Where(l => l.Exam != null);
-
-            DateTime refDate = referenceDate.HasValue ? referenceDate.Value : DateTime.UtcNow.Date;
-
-            return lectures.
-                GroupBy(l => l.StartDateTime.Date).
-                Select(g => g.Key).
-                Where(d => d != refDate.Date).
-                AsEnumerable().
-                OrderBy(d => (d - refDate).Duration()).
-                Take(dayRange).
-                OrderBy(d => d);
+            return SearchClosest(lectures, tense, reference, max);
         }
 
-        public IEnumerable<DateTime> FindClosestLectureDates(int[] courseIds, Tense tense, DateTime? referenceDate = null,
-            int dayRange = 5, bool scheduledOnly = false, bool withExamsOnly = false)
+        // This is not a wrapper of Search for each course
+        public IQueryable<Lecture> Search(int[] courseIds, Tense tense,
+            DateTimeOffset reference, int max = 5)
         {
-            if (courseIds == null)
+            if (courseIds is null)
                 throw new ArgumentNullException(nameof(courseIds));
 
-            var lectures = new List<DateTime>(courseIds.Length * dayRange);
+            var lectures = Find().
+                Where(l => courseIds.Contains(l.CourseId));
 
-            foreach (int courseId in courseIds)
-                lectures.AddRange(this.FindClosestLectureDates(courseId, tense, referenceDate, dayRange, scheduledOnly, withExamsOnly));
-
-            DateTime refDate = referenceDate.HasValue ? referenceDate.Value : DateTime.UtcNow.Date;
-
-            return lectures.
-                OrderBy(d => (d - refDate).Duration()).
-                Take(dayRange).
-                OrderBy(d => d);
+            return SearchClosest(lectures, tense, reference, max);
         }
+
+        // TODO: Check if this can be translated to SQL query
+        private IQueryable<Lecture> SearchClosest(IQueryable<Lecture> lectures, Tense tense,
+            DateTimeOffset reference, int max = 5)
+        {
+            if (tense == Tense.Past)
+                lectures = lectures.Where(l => l.StartDateTime < reference);
+            else if (tense == Tense.Future)
+                lectures = lectures.Where(l => l.StartDateTime >= reference);
+
+            if (SearchNonCancelledOnly)
+                lectures = lectures.Where(l => !l.IsCancelled);
+
+            return lectures.OrderBy(l => (l.StartDateTime - reference).Duration())
+                .Take(max);
+        }
+
+        #endregion
     }
 }

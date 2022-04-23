@@ -11,9 +11,8 @@ using Xunit;
 
 namespace Phoenix.DataHandle.Tests
 {
-    public class DataEntryTests
+    public class DataEntryTests : TestsBase
     {
-        private readonly IConfiguration _configuration;
         private readonly string WPUsername;
         private readonly string WPPassword;
 
@@ -22,11 +21,8 @@ namespace Phoenix.DataHandle.Tests
         private bool IsAuthenticated { get; set; }
 
         public DataEntryTests()
+            : base()
         {
-            _configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
-
             WPUsername = _configuration["WordPressAuth:Username"];
             WPPassword = _configuration["WordPressAuth:Password"];
         }

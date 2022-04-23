@@ -1,22 +1,43 @@
-﻿using Phoenix.DataHandle.Main;
+﻿using Phoenix.DataHandle.DataEntry.Models.Uniques;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Main.Types;
 using System;
 using System.Linq;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class BroadcastRepository : Repository<Broadcast>
+    public sealed class BroadcastRepository : Repository<Broadcast>
     {
-        public BroadcastRepository(PhoenixContext dbContext) : base(dbContext) { }
-
-        public IQueryable<Broadcast> FindForDate(DateTime date)
+        public BroadcastRepository(PhoenixContext phoenixContext)
+            : base(phoenixContext)
         {
-            return this.Find().Where(b => b.ScheduledDate.Date == date);
         }
 
-        public IQueryable<Broadcast> FindForDateDaypart(DateTime date, Daypart daypart)
+        #region Search
+
+        public IQueryable<Broadcast> Search(DateTime scheduledFor, int? authorId = null, int? schoolId = null)
         {
-            return this.FindForDate(date).Where(b => b.Daypart == daypart);
+            var broadcasts = Find().Where(b => b.ScheduledFor.Date == scheduledFor.Date);
+
+            if (authorId.HasValue)
+                broadcasts = broadcasts.Where(b => b.AuthorId == authorId);
+
+            if (schoolId.HasValue)
+                broadcasts = broadcasts.Where(b => b.SchoolId == schoolId);
+
+            return broadcasts;
         }
+
+        public IQueryable<Broadcast> Search(DateTime scheduledFor, SchoolUnique schoolUq)
+        {
+            return Find().Where(b => b.School.Code == schoolUq.Code && b.ScheduledFor.Date == scheduledFor.Date);
+        }
+
+        public IQueryable<Broadcast> Search(DateTime scheduledFor, Daypart daypart)
+        {
+            return Find().Where(b => b.ScheduledFor.Date == scheduledFor.Date && b.Daypart == daypart);
+        }
+
+        #endregion
     }
 }
