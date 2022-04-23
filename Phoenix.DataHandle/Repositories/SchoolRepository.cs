@@ -39,6 +39,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public School? FindUnique(SchoolUnique schoolUnique)
         {
+            if (schoolUnique is null)
+                throw new ArgumentNullException(nameof(schoolUnique));
+
             return FindUnique(schoolUnique.Code);
         }
 

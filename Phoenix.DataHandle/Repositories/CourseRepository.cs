@@ -24,6 +24,9 @@ namespace Phoenix.DataHandle.Repositories
         public static Expression<Func<Course, bool>> GetUniqueExpression(
             SchoolUnique schoolUq, short courseCode)
         {
+            if (schoolUq is null)
+                throw new ArgumentNullException(nameof(schoolUq));
+
             return c => c.School.Code == schoolUq.Code && c.Code == courseCode;
         }
 
@@ -57,6 +60,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public Course? FindUnique(CourseUnique courseUnique)
         {
+            if (courseUnique is null)
+                throw new ArgumentNullException(nameof(courseUnique));
+
             return FindUnique(courseUnique.SchoolUnique, courseUnique.Code);
         }
 
@@ -97,6 +103,9 @@ namespace Phoenix.DataHandle.Repositories
         public async Task<Course?> FindUniqueAsync(CourseUnique courseUnique,
             CancellationToken cancellationToken = default)
         {
+            if (courseUnique is null)
+                throw new ArgumentNullException(nameof(courseUnique));
+
             return await FindUniqueAsync(courseUnique.SchoolUnique, courseUnique.Code,
                 cancellationToken);
         }

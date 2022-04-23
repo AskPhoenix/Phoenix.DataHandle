@@ -30,6 +30,9 @@ namespace Phoenix.DataHandle.Repositories
 
         public IQueryable<Broadcast> Search(DateTime scheduledFor, SchoolUnique schoolUq)
         {
+            if (schoolUq is null)
+                throw new ArgumentNullException(nameof(schoolUq));
+
             return Find().Where(b => b.School.Code == schoolUq.Code && b.ScheduledFor.Date == scheduledFor.Date);
         }
 

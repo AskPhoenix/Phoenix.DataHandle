@@ -28,6 +28,8 @@ namespace Phoenix.DataHandle.Repositories
         public static Expression<Func<Classroom, bool>> GetUniqueExpression(
             SchoolUnique schoolUq, string classroomName)
         {
+            if (schoolUq is null)
+                throw new ArgumentNullException(nameof(schoolUq));
             if (string.IsNullOrWhiteSpace(classroomName))
                 throw new ArgumentNullException(nameof(classroomName));
 
