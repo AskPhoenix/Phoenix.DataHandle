@@ -83,22 +83,15 @@ namespace Phoenix.DataHandle.Main.Types
         public static RoleRank ToRoleRank(this string me)
         {
             return AllRoleRanks
-                .Single(rr => string.Equals(rr.ToString(), me, StringComparison.OrdinalIgnoreCase));
+                .SingleOrDefault(rr => string.Equals(rr.ToString(), me, StringComparison.OrdinalIgnoreCase));
         }
 
-        public static bool TryToRoleRank(this string me, out RoleRank role)
+        public static bool TryToRoleRank(this string me, out RoleRank roleRank)
         {
-            try
-            {
-                role = me.ToRoleRank();
-                return true;
-            }
-            catch(InvalidOperationException)
-            {
-                role = RoleRank.None;
-            }
+            roleRank = me.ToRoleRank();
 
-            return false;
+            return AllRoleRanks
+                .Any(rr => string.Equals(rr.ToString(), me, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

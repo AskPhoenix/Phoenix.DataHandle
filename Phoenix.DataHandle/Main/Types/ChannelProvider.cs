@@ -15,22 +15,15 @@ namespace Phoenix.DataHandle.Main.Types
         public static ChannelProvider ToChannelProvider(this string me)
         {
             return Enum.GetValues<ChannelProvider>()
-                .Single(cp => string.Equals(cp.ToString(), me, StringComparison.OrdinalIgnoreCase));
+                .SingleOrDefault(cp => string.Equals(cp.ToString(), me, StringComparison.OrdinalIgnoreCase));
         }
 
         public static bool TryToChannelProvider(this string me, out ChannelProvider channelProvider)
         {
-            try
-            {
-                channelProvider = me.ToChannelProvider();
-                return true;
-            }
-            catch (InvalidOperationException)
-            {
-                channelProvider = ChannelProvider.Unknown;
-            }
+            channelProvider = me.ToChannelProvider();
 
-            return false;
+            return Enum.GetValues<ChannelProvider>()
+                .Any(cp => string.Equals(cp.ToString(), me, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
