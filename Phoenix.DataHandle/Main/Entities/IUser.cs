@@ -14,6 +14,7 @@ namespace Phoenix.DataHandle.Main.Entities
         IEnumerable<IBotFeedback> BotFeedbacks { get; }
         IEnumerable<IBroadcast> Broadcasts { get; }
         IEnumerable<IGrade> Grades { get; }
+        IEnumerable<IOneTimeCode> OneTimeCodes { get; }
         IEnumerable<IUserLogin> UserLogins { get; }
 
         IEnumerable<IUser> Children { get; }

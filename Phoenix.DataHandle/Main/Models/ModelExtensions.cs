@@ -1,17 +1,24 @@
 ﻿using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models.Extensions;
+using Phoenix.DataHandle.Main.Types;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 
 namespace Phoenix.DataHandle.Main.Models
 {
-    public partial class Book : IBook, IModelEntity
+    public partial class Book : IBook, INormalizableEntity
     {
         IEnumerable<IExercise> IBook.Exercises => this.Exercises;
         IEnumerable<IMaterial> IBook.Materials => this.Materials;
         
         IEnumerable<ICourse> IBook.Courses => this.Courses;
+
+        public static Func<string, string> NormFunc => s => s.ToUpperInvariant();
+        public void Normalize()
+        {
+            this.NormalizedName = Book.NormFunc(this.NormalizedName);
+        }
     }
 
     public partial class BotFeedback : IBotFeedback, IModelEntity
@@ -27,18 +34,29 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ICourse> IBroadcast.Courses => this.Courses;
     }
 
-    public partial class Channel : IChannel, IModelEntity
+    public partial class Channel : IChannel, INormalizableEntity
     {
         IEnumerable<ISchoolLogin> IChannel.SchoolLogins => this.SchoolLogins;
         IEnumerable<IUserLogin> IChannel.UserLogins => this.UserLogins;
+
+        public void Normalize()
+        {
+            this.ProviderName = this.Provider.ToString();
+        }
     }
 
-    public partial class Classroom : IClassroom, IObviableModelEntity
+    public partial class Classroom : IClassroom, IObviableModelEntity, INormalizableEntity
     {
         ISchool IClassroom.School => this.School;
 
         IEnumerable<ILecture> IClassroom.Lectures => this.Lectures;
         IEnumerable<ISchedule> IClassroom.Schedules => this.Schedules;
+
+        public static Func<string, string> NormFunc => s => s.ToUpperInvariant();
+        public void Normalize()
+        {
+            this.NormalizedName = Classroom.NormFunc(this.NormalizedName);
+        }
     }
 
     public partial class Course : ICourse, IObviableModelEntity
@@ -100,8 +118,7 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class OneTimeCode : IOneTimeCode, IModelEntity
     {
-        IEnumerable<IUserInfo> IOneTimeCode.UserInfos => this.UserInfos;
-        IEnumerable<IUserLogin> IOneTimeCode.UserLogins => this.UserLogins;
+        IUser IOneTimeCode.User => this.User;
     }
 
     public partial class Schedule : ISchedule, IObviableModelEntity
@@ -112,9 +129,14 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ILecture> ISchedule.Lectures => this.Lectures;
     }
 
-    public partial class Role : IRole, IModelEntity
+    public partial class Role : IRole, INormalizableEntity
     {
         IEnumerable<IUser> IRole.Users => this.Users;
+
+        public void Normalize()
+        {
+            this.Name = this.Rank.ToString();
+        }
     }
 
     public partial class School : ISchool, IObviableModelEntity
@@ -135,17 +157,18 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class SchoolLogin : ISchoolLogin, ILoginEntity
     {
-        ISchool ISchoolLogin.School => this.School;
+        ISchool ISchoolLogin.Tenant => this.Tenant;
 
         IChannel ILoginEntity.Channel => this.Channel;
     }
 
-    public partial class User : IUser, IObviableModelEntity
+    public partial class User : IUser, IObviableModelEntity, INormalizableEntity
     {
         IUserInfo IUser.UserInfo => this.UserInfo;
         IEnumerable<IBotFeedback> IUser.BotFeedbacks => this.BotFeedbacks;
         IEnumerable<IBroadcast> IUser.Broadcasts => this.Broadcasts;
         IEnumerable<IGrade> IUser.Grades => this.Grades;
+        IEnumerable<IOneTimeCode> IUser.OneTimeCodes => this.OneTimeCodes;
         IEnumerable<IUserLogin> IUser.UserLogins => this.UserLogins;
 
         IEnumerable<IUser> IUser.Children => this.Children;
@@ -155,6 +178,15 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IRole> IUser.Roles => this.Roles;
         IEnumerable<ISchool> IUser.Schools => this.Schools;
 
+        public static Func<string, string> NormFunc => s => s.ToUpperInvariant();
+
+        public void Normalize()
+        {
+            if (this.Email is not null)
+                this.NormalizedEmail = NormFunc(this.Email);
+            
+            this.NormalizedUserName = NormFunc(this.UserName);
+        }
 
         public string GetHashSignature()
         {
@@ -180,8 +212,7 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class UserLogin : IUserLogin, ILoginEntity
     {
-        IUser IUserLogin.User => this.User;
-        IOneTimeCode IUserLogin.VerificationOneTimeCode => this.VerificationOneTimeCode;
+        IUser IUserLogin.Tenant => this.Tenant;
 
         IChannel ILoginEntity.Channel => this.Channel;
     }

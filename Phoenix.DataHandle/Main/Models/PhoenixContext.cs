@@ -132,9 +132,6 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasIndex(e => e.Provider, "IX_Channels_Provider")
                     .IsUnique();
 
-                entity.HasIndex(e => e.ProviderName, "IX_Channels_ProviderName")
-                    .IsUnique();
-
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -306,10 +303,6 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasIndex(e => e.Id, "UQ_Lectures_Course_StartDateTime")
                     .IsUnique();
 
-                entity.Property(e => e.AttendancesNoted)
-                    .IsRequired()
-                    .HasDefaultValueSql("(CONVERT([bit],(0)))");
-
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.EndDateTime).HasPrecision(0);
@@ -368,6 +361,8 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<OneTimeCode>(entity =>
             {
+                entity.HasIndex(e => e.UserId, "IX_OneTimeCodes_User");
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -377,11 +372,17 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.Token).HasMaxLength(16);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.OneTimeCodes)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_OneTimeCodes_Users");
             });
 
             modelBuilder.Entity<Role>(entity =>
             {
-                entity.HasIndex(e => e.Rank, "UQ_Roles_Type")
+                entity.HasIndex(e => e.Rank, "UQ_Roles_Rank")
                     .IsUnique();
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -505,9 +506,9 @@ namespace Phoenix.DataHandle.Main.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SchoolLogins_Channels");
 
-                entity.HasOne(d => d.School)
+                entity.HasOne(d => d.Tenant)
                     .WithMany(p => p.SchoolLogins)
-                    .HasForeignKey(d => d.SchoolId)
+                    .HasForeignKey(d => d.TenantId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SchoolLogins_Schools");
             });
@@ -655,11 +656,6 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasMaxLength(256)
                     .HasDefaultValueSql("(N'')");
 
-                entity.HasOne(d => d.IdentificationOneTimeCode)
-                    .WithMany(p => p.UserInfos)
-                    .HasForeignKey(d => d.IdentificationOneTimeCodeId)
-                    .HasConstraintName("FK_UserInfo_OneTimeCodes");
-
                 entity.HasOne(d => d.User)
                     .WithOne(p => p.UserInfo)
                     .HasForeignKey<UserInfo>(d => d.UserId)
@@ -671,7 +667,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasIndex(e => new { e.ChannelId, e.ProviderKey }, "IX_UserLogins_Channel_ProviderKey")
                     .IsUnique();
 
-                entity.HasIndex(e => new { e.UserId, e.ChannelId }, "UQ_UserLogins_User_Channel")
+                entity.HasIndex(e => new { e.TenantId, e.ChannelId }, "UQ_UserLogins_User_Channel")
                     .IsUnique();
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -690,16 +686,10 @@ namespace Phoenix.DataHandle.Main.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserLogins_Channels");
 
-                entity.HasOne(d => d.User)
+                entity.HasOne(d => d.Tenant)
                     .WithMany(p => p.UserLogins)
-                    .HasForeignKey(d => d.UserId)
+                    .HasForeignKey(d => d.TenantId)
                     .HasConstraintName("FK_UserLogins_Users");
-
-                entity.HasOne(d => d.VerificationOneTimeCode)
-                    .WithMany(p => p.UserLogins)
-                    .HasForeignKey(d => d.VerificationOneTimeCodeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserLogins_OneTimeCodes");
             });
 
             OnModelCreatingPartial(modelBuilder);

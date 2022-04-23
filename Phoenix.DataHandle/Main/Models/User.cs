@@ -10,6 +10,7 @@ namespace Phoenix.DataHandle.Main.Models
             BotFeedbacks = new HashSet<BotFeedback>();
             Broadcasts = new HashSet<Broadcast>();
             Grades = new HashSet<Grade>();
+            OneTimeCodes = new HashSet<OneTimeCode>();
             UserLogins = new HashSet<UserLogin>();
             Children = new HashSet<User>();
             Courses = new HashSet<Course>();
@@ -39,11 +40,12 @@ namespace Phoenix.DataHandle.Main.Models
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? ObviatedAt { get; set; }
-
+        
         public virtual UserInfo UserInfo { get; set; } = null!;
         public virtual ICollection<BotFeedback> BotFeedbacks { get; set; }
         public virtual ICollection<Broadcast> Broadcasts { get; set; }
         public virtual ICollection<Grade> Grades { get; set; }
+        public virtual ICollection<OneTimeCode> OneTimeCodes { get; set; }
         public virtual ICollection<UserLogin> UserLogins { get; set; }
 
         public virtual ICollection<User> Children { get; set; }

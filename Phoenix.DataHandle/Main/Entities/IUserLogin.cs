@@ -2,7 +2,6 @@
 {
     public interface IUserLogin
     {
-        IUser User { get; }
-        IOneTimeCode VerificationOneTimeCode { get; }
+        IUser Tenant { get; }
     }
 }

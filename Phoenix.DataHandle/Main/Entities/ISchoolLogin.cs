@@ -2,6 +2,6 @@
 {
     public interface ISchoolLogin
     {
-        ISchool School { get; }
+        ISchool Tenant { get; }
     }
 }

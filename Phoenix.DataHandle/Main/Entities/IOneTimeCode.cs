@@ -1,6 +1,6 @@
-﻿using Phoenix.DataHandle.Main.Types;
+﻿using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Main.Types;
 using System;
-using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Main.Entities
 {
@@ -10,7 +10,6 @@ namespace Phoenix.DataHandle.Main.Entities
         OneTimeCodePurpose Purpose { get; }
         DateTime ExpiresAt { get; }
 
-        IEnumerable<IUserInfo> UserInfos { get; }
-        IEnumerable<IUserLogin> UserLogins { get; }
+        IUser User { get; }
     }
 }

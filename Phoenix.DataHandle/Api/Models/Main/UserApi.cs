@@ -14,10 +14,11 @@ namespace Phoenix.DataHandle.Api.Models.Main
         {
             this.Courses = new List<CourseApi>();
             
-            this.UserLogins = new List<IUserLogin>();
             this.BotFeedbacks = new List<IBotFeedback>();
             this.Broadcasts = new List<IBroadcast>();
             this.Grades = new List<IGrade>();
+            this.OneTimeCodes = new List<IOneTimeCode>();
+            this.UserLogins = new List<IUserLogin>();
             this.Children = new List<IUser>();
             this.Lectures = new List<ILecture>();
             this.Parents = new List<IUser>();
@@ -91,9 +92,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         IUserInfo IUser.UserInfo => this.UserInfo;
 
-        [JsonIgnore] 
-        public IEnumerable<IUserLogin> UserLogins { get; }
-        
         [JsonIgnore]
         public IEnumerable<IBotFeedback> BotFeedbacks { get; }
         
@@ -102,7 +100,13 @@ namespace Phoenix.DataHandle.Api.Models.Main
         
         [JsonIgnore]
         public IEnumerable<IGrade> Grades { get; }
-        
+
+        [JsonIgnore]
+        public IEnumerable<IOneTimeCode> OneTimeCodes { get; }
+
+        [JsonIgnore]
+        public IEnumerable<IUserLogin> UserLogins { get; }
+
         [JsonIgnore]
         public IEnumerable<IUser> Children { get; }
 
