@@ -12,9 +12,9 @@ namespace Phoenix.DataHandle.Tests
         private const string OutDirName = "api_tests";
 
         [Fact]
-        public async void AspNetUserApiTestAsync()
+        public async void UserApiTestAsync()
         {
-            var aspNetUser = await _phoenixContext.Users.Include(u => u.UserInfo)
+            var user = await _phoenixContext.Users.Include(u => u.UserInfo)
                 .Include(u => u.Courses)
                 .FirstOrDefaultAsync()
                 ?? new User
@@ -31,10 +31,10 @@ namespace Phoenix.DataHandle.Tests
                     }
                 };
 
-            var aspNetUserApi = new UserApi(aspNetUser);
+            var userApi = new UserApi(user);
 
-            JsonUtilities.SaveToFile(aspNetUserApi, OutDirName, nameof(aspNetUser));
-            var aspNetUser2 = JsonUtilities.ReadFromFile<UserApi>(OutDirName, nameof(aspNetUser));
+            JsonUtilities.SaveToFile(userApi, OutDirName, nameof(user));
+            var user2 = JsonUtilities.ReadFromFile<UserApi>(OutDirName, nameof(user));
         }
 
         [Fact]

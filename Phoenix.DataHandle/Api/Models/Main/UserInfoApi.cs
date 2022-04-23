@@ -22,8 +22,8 @@ namespace Phoenix.DataHandle.Api.Models.Main
             : this(0, userInfo.FirstName, userInfo.LastName, userInfo.FullName,
                   userInfo.IsSelfDetermined)
         {
-            if (userInfo is UserInfo user1)
-                this.Id = user1.UserId;
+            if (userInfo is UserInfo userInfo1)
+                this.Id = userInfo1.UserId;
         }
 
         [JsonProperty(PropertyName = "id")]
