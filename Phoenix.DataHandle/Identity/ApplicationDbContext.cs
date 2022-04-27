@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Identity
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationContext : IdentityDbContext
         <ApplicationUser,
         ApplicationRole,
         int,
@@ -15,7 +15,7 @@ namespace Phoenix.DataHandle.Identity
         ApplicationRoleClaim,
         ApplicationUserToken>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
         {
         }

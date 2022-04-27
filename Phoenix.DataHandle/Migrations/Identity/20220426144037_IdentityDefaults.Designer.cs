@@ -12,7 +12,7 @@ using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Migrations.Identity
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(ApplicationContext))]
     [Migration("20220426144037_IdentityDefaults")]
     partial class IdentityDefaults
     {

@@ -11,7 +11,7 @@ namespace Phoenix.DataHandle.Identity
     public class ApplicationStore : UserStore
         <ApplicationUser,
         ApplicationRole,
-        ApplicationDbContext,
+        ApplicationContext,
         int,
         ApplicationUserClaim,
         ApplicationUserRole,
@@ -19,7 +19,7 @@ namespace Phoenix.DataHandle.Identity
         ApplicationUserToken,
         ApplicationRoleClaim>
     {
-        public ApplicationStore(ApplicationDbContext context,
+        public ApplicationStore(ApplicationContext context,
             IdentityErrorDescriber describer = default!)
             : base(context, describer)
         {
