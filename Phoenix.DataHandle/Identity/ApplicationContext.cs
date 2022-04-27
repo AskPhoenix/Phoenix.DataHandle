@@ -26,6 +26,13 @@ namespace Phoenix.DataHandle.Identity
 
             modelBuilder.Entity<ApplicationUser>(entity =>
             {
+                // Custom Index for Phone Number
+                entity.HasIndex(u => u.PhoneNumber, "PhoneNumberIndex");
+
+                // Custom limit of the Phone Number size
+                entity.Property(u => u.PhoneNumber).HasMaxLength(16);
+
+                // Navigation Properties
                 entity.HasMany(e => e.Claims)
                     .WithOne(e => e.User)
                     .HasForeignKey(uc => uc.UserId)
