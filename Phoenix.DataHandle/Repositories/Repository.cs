@@ -175,6 +175,7 @@ namespace Phoenix.DataHandle.Repositories
 
             return model;
         }
+
         public virtual TModel Update<TTo, TFrom>(TTo model, TFrom modelFrom)
             where TTo : TModel, TFrom
         {
