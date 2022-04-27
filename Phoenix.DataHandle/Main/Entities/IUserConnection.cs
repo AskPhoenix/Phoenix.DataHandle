@@ -2,7 +2,7 @@
 {
     public interface IUserConnection
     {
-        IUserInfo Tenant { get; }
+        IUser Tenant { get; }
         string Channel { get; }
         string ChannelKey { get; }
         string ChannelDisplayName { get; }

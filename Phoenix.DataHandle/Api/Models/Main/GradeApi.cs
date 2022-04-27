@@ -8,7 +8,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
     public class GradeApi : IGrade, IModelApi
     {
         [JsonConstructor]
-        public GradeApi(int id, UserInfoApi student, CourseApi? course, ExamApi? exam, ExerciseApi? exercise,
+        public GradeApi(int id, UserApi student, CourseApi? course, ExamApi? exam, ExerciseApi? exercise,
             decimal score, string? topic, string? justification)
         {
             this.Id = id;
@@ -31,7 +31,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
                 return;
 
             if (grade.Student is not null)
-                this.Student = new UserInfoApi(grade.Student);
+                this.Student = new UserApi(grade.Student);
             if (grade.Course is not null)
                 this.Course = new CourseApi(grade.Course);
             if (grade.Exam is not null)
@@ -44,7 +44,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public int Id { get; }
 
         [JsonProperty(PropertyName = "student")]
-        public UserInfoApi Student { get; } = null!;
+        public UserApi Student { get; } = null!;
 
         [JsonProperty(PropertyName = "course")]
         public CourseApi? Course { get; }
@@ -65,7 +65,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public string? Justification { get; }
 
 
-        IUserInfo IGrade.Student => this.Student;
+        IUser IGrade.Student => this.Student;
 
         ICourse? IGrade.Course => this.Course;
 

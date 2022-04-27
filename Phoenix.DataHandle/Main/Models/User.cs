@@ -3,19 +3,19 @@ using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Main.Models
 {
-    public partial class UserInfo
+    public partial class User
     {
-        public UserInfo()
+        public User()
         {
             BotFeedbacks = new HashSet<BotFeedback>();
             Broadcasts = new HashSet<Broadcast>();
             Grades = new HashSet<Grade>();
             OneTimeCodes = new HashSet<OneTimeCode>();
             UserConnections = new HashSet<UserConnection>();
-            Children = new HashSet<UserInfo>();
+            Children = new HashSet<User>();
             Courses = new HashSet<Course>();
             Lectures = new HashSet<Lecture>();
-            Parents = new HashSet<UserInfo>();
+            Parents = new HashSet<User>();
             Schools = new HashSet<School>();
         }
 
@@ -35,10 +35,10 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual ICollection<OneTimeCode> OneTimeCodes { get; set; }
         public virtual ICollection<UserConnection> UserConnections { get; set; }
 
-        public virtual ICollection<UserInfo> Children { get; set; }
+        public virtual ICollection<User> Children { get; set; }
         public virtual ICollection<Course> Courses { get; set; }
         public virtual ICollection<Lecture> Lectures { get; set; }
-        public virtual ICollection<UserInfo> Parents { get; set; }
+        public virtual ICollection<User> Parents { get; set; }
         public virtual ICollection<School> Schools { get; set; }
     }
 }

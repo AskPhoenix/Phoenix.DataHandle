@@ -8,9 +8,9 @@ using System.Linq;
 
 namespace Phoenix.DataHandle.Api.Models.Main
 {
-    public class UserInfoApi : IUserInfo, IModelApi
+    public class UserApi : IUser, IModelApi
     {
-        private UserInfoApi()
+        private UserApi()
         {
             this.Courses = new List<CourseApi>();
 
@@ -19,14 +19,14 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.Grades = new List<IGrade>();
             this.OneTimeCodes = new List<IOneTimeCode>();
             this.UserConnections = new List<IUserConnection>();
-            this.Children = new List<IUserInfo>();
+            this.Children = new List<IUser>();
             this.Lectures = new List<ILecture>();
-            this.Parents = new List<IUserInfo>();
+            this.Parents = new List<IUser>();
             this.Schools = new List<ISchool>();
         }
 
         [JsonConstructor]
-        public UserInfoApi(int id, string firstName, string lastName, string fullName,
+        public UserApi(int id, string firstName, string lastName, string fullName,
             bool isSelfDetermined, int dependenceOrder, AspNetUserApi aspNetUser, List<CourseApi>? courses)
             : this()
         {
@@ -49,21 +49,21 @@ namespace Phoenix.DataHandle.Api.Models.Main
                 this.Courses = courses;
         }
 
-        public UserInfoApi(IUserInfo userInfo, bool include = false)
-            : this(0, userInfo.FirstName, userInfo.LastName, userInfo.FullName,
-                  userInfo.IsSelfDetermined, userInfo.DependenceOrder, null!, null)
+        public UserApi(IUser user, bool include = false)
+            : this(0, user.FirstName, user.LastName, user.FullName,
+                  user.IsSelfDetermined, user.DependenceOrder, null!, null)
         {
-            if (userInfo is UserInfo userInfo1)
-                this.Id = userInfo1.AspNetUserId;
+            if (user is User user1)
+                this.Id = user1.AspNetUserId;
 
-            if (userInfo.AspNetUser is not null)
-                this.AspNetUser = new AspNetUserApi(userInfo.AspNetUser);
+            if (user.AspNetUser is not null)
+                this.AspNetUser = new AspNetUserApi(user.AspNetUser);
 
             // AspNetUser is always included if it's not null
             if (!include)
                 return;
 
-            this.Courses = userInfo.Courses.Select(c => new CourseApi(c)).ToList();
+            this.Courses = user.Courses.Select(c => new CourseApi(c)).ToList();
         }
 
         [JsonProperty(PropertyName = "id")]
@@ -90,7 +90,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         [JsonProperty(PropertyName = "courses")]
         public List<CourseApi> Courses { get; }
 
-        IAspNetUser IUserInfo.AspNetUser => this.AspNetUser;
+        IAspNetUser IUser.AspNetUser => this.AspNetUser;
 
         [JsonIgnore]
         public IEnumerable<IBotFeedback> BotFeedbacks { get; }
@@ -109,15 +109,15 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
 
         [JsonIgnore]
-        public IEnumerable<IUserInfo> Children { get; }
+        public IEnumerable<IUser> Children { get; }
 
-        IEnumerable<ICourse> IUserInfo.Courses => this.Courses;
+        IEnumerable<ICourse> IUser.Courses => this.Courses;
 
         [JsonIgnore]
         public IEnumerable<ILecture> Lectures { get; }
 
         [JsonIgnore]
-        public IEnumerable<IUserInfo> Parents { get; }
+        public IEnumerable<IUser> Parents { get; }
 
         [JsonIgnore]
         public IEnumerable<ISchool> Schools { get; }

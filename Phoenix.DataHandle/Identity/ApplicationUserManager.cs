@@ -33,8 +33,8 @@ namespace Phoenix.DataHandle.Identity
             if (user is null)
                 throw new ArgumentNullException(nameof(user));
 
-            if (user.UserInfo is null)
-                user.UserInfo = new UserInfo();
+            if (user.User is null)
+                user.User = new User();
 
             //user.UserInfo.CreatedAt = DateTime.Now;
 
@@ -46,8 +46,8 @@ namespace Phoenix.DataHandle.Identity
             if (user is null)
                 throw new ArgumentNullException(nameof(user));
 
-            if (user.UserInfo is null)
-                user.UserInfo = new UserInfo();
+            if (user.User is null)
+                user.User = new User();
 
             //user.UserInfo.CreatedAt = DateTime.Now;
 

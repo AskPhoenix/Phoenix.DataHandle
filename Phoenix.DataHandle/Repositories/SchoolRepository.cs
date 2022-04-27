@@ -70,20 +70,20 @@ namespace Phoenix.DataHandle.Repositories
 
         #region Update
 
-        public School UpdateWithSchoolInfo(School school, ISchool schoolFrom)
+        public School UpdateWithSchoolSetting(School school, ISchool schoolFrom)
         {
-            CopySchoolInfo(school.SchoolSetting, schoolFrom.SchoolSetting);
+            CopySchoolSetting(school.SchoolSetting, schoolFrom.SchoolSetting);
             return Update(school, schoolFrom);
         }
 
-        public async Task<School> UpdateWithSchoolInfoAsync(School school, ISchool schoolFrom,
+        public async Task<School> UpdateWithSchoolSettingAsync(School school, ISchool schoolFrom,
             CancellationToken cancellationToken = default)
         {
-            CopySchoolInfo(school.SchoolSetting, schoolFrom.SchoolSetting);
+            CopySchoolSetting(school.SchoolSetting, schoolFrom.SchoolSetting);
             return await UpdateAsync(school, schoolFrom, cancellationToken);
         }
 
-        public SchoolSetting CopySchoolInfo(SchoolSetting schoolSetting, ISchoolSetting schoolSettingFrom)
+        public SchoolSetting CopySchoolSetting(SchoolSetting schoolSetting, ISchoolSetting schoolSettingFrom)
         {
             if (schoolSettingFrom is null)
                 throw new ArgumentNullException(nameof(schoolSettingFrom));

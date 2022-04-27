@@ -6,6 +6,6 @@
         string? Email { get; }
         string PhoneNumber { get; }
 
-        IUserInfo UserInfo { get; }
+        IUser User { get; }
     }
 }

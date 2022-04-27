@@ -11,7 +11,7 @@ namespace Phoenix.DataHandle.Main.Models
             Classrooms = new HashSet<Classroom>();
             Courses = new HashSet<Course>();
             SchoolConnections = new HashSet<SchoolConnection>();
-            Users = new HashSet<UserInfo>();
+            Users = new HashSet<User>();
         }
 
         public int Id { get; set; }
@@ -31,6 +31,6 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual ICollection<Course> Courses { get; set; }
         public virtual ICollection<SchoolConnection> SchoolConnections { get; set; }
 
-        public virtual ICollection<UserInfo> Users { get; set; }
+        public virtual ICollection<User> Users { get; set; }
     }
 }

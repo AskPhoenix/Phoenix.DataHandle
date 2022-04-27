@@ -31,8 +31,8 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<School> Schools { get; set; } = null!;
         public virtual DbSet<SchoolConnection> SchoolConnections { get; set; } = null!;
         public virtual DbSet<SchoolSetting> SchoolSettings { get; set; } = null!;
+        public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<UserConnection> UserConnections { get; set; } = null!;
-        public virtual DbSet<UserInfo> UserInfos { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -418,7 +418,7 @@ namespace Phoenix.DataHandle.Main.Models
 
             modelBuilder.Entity<SchoolConnection>(entity =>
             {
-                entity.HasIndex(e => new { e.Channel, e.ChannelKey }, "IX_SchoolLogins")
+                entity.HasIndex(e => new { e.Channel, e.ChannelKey }, "IX_SchoolConnections")
                     .IsUnique();
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -437,7 +437,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.SchoolConnections)
                     .HasForeignKey(d => d.TenantId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SchoolLogins_Schools");
+                    .HasConstraintName("FK_SchoolConnections_Schools");
             });
 
             modelBuilder.Entity<SchoolSetting>(entity =>
@@ -475,35 +475,10 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasConstraintName("FK_SchoolSettings_Schools");
             });
 
-            modelBuilder.Entity<UserConnection>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
-                entity.HasIndex(e => new { e.Channel, e.ChannelKey }, "IX_UserChannels")
-                    .IsUnique();
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.ActivatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Channel).HasMaxLength(128);
-
-                entity.Property(e => e.ChannelKey).HasMaxLength(128);
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Tenant)
-                    .WithMany(p => p.UserConnections)
-                    .HasForeignKey(d => d.TenantId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserChannels_UserInfo");
-            });
-
-            modelBuilder.Entity<UserInfo>(entity =>
-            {
-                entity.HasKey(e => e.AspNetUserId);
-
-                entity.ToTable("UserInfo");
+                entity.HasKey(e => e.AspNetUserId)
+                    .HasName("PK_User");
 
                 entity.Property(e => e.AspNetUserId).ValueGeneratedNever();
 
@@ -525,8 +500,8 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.Parents)
                     .UsingEntity<Dictionary<string, object>>(
                         "Parenthood",
-                        l => l.HasOne<UserInfo>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Child"),
-                        r => r.HasOne<UserInfo>().WithMany().HasForeignKey("ParentId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Parent"),
+                        l => l.HasOne<User>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Child"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("ParentId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Parent"),
                         j =>
                         {
                             j.HasKey("ParentId", "ChildId");
@@ -543,7 +518,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .UsingEntity<Dictionary<string, object>>(
                         "CourseUser",
                         l => l.HasOne<Course>().WithMany().HasForeignKey("CourseId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_CourseUsers_Courses"),
-                        r => r.HasOne<UserInfo>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_CourseUsers_Users"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_CourseUsers_Users"),
                         j =>
                         {
                             j.HasKey("UserId", "CourseId");
@@ -560,7 +535,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .UsingEntity<Dictionary<string, object>>(
                         "Attendance",
                         l => l.HasOne<Lecture>().WithMany().HasForeignKey("LectureId").HasConstraintName("FK_Attendances_Lectures"),
-                        r => r.HasOne<UserInfo>().WithMany().HasForeignKey("AttendeeId").HasConstraintName("FK_Attendances_Users"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("AttendeeId").HasConstraintName("FK_Attendances_Users"),
                         j =>
                         {
                             j.HasKey("AttendeeId", "LectureId");
@@ -574,8 +549,8 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.Children)
                     .UsingEntity<Dictionary<string, object>>(
                         "Parenthood",
-                        l => l.HasOne<UserInfo>().WithMany().HasForeignKey("ParentId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Parent"),
-                        r => r.HasOne<UserInfo>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Child"),
+                        l => l.HasOne<User>().WithMany().HasForeignKey("ParentId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Parent"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Child"),
                         j =>
                         {
                             j.HasKey("ParentId", "ChildId");
@@ -592,7 +567,7 @@ namespace Phoenix.DataHandle.Main.Models
                     .UsingEntity<Dictionary<string, object>>(
                         "SchoolUser",
                         l => l.HasOne<School>().WithMany().HasForeignKey("SchoolId").HasConstraintName("FK_SchoolUsers_Schools"),
-                        r => r.HasOne<UserInfo>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_SchoolUsers_Users"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_SchoolUsers_Users"),
                         j =>
                         {
                             j.HasKey("UserId", "SchoolId");
@@ -601,6 +576,30 @@ namespace Phoenix.DataHandle.Main.Models
 
                             j.HasIndex(new[] { "SchoolId" }, "IX_SchoolUsers_School");
                         });
+            });
+
+            modelBuilder.Entity<UserConnection>(entity =>
+            {
+                entity.HasIndex(e => new { e.Channel, e.ChannelKey }, "IX_UserConnections")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.ActivatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Channel).HasMaxLength(128);
+
+                entity.Property(e => e.ChannelKey).HasMaxLength(128);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Tenant)
+                    .WithMany(p => p.UserConnections)
+                    .HasForeignKey(d => d.TenantId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserConnections_Users");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -56,9 +56,9 @@ namespace Phoenix.DataHandle.Identity
                             j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
                         });
 
-                entity.HasOne(d => d.UserInfo)
+                entity.HasOne(d => d.User)
                     .WithOne(p => p.AspNetUser)
-                    .HasForeignKey<UserInfo>(d => d.AspNetUserId)
+                    .HasForeignKey<User>(d => d.AspNetUserId)
                     .HasConstraintName("FK_Users_AspNetUsers");
             });
 

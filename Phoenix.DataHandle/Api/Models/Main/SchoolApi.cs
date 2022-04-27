@@ -17,7 +17,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
             this.Broadcasts = new List<IBroadcast>();
             this.SchoolConnections = new List<ISchoolConnection>();
-            this.Users = new List<IUserInfo>();
+            this.Users = new List<IUser>();
         }
 
         [JsonConstructor]
@@ -59,7 +59,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
             if (school.SchoolSetting is not null)
                 this.SchoolSetting = new SchoolSettingApi(school.SchoolSetting);
 
-            // SchoolInfo is always included if it's not null
+            // SchoolSetting is always included if it's not null
             if (!include)
                 return;
 
@@ -111,6 +111,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public IEnumerable<ISchoolConnection> SchoolConnections { get; }
 
         [JsonIgnore]
-        public IEnumerable<IUserInfo> Users { get; }
+        public IEnumerable<IUser> Users { get; }
     }
 }

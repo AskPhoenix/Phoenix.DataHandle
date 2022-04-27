@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
-    public abstract class UserAcf : IUserInfo
+    public abstract class UserAcf : IUser
     {
         private UserAcf()
         {
@@ -21,10 +21,10 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.Grades = new List<IGrade>();
             this.OneTimeCodes = new List<IOneTimeCode>();
             this.UserConnections = new List<IUserConnection>();
-            this.Children = new List<IUserInfo>();
+            this.Children = new List<IUser>();
             this.Courses = new List<ICourse>();
             this.Lectures = new List<ILecture>();
-            this.Parents = new List<IUserInfo>();
+            this.Parents = new List<IUser>();
             this.Schools = new List<ISchool>();
         }
 
@@ -118,7 +118,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
 
         [JsonIgnore]
-        public IEnumerable<IUserInfo> Children { get; }
+        public IEnumerable<IUser> Children { get; }
 
         [JsonIgnore]
         public IEnumerable<ICourse> Courses { get; }
@@ -127,7 +127,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public IEnumerable<ILecture> Lectures { get; }
 
         [JsonIgnore]
-        public IEnumerable<IUserInfo> Parents { get; }
+        public IEnumerable<IUser> Parents { get; }
 
         [JsonIgnore]
         public IEnumerable<ISchool> Schools { get; }

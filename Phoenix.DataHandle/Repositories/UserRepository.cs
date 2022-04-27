@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public sealed class UserRepository : ObviableRepository<UserInfo>
+    public sealed class UserRepository : ObviableRepository<User>
     {
         public UserRepository(PhoenixContext dbContext) 
             : base(dbContext)
@@ -19,18 +19,18 @@ namespace Phoenix.DataHandle.Repositories
 
         #region Validate
 
-        public bool IsValid(UserInfo user)
+        public bool IsValid(User user)
         {
             return user.IsSelfDetermined && user.DependenceOrder != 0;
         }
 
-        public void CheckIfValid(UserInfo user)
+        public void CheckIfValid(User user)
         {
             if (!IsValid(user))
                 throw new InvalidOperationException($"{nameof(user.DependenceOrder)} must be 0 for a self-determined user.");
         }
 
-        public void CheckIfValid(IEnumerable<UserInfo> users)
+        public void CheckIfValid(IEnumerable<User> users)
         {
             foreach (var user in users)
                 CheckIfValid(user);
@@ -40,14 +40,14 @@ namespace Phoenix.DataHandle.Repositories
 
         #region Create
 
-        public override Task<UserInfo> CreateAsync(UserInfo user,
+        public override Task<User> CreateAsync(User user,
             CancellationToken cancellationToken = default)
         {
             CheckIfValid(user);
             return base.CreateAsync(user, cancellationToken);
         }
 
-        public override Task<IEnumerable<UserInfo>> CreateRangeAsync(IEnumerable<UserInfo> users,
+        public override Task<IEnumerable<User>> CreateRangeAsync(IEnumerable<User> users,
             CancellationToken cancellationToken = default)
         {
             CheckIfValid(users);
@@ -58,34 +58,34 @@ namespace Phoenix.DataHandle.Repositories
 
         #region Update
 
-        public override Task<UserInfo> UpdateAsync(UserInfo user,
+        public override Task<User> UpdateAsync(User user,
             CancellationToken cancellationToken = default)
         {
             CheckIfValid(user);
             return base.UpdateAsync(user, cancellationToken);
         }
 
-        public override Task<IEnumerable<UserInfo>> UpdateRangeAsync(IEnumerable<UserInfo> users,
+        public override Task<IEnumerable<User>> UpdateRangeAsync(IEnumerable<User> users,
             CancellationToken cancellationToken = default)
         {
             CheckIfValid(users);
             return base.UpdateRangeAsync(users, cancellationToken);
         }
 
-        public UserInfo UpdateWithUserInfo(UserInfo user, IUserInfo userFrom)
+        public User UpdateWithAppUser(User user, IUser userFrom)
         {
-            CopyAspNetUser(user.AspNetUser, userFrom.AspNetUser);
+            CopyAppUser(user.AspNetUser, userFrom.AspNetUser);
             return Update(user, userFrom);
         }
 
-        public async Task<UserInfo> UpdateWithUserInfoAsync(UserInfo user, IUserInfo userFrom,
+        public async Task<User> UpdateWithAppUserAsync(User user, IUser userFrom,
             CancellationToken cancellationToken = default)
         {
-            CopyAspNetUser(user.AspNetUser, userFrom.AspNetUser);
+            CopyAppUser(user.AspNetUser, userFrom.AspNetUser);
             return await UpdateAsync(user, userFrom, cancellationToken);
         }
 
-        public ApplicationUser CopyAspNetUser(ApplicationUser appUser, IAspNetUser aspNetUserFrom)
+        public ApplicationUser CopyAppUser(ApplicationUser appUser, IAspNetUser aspNetUserFrom)
         {
             if (aspNetUserFrom is null)
                 throw new ArgumentNullException(nameof(aspNetUserFrom));

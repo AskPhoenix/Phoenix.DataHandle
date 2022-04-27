@@ -9,6 +9,6 @@ namespace Phoenix.DataHandle.Main.Entities
         OneTimeCodePurpose Purpose { get; }
         DateTime ExpiresAt { get; }
 
-        IUserInfo User { get; }
+        IUser User { get; }
     }
 }

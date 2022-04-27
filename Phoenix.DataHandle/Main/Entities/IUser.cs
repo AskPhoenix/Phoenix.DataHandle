@@ -2,7 +2,7 @@
 
 namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IUserInfo
+    public interface IUser
     {
         IAspNetUser AspNetUser { get; }
         string FirstName { get; }
@@ -17,10 +17,10 @@ namespace Phoenix.DataHandle.Main.Entities
         IEnumerable<IOneTimeCode> OneTimeCodes { get; }
         IEnumerable<IUserConnection> UserConnections { get; }
         
-        IEnumerable<IUserInfo> Children { get; }
+        IEnumerable<IUser> Children { get; }
         IEnumerable<ICourse> Courses { get; }
         IEnumerable<ILecture> Lectures { get; }
-        IEnumerable<IUserInfo> Parents { get; }
+        IEnumerable<IUser> Parents { get; }
         IEnumerable<ISchool> Schools { get; }
     }
 }

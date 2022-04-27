@@ -18,8 +18,8 @@ namespace Phoenix.DataHandle.Identity
             Roles = new HashSet<ApplicationRole>();
         }
 
-        public virtual UserInfo UserInfo { get; set; } = null!;
-        IUserInfo IAspNetUser.UserInfo => UserInfo;
+        public virtual User User { get; set; } = null!;
+        IUser IAspNetUser.User => User;
 
         public virtual ICollection<ApplicationUserClaim> Claims { get; set; }
         public virtual ICollection<ApplicationUserLogin> Logins { get; set; }

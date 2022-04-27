@@ -28,6 +28,6 @@ dotnet ef dbcontext scaffold "%cs%" Microsoft.EntityFrameworkCore.SqlServer ^
 --table "dbo.SchoolSettings" ^
 --table "dbo.SchoolUsers" ^
 --table "dbo.UserConnections" ^
---table "dbo.UserInfo"
+--table "dbo.Users"
 
 Pause

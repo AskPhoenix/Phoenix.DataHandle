@@ -12,7 +12,7 @@ namespace Phoenix.DataHandle.Main.Models
             Schedules = new HashSet<Schedule>();
             Books = new HashSet<Book>();
             Broadcasts = new HashSet<Broadcast>();
-            Users = new HashSet<UserInfo>();
+            Users = new HashSet<User>();
         }
 
         public int Id { get; set; }
@@ -36,6 +36,6 @@ namespace Phoenix.DataHandle.Main.Models
 
         public virtual ICollection<Book> Books { get; set; }
         public virtual ICollection<Broadcast> Broadcasts { get; set; }
-        public virtual ICollection<UserInfo> Users { get; set; }
+        public virtual ICollection<User> Users { get; set; }
     }
 }

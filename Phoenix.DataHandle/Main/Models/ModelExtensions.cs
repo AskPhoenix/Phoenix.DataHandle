@@ -11,11 +11,11 @@ namespace Phoenix.DataHandle.Main.Models
     {
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserInfo>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
                 entity.HasOne(d => d.AspNetUser)
-                    .WithOne(p => p.UserInfo)
-                    .HasForeignKey<UserInfo>(d => d.AspNetUserId)
+                    .WithOne(p => p.User)
+                    .HasForeignKey<User>(d => d.AspNetUserId)
                     .HasConstraintName("FK_Users_AspNetUsers");
             });
         }
@@ -37,13 +37,13 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class BotFeedback : IBotFeedback, IModelEntity
     {
-        IUserInfo IBotFeedback.Author => this.Author;
+        IUser IBotFeedback.Author => this.Author;
     }
 
     public partial class Broadcast : IBroadcast, IModelEntity
     {
         ISchool IBroadcast.School => this.School;
-        IUserInfo IBroadcast.Author => this.Author;
+        IUser IBroadcast.Author => this.Author;
 
         IEnumerable<ICourse> IBroadcast.Courses => this.Courses;
     }
@@ -72,7 +72,7 @@ namespace Phoenix.DataHandle.Main.Models
 
         IEnumerable<IBook> ICourse.Books => this.Books;
         IEnumerable<IBroadcast> ICourse.Broadcasts => this.Broadcasts;
-        IEnumerable<IUserInfo> ICourse.Users => this.Users;
+        IEnumerable<IUser> ICourse.Users => this.Users;
     }
 
     public partial class Exam : IExam, IModelEntity
@@ -93,7 +93,7 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class Grade : IGrade, IModelEntity
     {
-        IUserInfo IGrade.Student => this.Student;
+        IUser IGrade.Student => this.Student;
         ICourse? IGrade.Course => this.Course;
         IExam? IGrade.Exam => this.Exam;
         IExercise? IGrade.Exercise => this.Exercise;
@@ -110,7 +110,7 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IExercise> ILecture.Exercises => this.Exercises;
         IEnumerable<ILecture> ILecture.InverseReplacementLecture => this.InverseReplacementLecture;
 
-        IEnumerable<IUserInfo> ILecture.Attendees => this.Attendees;
+        IEnumerable<IUser> ILecture.Attendees => this.Attendees;
     }
 
     public partial class Material : IMaterial, IModelEntity
@@ -121,7 +121,7 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class OneTimeCode : IOneTimeCode, IModelEntity
     {
-        IUserInfo IOneTimeCode.User => this.User;
+        IUser IOneTimeCode.User => this.User;
     }
     
     public partial class Schedule : ISchedule, IObviableModelEntity
@@ -145,7 +145,7 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ICourse> ISchool.Courses => this.Courses;
         IEnumerable<ISchoolConnection> ISchool.SchoolConnections => this.SchoolConnections;
 
-        IEnumerable<IUserInfo> ISchool.Users => this.Users;
+        IEnumerable<IUser> ISchool.Users => this.Users;
     }
 
     public partial class SchoolSetting : ISchoolSetting
@@ -155,28 +155,28 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class UserConnection : IUserConnection, IConnectionEntity
     {
-        IUserInfo IUserConnection.Tenant => this.Tenant;
+        IUser IUserConnection.Tenant => this.Tenant;
     }
 
-    public partial class UserInfo : IUserInfo, IObviableModelEntity
+    public partial class User : IUser, IObviableModelEntity
     {
         public ApplicationUser AspNetUser { get; set; } = null!;
         public string FullName => this.BuildFullName();
 
         int IModelEntity.Id => this.AspNetUserId;
 
-        IAspNetUser IUserInfo.AspNetUser => this.AspNetUser;
+        IAspNetUser IUser.AspNetUser => this.AspNetUser;
 
-        IEnumerable<IBotFeedback> IUserInfo.BotFeedbacks => this.BotFeedbacks;
-        IEnumerable<IBroadcast> IUserInfo.Broadcasts => this.Broadcasts;
-        IEnumerable<IGrade> IUserInfo.Grades => this.Grades;
-        IEnumerable<IOneTimeCode> IUserInfo.OneTimeCodes => this.OneTimeCodes;
-        IEnumerable<IUserConnection> IUserInfo.UserConnections => this.UserConnections;
+        IEnumerable<IBotFeedback> IUser.BotFeedbacks => this.BotFeedbacks;
+        IEnumerable<IBroadcast> IUser.Broadcasts => this.Broadcasts;
+        IEnumerable<IGrade> IUser.Grades => this.Grades;
+        IEnumerable<IOneTimeCode> IUser.OneTimeCodes => this.OneTimeCodes;
+        IEnumerable<IUserConnection> IUser.UserConnections => this.UserConnections;
 
-        IEnumerable<IUserInfo> IUserInfo.Children => this.Children;
-        IEnumerable<ICourse> IUserInfo.Courses => this.Courses;
-        IEnumerable<ILecture> IUserInfo.Lectures => this.Lectures;
-        IEnumerable<IUserInfo> IUserInfo.Parents => this.Parents;
-        IEnumerable<ISchool> IUserInfo.Schools => this.Schools;
+        IEnumerable<IUser> IUser.Children => this.Children;
+        IEnumerable<ICourse> IUser.Courses => this.Courses;
+        IEnumerable<ILecture> IUser.Lectures => this.Lectures;
+        IEnumerable<IUser> IUser.Parents => this.Parents;
+        IEnumerable<ISchool> IUser.Schools => this.Schools;
     }
 }

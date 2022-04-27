@@ -19,7 +19,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.Courses = new List<ICourse>();
             this.Broadcasts = new List<IBroadcast>();
             this.SchoolConnections = new List<ISchoolConnection>();
-            this.Users = new List<IUserInfo>();
+            this.Users = new List<IUser>();
         }
 
         [JsonConstructor]
@@ -97,6 +97,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public IEnumerable<ISchoolConnection> SchoolConnections { get; }
 
         [JsonIgnore]
-        public IEnumerable<IUserInfo> Users { get; }
+        public IEnumerable<IUser> Users { get; }
     }
 }

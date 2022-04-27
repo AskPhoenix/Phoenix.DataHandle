@@ -4,7 +4,7 @@ namespace Phoenix.DataHandle.Main.Entities
 {
     public interface IBotFeedback
     {
-        IUserInfo Author { get; }
+        IUser Author { get; }
         bool AskTriggered { get; }
         BotFeedbackCategory Category { get; }
         short? Rating { get; }

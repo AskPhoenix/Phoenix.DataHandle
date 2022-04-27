@@ -16,10 +16,10 @@ namespace Phoenix.Verification.DataHandle.Tests
         [Fact]
         public async void UserApiTestAsync()
         {
-            var user = await _phoenixContext.UserInfos.Include(u => u.AspNetUser)
+            var user = await _phoenixContext.Users.Include(u => u.AspNetUser)
                 .Include(u => u.Courses)
                 .FirstOrDefaultAsync()
-                ?? new UserInfo
+                ?? new User
                 {
                     FirstName = "Kapoios",
                     LastName = "Kapoiou",
@@ -34,10 +34,10 @@ namespace Phoenix.Verification.DataHandle.Tests
                     }
                 };
 
-            var userApi = new UserInfoApi(user);
+            var userApi = new UserApi(user);
 
             JsonUtilities.SaveToFile(userApi, OutDirName, nameof(user));
-            var user2 = JsonUtilities.ReadFromFile<UserInfoApi>(OutDirName, nameof(user));
+            var user2 = JsonUtilities.ReadFromFile<UserApi>(OutDirName, nameof(user));
         }
 
         [Fact]

@@ -42,6 +42,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public string PhoneNumber { get; } = null!;
 
         [JsonIgnore]
-        public IUserInfo UserInfo { get; } = null!;
+        public IUser User { get; } = null!;
     }
 }

@@ -37,12 +37,12 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.PhoneCountryCode = phoneCode;
         }
 
-        public SchoolSettingApi(ISchoolSetting schoolInfo)
-            : this(0, schoolInfo.Country, schoolInfo.PrimaryLanguage, schoolInfo.PrimaryLocale,
-                  schoolInfo.SecondaryLanguage, schoolInfo.SecondaryLocale, schoolInfo.TimeZone, schoolInfo.PhoneCountryCode)
+        public SchoolSettingApi(ISchoolSetting schoolSetting)
+            : this(0, schoolSetting.Country, schoolSetting.PrimaryLanguage, schoolSetting.PrimaryLocale,
+                  schoolSetting.SecondaryLanguage, schoolSetting.SecondaryLocale, schoolSetting.TimeZone, schoolSetting.PhoneCountryCode)
         {
-            if (schoolInfo is SchoolSetting schoolInfo1)
-                this.Id = schoolInfo1.SchoolId;
+            if (schoolSetting is SchoolSetting schoolSetting1)
+                this.Id = schoolSetting1.SchoolId;
         }
 
         [JsonProperty(PropertyName = "id")]

@@ -17,7 +17,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.Exercises = new List<ExerciseApi>();
             
             this.InverseReplacementLecture = new List<ILecture>();
-            this.Attendees = new List<IUserInfo>();
+            this.Attendees = new List<IUser>();
         }
 
         [JsonConstructor]
@@ -123,6 +123,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public IEnumerable<ILecture> InverseReplacementLecture { get; }
 
         [JsonIgnore]
-        public IEnumerable<IUserInfo> Attendees { get; }
+        public IEnumerable<IUser> Attendees { get; }
     }
 }
