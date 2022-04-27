@@ -1,13 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Api.Models.Main;
 using Phoenix.DataHandle.Main.Models;
-using Phoenix.DataHandle.Tests.Utilities;
+using Phoenix.Verification.Base;
+using Phoenix.Verification.Utilities;
 using System;
 using Xunit;
 
-namespace Phoenix.DataHandle.Tests
+namespace Phoenix.Verification.DataHandle.Tests
 {
-    public class ApiTests : TestsBase
+    public class ApiTests : ContextTestsBase
     {
         private const string OutDirName = "api_tests";
 

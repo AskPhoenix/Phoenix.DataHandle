@@ -3,9 +3,9 @@ using System.Globalization;
 using System.Threading;
 using Xunit;
 
-namespace Phoenix.DataHandle.Tests
+namespace Phoenix.Verification.DataHandle.Tests
 {
-    public class UtilityTests : TestsBase
+    public class UtilityTests
     {
         [Fact]
         public void EnumExtensionsTest()

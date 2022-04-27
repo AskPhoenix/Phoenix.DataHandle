@@ -1,10 +1,11 @@
 using Phoenix.DataHandle.Identity;
 using Phoenix.DataHandle.Main.Types;
+using Phoenix.Verification.Base;
 using Xunit;
 
-namespace Phoenix.DataHandle.Tests
+namespace Phoenix.Verification.DataHandle.Tests
 {
-    public class IdentityTests : TestsBase
+    public class IdentityTests : ContextTestsBase
     {
         private readonly ApplicationStore _applicationStore;
 

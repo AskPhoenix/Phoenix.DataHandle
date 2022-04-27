@@ -1,17 +1,17 @@
-﻿using Microsoft.Extensions.Configuration;
-using Phoenix.DataHandle.DataEntry;
+﻿using Phoenix.DataHandle.DataEntry;
 using Phoenix.DataHandle.DataEntry.Models;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
 using Phoenix.DataHandle.DataEntry.Models.Uniques;
-using Phoenix.DataHandle.Tests.Utilities;
+using Phoenix.Verification.Base;
+using Phoenix.Verification.Utilities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Phoenix.DataHandle.Tests
+namespace Phoenix.Verification.DataHandle.Tests
 {
-    public class DataEntryTests : TestsBase
+    public class DataEntryTests : ConfigurationTestsBase
     {
         private readonly string WPUsername;
         private readonly string WPPassword;
