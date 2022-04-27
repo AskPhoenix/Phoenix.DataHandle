@@ -15,7 +15,7 @@ namespace Phoenix.DataHandle.Main.Entities
         IEnumerable<IBroadcast> Broadcasts { get; }
         IEnumerable<IClassroom> Classrooms { get; }
         IEnumerable<ICourse> Courses { get; }
-        IEnumerable<ISchoolLogin> SchoolLogins { get; }
+        IEnumerable<ISchoolConnection> SchoolConnections { get; }
 
         IEnumerable<IUserInfo> Users { get; }
     }

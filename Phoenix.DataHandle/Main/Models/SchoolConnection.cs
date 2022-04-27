@@ -3,16 +3,17 @@ using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Main.Models
 {
-    public partial class UserLogin
+    public partial class SchoolConnection
     {
         public int Id { get; set; }
         public int TenantId { get; set; }
-        public int ChannelId { get; set; }
-        public string ProviderKey { get; set; } = null!;
+        public string Channel { get; set; } = null!;
+        public string ChannelKey { get; set; } = null!;
+        public string ChannelDisplayName { get; set; } = null!;
         public DateTime? ActivatedAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual Channel Channel { get; set; } = null!;
+        public virtual School Tenant { get; set; } = null!;
     }
 }

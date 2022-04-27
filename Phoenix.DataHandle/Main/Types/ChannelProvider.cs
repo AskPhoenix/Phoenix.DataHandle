@@ -25,5 +25,15 @@ namespace Phoenix.DataHandle.Main.Types
             return Enum.GetValues<ChannelProvider>()
                 .Any(cp => string.Equals(cp.ToString(), me, StringComparison.OrdinalIgnoreCase));
         }
+
+        public static string ToFriendlyString(this ChannelProvider me)
+        {
+            return me switch
+            {
+                ChannelProvider.Facebook    => "Facebook",
+                ChannelProvider.Emulator    => "Emulator",
+                _                           => string.Empty
+            };
+        }
     }
 }

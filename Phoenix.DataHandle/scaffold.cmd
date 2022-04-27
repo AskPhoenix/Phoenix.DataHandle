@@ -11,7 +11,6 @@ dotnet ef dbcontext scaffold "%cs%" Microsoft.EntityFrameworkCore.SqlServer ^
 --table "dbo.BotFeedback" ^
 --table "dbo.BroadcastCourses" ^
 --table "dbo.Broadcasts" ^
---table "dbo.Channels" ^
 --table "dbo.Classrooms" ^
 --table "dbo.CourseBooks" ^
 --table "dbo.Courses" ^
@@ -24,11 +23,11 @@ dotnet ef dbcontext scaffold "%cs%" Microsoft.EntityFrameworkCore.SqlServer ^
 --table "dbo.OneTimeCodes" ^
 --table "dbo.Parenthoods" ^
 --table "dbo.Schedules" ^
+--table "dbo.SchoolConnections" ^
 --table "dbo.SchoolInfo" ^
---table "dbo.SchoolLogins" ^
 --table "dbo.Schools" ^
 --table "dbo.SchoolUsers" ^
---table "dbo.UserInfo" ^
---table "dbo.UserLogins"
+--table "dbo.UserConnections" ^
+--table "dbo.UserInfo"
 
 Pause

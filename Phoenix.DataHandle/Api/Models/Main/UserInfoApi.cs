@@ -18,6 +18,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.Broadcasts = new List<IBroadcast>();
             this.Grades = new List<IGrade>();
             this.OneTimeCodes = new List<IOneTimeCode>();
+            this.UserConnections = new List<IUserConnection>();
             this.Children = new List<IUserInfo>();
             this.Lectures = new List<ILecture>();
             this.Parents = new List<IUserInfo>();
@@ -102,6 +103,9 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         [JsonIgnore]
         public IEnumerable<IOneTimeCode> OneTimeCodes { get; }
+        
+        [JsonIgnore]
+        public IEnumerable<IUserConnection> UserConnections { get; }
 
 
         [JsonIgnore]

@@ -10,7 +10,7 @@ namespace Phoenix.DataHandle.Main.Models
             Broadcasts = new HashSet<Broadcast>();
             Classrooms = new HashSet<Classroom>();
             Courses = new HashSet<Course>();
-            SchoolLogins = new HashSet<SchoolLogin>();
+            SchoolConnections = new HashSet<SchoolConnection>();
             Users = new HashSet<UserInfo>();
         }
 
@@ -29,7 +29,7 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual ICollection<Broadcast> Broadcasts { get; set; }
         public virtual ICollection<Classroom> Classrooms { get; set; }
         public virtual ICollection<Course> Courses { get; set; }
-        public virtual ICollection<SchoolLogin> SchoolLogins { get; set; }
+        public virtual ICollection<SchoolConnection> SchoolConnections { get; set; }
 
         public virtual ICollection<UserInfo> Users { get; set; }
     }

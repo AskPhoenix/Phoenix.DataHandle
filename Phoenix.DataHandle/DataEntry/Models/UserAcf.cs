@@ -20,6 +20,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.Broadcasts = new List<IBroadcast>();
             this.Grades = new List<IGrade>();
             this.OneTimeCodes = new List<IOneTimeCode>();
+            this.UserConnections = new List<IUserConnection>();
             this.Children = new List<IUserInfo>();
             this.Courses = new List<ICourse>();
             this.Lectures = new List<ILecture>();
@@ -111,6 +112,9 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         [JsonIgnore]
         public IEnumerable<IOneTimeCode> OneTimeCodes { get; }
+
+        [JsonIgnore]
+        public IEnumerable<IUserConnection> UserConnections { get; set; }
 
 
         [JsonIgnore]

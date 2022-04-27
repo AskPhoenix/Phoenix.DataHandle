@@ -48,17 +48,6 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ICourse> IBroadcast.Courses => this.Courses;
     }
 
-    public partial class Channel : IChannel, INormalizableEntity
-    {
-        IEnumerable<ISchoolLogin> IChannel.SchoolLogins => this.SchoolLogins;
-        IEnumerable<IUserLogin> IChannel.UserLogins => this.UserLogins;
-
-        public void Normalize()
-        {
-            this.ProviderName = this.Provider.ToString();
-        }
-    }
-
     public partial class Classroom : IClassroom, IObviableModelEntity, INormalizableEntity
     {
         ISchool IClassroom.School => this.School;
@@ -149,9 +138,14 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IBroadcast> ISchool.Broadcasts => this.Broadcasts;
         IEnumerable<IClassroom> ISchool.Classrooms => this.Classrooms;
         IEnumerable<ICourse> ISchool.Courses => this.Courses;
-        IEnumerable<ISchoolLogin> ISchool.SchoolLogins => this.SchoolLogins;
+        IEnumerable<ISchoolConnection> ISchool.SchoolConnections => this.SchoolConnections;
 
         IEnumerable<IUserInfo> ISchool.Users => this.Users;
+    }
+
+    public partial class SchoolConnection : ISchoolConnection, IConnectionEntity
+    {
+        ISchool ISchoolConnection.Tenant => this.Tenant;
     }
 
     public partial class SchoolInfo : ISchoolInfo
@@ -159,11 +153,9 @@ namespace Phoenix.DataHandle.Main.Models
         ISchool ISchoolInfo.School => this.School;
     }
 
-    public partial class SchoolLogin : ISchoolLogin, ILoginEntity
+    public partial class UserConnection : IUserConnection, IConnectionEntity
     {
-        ISchool ISchoolLogin.Tenant => this.Tenant;
-
-        IChannel ILoginEntity.Channel => this.Channel;
+        IUserInfo IUserConnection.Tenant => this.Tenant;
     }
 
     public partial class UserInfo : IUserInfo, IObviableModelEntity
@@ -179,18 +171,12 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IBroadcast> IUserInfo.Broadcasts => this.Broadcasts;
         IEnumerable<IGrade> IUserInfo.Grades => this.Grades;
         IEnumerable<IOneTimeCode> IUserInfo.OneTimeCodes => this.OneTimeCodes;
+        IEnumerable<IUserConnection> IUserInfo.UserConnections => this.UserConnections;
 
         IEnumerable<IUserInfo> IUserInfo.Children => this.Children;
         IEnumerable<ICourse> IUserInfo.Courses => this.Courses;
         IEnumerable<ILecture> IUserInfo.Lectures => this.Lectures;
         IEnumerable<IUserInfo> IUserInfo.Parents => this.Parents;
         IEnumerable<ISchool> IUserInfo.Schools => this.Schools;
-    }
-
-    public partial class UserLogin : IUserLogin, ILoginEntity
-    {
-        //IUserInfo IUserLogin.Tenant => this.Tenant;
-
-        IChannel ILoginEntity.Channel => this.Channel;
     }
 }

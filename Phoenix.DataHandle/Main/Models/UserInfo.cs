@@ -11,6 +11,7 @@ namespace Phoenix.DataHandle.Main.Models
             Broadcasts = new HashSet<Broadcast>();
             Grades = new HashSet<Grade>();
             OneTimeCodes = new HashSet<OneTimeCode>();
+            UserConnections = new HashSet<UserConnection>();
             Children = new HashSet<UserInfo>();
             Courses = new HashSet<Course>();
             Lectures = new HashSet<Lecture>();
@@ -32,6 +33,7 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual ICollection<Broadcast> Broadcasts { get; set; }
         public virtual ICollection<Grade> Grades { get; set; }
         public virtual ICollection<OneTimeCode> OneTimeCodes { get; set; }
+        public virtual ICollection<UserConnection> UserConnections { get; set; }
 
         public virtual ICollection<UserInfo> Children { get; set; }
         public virtual ICollection<Course> Courses { get; set; }

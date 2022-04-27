@@ -19,7 +19,6 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<Book> Books { get; set; } = null!;
         public virtual DbSet<BotFeedback> BotFeedbacks { get; set; } = null!;
         public virtual DbSet<Broadcast> Broadcasts { get; set; } = null!;
-        public virtual DbSet<Channel> Channels { get; set; } = null!;
         public virtual DbSet<Classroom> Classrooms { get; set; } = null!;
         public virtual DbSet<Course> Courses { get; set; } = null!;
         public virtual DbSet<Exam> Exams { get; set; } = null!;
@@ -30,10 +29,10 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<OneTimeCode> OneTimeCodes { get; set; } = null!;
         public virtual DbSet<Schedule> Schedules { get; set; } = null!;
         public virtual DbSet<School> Schools { get; set; } = null!;
+        public virtual DbSet<SchoolConnection> SchoolConnections { get; set; } = null!;
         public virtual DbSet<SchoolInfo> SchoolInfos { get; set; } = null!;
-        public virtual DbSet<SchoolLogin> SchoolLogins { get; set; } = null!;
+        public virtual DbSet<UserConnection> UserConnections { get; set; } = null!;
         public virtual DbSet<UserInfo> UserInfos { get; set; } = null!;
-        public virtual DbSet<UserLogin> UserLogins { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -122,20 +121,6 @@ namespace Phoenix.DataHandle.Main.Models
 
                             j.HasIndex(new[] { "CourseId" }, "IX_BroadcastCourses_Course");
                         });
-            });
-
-            modelBuilder.Entity<Channel>(entity =>
-            {
-                entity.HasIndex(e => e.Provider, "IX_Channels_Provider")
-                    .IsUnique();
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.ProviderName).HasMaxLength(256);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Classroom>(entity =>
@@ -431,6 +416,30 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
+            modelBuilder.Entity<SchoolConnection>(entity =>
+            {
+                entity.HasIndex(e => new { e.Channel, e.ChannelKey }, "IX_SchoolLogins")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.ActivatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Channel).HasMaxLength(128);
+
+                entity.Property(e => e.ChannelKey).HasMaxLength(128);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Tenant)
+                    .WithMany(p => p.SchoolConnections)
+                    .HasForeignKey(d => d.TenantId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SchoolLogins_Schools");
+            });
+
             modelBuilder.Entity<SchoolInfo>(entity =>
             {
                 entity.HasKey(e => e.SchoolId);
@@ -467,35 +476,28 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasConstraintName("FK_SchoolSettings_Schools");
             });
 
-            modelBuilder.Entity<SchoolLogin>(entity =>
+            modelBuilder.Entity<UserConnection>(entity =>
             {
-                entity.HasIndex(e => new { e.ChannelId, e.ProviderKey }, "IX_SchoolChannels_Channel_ProviderKey")
-                    .IsUnique();
-
-                entity.HasIndex(e => e.Id, "UQ_SchoolLogins_School_Channel")
+                entity.HasIndex(e => new { e.Channel, e.ChannelKey }, "IX_UserChannels")
                     .IsUnique();
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.ActivatedAt).HasColumnType("datetime");
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.Channel).HasMaxLength(128);
 
-                entity.Property(e => e.ProviderKey).HasMaxLength(256);
+                entity.Property(e => e.ChannelKey).HasMaxLength(128);
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-                entity.HasOne(d => d.Channel)
-                    .WithMany(p => p.SchoolLogins)
-                    .HasForeignKey(d => d.ChannelId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SchoolLogins_Channels");
-
                 entity.HasOne(d => d.Tenant)
-                    .WithMany(p => p.SchoolLogins)
+                    .WithMany(p => p.UserConnections)
                     .HasForeignKey(d => d.TenantId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SchoolLogins_Schools");
+                    .HasConstraintName("FK_UserChannels_UserInfo");
             });
 
             modelBuilder.Entity<UserInfo>(entity =>
@@ -600,31 +602,6 @@ namespace Phoenix.DataHandle.Main.Models
 
                             j.HasIndex(new[] { "SchoolId" }, "IX_SchoolUsers_School");
                         });
-            });
-
-            modelBuilder.Entity<UserLogin>(entity =>
-            {
-                entity.HasIndex(e => new { e.ChannelId, e.ProviderKey }, "IX_UserLogins_Channel_ProviderKey")
-                    .IsUnique();
-
-                entity.HasIndex(e => new { e.TenantId, e.ChannelId }, "UQ_UserLogins_User_Channel")
-                    .IsUnique();
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.ActivatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.ProviderKey).HasMaxLength(256);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Channel)
-                    .WithMany(p => p.UserLogins)
-                    .HasForeignKey(d => d.ChannelId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserLogins_Channels");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -16,7 +16,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.Courses = new List<CourseApi>();
 
             this.Broadcasts = new List<IBroadcast>();
-            this.SchoolLogins = new List<ISchoolLogin>();
+            this.SchoolConnections = new List<ISchoolConnection>();
             this.Users = new List<IUserInfo>();
         }
 
@@ -108,7 +108,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         IEnumerable<ICourse> ISchool.Courses => this.Courses;
 
         [JsonIgnore]
-        public IEnumerable<ISchoolLogin> SchoolLogins { get; }
+        public IEnumerable<ISchoolConnection> SchoolConnections { get; }
 
         [JsonIgnore]
         public IEnumerable<IUserInfo> Users { get; }

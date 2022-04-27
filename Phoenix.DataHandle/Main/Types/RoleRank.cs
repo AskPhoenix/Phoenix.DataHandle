@@ -68,7 +68,7 @@ namespace Phoenix.DataHandle.Main.Types
                 RoleRank.SchoolTester   => RoleRankResources.SchoolTester,
                 RoleRank.SuperTester    => RoleRankResources.SuperTester,
                 RoleRank.SuperAdmin     => RoleRankResources.SuperAdmin,
-                _                   => string.Empty
+                _                       => string.Empty
             };
         }
 
