@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Api.Models.Main;
+using Phoenix.DataHandle.Identity;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.Verification.Base;
 using Phoenix.Verification.Utilities;
@@ -15,27 +16,28 @@ namespace Phoenix.Verification.DataHandle.Tests
         [Fact]
         public async void UserApiTestAsync()
         {
-            var user = await _phoenixContext.Users.Include(u => u.UserInfo)
+            var user = await _phoenixContext.UserInfos.Include(u => u.AspNetUser)
                 .Include(u => u.Courses)
                 .FirstOrDefaultAsync()
-                ?? new User
+                ?? new UserInfo
                 {
-                    PhoneNumber = "0000000000",
-                    Email = "kati@kapou.com",
-                    UserName = "kapoios",
-                    UserInfo = new UserInfo
+                    FirstName = "Kapoios",
+                    LastName = "Kapoiou",
+                    HasAcceptedTerms = true,
+                    IsSelfDetermined = true,
+
+                    AspNetUser = new ApplicationUser
                     {
-                        FirstName = "Kapoios",
-                        LastName = "Kapoiou",
-                        TermsAccepted = true,
-                        IsSelfDetermined = true
+                        PhoneNumber = "0000000000",
+                        Email = "kati@kapou.com",
+                        UserName = "kapoios"
                     }
                 };
 
-            var userApi = new UserApi(user);
+            var userApi = new UserInfoApi(user);
 
             JsonUtilities.SaveToFile(userApi, OutDirName, nameof(user));
-            var user2 = JsonUtilities.ReadFromFile<UserApi>(OutDirName, nameof(user));
+            var user2 = JsonUtilities.ReadFromFile<UserInfoApi>(OutDirName, nameof(user));
         }
 
         [Fact]
