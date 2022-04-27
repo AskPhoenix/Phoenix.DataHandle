@@ -6,5 +6,10 @@
   "WordPressAuth": {
     "Username": "",
     "Password": ""
+  },
+
+  "IdentityTests": {
+    "TestPhoneNumber": "",
+    "TestProviderKey": ""
   }
 }

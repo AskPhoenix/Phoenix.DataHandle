@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Phoenix.DataHandle.Identity;
+using System;
 using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Main.Models
@@ -12,5 +13,6 @@ namespace Phoenix.DataHandle.Main.Models
         public bool IsSelfDetermined { get; set; }
 
         public virtual User User { get; set; } = null!;
+        public virtual ApplicationUser AppUser { get; set; } = null!;
     }
 }

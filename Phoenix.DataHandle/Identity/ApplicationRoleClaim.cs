@@ -2,7 +2,8 @@
 
 namespace Phoenix.DataHandle.Identity
 {
-    public sealed class ApplicationRoleClaim : IdentityRoleClaim<int>
+    public class ApplicationRoleClaim : IdentityRoleClaim<int>
     {
+        public virtual ApplicationRole Role { get; set; } = null!;
     }
 }
