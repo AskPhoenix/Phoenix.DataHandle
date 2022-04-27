@@ -16,7 +16,7 @@ namespace Phoenix.DataHandle.Main.Models
             Courses = new HashSet<Course>();
             Lectures = new HashSet<Lecture>();
             Parents = new HashSet<User>();
-            Roles = new HashSet<Role>();
+            //Roles = new HashSet<Role>();
             Schools = new HashSet<School>();
         }
 
@@ -52,7 +52,7 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual ICollection<Course> Courses { get; set; }
         public virtual ICollection<Lecture> Lectures { get; set; }
         public virtual ICollection<User> Parents { get; set; }
-        public virtual ICollection<Role> Roles { get; set; }
+        //public virtual ICollection<Role> Roles { get; set; }
         public virtual ICollection<School> Schools { get; set; }
     }
 }

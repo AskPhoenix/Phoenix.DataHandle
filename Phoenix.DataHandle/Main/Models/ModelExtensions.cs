@@ -120,16 +120,6 @@ namespace Phoenix.DataHandle.Main.Models
         IUser IOneTimeCode.User => this.User;
     }
     
-    public partial class Role : IRole, INormalizableEntity
-    {
-        IEnumerable<IUser> IRole.Users => this.Users;
-
-        public void Normalize()
-        {
-            this.Name = this.Rank.ToString();
-        }
-    }
-
     public partial class Schedule : ISchedule, IObviableModelEntity
     {
         ICourse ISchedule.Course => this.Course;
@@ -174,7 +164,6 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ICourse> IUser.Courses => this.Courses;
         IEnumerable<ILecture> IUser.Lectures => this.Lectures;
         IEnumerable<IUser> IUser.Parents => this.Parents;
-        IEnumerable<IRole> IUser.Roles => this.Roles;
         IEnumerable<ISchool> IUser.Schools => this.Schools;
 
         public static Func<string, string> NormFunc => s => s.ToUpperInvariant();

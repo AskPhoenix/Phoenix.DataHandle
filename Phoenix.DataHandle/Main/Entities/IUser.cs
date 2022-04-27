@@ -21,7 +21,7 @@ namespace Phoenix.DataHandle.Main.Entities
         IEnumerable<ICourse> Courses { get; }
         IEnumerable<ILecture> Lectures { get; }
         IEnumerable<IUser> Parents { get; }
-        IEnumerable<IRole> Roles { get; }
+        //IEnumerable<IRole> Roles { get; }
         IEnumerable<ISchool> Schools { get; }
     }
 }

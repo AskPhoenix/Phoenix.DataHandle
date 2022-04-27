@@ -28,7 +28,6 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<Lecture> Lectures { get; set; } = null!;
         public virtual DbSet<Material> Materials { get; set; } = null!;
         public virtual DbSet<OneTimeCode> OneTimeCodes { get; set; } = null!;
-        public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Schedule> Schedules { get; set; } = null!;
         public virtual DbSet<School> Schools { get; set; } = null!;
         public virtual DbSet<SchoolInfo> SchoolInfos { get; set; } = null!;
@@ -381,19 +380,6 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasConstraintName("FK_OneTimeCodes_Users");
             });
 
-            modelBuilder.Entity<Role>(entity =>
-            {
-                entity.HasIndex(e => e.Rank, "UQ_Roles_Rank")
-                    .IsUnique();
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Name)
-                    .HasMaxLength(256);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-            });
-
             modelBuilder.Entity<Schedule>(entity =>
             {
                 entity.HasIndex(e => e.ClassroomId, "IX_Schedules_Classroom");
@@ -605,23 +591,6 @@ namespace Phoenix.DataHandle.Main.Models
                             j.HasIndex(new[] { "ChildId" }, "IX_Parenthoods_Child");
 
                             j.HasIndex(new[] { "ParentId" }, "IX_Parenthoods_Parent");
-                        });
-
-                entity.HasMany(d => d.Roles)
-                    .WithMany(p => p.Users)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "UserRole",
-                        l => l.HasOne<Role>().WithMany().HasForeignKey("RoleId").HasConstraintName("FK_UserRoles_Roles"),
-                        r => r.HasOne<User>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_UserRoles_Users"),
-                        j =>
-                        {
-                            j.HasKey("UserId", "RoleId");
-
-                            j.ToTable("UserRoles");
-
-                            j.HasIndex(new[] { "RoleId" }, "IX_UserRoles_Role");
-
-                            j.HasIndex(new[] { "UserId" }, "IX_UserRoles_Users");
                         });
 
                 entity.HasMany(d => d.Schools)

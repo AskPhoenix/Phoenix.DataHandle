@@ -22,7 +22,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.Children = new List<IUser>();
             this.Lectures = new List<ILecture>();
             this.Parents = new List<IUser>();
-            this.Roles = new List<IRole>();
             this.Schools = new List<ISchool>();
         }
 
@@ -117,9 +116,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
         
         [JsonIgnore]
         public IEnumerable<IUser> Parents { get; }
-        
-        [JsonIgnore]
-        public IEnumerable<IRole> Roles { get; }
         
         [JsonIgnore]
         public IEnumerable<ISchool> Schools { get; }
