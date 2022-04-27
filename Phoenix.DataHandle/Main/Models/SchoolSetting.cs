@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Main.Models
 {
-    public partial class SchoolInfo
+    public partial class SchoolSetting
     {
         public int SchoolId { get; set; }
         public string Country { get; set; } = null!;

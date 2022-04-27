@@ -30,7 +30,7 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<Schedule> Schedules { get; set; } = null!;
         public virtual DbSet<School> Schools { get; set; } = null!;
         public virtual DbSet<SchoolConnection> SchoolConnections { get; set; } = null!;
-        public virtual DbSet<SchoolInfo> SchoolInfos { get; set; } = null!;
+        public virtual DbSet<SchoolSetting> SchoolSettings { get; set; } = null!;
         public virtual DbSet<UserConnection> UserConnections { get; set; } = null!;
         public virtual DbSet<UserInfo> UserInfos { get; set; } = null!;
 
@@ -440,11 +440,10 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasConstraintName("FK_SchoolLogins_Schools");
             });
 
-            modelBuilder.Entity<SchoolInfo>(entity =>
+            modelBuilder.Entity<SchoolSetting>(entity =>
             {
-                entity.HasKey(e => e.SchoolId);
-
-                entity.ToTable("SchoolInfo");
+                entity.HasKey(e => e.SchoolId)
+                    .HasName("PK_SchoolSetting");
 
                 entity.Property(e => e.SchoolId).ValueGeneratedNever();
 
@@ -471,8 +470,8 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.TimeZone).HasMaxLength(64);
 
                 entity.HasOne(d => d.School)
-                    .WithOne(p => p.SchoolInfo)
-                    .HasForeignKey<SchoolInfo>(d => d.SchoolId)
+                    .WithOne(p => p.SchoolSetting)
+                    .HasForeignKey<SchoolSetting>(d => d.SchoolId)
                     .HasConstraintName("FK_SchoolSettings_Schools");
             });
 

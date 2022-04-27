@@ -224,7 +224,7 @@ namespace Phoenix.Verification.DataHandle.Tests
         {
             var school = await _phoenixContext.Schools.Include(s => s.Classrooms)
                 .Include(s => s.Courses)
-                .Include(s => s.SchoolInfo)
+                .Include(s => s.SchoolSetting)
                 .FirstOrDefaultAsync()
                 ?? new School
                 {
@@ -232,7 +232,7 @@ namespace Phoenix.Verification.DataHandle.Tests
                     Slug = "Sxoleio",
                     City = "Poli",
                     AddressLine = "Dieuthinsi",
-                    SchoolInfo = new SchoolInfo
+                    SchoolSetting = new SchoolSetting
                     {
                         Country = "Ellada",
                         PhoneCountryCode = "0030",

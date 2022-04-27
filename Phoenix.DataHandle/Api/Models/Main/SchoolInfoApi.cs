@@ -6,10 +6,10 @@ using System;
 
 namespace Phoenix.DataHandle.Api.Models.Main
 {
-    public class SchoolInfoApi : ISchoolInfo, IModelApi
+    public class SchoolSettingApi : ISchoolSetting, IModelApi
     {
         [JsonConstructor]
-        public SchoolInfoApi(int id, string country, string primaryLanguage, string primaryLocale,
+        public SchoolSettingApi(int id, string country, string primaryLanguage, string primaryLocale,
             string secondaryLanguage, string secondaryLocale, string timeZone, string phoneCode)
         {
             if (country is null)
@@ -37,11 +37,11 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.PhoneCountryCode = phoneCode;
         }
 
-        public SchoolInfoApi(ISchoolInfo schoolInfo)
+        public SchoolSettingApi(ISchoolSetting schoolInfo)
             : this(0, schoolInfo.Country, schoolInfo.PrimaryLanguage, schoolInfo.PrimaryLocale,
                   schoolInfo.SecondaryLanguage, schoolInfo.SecondaryLocale, schoolInfo.TimeZone, schoolInfo.PhoneCountryCode)
         {
-            if (schoolInfo is SchoolInfo schoolInfo1)
+            if (schoolInfo is SchoolSetting schoolInfo1)
                 this.Id = schoolInfo1.SchoolId;
         }
 

@@ -11,7 +11,7 @@ namespace Phoenix.DataHandle.Main.Entities
         string AddressLine { get; }
         string? Description { get; }
         
-        ISchoolInfo SchoolInfo { get; }
+        ISchoolSetting SchoolSetting { get; }
         IEnumerable<IBroadcast> Broadcasts { get; }
         IEnumerable<IClassroom> Classrooms { get; }
         IEnumerable<ICourse> Courses { get; }

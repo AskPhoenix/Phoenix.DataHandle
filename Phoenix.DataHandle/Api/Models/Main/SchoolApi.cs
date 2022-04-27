@@ -22,7 +22,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         [JsonConstructor]
         public SchoolApi(int id, int code, string name, string slug, string city, string address, string? description, 
-            SchoolInfoApi schoolInfo, List<ClassroomApi>? classrooms, List<CourseApi>? courses)
+            SchoolSettingApi schoolSetting, List<ClassroomApi>? classrooms, List<CourseApi>? courses)
             : this()
         {
             if (name is null)
@@ -41,7 +41,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.City = city;
             this.AddressLine = address;
             this.Description = description;
-            this.SchoolInfo = schoolInfo;
+            this.SchoolSetting = schoolSetting;
 
             if (classrooms is not null)
                 this.Classrooms = Classrooms;
@@ -56,8 +56,8 @@ namespace Phoenix.DataHandle.Api.Models.Main
             if (school is School school1)
                 this.Id = school1.Id;
 
-            if (school.SchoolInfo is not null)
-                this.SchoolInfo = new SchoolInfoApi(school.SchoolInfo);
+            if (school.SchoolSetting is not null)
+                this.SchoolSetting = new SchoolSettingApi(school.SchoolSetting);
 
             // SchoolInfo is always included if it's not null
             if (!include)
@@ -89,7 +89,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public string? Description { get; }
 
         [JsonProperty(PropertyName = "school_info")]
-        public SchoolInfoApi SchoolInfo { get; } = null!;
+        public SchoolSettingApi SchoolSetting { get; } = null!;
 
         [JsonProperty(PropertyName = "classrooms")]
         public List<ClassroomApi> Classrooms { get; }
@@ -98,7 +98,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public List<CourseApi> Courses { get; }
 
 
-        ISchoolInfo ISchool.SchoolInfo => this.SchoolInfo;
+        ISchoolSetting ISchool.SchoolSetting => this.SchoolSetting;
 
         [JsonIgnore]
         public IEnumerable<IBroadcast> Broadcasts { get; }

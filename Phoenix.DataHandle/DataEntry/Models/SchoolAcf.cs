@@ -47,13 +47,13 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 First(c => c.EnglishName.Equals(language, StringComparison.InvariantCultureIgnoreCase)).
                 TwoLetterISOLanguageName;
 
-            this.SchoolInfo = new SchoolInfo
+            this.SchoolSetting = new SchoolSetting
             {
                 PrimaryLanguage = language,
                 PrimaryLocale = locale
             };
 
-            this.BotLanguage = this.SchoolInfo.PrimaryLanguage;
+            this.BotLanguage = this.SchoolSetting.PrimaryLanguage;
         }
 
         public SchoolUnique GetSchoolUnique() => new(this.Code);
@@ -81,7 +81,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         [JsonIgnore]
         // TODO: Check in repository what happens with CreatedAt and other properties when creating/updating the object
-        public ISchoolInfo SchoolInfo { get; } = null!;
+        public ISchoolSetting SchoolSetting { get; } = null!;
 
 
         [JsonIgnore]

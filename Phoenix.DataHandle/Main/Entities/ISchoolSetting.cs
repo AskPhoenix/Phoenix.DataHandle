@@ -1,6 +1,6 @@
 ﻿namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface ISchoolInfo
+    public interface ISchoolSetting
     {
         ISchool School { get; }
         string Country { get; }

@@ -132,9 +132,14 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ILecture> ISchedule.Lectures => this.Lectures;
     }
 
+    public partial class SchoolConnection : ISchoolConnection, IConnectionEntity
+    {
+        ISchool ISchoolConnection.Tenant => this.Tenant;
+    }
+
     public partial class School : ISchool, IObviableModelEntity
     {
-        ISchoolInfo ISchool.SchoolInfo => this.SchoolInfo;
+        ISchoolSetting ISchool.SchoolSetting => this.SchoolSetting;
         IEnumerable<IBroadcast> ISchool.Broadcasts => this.Broadcasts;
         IEnumerable<IClassroom> ISchool.Classrooms => this.Classrooms;
         IEnumerable<ICourse> ISchool.Courses => this.Courses;
@@ -143,14 +148,9 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IUserInfo> ISchool.Users => this.Users;
     }
 
-    public partial class SchoolConnection : ISchoolConnection, IConnectionEntity
+    public partial class SchoolSetting : ISchoolSetting
     {
-        ISchool ISchoolConnection.Tenant => this.Tenant;
-    }
-
-    public partial class SchoolInfo : ISchoolInfo
-    {
-        ISchool ISchoolInfo.School => this.School;
+        ISchool ISchoolSetting.School => this.School;
     }
 
     public partial class UserConnection : IUserConnection, IConnectionEntity

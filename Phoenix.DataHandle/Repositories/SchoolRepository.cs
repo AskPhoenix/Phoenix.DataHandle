@@ -14,7 +14,7 @@ namespace Phoenix.DataHandle.Repositories
         public SchoolRepository(PhoenixContext dbContext) 
             : base(dbContext) 
         {
-            Include(s => s.SchoolInfo);
+            Include(s => s.SchoolSetting);
         }
 
         public static Expression<Func<School, bool>> GetUniqueExpression(int schoolCode)
@@ -72,27 +72,27 @@ namespace Phoenix.DataHandle.Repositories
 
         public School UpdateWithSchoolInfo(School school, ISchool schoolFrom)
         {
-            CopySchoolInfo(school.SchoolInfo, schoolFrom.SchoolInfo);
+            CopySchoolInfo(school.SchoolSetting, schoolFrom.SchoolSetting);
             return Update(school, schoolFrom);
         }
 
         public async Task<School> UpdateWithSchoolInfoAsync(School school, ISchool schoolFrom,
             CancellationToken cancellationToken = default)
         {
-            CopySchoolInfo(school.SchoolInfo, schoolFrom.SchoolInfo);
+            CopySchoolInfo(school.SchoolSetting, schoolFrom.SchoolSetting);
             return await UpdateAsync(school, schoolFrom, cancellationToken);
         }
 
-        public SchoolInfo CopySchoolInfo(SchoolInfo schoolInfo, ISchoolInfo schoolInfoFrom)
+        public SchoolSetting CopySchoolInfo(SchoolSetting schoolSetting, ISchoolSetting schoolSettingFrom)
         {
-            if (schoolInfoFrom is null)
-                throw new ArgumentNullException(nameof(schoolInfoFrom));
-            if (schoolInfo is null)
-                schoolInfo = new();
+            if (schoolSettingFrom is null)
+                throw new ArgumentNullException(nameof(schoolSettingFrom));
+            if (schoolSetting is null)
+                schoolSetting = new();
 
-            PropertyCopier.CopyFromBase(schoolInfo, schoolInfoFrom);
+            PropertyCopier.CopyFromBase(schoolSetting, schoolSettingFrom);
 
-            return schoolInfo;
+            return schoolSetting;
         }
 
         #endregion
