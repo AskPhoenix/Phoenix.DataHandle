@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Phoenix.DataHandle.Identity;
 using Phoenix.DataHandle.Main.Entities;
-using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Main.Types;
 using Phoenix.DataHandle.Utilities;
 using System;
@@ -15,9 +15,19 @@ namespace Phoenix.DataHandle.DataEntry.Models
         private UserAcf()
         {
             this.CourseCodes = new List<short>();
+
+            this.BotFeedbacks = new List<IBotFeedback>();
+            this.Broadcasts = new List<IBroadcast>();
+            this.Grades = new List<IGrade>();
+            this.OneTimeCodes = new List<IOneTimeCode>();
+            this.Children = new List<IUserInfo>();
+            this.Courses = new List<ICourse>();
+            this.Lectures = new List<ILecture>();
+            this.Parents = new List<IUserInfo>();
+            this.Schools = new List<ISchool>();
         }
 
-        public UserAcf(string fullName, string phone)
+        public UserAcf(string fullName, string phone, int dependenceOrder)
             : this()
         {
             if (string.IsNullOrWhiteSpace(fullName))
@@ -27,16 +37,24 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.FirstName = this.ResolveFirstName();
             this.LastName = this.ResolveLastName();
 
-            this.User = new User
+            this.AspNetUser = new ApplicationUser
             {
                 PhoneNumber = phone
             };
 
-            this.PhoneString = this.User.PhoneNumber;
+            this.PhoneString = this.AspNetUser.PhoneNumber;
+
+            if (dependenceOrder < 0)
+                throw new ArgumentOutOfRangeException(nameof(DependenceOrder));
+            if (this.IsSelfDetermined && dependenceOrder != 0)
+                throw new InvalidOperationException(
+                    $"Cannot set {nameof(DependenceOrder)} to a non-zero value for a self-setermined user.");
+
+            this.DependenceOrder = dependenceOrder;
         }
 
-        public UserAcf(string fullName, string phone, string? courseCodes)
-            : this(fullName, phone)
+        public UserAcf(string fullName, string phone, int dependenceOrder, string? courseCodes)
+            : this(fullName, phone, dependenceOrder)
         {
             // Accept empty course codes string in order to register the user
             // in all the courses of their school
@@ -73,77 +91,41 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public bool IsSelfDetermined { get; protected set; }
 
         [JsonIgnore]
+        public int DependenceOrder { get; set; }
+
+        [JsonIgnore]
         public List<short> CourseCodes { get; }
 
-        [JsonIgnore]
-        public IUser User 
-        {
-            get 
-            {
-                if (this.PhoneCountryCode is null || this.DependenceOrder is null)
-                    return null!;
-
-                return user!;
-            }
-            private set { user = value; }
-        }
-        private IUser? user = null;
 
         [JsonIgnore]
-        public string? PhoneCountryCode 
-        {
-            get
-            {
-                return phoneCountryCode;
-            }
-            set
-            {
-                if (value is null)
-                    return;
-
-                phoneCountryCode = value;
-
-                this.User = new User
-                {
-                    PhoneNumber = this.User.PhoneNumber,
-                    PhoneCountryCode = value,
-                    DependenceOrder = this.User.DependenceOrder
-                };
-            }
-        }
-        private string? phoneCountryCode = null;
+        public IAspNetUser AspNetUser { get; } = null!;
 
         [JsonIgnore]
-        public int? DependenceOrder 
-        {
-            get 
-            {
-                if (this.IsSelfDetermined)
-                    return 0;
+        public IEnumerable<IBotFeedback> BotFeedbacks { get; }
 
-                return dependenceOrder;
-            }
-            set
-            {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(DependenceOrder));
-                if (this.IsSelfDetermined && value != 0)
-                    throw new InvalidOperationException(
-                        $"Cannot set {nameof(DependenceOrder)} to a non-zero value for a self-setermined user.");
+        [JsonIgnore]
+        public IEnumerable<IBroadcast> Broadcasts { get; }
 
-                dependenceOrder = value;
+        [JsonIgnore]
+        public IEnumerable<IGrade> Grades { get; }
 
-                if (dependenceOrder != null)
-                {
-                    this.User = new User
-                    {
-                        PhoneNumber = this.User.PhoneNumber,
-                        PhoneCountryCode= this.User.PhoneCountryCode,
-                        DependenceOrder = dependenceOrder.Value
-                    };
-                }
-            }
-        }
-        private int? dependenceOrder = null;
+        [JsonIgnore]
+        public IEnumerable<IOneTimeCode> OneTimeCodes { get; }
+
+
+        [JsonIgnore]
+        public IEnumerable<IUserInfo> Children { get; }
+
+        [JsonIgnore]
+        public IEnumerable<ICourse> Courses { get; }
+
+        [JsonIgnore]
+        public IEnumerable<ILecture> Lectures { get; }
+
+        [JsonIgnore]
+        public IEnumerable<IUserInfo> Parents { get; }
+
+        [JsonIgnore]
+        public IEnumerable<ISchool> Schools { get; }
     }
 }

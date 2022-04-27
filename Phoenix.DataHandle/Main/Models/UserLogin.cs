@@ -14,6 +14,5 @@ namespace Phoenix.DataHandle.Main.Models
         public DateTime? UpdatedAt { get; set; }
 
         public virtual Channel Channel { get; set; } = null!;
-        public virtual User Tenant { get; set; } = null!;
     }
 }

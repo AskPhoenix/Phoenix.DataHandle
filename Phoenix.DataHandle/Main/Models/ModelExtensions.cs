@@ -1,11 +1,26 @@
-﻿using Phoenix.DataHandle.Main.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Phoenix.DataHandle.Identity;
+using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 
 namespace Phoenix.DataHandle.Main.Models
 {
+    public partial class PhoenixContext
+    {
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserInfo>(entity =>
+            {
+                entity.HasOne(d => d.AspNetUser)
+                    .WithOne(p => p.UserInfo)
+                    .HasForeignKey<UserInfo>(d => d.AspNetUserId)
+                    .HasConstraintName("FK_Users_AspNetUsers");
+            });
+        }
+    }
+
     public partial class Book : IBook, INormalizableEntity
     {
         IEnumerable<IExercise> IBook.Exercises => this.Exercises;
@@ -22,13 +37,13 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class BotFeedback : IBotFeedback, IModelEntity
     {
-        IUser IBotFeedback.Author => this.Author;
+        IUserInfo IBotFeedback.Author => this.Author;
     }
 
     public partial class Broadcast : IBroadcast, IModelEntity
     {
         ISchool IBroadcast.School => this.School;
-        IUser IBroadcast.Author => this.Author;
+        IUserInfo IBroadcast.Author => this.Author;
 
         IEnumerable<ICourse> IBroadcast.Courses => this.Courses;
     }
@@ -68,7 +83,7 @@ namespace Phoenix.DataHandle.Main.Models
 
         IEnumerable<IBook> ICourse.Books => this.Books;
         IEnumerable<IBroadcast> ICourse.Broadcasts => this.Broadcasts;
-        IEnumerable<IUser> ICourse.Users => this.Users;
+        IEnumerable<IUserInfo> ICourse.Users => this.Users;
     }
 
     public partial class Exam : IExam, IModelEntity
@@ -89,7 +104,7 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class Grade : IGrade, IModelEntity
     {
-        IUser IGrade.Student => this.Student;
+        IUserInfo IGrade.Student => this.Student;
         ICourse? IGrade.Course => this.Course;
         IExam? IGrade.Exam => this.Exam;
         IExercise? IGrade.Exercise => this.Exercise;
@@ -106,7 +121,7 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IExercise> ILecture.Exercises => this.Exercises;
         IEnumerable<ILecture> ILecture.InverseReplacementLecture => this.InverseReplacementLecture;
 
-        IEnumerable<IUser> ILecture.Attendees => this.Attendees;
+        IEnumerable<IUserInfo> ILecture.Attendees => this.Attendees;
     }
 
     public partial class Material : IMaterial, IModelEntity
@@ -117,7 +132,7 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class OneTimeCode : IOneTimeCode, IModelEntity
     {
-        IUser IOneTimeCode.User => this.User;
+        IUserInfo IOneTimeCode.User => this.User;
     }
     
     public partial class Schedule : ISchedule, IObviableModelEntity
@@ -136,7 +151,7 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ICourse> ISchool.Courses => this.Courses;
         IEnumerable<ISchoolLogin> ISchool.SchoolLogins => this.SchoolLogins;
 
-        IEnumerable<IUser> ISchool.Users => this.Users;
+        IEnumerable<IUserInfo> ISchool.Users => this.Users;
     }
 
     public partial class SchoolInfo : ISchoolInfo
@@ -151,56 +166,30 @@ namespace Phoenix.DataHandle.Main.Models
         IChannel ILoginEntity.Channel => this.Channel;
     }
 
-    public partial class User : IUser, IObviableModelEntity, INormalizableEntity
+    public partial class UserInfo : IUserInfo, IObviableModelEntity
     {
-        IUserInfo IUser.UserInfo => this.UserInfo;
-        IEnumerable<IBotFeedback> IUser.BotFeedbacks => this.BotFeedbacks;
-        IEnumerable<IBroadcast> IUser.Broadcasts => this.Broadcasts;
-        IEnumerable<IGrade> IUser.Grades => this.Grades;
-        IEnumerable<IOneTimeCode> IUser.OneTimeCodes => this.OneTimeCodes;
-        IEnumerable<IUserLogin> IUser.UserLogins => this.UserLogins;
-
-        IEnumerable<IUser> IUser.Children => this.Children;
-        IEnumerable<ICourse> IUser.Courses => this.Courses;
-        IEnumerable<ILecture> IUser.Lectures => this.Lectures;
-        IEnumerable<IUser> IUser.Parents => this.Parents;
-        IEnumerable<ISchool> IUser.Schools => this.Schools;
-
-        public static Func<string, string> NormFunc => s => s.ToUpperInvariant();
-
-        public void Normalize()
-        {
-            if (this.Email is not null)
-                this.NormalizedEmail = NormFunc(this.Email);
-            
-            this.NormalizedUserName = NormFunc(this.UserName);
-        }
-
-        public string GetHashSignature()
-        {
-            byte[] salt = new byte[16];
-            using var pbkdf2 = new Rfc2898DeriveBytes(this.Id + this.PhoneNumber, salt, 10 * 1000, HashAlgorithmName.SHA256);
-            byte[] hash = pbkdf2.GetBytes(32);
-            string savedPasswordHash = Convert.ToBase64String(hash);
-
-            return savedPasswordHash;
-        }
-
-        public bool VerifyHashSignature(string hashSignature)
-        {
-            return hashSignature == this.GetHashSignature();
-        }
-    }
-
-    public partial class UserInfo : IUserInfo
-    {
-        IUser IUserInfo.User => this.User;
+        public ApplicationUser AspNetUser { get; set; } = null!;
         public string FullName => this.BuildFullName();
+
+        int IModelEntity.Id => this.AspNetUserId;
+
+        IAspNetUser IUserInfo.AspNetUser => this.AspNetUser;
+
+        IEnumerable<IBotFeedback> IUserInfo.BotFeedbacks => this.BotFeedbacks;
+        IEnumerable<IBroadcast> IUserInfo.Broadcasts => this.Broadcasts;
+        IEnumerable<IGrade> IUserInfo.Grades => this.Grades;
+        IEnumerable<IOneTimeCode> IUserInfo.OneTimeCodes => this.OneTimeCodes;
+
+        IEnumerable<IUserInfo> IUserInfo.Children => this.Children;
+        IEnumerable<ICourse> IUserInfo.Courses => this.Courses;
+        IEnumerable<ILecture> IUserInfo.Lectures => this.Lectures;
+        IEnumerable<IUserInfo> IUserInfo.Parents => this.Parents;
+        IEnumerable<ISchool> IUserInfo.Schools => this.Schools;
     }
 
     public partial class UserLogin : IUserLogin, ILoginEntity
     {
-        IUser IUserLogin.Tenant => this.Tenant;
+        //IUserInfo IUserLogin.Tenant => this.Tenant;
 
         IChannel ILoginEntity.Channel => this.Channel;
     }

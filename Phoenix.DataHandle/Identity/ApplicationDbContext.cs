@@ -57,9 +57,9 @@ namespace Phoenix.DataHandle.Identity
                         });
 
                 entity.HasOne(d => d.UserInfo)
-                    .WithOne(p => p.AppUser)
-                    .HasForeignKey<UserInfo>(d => d.UserId)
-                    .HasConstraintName("FK_UserInfo_Users");
+                    .WithOne(p => p.AspNetUser)
+                    .HasForeignKey<UserInfo>(d => d.AspNetUserId)
+                    .HasConstraintName("FK_Users_AspNetUsers");
             });
 
             modelBuilder.Entity<ApplicationRole>(entity =>

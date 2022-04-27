@@ -1,112 +1,46 @@
-﻿using System;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Phoenix.DataHandle.Identity;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public sealed class UserRepository : ObviableRepository<User>
+    public sealed class UserRepository : ObviableRepository<UserInfo>
     {
         public UserRepository(PhoenixContext dbContext) 
             : base(dbContext)
         {
-            Include(u => u.UserInfo);
+            Include(u => u.AspNetUser);
         }
-
-        public static Expression<Func<User, bool>> GetUniqueExpression(string username)
-        {
-            if (string.IsNullOrWhiteSpace(username))
-                throw new ArgumentNullException(nameof(username));
-
-            string normName = User.NormFunc(username);
-            return u => u.NormalizedUserName == normName;
-        }
-
-        public static Expression<Func<User, bool>> GetUniqueExpression(
-            string phoneCountryCode, string phoneNumber, int dependenceOrder)
-        {
-            if (string.IsNullOrWhiteSpace(phoneCountryCode))
-                throw new ArgumentNullException(nameof(phoneCountryCode));
-            if (string.IsNullOrWhiteSpace(phoneNumber))
-                throw new ArgumentNullException(nameof(phoneNumber));
-
-            return u => u.PhoneCountryCode == phoneCountryCode
-                        && u.PhoneNumber == phoneNumber
-                        && u.DependenceOrder == dependenceOrder;
-        }
-
-        #region Find Unique
-
-        public User? FindUnique(string username)
-        {
-            return FindUnique(GetUniqueExpression(username));
-        }
-
-        public User? FindUnique(IUser user)
-        {
-            if (user is null)
-                throw new ArgumentNullException(nameof(user));
-
-            return FindUnique(user.UserName);
-        }
-
-        public User? FindUnique(string phoneCountryCode, string phoneNumber, int dependenceOrder)
-        {
-            return FindUnique(GetUniqueExpression(phoneCountryCode, phoneNumber, dependenceOrder));
-        }
-
-        public async Task<User?> FindUniqueAsync(string username,
-            CancellationToken cancellationToken = default)
-        {
-            return await FindUniqueAsync(GetUniqueExpression(username),
-                cancellationToken);
-        }
-
-        public async Task<User?> FindUniqueAsync(IUser user,
-            CancellationToken cancellationToken = default)
-        {
-            if (user is null)
-                throw new ArgumentNullException(nameof(user));
-
-            return await FindUniqueAsync(user.UserName, cancellationToken);
-        }
-
-        public async Task<User?> FindUniqueAsync(string phoneCountryCode, string phoneNumber, int dependenceOrder,
-            CancellationToken cancellationToken = default)
-        {
-            return await FindUniqueAsync(GetUniqueExpression(phoneCountryCode, phoneNumber, dependenceOrder));
-        }
-
-        #endregion
 
         #region Update
 
-        public User UpdateWithUserInfo(User user, IUser userFrom)
+        public UserInfo UpdateWithUserInfo(UserInfo user, IUserInfo userFrom)
         {
-            CopyUserInfo(user.UserInfo, userFrom.UserInfo);
+            CopyAspNetUser(user.AspNetUser, userFrom.AspNetUser);
             return Update(user, userFrom);
         }
 
-        public async Task<User> UpdateWithUserInfoAsync(User user, IUser userFrom,
+        public async Task<UserInfo> UpdateWithUserInfoAsync(UserInfo user, IUserInfo userFrom,
             CancellationToken cancellationToken = default)
         {
-            CopyUserInfo(user.UserInfo, userFrom.UserInfo);
+            CopyAspNetUser(user.AspNetUser, userFrom.AspNetUser);
             return await UpdateAsync(user, userFrom, cancellationToken);
         }
 
-        public UserInfo CopyUserInfo(UserInfo userInfo, IUserInfo userInfoFrom)
+        public ApplicationUser CopyAspNetUser(ApplicationUser appUser, IAspNetUser aspNetUserFrom)
         {
-            if (userInfoFrom is null)
-                throw new ArgumentNullException(nameof(userInfoFrom));
-            if (userInfo is null)
-                userInfo = new();
+            if (aspNetUserFrom is null)
+                throw new ArgumentNullException(nameof(aspNetUserFrom));
+            if (appUser is null)
+                appUser = new();
 
-            PropertyCopier.CopyFromBase(userInfo, userInfoFrom);
+            PropertyCopier.CopyFromBase(appUser, aspNetUserFrom);
 
-            return userInfo;
+            return appUser;
         }
 
         #endregion

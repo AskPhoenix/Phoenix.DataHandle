@@ -27,7 +27,7 @@ namespace Phoenix.DataHandle.Repositories
             if (parent is null)
                 throw new InvalidOperationException($"There is no User with ID {parentId}.");
             
-            var affiliatedIds = parent.Children.Select(u => u.Id);
+            var affiliatedIds = parent.Children.Select(u => u.AspNetUserId);
             if (!affiliatedIds.Any())
                 return Enumerable.Empty<UserLogin>();
 
@@ -51,7 +51,7 @@ namespace Phoenix.DataHandle.Repositories
             if (parent is null)
                 throw new InvalidOperationException($"There is no User with ID {parentId}.");
 
-            var affiliatedIds = parent.Children.Select(u => u.Id);
+            var affiliatedIds = parent.Children.Select(u => u.AspNetUserId);
             if (!affiliatedIds.Any())
                 return Enumerable.Empty<UserLogin>();
 

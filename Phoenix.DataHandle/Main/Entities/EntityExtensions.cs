@@ -50,14 +50,12 @@ namespace Phoenix.DataHandle.Main.Entities
 
     public static class UserExtensions
     {
-        public static string GetUserName(this IUser me, int schoolCode)
+        public static string GetUserName(this IUserInfo me, int schoolCode, string linkedPhone)
         {
-            return "S" + schoolCode + "_P" + me.PhoneNumber + "_N" + me.UserInfo.FirstName + "_O" + me.DependenceOrder;
-        }
+            if (string.IsNullOrWhiteSpace(linkedPhone))
+                throw new ArgumentNullException(nameof(linkedPhone));
 
-        public static string GetFullPhoneNumber(this IUser me)
-        {
-            return me.PhoneCountryCode + me.PhoneNumber;
+            return $"S{schoolCode}_P{linkedPhone}_N{me.FirstName}_O{me.DependenceOrder}";
         }
     }
 }

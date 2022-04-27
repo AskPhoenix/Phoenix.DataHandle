@@ -9,7 +9,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
     {
         [JsonConstructor]
         public PersonnelAcf(string full_name, string role, string phone, string? course_codes)
-            : base(full_name, phone, course_codes)
+            : base(full_name, phone, 0, course_codes)
         {
             if (string.IsNullOrWhiteSpace(role))
                 throw new ArgumentNullException(nameof(role));
@@ -21,7 +21,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 throw new ArgumentOutOfRangeException(nameof(role));
 
             this.IsSelfDetermined = true;
-            this.DependenceOrder = 0;
 
             this.RoleString = role;
         }

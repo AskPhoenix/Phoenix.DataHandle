@@ -13,6 +13,6 @@ namespace Phoenix.DataHandle.Main.Models
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual User User { get; set; } = null!;
+        public virtual UserInfo User { get; set; } = null!;
     }
 }

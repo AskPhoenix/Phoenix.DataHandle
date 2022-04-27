@@ -9,21 +9,20 @@ namespace Phoenix.DataHandle.DataEntry.Models
     {
         // Constructor for Parent Client
         private ClientAcf(string fullName, string phone)
-            : base(fullName, phone)
+            : base(fullName, phone, 0)
         {
             this.Role = RoleRank.Parent;
             this.IsSelfDetermined = true;
-            this.DependenceOrder = 0;
         }
 
         // Constructor for Student Client
         [JsonConstructor]
         public ClientAcf(string student_full_name, string? course_codes, string needs_parent_authorization,
             string? student_phone, string? parent1_full_name, string? parent1_phone, 
-            string? parent2_full_name, string? parent2_phone)
+            string? parent2_full_name, string? parent2_phone, int dependenceOrder)
             : base(student_full_name,
-                  student_phone ?? parent1_phone ?? parent2_phone 
-                  ?? throw new InvalidOperationException("There must be at least one phone number for a student or their parents."),
+                  student_phone ?? parent1_phone ?? parent2_phone ?? throw new InvalidOperationException("There must be at least one phone number for a student or their parents."),
+                  dependenceOrder,
                   course_codes)
         {
             if (string.IsNullOrWhiteSpace(needs_parent_authorization))

@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
+using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace Phoenix.DataHandle.Identity
 {
-    public class ApplicationUser : IdentityUser<int>
+    public class ApplicationUser : IdentityUser<int>, IAspNetUser
     {
         public ApplicationUser()
             : base()
@@ -16,6 +19,7 @@ namespace Phoenix.DataHandle.Identity
         }
 
         public virtual UserInfo UserInfo { get; set; } = null!;
+        IUserInfo IAspNetUser.UserInfo => UserInfo;
 
         public virtual ICollection<ApplicationUserClaim> Claims { get; set; }
         public virtual ICollection<ApplicationUserLogin> Logins { get; set; }
@@ -26,6 +30,21 @@ namespace Phoenix.DataHandle.Identity
         {
             this.NormalizedEmail = this.Email?.ToUpperInvariant();
             this.NormalizedUserName = this.UserName?.ToUpperInvariant();
+        }
+
+        public string GetHashSignature()
+        {
+            byte[] salt = new byte[16];
+            using var pbkdf2 = new Rfc2898DeriveBytes(this.Id + this.PhoneNumber, salt, 10 * 1000, HashAlgorithmName.SHA256);
+            byte[] hash = pbkdf2.GetBytes(32);
+            string savedPasswordHash = Convert.ToBase64String(hash);
+
+            return savedPasswordHash;
+        }
+
+        public bool VerifyHashSignature(string hashSignature)
+        {
+            return hashSignature == this.GetHashSignature();
         }
     }
 }

@@ -22,6 +22,6 @@ namespace Phoenix.DataHandle.Main.Entities
         IEnumerable<IExercise> Exercises { get; }
         IEnumerable<ILecture> InverseReplacementLecture { get; }
 
-        IEnumerable<IUser> Attendees { get; }
+        IEnumerable<IUserInfo> Attendees { get; }
     }
 }

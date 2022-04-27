@@ -10,7 +10,7 @@ namespace Phoenix.DataHandle.Main.Models
             Exams = new HashSet<Exam>();
             Exercises = new HashSet<Exercise>();
             InverseReplacementLecture = new HashSet<Lecture>();
-            Attendees = new HashSet<User>();
+            Attendees = new HashSet<UserInfo>();
         }
 
         public int Id { get; set; }
@@ -37,6 +37,6 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual ICollection<Exercise> Exercises { get; set; }
         public virtual ICollection<Lecture> InverseReplacementLecture { get; set; }
 
-        public virtual ICollection<User> Attendees { get; set; }
+        public virtual ICollection<UserInfo> Attendees { get; set; }
     }
 }

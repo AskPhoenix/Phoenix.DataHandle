@@ -15,7 +15,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.Grades = new List<GradeApi>();
             this.Lectures = new List<LectureApi>();
             this.Schedules = new List<ScheduleApi>();
-            this.Users = new List<UserApi>();
+            this.Users = new List<UserInfoApi>();
             this.Books = new List<BookApi>();
 
             this.Broadcasts = new List<IBroadcast>();
@@ -24,7 +24,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         [JsonConstructor]
         public CourseApi(int id, short code, SchoolApi school, string name, string? subcourse, string level, string group, string? comments,
             DateTime firstDate, DateTime lastDate, List<GradeApi>? grades, List<LectureApi>? lectures,
-            List<ScheduleApi>? schedules, List<UserApi>? users, List<BookApi>? books)
+            List<ScheduleApi>? schedules, List<UserInfoApi>? users, List<BookApi>? books)
             : this()
         {
             if (name is null)
@@ -73,7 +73,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.Grades = course.Grades.Select(g => new GradeApi(g)).ToList();
             this.Lectures = course.Lectures.Select(l => new LectureApi(l)).ToList();
             this.Schedules = course.Schedules.Select(s => new ScheduleApi(s)).ToList();
-            this.Users = course.Users.Select(t => new UserApi(t)).ToList();
+            this.Users = course.Users.Select(t => new UserInfoApi(t)).ToList();
             this.Books = course.Books.Select(b => new BookApi(b)).ToList();
         }
 
@@ -117,7 +117,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public List<ScheduleApi> Schedules { get; }
 
         [JsonProperty(PropertyName = "users")]
-        public List<UserApi> Users { get; }
+        public List<UserInfoApi> Users { get; }
 
         [JsonProperty(PropertyName = "books")]
         public List<BookApi> Books { get; }
@@ -136,6 +136,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
         [JsonIgnore]
         public IEnumerable<IBroadcast> Broadcasts { get; }
         
-        IEnumerable<IUser> ICourse.Users => this.Users;
+        IEnumerable<IUserInfo> ICourse.Users => this.Users;
     }
 }

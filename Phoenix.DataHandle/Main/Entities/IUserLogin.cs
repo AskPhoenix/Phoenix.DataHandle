@@ -2,6 +2,6 @@
 {
     public interface IUserLogin
     {
-        IUser Tenant { get; }
+        //IUser Tenant { get; }
     }
 }

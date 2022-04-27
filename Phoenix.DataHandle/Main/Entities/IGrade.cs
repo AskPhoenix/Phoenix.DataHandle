@@ -2,7 +2,7 @@
 {
     public interface IGrade
     {
-        IUser Student { get; }
+        IUserInfo Student { get; }
         ICourse? Course { get; }
         IExam? Exam { get; }
         IExercise? Exercise { get; }

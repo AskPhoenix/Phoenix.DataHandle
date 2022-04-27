@@ -17,6 +17,6 @@ namespace Phoenix.DataHandle.Main.Entities
         IEnumerable<ICourse> Courses { get; }
         IEnumerable<ISchoolLogin> SchoolLogins { get; }
 
-        IEnumerable<IUser> Users { get; }
+        IEnumerable<IUserInfo> Users { get; }
     }
 }
