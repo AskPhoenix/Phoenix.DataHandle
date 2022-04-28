@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.Api.Models.Extensions;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
+using System;
+using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Api.Models.Main
 {
@@ -18,6 +19,9 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public ClassroomApi(int id, SchoolApi school, string name, string? comments)
             : this()
         {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+
             this.Id = id;
             this.School = school;
             this.Name = name;

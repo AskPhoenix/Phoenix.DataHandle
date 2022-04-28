@@ -11,9 +11,9 @@ namespace Phoenix.DataHandle.Api.Models.Main
         [JsonConstructor]
         public AspNetUserApi(int id, string username, string? email, string phoneNumber)
         {
-            if (username is null)
+            if (string.IsNullOrWhiteSpace(username))
                 throw new ArgumentNullException(nameof(username));
-            if (phoneNumber is null)
+            if (string.IsNullOrWhiteSpace(phoneNumber))
                 throw new ArgumentNullException(nameof(phoneNumber));
 
             this.Id = id;

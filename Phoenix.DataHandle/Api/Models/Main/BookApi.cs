@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.Api.Models.Extensions;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
+using System;
+using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Api.Models.Main
 {
@@ -20,7 +20,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public BookApi(int id, string name, string? publisher, string? comments)
             : this()
         {
-            if (name is null)
+            if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
 
             this.Id = id;

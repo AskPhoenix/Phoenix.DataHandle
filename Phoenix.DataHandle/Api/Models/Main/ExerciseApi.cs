@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.Api.Models.Extensions;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Phoenix.DataHandle.Api.Models.Main
 {
@@ -19,7 +19,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public ExerciseApi(int id, LectureApi lecture, string name, BookApi? book, string? page, string? comments, List<GradeApi>? grades)
             : this()
         {
-            if (name is null)
+            if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
 
             this.Id = id;

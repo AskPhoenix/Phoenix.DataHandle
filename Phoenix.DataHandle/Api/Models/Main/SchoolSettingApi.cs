@@ -12,19 +12,19 @@ namespace Phoenix.DataHandle.Api.Models.Main
         public SchoolSettingApi(int id, string country, string primaryLanguage, string primaryLocale,
             string secondaryLanguage, string secondaryLocale, string timeZone, string phoneCode)
         {
-            if (country is null)
+            if (string.IsNullOrWhiteSpace(country))
                 throw new ArgumentNullException(nameof(country));
-            if (primaryLanguage is null)
+            if (string.IsNullOrWhiteSpace(primaryLanguage))
                 throw new ArgumentNullException(nameof(primaryLanguage));
-            if (primaryLocale is null)
+            if (string.IsNullOrWhiteSpace(primaryLocale))
                 throw new ArgumentNullException(nameof(primaryLocale));
-            if (secondaryLanguage is null)
+            if (string.IsNullOrWhiteSpace(secondaryLanguage))
                 throw new ArgumentNullException(nameof(secondaryLanguage));
-            if (secondaryLocale is null)
+            if (string.IsNullOrWhiteSpace(secondaryLocale))
                 throw new ArgumentNullException(nameof(secondaryLocale));
-            if (timeZone is null)
+            if (string.IsNullOrWhiteSpace(timeZone))
                 throw new ArgumentNullException(nameof(timeZone));
-            if (phoneCode is null)
+            if (string.IsNullOrWhiteSpace(phoneCode))
                 throw new ArgumentNullException(nameof(phoneCode));
 
             this.Id = id;

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.Api.Models.Extensions;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Phoenix.DataHandle.Api.Models.Main
 {
@@ -27,11 +27,11 @@ namespace Phoenix.DataHandle.Api.Models.Main
             List<ScheduleApi>? schedules, List<UserApi>? users, List<BookApi>? books)
             : this()
         {
-            if (name is null)
+            if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
-            if (level is null)
+            if (string.IsNullOrWhiteSpace(level))
                 throw new ArgumentNullException(nameof(level));
-            if (group is null)
+            if (string.IsNullOrWhiteSpace(group))
                 throw new ArgumentNullException(nameof(group));
 
             this.Id = id;

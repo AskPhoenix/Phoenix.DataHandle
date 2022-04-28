@@ -52,10 +52,7 @@ namespace Phoenix.DataHandle.Repositories
         public Task<Course?> FindUniqueAsync(CourseUnique courseUnique,
             CancellationToken cancellationToken = default)
         {
-            if (courseUnique is null)
-                throw new ArgumentNullException(nameof(courseUnique));
-
-            return FindUniqueAsync(courseUnique,
+            return FindUniqueAsync(GetUniqueExpression(courseUnique),
                 cancellationToken);
         }
 
