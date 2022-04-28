@@ -1,6 +1,4 @@
 ﻿using Phoenix.Language.Types;
-using System;
-using System.Linq;
 namespace Phoenix.DataHandle.Main.Types
 {
     public enum RoleRank

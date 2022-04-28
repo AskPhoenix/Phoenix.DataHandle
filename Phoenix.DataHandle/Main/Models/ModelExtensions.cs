@@ -2,8 +2,6 @@
 using Phoenix.DataHandle.Identity;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models.Extensions;
-using System;
-using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Main.Models
 {

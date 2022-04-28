@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models;
-using System.Collections.Generic;
 
 namespace Phoenix.DataHandle.Identity
 {

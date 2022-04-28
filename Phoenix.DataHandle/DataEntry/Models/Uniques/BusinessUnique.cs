@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Phoenix.DataHandle.DataEntry.Models.Uniques
+﻿namespace Phoenix.DataHandle.DataEntry.Models.Uniques
 {
     public class BusinessUnique
     {

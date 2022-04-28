@@ -3,10 +3,7 @@ using Phoenix.DataHandle.Identity;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Types;
 using Phoenix.DataHandle.Utilities;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {

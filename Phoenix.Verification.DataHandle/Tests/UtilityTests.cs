@@ -1,6 +1,5 @@
 ﻿using Phoenix.DataHandle.Main.Types;
 using System.Globalization;
-using System.Threading;
 using Xunit;
 
 namespace Phoenix.Verification.DataHandle.Tests

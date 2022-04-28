@@ -4,9 +4,6 @@ using Phoenix.DataHandle.DataEntry.Models.Uniques;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Phoenix.DataHandle.Main.Entities
+﻿namespace Phoenix.DataHandle.Main.Entities
 {
     public interface ICourse
     {

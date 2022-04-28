@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
-using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 
 namespace Phoenix.DataHandle.Identity

@@ -1,10 +1,6 @@
 ﻿using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
-using System;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Phoenix.DataHandle.Repositories
 {

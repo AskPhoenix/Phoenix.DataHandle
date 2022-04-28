@@ -17,6 +17,7 @@
     <PackageDescription>A library for handling the backend of AskPhoenix</PackageDescription>
     <RepositoryUrl>https://github.com/AskPhoenix/Phoenix.DataHandle</RepositoryUrl>
     <Nullable>enable</Nullable>
+	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

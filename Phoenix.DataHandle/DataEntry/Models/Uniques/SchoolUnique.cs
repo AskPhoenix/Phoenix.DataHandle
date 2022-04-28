@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Phoenix.DataHandle.DataEntry.Models.Uniques
+﻿namespace Phoenix.DataHandle.DataEntry.Models.Uniques
 {
     public class SchoolUnique : BusinessUnique
     {

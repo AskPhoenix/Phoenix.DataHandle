@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Phoenix.DataHandle.Main.Models.Extensions
+﻿namespace Phoenix.DataHandle.Main.Models.Extensions
 {
     public interface IConnectionEntity : IModelEntity
     {

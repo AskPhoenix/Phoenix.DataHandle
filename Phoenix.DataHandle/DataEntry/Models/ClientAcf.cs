@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
 using Phoenix.DataHandle.Main.Types;
-using System;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Phoenix.DataHandle.Utilities
+﻿namespace Phoenix.DataHandle.Utilities
 {
     public static class OTCGenerator
     {

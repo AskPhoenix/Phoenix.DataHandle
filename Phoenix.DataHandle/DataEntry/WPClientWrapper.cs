@@ -2,10 +2,6 @@
 using Phoenix.DataHandle.DataEntry.Models;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
 using Phoenix.DataHandle.DataEntry.Models.Uniques;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using WordPressPCL;
 using WordPressPCL.Models;
 using WordPressPCL.Models.Exceptions;

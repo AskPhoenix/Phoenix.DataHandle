@@ -1,5 +1,4 @@
 ﻿using Phoenix.DataHandle.Main.Models;
-using System.Linq;
 
 namespace Phoenix.DataHandle.Repositories
 {

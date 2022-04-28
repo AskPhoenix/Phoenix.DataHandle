@@ -2,7 +2,6 @@
 using Phoenix.DataHandle.Api.Models.Extensions;
 using Phoenix.DataHandle.Identity;
 using Phoenix.DataHandle.Main.Entities;
-using System;
 
 namespace Phoenix.DataHandle.Api.Models.Main
 {

@@ -1,7 +1,5 @@
 ﻿using Nexmo.Api;
 using Nexmo.Api.Request;
-using System;
-using System.Linq;
 
 namespace Phoenix.DataHandle.Sms
 {

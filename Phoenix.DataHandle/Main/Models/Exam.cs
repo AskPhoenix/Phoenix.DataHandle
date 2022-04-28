@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Phoenix.DataHandle.Main.Models
+﻿namespace Phoenix.DataHandle.Main.Models
 {
     public partial class Exam
     {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Phoenix.DataHandle.Main.Types
+﻿namespace Phoenix.DataHandle.Main.Types
 {
     public enum Tense
     {

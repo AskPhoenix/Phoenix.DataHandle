@@ -1,5 +1,4 @@
 ﻿using Phoenix.DataHandle.Main.Types;
-using System;
 
 namespace Phoenix.DataHandle.Main.Entities
 {

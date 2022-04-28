@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Phoenix.DataHandle.Main.Entities
+﻿namespace Phoenix.DataHandle.Main.Entities
 {
     public static class CourseExtensions
     {

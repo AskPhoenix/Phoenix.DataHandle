@@ -4,7 +4,6 @@ using Phoenix.DataHandle.Identity;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.Verification.Base;
 using Phoenix.Verification.Utilities;
-using System;
 using Xunit;
 
 namespace Phoenix.Verification.DataHandle.Tests

@@ -1,8 +1,6 @@
 ﻿using Phoenix.DataHandle.DataEntry.Models.Uniques;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Main.Types;
-using System;
-using System.Linq;
 
 namespace Phoenix.DataHandle.Repositories
 {
