@@ -25,6 +25,8 @@ namespace Phoenix.DataHandle.Identity
         {
         }
 
+        #region Find
+
         public Task<ApplicationUser?> FindByPhoneNumberAsync(string phoneNumber,
             CancellationToken cancellationToken = default)
         {
@@ -49,5 +51,7 @@ namespace Phoenix.DataHandle.Identity
                     u => u.Logins.Any(l => l.LoginProvider == provider && l.ProviderKey == key),
                 cancellationToken);
         }
+
+        #endregion
     }
 }
