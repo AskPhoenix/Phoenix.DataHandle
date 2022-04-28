@@ -485,12 +485,10 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.FirstName)
-                    .HasMaxLength(256)
-                    .HasDefaultValueSql("(N'')");
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.LastName)
-                    .HasMaxLength(256)
-                    .HasDefaultValueSql("(N'')");
+                    .HasMaxLength(256);
 
                 entity.Property(e => e.ObviatedAt).HasColumnType("datetime");
 

@@ -25,33 +25,20 @@ namespace Phoenix.DataHandle.Repositories
 
         #region Find Unique
 
-        public Book? FindUnique(string name)
-        {
-            return FindUnique(GetUniqueExpression(name));
-        }
-
-        public Book? FindUnique(IBook book)
-        {
-            if (book is null)
-                throw new ArgumentNullException(nameof(book));
-
-            return FindUnique(book.Name);
-        }
-
-        public async Task<Book?> FindUniqueAsync(string name,
+        public Task<Book?> FindUniqueAsync(string name,
             CancellationToken cancellationToken = default)
         {
-            return await FindUniqueAsync(GetUniqueExpression(name),
+            return FindUniqueAsync(GetUniqueExpression(name),
                 cancellationToken);
         }
 
-        public async Task<Book?> FindUniqueAsync(IBook book,
+        public Task<Book?> FindUniqueAsync(IBook book,
             CancellationToken cancellationToken = default)
         {
             if (book is null)
                 throw new ArgumentNullException(nameof(book));
 
-            return await FindUniqueAsync(book.Name,
+            return FindUniqueAsync(book.Name,
                 cancellationToken);
         }
 

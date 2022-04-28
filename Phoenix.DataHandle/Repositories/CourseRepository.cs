@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Phoenix.DataHandle.DataEntry.Models.Uniques;
+using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Main.Models;
+using System;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Phoenix.DataHandle.DataEntry.Models.Uniques;
-using Phoenix.DataHandle.Main.Entities;
-using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Repositories
 {
@@ -22,91 +22,40 @@ namespace Phoenix.DataHandle.Repositories
         }
 
         public static Expression<Func<Course, bool>> GetUniqueExpression(
-            SchoolUnique schoolUq, short courseCode)
+            CourseUnique courseUq)
         {
-            if (schoolUq is null)
-                throw new ArgumentNullException(nameof(schoolUq));
+            if (courseUq is null)
+                throw new ArgumentNullException(nameof(courseUq));
 
-            return c => c.School.Code == schoolUq.Code && c.Code == courseCode;
+            return c => c.School.Code == courseUq.SchoolUnique.Code && c.Code == courseUq.Code;
         }
 
         #region Find Unique
 
-        public Course? FindUnique(int schoolId, short courseCode)
-        {
-            return FindUnique(GetUniqueExpression(schoolId, courseCode));
-        }
-
-        public Course? FindUnique(SchoolUnique schoolUq, short courseCode)
-        {
-            return FindUnique(GetUniqueExpression(schoolUq, courseCode));
-        }
-
-        public Course? FindUnique(int schoolId, ICourse course)
-        {
-            if (course is null)
-                throw new ArgumentNullException(nameof(course));
-
-            return FindUnique(schoolId, course.Code);
-        }
-
-        public Course? FindUnique(SchoolUnique schoolUq, ICourse course)
-        {
-            if (course is null)
-                throw new ArgumentNullException(nameof(course));
-
-            return FindUnique(schoolUq, course.Code);
-        }
-
-        public Course? FindUnique(CourseUnique courseUnique)
-        {
-            if (courseUnique is null)
-                throw new ArgumentNullException(nameof(courseUnique));
-
-            return FindUnique(courseUnique.SchoolUnique, courseUnique.Code);
-        }
-
-        public async Task<Course?> FindUniqueAsync(int schoolId, short courseCode,
+        public Task<Course?> FindUniqueAsync(int schoolId, short courseCode,
             CancellationToken cancellationToken = default)
         {
-            return await FindUniqueAsync(GetUniqueExpression(schoolId, courseCode),
+            return FindUniqueAsync(GetUniqueExpression(schoolId, courseCode),
                 cancellationToken);
         }
 
-        public async Task<Course?> FindUniqueAsync(SchoolUnique schoolUq, short courseCode,
-            CancellationToken cancellationToken = default)
-        {
-            return await FindUniqueAsync(GetUniqueExpression(schoolUq, courseCode),
-                cancellationToken);
-        }
-
-        public async Task<Course?> FindUniqueAsync(int schoolId, ICourse course,
+        public Task<Course?> FindUniqueAsync(int schoolId, ICourse course,
             CancellationToken cancellationToken = default)
         {
             if (course is null)
                 throw new ArgumentNullException(nameof(course));
 
-            return await FindUniqueAsync(schoolId, course.Code,
+            return FindUniqueAsync(schoolId, course.Code,
                 cancellationToken);
         }
 
-        public async Task<Course?> FindUniqueAsync(SchoolUnique schoolUq, ICourse course,
-            CancellationToken cancellationToken = default)
-        {
-            if (course is null)
-                throw new ArgumentNullException(nameof(course));
-
-            return await FindUniqueAsync(schoolUq, course.Code,
-                cancellationToken);
-        }
-
-        public async Task<Course?> FindUniqueAsync(CourseUnique courseUnique,
+        public Task<Course?> FindUniqueAsync(CourseUnique courseUnique,
             CancellationToken cancellationToken = default)
         {
             if (courseUnique is null)
                 throw new ArgumentNullException(nameof(courseUnique));
 
-            return await FindUniqueAsync(courseUnique.SchoolUnique, courseUnique.Code,
+            return FindUniqueAsync(courseUnique,
                 cancellationToken);
         }
 

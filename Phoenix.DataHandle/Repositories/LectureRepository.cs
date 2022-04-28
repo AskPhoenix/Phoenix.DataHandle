@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Main.Types;
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Phoenix.DataHandle.Main.Entities;
-using Phoenix.DataHandle.Main.Models;
-using Phoenix.DataHandle.Main.Types;
 
 namespace Phoenix.DataHandle.Repositories
 {
@@ -27,33 +27,20 @@ namespace Phoenix.DataHandle.Repositories
 
         #region Find Unique
 
-        public Lecture? FindUnique(int courseId, DateTimeOffset startDateTime)
-        {
-            return FindUnique(GetUniqueExpression(courseId, startDateTime));
-        }
-
-        public Lecture? FindUnique(int courseId, ILecture lecture)
-        {
-            if (lecture is null)
-                throw new ArgumentNullException(nameof(lecture));
-
-            return FindUnique(courseId, lecture.StartDateTime);
-        }
-
-        public async Task<Lecture?> FindUniqueAsync(int courseId, DateTimeOffset startDateTime, 
+        public Task<Lecture?> FindUniqueAsync(int courseId, DateTimeOffset startDateTime, 
             CancellationToken cancellationToken = default)
         {
-            return await FindUniqueAsync(GetUniqueExpression(courseId, startDateTime), 
+            return FindUniqueAsync(GetUniqueExpression(courseId, startDateTime), 
                 cancellationToken);
         }
 
-        public async Task<Lecture?> FindUniqueAsync(int courseId, ILecture lecture,
+        public Task<Lecture?> FindUniqueAsync(int courseId, ILecture lecture,
             CancellationToken cancellationToken = default)
         {
             if (lecture is null)
                 throw new ArgumentNullException(nameof(lecture));
 
-            return await FindUniqueAsync(courseId, lecture.StartDateTime,
+            return FindUniqueAsync(courseId, lecture.StartDateTime,
                 cancellationToken);
         }
 

@@ -21,52 +21,38 @@ namespace Phoenix.DataHandle.Repositories
 
         #region Disconnect Affiliated
 
-        public IEnumerable<UserConnection> DisconnectAffiliated(ChannelProvider channelProvider, int parentId)
-        {
-            var parent = userRepository.FindPrimary(parentId);
-            if (parent is null)
-                throw new InvalidOperationException($"There is no User with ID {parentId}.");
-            
-            var affiliatedIds = parent.Children.Select(u => u.AspNetUserId);
-            if (!affiliatedIds.Any())
-                return Enumerable.Empty<UserConnection>();
-
-            return DisconnectRange(channelProvider, affiliatedIds);
-        }
-
-        public IEnumerable<UserConnection> DisconnectAffiliatedAnywhere(int parentId)
-        {
-            List<UserConnection> connections = new();
-
-            foreach (var channelProvider in Enum.GetValues<ChannelProvider>())
-                connections.AddRange(DisconnectAffiliated(channelProvider, parentId));
-
-            return connections;
-        }
-
-        public async Task<IEnumerable<UserConnection>> DisconnectAffiliatedAsync(ChannelProvider channelProvider, int parentId,
+        private async Task<IEnumerable<int>> DisconnectAffiliatedPrepareAsync(
+            int parentId,
             CancellationToken cancellationToken = default)
         {
             var parent = await userRepository.FindPrimaryAsync(parentId, cancellationToken);
             if (parent is null)
                 throw new InvalidOperationException($"There is no User with ID {parentId}.");
 
-            var affiliatedIds = parent.Children.Select(u => u.AspNetUserId);
+            return parent.Children.Select(u => u.AspNetUserId);
+        }
+
+        public async Task<IEnumerable<UserConnection>> DisconnectAffiliatedAsync(
+            ChannelProvider channelProvider, int parentId,
+            CancellationToken cancellationToken = default)
+        {
+            var affiliatedIds = await DisconnectAffiliatedPrepareAsync(parentId, cancellationToken);
             if (!affiliatedIds.Any())
                 return Enumerable.Empty<UserConnection>();
 
-            return await DisconnectRangeAsync(channelProvider, affiliatedIds, cancellationToken);
+            return await DisconnectRangeFromChannelAsync(channelProvider, affiliatedIds, cancellationToken);
         }
 
-        public async Task<IEnumerable<UserConnection>> DisconnectAffiliatedAnywhereAsync(int parentId,
+        public async Task<IEnumerable<UserConnection>> DisconnectAffiliatedAnywhereAsync(
+            int parentId,
             CancellationToken cancellationToken = default)
         {
-            List<UserConnection> connections = new();
+            var affiliatedIds = await DisconnectAffiliatedPrepareAsync(parentId, cancellationToken);
+            if (!affiliatedIds.Any())
+                return Enumerable.Empty<UserConnection>();
 
-            foreach (var channelProvider in Enum.GetValues<ChannelProvider>())
-                connections.AddRange(await DisconnectAffiliatedAsync(channelProvider, parentId, cancellationToken));
 
-            return connections;
+            return await DisconnectRangeAnywhereAsync(affiliatedIds, cancellationToken);
         }
 
         #endregion

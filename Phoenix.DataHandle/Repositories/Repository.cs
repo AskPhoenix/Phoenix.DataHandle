@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Phoenix.DataHandle.Main.Models.Extensions;
+using Phoenix.DataHandle.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Phoenix.DataHandle.Main.Models.Extensions;
-using Phoenix.DataHandle.Utilities;
 
 namespace Phoenix.DataHandle.Repositories
 {
@@ -41,18 +41,6 @@ namespace Phoenix.DataHandle.Repositories
                 q = include(q);
 
             return q;
-        }
-
-        public TModel? FindPrimary(int id)
-        {
-            return Find()
-                .SingleOrDefault(a => a.Id == id);
-        }
-
-        protected TModel? FindUnique(Expression<Func<TModel, bool>> unique)
-        {
-            return Find()
-                .SingleOrDefault(unique);
         }
 
         public Task<TModel?> FindPrimaryAsync(int id,
@@ -94,28 +82,6 @@ namespace Phoenix.DataHandle.Repositories
             return models.Select(m => CreatePrepare(m));
         }
 
-        public virtual TModel Create(TModel model)
-        {
-            CreatePrepare(model);
-
-            this.Set.Add(model);
-            this.DbContext.SaveChanges();
-
-            return model;
-        }
-
-        public virtual IEnumerable<TModel> CreateRange(IEnumerable<TModel> models)
-        {
-            var createdModels = CreateRangePrepare(models);
-            if (!createdModels.Any())
-                return Enumerable.Empty<TModel>();
-
-            this.Set.AddRange(createdModels);
-            this.DbContext.SaveChanges();
-
-            return createdModels;
-        }
-
         public virtual async Task<TModel> CreateAsync(TModel model,
             CancellationToken cancellationToken = default)
         {
@@ -130,9 +96,9 @@ namespace Phoenix.DataHandle.Repositories
         public virtual async Task<IEnumerable<TModel>> CreateRangeAsync(IEnumerable<TModel> models,
             CancellationToken cancellationToken = default)
         {
-            IEnumerable<TModel> createdModels = CreateRangePrepare(models);
+            var createdModels = CreateRangePrepare(models);
             if (!createdModels.Any())
-                return await Task.FromResult(Enumerable.Empty<TModel>());
+                return Enumerable.Empty<TModel>();
 
             await this.Set.AddRangeAsync(createdModels, cancellationToken);
             await this.DbContext.SaveChangesAsync(cancellationToken);
@@ -167,33 +133,6 @@ namespace Phoenix.DataHandle.Repositories
             return models.Select(m => UpdatePrepare(m));
         }
 
-        public virtual TModel Update(TModel model)
-        {
-            UpdatePrepare(model);
-
-            this.DbContext.SaveChanges();
-
-            return model;
-        }
-
-        public virtual TModel Update<TTo, TFrom>(TTo model, TFrom modelFrom)
-            where TTo : TModel, TFrom
-        {
-            PropertyCopier.CopyFromBase(model, modelFrom);
-            return Update(model);
-        }
-
-        public virtual IEnumerable<TModel> UpdateRange(IEnumerable<TModel> models)
-        {
-            var updatedModels = UpdateRangePrepare(models);
-            if (!updatedModels.Any())
-                return Enumerable.Empty<TModel>();
-
-            this.DbContext.SaveChanges();
-
-            return updatedModels;
-        }
-
         public virtual async Task<TModel> UpdateAsync(TModel model,
             CancellationToken cancellationToken = default)
         {
@@ -204,12 +143,12 @@ namespace Phoenix.DataHandle.Repositories
             return model;
         }
 
-        public virtual async Task<TModel> UpdateAsync<TTo, TFrom>(TTo model, TFrom modelFrom,
+        public virtual Task<TModel> UpdateAsync<TTo, TFrom>(TTo model, TFrom modelFrom,
             CancellationToken cancellationToken = default)
             where TTo : TModel, TFrom
         {
             PropertyCopier.CopyFromBase(model, modelFrom);
-            return await UpdateAsync(model, cancellationToken);
+            return UpdateAsync(model, cancellationToken);
         }
 
         public virtual async Task<IEnumerable<TModel>> UpdateRangeAsync(IEnumerable<TModel> models,
@@ -217,7 +156,7 @@ namespace Phoenix.DataHandle.Repositories
         {
             var updatedModels = UpdateRangePrepare(models);
             if (!updatedModels.Any())
-                return await Task.FromResult(Enumerable.Empty<TModel>());
+                return Enumerable.Empty<TModel>();
 
             await this.DbContext.SaveChangesAsync(cancellationToken);
 
@@ -246,7 +185,6 @@ namespace Phoenix.DataHandle.Repositories
             if (!models.Any())
                 return Enumerable.Empty<TModel>();
 
-            // This is included here because there is no async remove-range method
             this.Set.RemoveRange(models);
 
             return models;
@@ -259,39 +197,7 @@ namespace Phoenix.DataHandle.Repositories
             if (!ids.Any())
                 return Enumerable.Empty<TModel>();
 
-            return Find().Where(m => ids.Contains(m.Id));
-        }
-
-        public virtual TModel Delete(TModel model)
-        {
-            DeletePrepare(model);
-
-            this.DbContext.SaveChanges();
-
-            return model;
-        }
-
-        public virtual TModel Delete(int id)
-        {
-            TModel? toRemove = FindPrimary(id);
-            if (toRemove is null)
-                throw new InvalidOperationException($"There is no entry with id {id}.");
-
-            return Delete(toRemove);
-        }
-
-        public virtual IEnumerable<TModel> DeleteRange(IEnumerable<TModel> models)
-        {
-            DeleteRangePrepare(models);
-
-            this.DbContext.SaveChanges();
-
-            return models;
-        }
-
-        public virtual IEnumerable<TModel> DeleteRange(IEnumerable<int> ids)
-        {
-            return DeleteRange(DeleteRangePrepare(ids));
+            return DeleteRangePrepare(Find().Where(m => ids.Contains(m.Id)));
         }
 
         public virtual async Task<TModel> DeleteAsync(TModel model,
@@ -324,10 +230,10 @@ namespace Phoenix.DataHandle.Repositories
             return models;
         }
 
-        public virtual async Task<IEnumerable<TModel>> DeleteRangeAsync(IEnumerable<int> ids,
+        public virtual Task<IEnumerable<TModel>> DeleteRangeAsync(IEnumerable<int> ids,
             CancellationToken cancellationToken = default)
         {
-            return await DeleteRangeAsync(DeleteRangePrepare(ids), cancellationToken);
+            return DeleteRangeAsync(DeleteRangePrepare(ids), cancellationToken);
         }
 
         #endregion

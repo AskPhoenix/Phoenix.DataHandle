@@ -1,5 +1,4 @@
-﻿using Phoenix.DataHandle.Identity;
-using Phoenix.DataHandle.Main.Entities;
+﻿using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
 using System;
@@ -27,10 +26,11 @@ namespace Phoenix.DataHandle.Repositories
         public void CheckIfValid(User user)
         {
             if (!IsValid(user))
-                throw new InvalidOperationException($"{nameof(user.DependenceOrder)} must be 0 for a self-determined user.");
+                throw new InvalidOperationException(
+                    $"{nameof(user.DependenceOrder)} must be 0 for a self-determined user.");
         }
 
-        public void CheckIfValid(IEnumerable<User> users)
+        public void CheckRangeIfValid(IEnumerable<User> users)
         {
             foreach (var user in users)
                 CheckIfValid(user);
@@ -50,7 +50,7 @@ namespace Phoenix.DataHandle.Repositories
         public override Task<IEnumerable<User>> CreateRangeAsync(IEnumerable<User> users,
             CancellationToken cancellationToken = default)
         {
-            CheckIfValid(users);
+            CheckRangeIfValid(users);
             return base.CreateRangeAsync(users, cancellationToken);
         }
 
@@ -68,35 +68,28 @@ namespace Phoenix.DataHandle.Repositories
         public override Task<IEnumerable<User>> UpdateRangeAsync(IEnumerable<User> users,
             CancellationToken cancellationToken = default)
         {
-            CheckIfValid(users);
+            CheckRangeIfValid(users);
             return base.UpdateRangeAsync(users, cancellationToken);
         }
 
-        public User UpdateWithAppUser(User user, IUser userFrom)
-        {
-            CopyAppUser(user.AspNetUser, userFrom.AspNetUser);
-            return Update(user, userFrom);
-        }
-
-        public async Task<User> UpdateWithAppUserAsync(User user, IUser userFrom,
+        public Task<User> UpdateWithAppUserAsync(User user, IUser userFrom,
             CancellationToken cancellationToken = default)
         {
-            CopyAppUser(user.AspNetUser, userFrom.AspNetUser);
-            return await UpdateAsync(user, userFrom, cancellationToken);
+            if (user is null)
+                throw new ArgumentNullException(nameof(user));
+            if (userFrom is null)
+                throw new ArgumentNullException(nameof(userFrom));
+
+            if (userFrom.AspNetUser is null)
+                throw new ArgumentNullException(nameof(userFrom.AspNetUser));
+            if (user.AspNetUser is null)
+                user.AspNetUser = new();
+
+            PropertyCopier.CopyFromBase(user.AspNetUser, userFrom.AspNetUser);
+
+            return UpdateAsync(user, userFrom, cancellationToken);
         }
-
-        public ApplicationUser CopyAppUser(ApplicationUser appUser, IAspNetUser aspNetUserFrom)
-        {
-            if (aspNetUserFrom is null)
-                throw new ArgumentNullException(nameof(aspNetUserFrom));
-            if (appUser is null)
-                appUser = new();
-
-            PropertyCopier.CopyFromBase(appUser, aspNetUserFrom);
-
-            return appUser;
-        }
-
+        
         #endregion
     }
 }

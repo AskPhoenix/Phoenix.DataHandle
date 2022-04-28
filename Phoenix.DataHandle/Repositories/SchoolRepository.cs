@@ -1,11 +1,11 @@
-﻿using System;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
-using Phoenix.DataHandle.DataEntry.Models.Uniques;
+﻿using Phoenix.DataHandle.DataEntry.Models.Uniques;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
+using System;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Phoenix.DataHandle.Repositories
 {
@@ -24,75 +24,50 @@ namespace Phoenix.DataHandle.Repositories
 
         #region Find Unique
 
-        public School? FindUnique(int schoolCode)
+        public Task<School?> FindUniqueAsync(int schoolCode,
+            CancellationToken cancellationToken = default)
         {
-            return FindUnique(GetUniqueExpression(schoolCode));
+            return FindUniqueAsync(GetUniqueExpression(schoolCode), cancellationToken);
         }
 
-        public School? FindUnique(ISchool school)
+        public Task<School?> FindUniqueAsync(ISchool school,
+            CancellationToken cancellationToken = default)
         {
             if (school is null)
                 throw new ArgumentNullException(nameof(school));
 
-            return FindUnique(school.Code);
+            return FindUniqueAsync(school.Code, cancellationToken);
         }
 
-        public School? FindUnique(SchoolUnique schoolUnique)
+        public Task<School?> FindUniqueAsync(SchoolUnique schoolUnique,
+            CancellationToken cancellationToken = default)
         {
             if (schoolUnique is null)
                 throw new ArgumentNullException(nameof(schoolUnique));
 
-            return FindUnique(schoolUnique.Code);
-        }
-
-        public async Task<School?> FindUniqueAsync(int schoolCode,
-            CancellationToken cancellationToken = default)
-        {
-            return await FindUniqueAsync(GetUniqueExpression(schoolCode), cancellationToken);
-        }
-
-        public async Task<School?> FindUniqueAsync(ISchool school,
-            CancellationToken cancellationToken = default)
-        {
-            if (school is null)
-                throw new ArgumentNullException(nameof(school));
-
-            return await FindUniqueAsync(school.Code, cancellationToken);
-        }
-
-        public async Task<School?> FindUniqueAsync(SchoolUnique schoolUnique,
-            CancellationToken cancellationToken = default)
-        {
-            return await FindUniqueAsync(schoolUnique.Code, cancellationToken);
+            return FindUniqueAsync(schoolUnique.Code, cancellationToken);
         }
 
         #endregion
 
         #region Update
 
-        public School UpdateWithSchoolSetting(School school, ISchool schoolFrom)
-        {
-            CopySchoolSetting(school.SchoolSetting, schoolFrom.SchoolSetting);
-            return Update(school, schoolFrom);
-        }
-
-        public async Task<School> UpdateWithSchoolSettingAsync(School school, ISchool schoolFrom,
+        public Task<School> UpdateWithSchoolSettingAsync(School school, ISchool schoolFrom,
             CancellationToken cancellationToken = default)
         {
-            CopySchoolSetting(school.SchoolSetting, schoolFrom.SchoolSetting);
-            return await UpdateAsync(school, schoolFrom, cancellationToken);
-        }
+            if (school is null)
+                throw new ArgumentNullException(nameof(school));
+            if (schoolFrom is null)
+                throw new ArgumentNullException(nameof(schoolFrom));
+            
+            if (schoolFrom.SchoolSetting is null)
+                throw new ArgumentNullException(nameof(schoolFrom.SchoolSetting));
+            if (school.SchoolSetting is null)
+                school.SchoolSetting = new();
 
-        public SchoolSetting CopySchoolSetting(SchoolSetting schoolSetting, ISchoolSetting schoolSettingFrom)
-        {
-            if (schoolSettingFrom is null)
-                throw new ArgumentNullException(nameof(schoolSettingFrom));
-            if (schoolSetting is null)
-                schoolSetting = new();
+            PropertyCopier.CopyFromBase(school.SchoolSetting, schoolFrom.SchoolSetting);
 
-            PropertyCopier.CopyFromBase(schoolSetting, schoolSettingFrom);
-
-            return schoolSetting;
+            return UpdateAsync(school, schoolFrom, cancellationToken);
         }
 
         #endregion

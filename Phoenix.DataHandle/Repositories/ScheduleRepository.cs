@@ -25,33 +25,20 @@ namespace Phoenix.DataHandle.Repositories
 
         #region Find Unique
 
-        public Schedule? FindUnique(int courseId, DayOfWeek dayOfWeek, DateTime startTime)
-        {
-            return FindUnique(GetUniqueExpression(courseId, dayOfWeek, startTime));
-        }
-
-        public Schedule? FindUnique(int courseId, ISchedule schedule)
-        {
-            if (schedule is null)
-                throw new ArgumentNullException(nameof(schedule));
-
-            return FindUnique(courseId, schedule.DayOfWeek, schedule.StartTime);
-        }
-
-        public async Task<Schedule?> FindUniqueAsync(int courseId, DayOfWeek dayOfWeek, DateTime startTime,
+        public Task<Schedule?> FindUniqueAsync(int courseId, DayOfWeek dayOfWeek, DateTime startTime,
             CancellationToken cancellationToken = default)
         {
-            return await FindUniqueAsync(GetUniqueExpression(courseId, dayOfWeek, startTime),
+            return FindUniqueAsync(GetUniqueExpression(courseId, dayOfWeek, startTime),
                 cancellationToken);
         }
 
-        public async Task<Schedule?> FindUniqueAsync(int courseId, ISchedule schedule,
+        public Task<Schedule?> FindUniqueAsync(int courseId, ISchedule schedule,
             CancellationToken cancellationToken = default)
         {
             if (schedule is null)
                 throw new ArgumentNullException(nameof(schedule));
 
-            return await FindUniqueAsync(courseId, schedule.DayOfWeek, schedule.StartTime,
+            return FindUniqueAsync(courseId, schedule.DayOfWeek, schedule.StartTime,
                 cancellationToken);
         }
 

@@ -39,26 +39,16 @@ namespace Phoenix.DataHandle.Repositories
             return obviableModels.Select(m => ObviatePrepare(m));
         }
 
-        public TObviableModel Obviate(TObviableModel obviableModel)
-        {
-            return Update(ObviatePrepare(obviableModel));
-        }
-
-        public IEnumerable<TObviableModel> ObviateRange(IEnumerable<TObviableModel> obviableModels)
-        {
-            return UpdateRange(ObviateRangePrepare(obviableModels));
-        }
-
-        public async Task<TObviableModel> ObviateAsync(TObviableModel obviableModel,
+        public Task<TObviableModel> ObviateAsync(TObviableModel obviableModel,
             CancellationToken cancellationToken = default)
         {
-            return await UpdateAsync(ObviatePrepare(obviableModel), cancellationToken);
+            return UpdateAsync(ObviatePrepare(obviableModel), cancellationToken);
         }
 
-        public async Task<IEnumerable<TObviableModel>> ObviateRangeAsync(IEnumerable<TObviableModel> obviableModels,
+        public Task<IEnumerable<TObviableModel>> ObviateRangeAsync(IEnumerable<TObviableModel> obviableModels,
             CancellationToken cancellationToken = default)
         {
-            return await UpdateRangeAsync(ObviateRangePrepare(obviableModels), cancellationToken);
+            return UpdateRangeAsync(ObviateRangePrepare(obviableModels), cancellationToken);
         }
 
         #endregion
@@ -83,16 +73,6 @@ namespace Phoenix.DataHandle.Repositories
             return obviableModels.Select(m => RestorePrepare(m));
         }
 
-        public TObviableModel Restore(TObviableModel obviableModel)
-        {
-            return Update(RestorePrepare(obviableModel));
-        }
-
-        public IEnumerable<TObviableModel> RestoreRange(IEnumerable<TObviableModel> obviableModels)
-        {
-            return UpdateRange(RestoreRangePrepare(obviableModels));
-        }
-
         public async Task<TObviableModel> RestoreAsync(TObviableModel obviableModel,
             CancellationToken cancellationToken = default)
         {
@@ -109,14 +89,9 @@ namespace Phoenix.DataHandle.Repositories
 
         #region Delete
 
-        public void DeleteAllObviated()
+        public Task DeleteAllObviatedAsync(CancellationToken cancellationToken = default)
         {
-            DeleteRange(Find().Where(m => m.IsObviated));
-        }
-
-        public async Task DeleteAllObviatedAsync(CancellationToken cancellationToken = default)
-        {
-            await DeleteRangeAsync(Find().Where(m => m.IsObviated), cancellationToken);
+            return DeleteRangeAsync(Find().Where(m => m.IsObviated), cancellationToken);
         }
 
         #endregion
