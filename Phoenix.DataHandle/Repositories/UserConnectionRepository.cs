@@ -10,7 +10,7 @@ namespace Phoenix.DataHandle.Repositories
 {
     public sealed class UserConnectionRepository : ConnectionRepository<UserConnection>
     {
-        private UserRepository userRepository;
+        private readonly UserRepository userRepository;
 
         public UserConnectionRepository(PhoenixContext phoenixContext)
             : base(phoenixContext)

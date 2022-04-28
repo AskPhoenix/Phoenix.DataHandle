@@ -11,7 +11,7 @@
   <PropertyGroup>
     <PackageId>Phoenix.DataHandle</PackageId>
     <Product>Phoenix.DataHandle</Product>
-    <Version>3.0.0-beta1.1</Version>
+    <Version>3.0.0-beta1.2</Version>
     <Authors>AskPhoenix</Authors>
     <Company>AskPhoenix</Company>
     <PackageDescription>A library for handling the backend of AskPhoenix</PackageDescription>
@@ -26,12 +26,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Nexmo.Csharp.Client" Version="5.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.4" />
     <PackageReference Include="Phoenix.Language" Version="3.0.0-alpha.1" />
-    <PackageReference Include="WordPressPCL" Version="1.9.0" />
+    <PackageReference Include="WordPressPCL" Version="2.0.0" />
   </ItemGroup>
 
 

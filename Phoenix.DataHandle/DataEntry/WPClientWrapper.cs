@@ -21,13 +21,14 @@ namespace Phoenix.DataHandle.DataEntry
 
         private static WordPressClient Client { get; }
         public static bool AlwaysUseAuthentication { get; set; }
-        public static bool IsAuthenticated => !string.IsNullOrEmpty(Client.GetToken());
+        public static bool IsAuthenticated { get; private set; } // => !string.IsNullOrEmpty(Client.Auth.GetToken());
         public static bool Embed { get; set; }
         public static int PostsPerPage { get; set; } = 10;
 
         static WPClientWrapper()
         {
-            Client = new WordPressClient(new Uri(new Uri(WordpressEndpoint), "wp-json").ToString()) { AuthMethod = AuthMethod.JWT };
+            Client = new WordPressClient(new Uri(new Uri(WordpressEndpoint), "wp-json").ToString());
+            Client.Auth.UseBearerAuth(JWTPlugin.JWTAuthByEnriqueChavez);
         }
 
         public static async Task<bool> AuthenticateAsync(string username, string password)
@@ -35,8 +36,10 @@ namespace Phoenix.DataHandle.DataEntry
             if (IsAuthenticated)
                 return true;
 
-            await Client.RequestJWToken(username, password);
-            if (!await Client.IsValidJWToken())
+            await Client.Auth.RequestJWTokenAsync(username, password);
+            
+            IsAuthenticated = await Client.Auth.IsValidJWTokenAsync();
+            if (!IsAuthenticated)
                 throw new WPException($"Cannot authenticate user '{username}' in WordPress because of invalid JWToken.");
 
             return IsAuthenticated;
@@ -44,7 +47,7 @@ namespace Phoenix.DataHandle.DataEntry
 
         public static async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
-            return await Client.Categories.GetAll(Embed, AlwaysUseAuthentication);
+            return await Client.Categories.GetAllAsync(Embed, AlwaysUseAuthentication);
         }
 
         public static async Task<int> GetCategoryIdAsync(PostCategory category)
@@ -55,7 +58,7 @@ namespace Phoenix.DataHandle.DataEntry
                 Embed = Embed 
             };
             
-            var matches = await Client.Categories.Query(categoriesQueryBuilder, AlwaysUseAuthentication);
+            var matches = await Client.Categories.QueryAsync(categoriesQueryBuilder, AlwaysUseAuthentication);
             
             return matches.Single(c => c.Name == category.GetName()).Id;
         }
@@ -65,7 +68,7 @@ namespace Phoenix.DataHandle.DataEntry
             queryBuilder.PerPage = PostsPerPage;
             queryBuilder.Embed = Embed;
 
-            string route = PostsPath + queryBuilder.BuildQueryURL();
+            string route = PostsPath + queryBuilder.BuildQuery();
 
             IEnumerable<Post> posts;
             try
@@ -86,7 +89,7 @@ namespace Phoenix.DataHandle.DataEntry
             var queryBuilder = new PostsQueryBuilder()
             {
                 Page = page,
-                Categories = new int[1] { categoryId },
+                Categories = new List<int>(1) { categoryId },
                 Search = search
             };
 
@@ -160,7 +163,7 @@ namespace Phoenix.DataHandle.DataEntry
         {
             var queryBuilder = new PostsQueryBuilder()
             {
-                Categories = new int[1] { categoryId },
+                Categories = new List<int>(1) { categoryId },
                 Search = search
             };
 
@@ -197,7 +200,7 @@ namespace Phoenix.DataHandle.DataEntry
         public static async Task<T> GetCustomAsync<T>(string route)
             where T : class
         {
-            return await Client.CustomRequest.Get<T>(route, Embed, AlwaysUseAuthentication);
+            return await Client.CustomRequest.GetAsync<T>(route, Embed, AlwaysUseAuthentication);
         }
 
         public static async Task<TModelACF> GetAcfAsync<TModelACF>(int postId)

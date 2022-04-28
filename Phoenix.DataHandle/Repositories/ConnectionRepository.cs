@@ -121,14 +121,14 @@ namespace Phoenix.DataHandle.Repositories
             return connections.Select(l => DisconnectPrepare(l));
         }
 
-        public Task<TConnectionModel?> DisconnectAsync(
+        public async Task<TConnectionModel?> DisconnectAsync(
             TConnectionModel? connection,
             CancellationToken cancellationToken = default)
         {
             if (connection is null)
                 return null;
 
-            return UpdateAsync(DisconnectPrepare(connection), cancellationToken);
+            return await UpdateAsync(DisconnectPrepare(connection), cancellationToken);
         }
 
         public async Task<TConnectionModel?> DisconnectAsync(
