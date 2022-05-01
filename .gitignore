@@ -305,4 +305,3 @@ __pycache__/
 **/logs/
 **/appsettings.Development.json
 /Phoenix.DataHandle/nuget.exe
-/Phoenix.Verification.DataHandle/appsettings.json
