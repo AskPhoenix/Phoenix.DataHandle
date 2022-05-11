@@ -22,5 +22,17 @@ namespace Phoenix.DataHandle.Identity
                   errors, services, logger)
         {
         }
+
+        public Task<ApplicationUser?> FindByPhoneNumberAsync(string phoneNumber,
+            CancellationToken cancellationToken = default)
+        {
+            return this.Store.FindByPhoneNumberAsync(phoneNumber, cancellationToken);
+        }
+
+        public Task<ApplicationUser?> FindByProviderKeyAsync(string provider, string key,
+            CancellationToken cancellationToken = default)
+        {
+            return this.Store.FindByProviderKeyAsync(provider, key, cancellationToken);
+        }
     }
 }
