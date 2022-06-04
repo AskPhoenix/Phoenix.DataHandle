@@ -9,7 +9,7 @@ namespace Phoenix.DataHandle.Identity
         protected internal new ApplicationStore Store => (ApplicationStore)base.Store;
 
         public ApplicationUserManager(
-            ApplicationStore store,
+            IUserStore<ApplicationUser> store,
             IOptions<IdentityOptions> optionsAccessor,
             IPasswordHasher<ApplicationUser> passwordHasher,
             IEnumerable<IUserValidator<ApplicationUser>> userValidators,
