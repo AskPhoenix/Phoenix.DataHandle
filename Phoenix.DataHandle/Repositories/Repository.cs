@@ -158,6 +158,22 @@ namespace Phoenix.DataHandle.Repositories
             return updatedModels;
         }
 
+        public virtual async Task<IEnumerable<TModel>> UpdateRangeAsync<TTo, TFrom>(
+            IEnumerable<TTo> models, IEnumerable<TFrom> modelsFrom,
+            CancellationToken cancellationToken = default)
+            where TTo : TModel, TFrom
+        {
+            if (models.Count() != modelsFrom.Count())
+                throw new InvalidOperationException("Enumerable sizes must match.");
+
+            var modelsList = models.ToList();
+            for (int i = 0; i < models.Count(); i++)
+                PropertyCopier.CopyFromBase(modelsList[i], modelsFrom.ElementAt(i));
+
+            return await UpdateRangeAsync(modelsList.Cast<TModel>(),
+                cancellationToken);
+        }
+
         #endregion
 
         #region Delete
