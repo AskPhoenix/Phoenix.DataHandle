@@ -19,9 +19,19 @@ namespace Phoenix.DataHandle.Identity
         {
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer("Server=.;Database=PhoenicopterusDB;Trusted_Connection=True;");
+            }
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.HasDefaultSchema("Identity");
 
             modelBuilder.Entity<ApplicationUser>(entity =>
             {
@@ -47,20 +57,10 @@ namespace Phoenix.DataHandle.Identity
                     .HasForeignKey(ut => ut.UserId)
                     .IsRequired();
 
-                entity.HasMany(e => e.Roles)
-                    .WithMany(e => e.Users)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "UserRole",
-                        l => l.HasOne<ApplicationRole>().WithMany().HasForeignKey("RoleId").HasConstraintName("FK_AspNetUserRoles_AspNetRoles_RoleId"),
-                        r => r.HasOne<ApplicationUser>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_AspNetUserRoles_AspNetUsers_UserId"),
-                        j =>
-                        {
-                            j.HasKey("UserId", "RoleId");
-
-                            j.ToTable("AspNetUserRoles");
-
-                            j.HasIndex(new[] { "RoleId" }, "IX_AspNetUserRoles_RoleId");
-                        });
+                entity.HasMany(e => e.UserRoles)
+                    .WithOne(e => e.User)
+                    .HasForeignKey(ur => ur.UserId)
+                    .IsRequired();
 
                 entity.HasOne(d => d.User)
                     .WithOne(p => p.AspNetUser)
@@ -68,8 +68,27 @@ namespace Phoenix.DataHandle.Identity
                     .HasConstraintName("FK_Users_AspNetUsers");
             });
 
+            modelBuilder.Entity<ApplicationUserLogin>(b =>
+            {
+                // Limit the size of the composite key columns due to common DB restrictions
+                b.Property(l => l.LoginProvider).HasMaxLength(128);
+                b.Property(l => l.ProviderKey).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<ApplicationUserToken>(b =>
+            {
+                // Limit the size of the composite key columns due to common DB restrictions
+                b.Property(l => l.LoginProvider).HasMaxLength(128);
+                b.Property(l => l.Name).HasMaxLength(128);
+            });
+
             modelBuilder.Entity<ApplicationRole>(entity =>
             {
+                entity.HasMany(e => e.UserRoles)
+                    .WithOne(e => e.Role)
+                    .HasForeignKey(ur => ur.RoleId)
+                    .IsRequired();
+
                 entity.HasMany(e => e.Claims)
                     .WithOne(e => e.Role)
                     .HasForeignKey(rc => rc.RoleId)

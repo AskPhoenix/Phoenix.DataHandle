@@ -16,6 +16,8 @@ namespace Phoenix.DataHandle.Main.Models
                     .HasForeignKey<User>(d => d.AspNetUserId)
                     .HasConstraintName("FK_Users_AspNetUsers");
             });
+
+            modelBuilder.HasDefaultSchema("Phoenix");
         }
     }
 

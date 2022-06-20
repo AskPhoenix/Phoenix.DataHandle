@@ -13,7 +13,7 @@ namespace Phoenix.DataHandle.Identity
             Claims = new HashSet<ApplicationUserClaim>();
             Logins = new HashSet<ApplicationUserLogin>();
             Tokens = new HashSet<ApplicationUserToken>();
-            Roles = new HashSet<ApplicationRole>();
+            UserRoles = new HashSet<ApplicationUserRole>();
         }
 
         public virtual User User { get; set; } = null!;
@@ -22,7 +22,7 @@ namespace Phoenix.DataHandle.Identity
         public virtual ICollection<ApplicationUserClaim> Claims { get; set; }
         public virtual ICollection<ApplicationUserLogin> Logins { get; set; }
         public virtual ICollection<ApplicationUserToken> Tokens { get; set; }
-        public virtual ICollection<ApplicationRole> Roles { get; set; }
+        public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
 
         public void Normalize()
         {

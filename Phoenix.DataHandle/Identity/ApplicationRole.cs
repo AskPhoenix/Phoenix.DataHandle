@@ -9,13 +9,13 @@ namespace Phoenix.DataHandle.Identity
         public ApplicationRole()
             : base()
         {
-            Users = new HashSet<ApplicationUser>();
+            UserRoles = new HashSet<ApplicationUserRole>();
             Claims = new HashSet<ApplicationRoleClaim>();
         }
 
         public RoleRank Rank => this.NormalizedName.ToRoleRank();
 
-        public virtual ICollection<ApplicationUser> Users { get; set; }
+        public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
         public virtual ICollection<ApplicationRoleClaim> Claims { get; set; }
 
         public void Normalize()
