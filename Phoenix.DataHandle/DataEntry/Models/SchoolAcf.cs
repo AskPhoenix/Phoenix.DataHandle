@@ -56,7 +56,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public SchoolUnique GetSchoolUnique() => new(this.Code);
 
         [JsonIgnore]
-        public int Code { get; }
+        public int Code { get; internal set; }
 
         [JsonProperty(PropertyName = "name")]
         public string Name { get; } = null!;

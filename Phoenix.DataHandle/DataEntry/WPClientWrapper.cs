@@ -214,14 +214,12 @@ namespace Phoenix.DataHandle.DataEntry
             return await GetAcfAsync<TModelACF>(post.Id);
         }
 
-        public static async Task<SchoolAcf> GetSchoolAcfAsync(int postId)
-        {
-            return await GetAcfAsync<SchoolAcf>(postId);
-        }
-
         public static async Task<SchoolAcf> GetSchoolAcfAsync(Post post)
         {
-            return await GetAcfAsync<SchoolAcf>(post);
+            SchoolAcf schoolAcf = await GetAcfAsync<SchoolAcf>(post);
+            schoolAcf.Code = new SchoolUnique(post.GetTitle()).Code;
+
+            return schoolAcf;
         }
 
         public static async Task<CourseAcf> GetCourseAcfAsync(int postId)
