@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Phoenix.DataHandle.Main.Models;
 
 namespace Phoenix.DataHandle.Identity
 {
@@ -61,11 +60,6 @@ namespace Phoenix.DataHandle.Identity
                     .WithOne(e => e.User)
                     .HasForeignKey(ur => ur.UserId)
                     .IsRequired();
-
-                entity.HasOne(d => d.User)
-                    .WithOne(p => p.AspNetUser)
-                    .HasForeignKey<User>(d => d.AspNetUserId)
-                    .HasConstraintName("FK_Users_AspNetUsers");
             });
 
             modelBuilder.Entity<ApplicationUserLogin>(b =>

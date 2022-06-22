@@ -53,8 +53,10 @@ namespace Phoenix.DataHandle.Api.Models.Main
             if (user is User user1)
                 this.Id = user1.AspNetUserId;
 
-            if (user.AspNetUser is not null)
-                this.AspNetUser = new AspNetUserApi(user.AspNetUser);
+            // TODO: Separate AspNetUserApi
+
+            //if (user.AspNetUser is not null)
+            //    this.AspNetUser = new AspNetUserApi(user.AspNetUser);
 
             // AspNetUser is always included if it's not null
             if (!include)
@@ -86,8 +88,6 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         [JsonProperty(PropertyName = "courses")]
         public List<CourseApi> Courses { get; }
-
-        IAspNetUser IUser.AspNetUser => this.AspNetUser;
 
         [JsonIgnore]
         public IEnumerable<IBotFeedback> BotFeedbacks { get; }

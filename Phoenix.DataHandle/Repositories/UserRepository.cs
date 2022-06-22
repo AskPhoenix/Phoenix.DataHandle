@@ -9,7 +9,6 @@ namespace Phoenix.DataHandle.Repositories
         public UserRepository(PhoenixContext dbContext) 
             : base(dbContext)
         {
-            Include(u => u.AspNetUser);
         }
 
         #region Validate
@@ -68,24 +67,6 @@ namespace Phoenix.DataHandle.Repositories
             return base.UpdateRangeAsync(users, cancellationToken);
         }
 
-        public Task<User> UpdateWithAppUserAsync(User user, IUser userFrom,
-            CancellationToken cancellationToken = default)
-        {
-            if (user is null)
-                throw new ArgumentNullException(nameof(user));
-            if (userFrom is null)
-                throw new ArgumentNullException(nameof(userFrom));
-
-            if (userFrom.AspNetUser is null)
-                throw new ArgumentNullException(nameof(userFrom.AspNetUser));
-            if (user.AspNetUser is null)
-                user.AspNetUser = new();
-
-            PropertyCopier.CopyFromBase(user.AspNetUser, userFrom.AspNetUser);
-
-            return UpdateAsync(user, userFrom, cancellationToken);
-        }
-        
         #endregion
     }
 }

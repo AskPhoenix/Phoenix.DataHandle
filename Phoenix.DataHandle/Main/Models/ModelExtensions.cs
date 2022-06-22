@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Phoenix.DataHandle.Identity;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models.Extensions;
 
@@ -9,14 +8,6 @@ namespace Phoenix.DataHandle.Main.Models
     {
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>(entity =>
-            {
-                entity.HasOne(d => d.AspNetUser)
-                    .WithOne(p => p.User)
-                    .HasForeignKey<User>(d => d.AspNetUserId)
-                    .HasConstraintName("FK_Users_AspNetUsers");
-            });
-
             modelBuilder.HasDefaultSchema("Phoenix");
         }
     }
@@ -160,12 +151,12 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class User : IUser, IObviableModelEntity
     {
-        public ApplicationUser AspNetUser { get; set; } = null!;
+        //public virtual ApplicationUser AspNetUser { get; set; } = null!;
         public string FullName => this.BuildFullName();
 
         int IModelEntity.Id => this.AspNetUserId;
 
-        IAspNetUser IUser.AspNetUser => this.AspNetUser;
+        //IAspNetUser IUser.AspNetUser => this.AspNetUser;
 
         IEnumerable<IBotFeedback> IUser.BotFeedbacks => this.BotFeedbacks;
         IEnumerable<IBroadcast> IUser.Broadcasts => this.Broadcasts;

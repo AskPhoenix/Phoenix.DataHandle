@@ -2,7 +2,6 @@
 {
     public interface IUser
     {
-        IAspNetUser AspNetUser { get; }
         string FirstName { get; }
         string LastName { get; }
         string FullName { get; }
