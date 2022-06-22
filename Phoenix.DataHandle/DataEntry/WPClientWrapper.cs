@@ -23,7 +23,7 @@ namespace Phoenix.DataHandle.DataEntry
 
         static WPClientWrapper()
         {
-            Client = new WordPressClient(new Uri(new Uri(WordpressEndpoint), "wp-json").ToString());
+            Client = new WordPressClient(new Uri(new Uri(WordpressEndpoint), "wp-json/"));
             Client.Auth.UseBearerAuth(JWTPlugin.JWTAuthByEnriqueChavez);
         }
 
