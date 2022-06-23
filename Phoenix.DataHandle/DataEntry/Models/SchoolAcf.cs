@@ -87,6 +87,23 @@ namespace Phoenix.DataHandle.DataEntry.Models
             };
         }
 
+        public School ToSchool(School schoolFrom)
+        {
+            if (schoolFrom is null)
+                throw new ArgumentNullException(nameof(schoolFrom));
+
+            var school = this.ToSchool();
+
+            school.Id = schoolFrom.Id;
+            school.CreatedAt = schoolFrom.CreatedAt;
+            school.UpdatedAt = schoolFrom.UpdatedAt;
+            school.ObviatedAt = schoolFrom.ObviatedAt;
+
+            school.SchoolSetting.SchoolId = schoolFrom.Id;
+
+            return school;
+        }
+
         public SchoolUnique GetSchoolUnique() => new(this.Code);
 
         [JsonIgnore]

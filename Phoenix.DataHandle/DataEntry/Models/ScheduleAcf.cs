@@ -75,6 +75,38 @@ namespace Phoenix.DataHandle.DataEntry.Models
             return schedule;
         }
 
+        public Schedule ToSchedule(Schedule scheduleFrom)
+        {
+            if (scheduleFrom is null)
+                throw new ArgumentNullException(nameof(scheduleFrom));
+
+            var schedule = this.ToSchedule(scheduleFrom.CourseId, scheduleFrom.ClassroomId);
+
+            schedule.Id = scheduleFrom.Id;
+            schedule.CreatedAt = scheduleFrom.CreatedAt;
+            schedule.UpdatedAt = scheduleFrom.UpdatedAt;
+            schedule.ObviatedAt = scheduleFrom.ObviatedAt;
+
+            if (schedule.Classroom is not null)
+            {
+                schedule.ClassroomId = scheduleFrom.ClassroomId;
+
+                if (scheduleFrom.Classroom is null)
+                    throw new ArgumentNullException(nameof(scheduleFrom.Classroom));
+                else
+                {
+                    schedule.Classroom.Id = scheduleFrom.Classroom.Id;
+                    schedule.Classroom.CreatedAt = scheduleFrom.Classroom.CreatedAt;
+                    schedule.Classroom.UpdatedAt = scheduleFrom.Classroom.UpdatedAt;
+                    schedule.Classroom.ObviatedAt = scheduleFrom.Classroom.ObviatedAt;
+                }
+            }
+            else
+                schedule.ClassroomId = null;
+
+            return schedule;
+        }
+
         [JsonProperty(PropertyName = "course_code")]
         public short CourseCode { get; }
 

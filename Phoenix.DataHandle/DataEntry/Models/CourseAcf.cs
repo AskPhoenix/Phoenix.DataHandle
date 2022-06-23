@@ -62,9 +62,11 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.LastDateString = last_date;
         }
 
-        public Course ToCourse() =>
-            new()
+        public Course ToCourse(int schoolId)
+        {
+            return new()
             {
+                SchoolId = schoolId,
                 Code = this.Code,
                 Name = this.Name,
                 SubCourse = this.SubCourse,
@@ -80,6 +82,22 @@ namespace Phoenix.DataHandle.DataEntry.Models
                     NormalizedName = b.Name.ToUpperInvariant()
                 }).ToHashSet()
             };
+        }
+
+        public Course ToCourse(Course courseFrom)
+        {
+            if (courseFrom is null)
+                throw new ArgumentNullException(nameof(courseFrom));
+
+            var course = this.ToCourse(courseFrom.SchoolId);
+
+            course.Id = courseFrom.Id;
+            course.CreatedAt = courseFrom.CreatedAt;
+            course.UpdatedAt = courseFrom.UpdatedAt;
+            course.ObviatedAt = courseFrom.ObviatedAt;
+
+            return course;
+        }
 
         public CourseUnique GetCourseUnique(SchoolUnique schoolUnique) => new(schoolUnique, this.Code);
 
