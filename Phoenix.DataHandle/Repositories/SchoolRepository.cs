@@ -1,7 +1,6 @@
 ﻿using Phoenix.DataHandle.DataEntry.Models.Uniques;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
-using Phoenix.DataHandle.Utilities;
 using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.Repositories
@@ -43,28 +42,6 @@ namespace Phoenix.DataHandle.Repositories
                 throw new ArgumentNullException(nameof(schoolUnique));
 
             return FindUniqueAsync(schoolUnique.Code, cancellationToken);
-        }
-
-        #endregion
-
-        #region Update
-
-        public Task<School> UpdateWithSchoolSettingAsync(School school, ISchool schoolFrom,
-            CancellationToken cancellationToken = default)
-        {
-            if (school is null)
-                throw new ArgumentNullException(nameof(school));
-            if (schoolFrom is null)
-                throw new ArgumentNullException(nameof(schoolFrom));
-            
-            if (schoolFrom.SchoolSetting is null)
-                throw new ArgumentNullException(nameof(schoolFrom.SchoolSetting));
-            if (school.SchoolSetting is null)
-                school.SchoolSetting = new();
-
-            PropertyCopier.CopyFromBase(school.SchoolSetting, schoolFrom.SchoolSetting);
-
-            return UpdateAsync(school, schoolFrom, cancellationToken);
         }
 
         #endregion

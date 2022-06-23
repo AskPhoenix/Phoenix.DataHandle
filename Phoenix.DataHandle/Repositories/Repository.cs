@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models.Extensions;
-using Phoenix.DataHandle.Utilities;
 using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.Repositories
@@ -138,14 +137,6 @@ namespace Phoenix.DataHandle.Repositories
             return model;
         }
 
-        public virtual Task<TModel> UpdateAsync<TTo, TFrom>(TTo model, TFrom modelFrom,
-            CancellationToken cancellationToken = default)
-            where TTo : TModel, TFrom
-        {
-            PropertyCopier.CopyFromBase(model, modelFrom);
-            return UpdateAsync(model, cancellationToken);
-        }
-
         public virtual async Task<IEnumerable<TModel>> UpdateRangeAsync(IEnumerable<TModel> models,
             CancellationToken cancellationToken = default)
         {
@@ -157,23 +148,6 @@ namespace Phoenix.DataHandle.Repositories
 
             return updatedModels;
         }
-
-        public virtual async Task<IEnumerable<TModel>> UpdateRangeAsync<TTo, TFrom>(
-            IEnumerable<TTo> models, IEnumerable<TFrom> modelsFrom,
-            CancellationToken cancellationToken = default)
-            where TTo : TModel, TFrom
-        {
-            if (models.Count() != modelsFrom.Count())
-                throw new InvalidOperationException("Enumerable sizes must match.");
-
-            var modelsList = models.ToList();
-            for (int i = 0; i < models.Count(); i++)
-                PropertyCopier.CopyFromBase(modelsList[i], modelsFrom.ElementAt(i));
-
-            return await UpdateRangeAsync(modelsList.Cast<TModel>(),
-                cancellationToken);
-        }
-
         #endregion
 
         #region Delete
