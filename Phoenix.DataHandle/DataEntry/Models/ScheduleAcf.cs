@@ -42,8 +42,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
             {
                 this.Classroom = new Classroom
                 {
-                    Name = classroom.Trim().ToTitleCase(),
-                    NormalizedName = classroom.ToUpper()
+                    Name = classroom.Trim().ToTitleCase()
                 };
 
                 this.ClassroomName = this.Classroom.Name;
@@ -52,6 +51,28 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.DayString = day;
             this.StartTimeString = start_time;
             this.EndTimeString = end_time;
+        }
+
+        public Schedule ToSchedule(int courseId, int? classroomSchoolId = null)
+        {
+            Schedule schedule = new()
+            {
+                CourseId = courseId,
+                DayOfWeek = this.DayOfWeek,
+                StartTime = this.StartTime,
+                EndTime = this.EndTime,
+                Comments = this.Comments
+            };
+
+            if (this.Classroom is not null && classroomSchoolId is not null)
+                schedule.Classroom = new()
+                {
+                    SchoolId = classroomSchoolId.Value,
+                    Name = this.ClassroomName,
+                    NormalizedName = this.ClassroomName.ToUpperInvariant()
+                };
+
+            return schedule;
         }
 
         [JsonProperty(PropertyName = "course_code")]

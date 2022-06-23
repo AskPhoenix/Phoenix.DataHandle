@@ -54,11 +54,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 .Split(',')
                 .Select(s => s.Trim())
                 .Distinct()
-                .Select(b => (IBook)new Book()
-                {
-                    Name = b,
-                    NormalizedName = b.ToUpperInvariant(),
-                })
+                .Select(b => (IBook) new Book() { Name = b })
                 .ToList();
 
             this.BooksString = books;
@@ -66,9 +62,27 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.LastDateString = last_date;
         }
 
+        public Course ToCourse() =>
+            new()
+            {
+                Code = this.Code,
+                Name = this.Name,
+                SubCourse = this.SubCourse,
+                Level = this.Level,
+                Group = this.Group,
+                Comments = this.Comments,
+                FirstDate = this.FirstDate,
+                LastDate = this.LastDate,
+
+                Books = this.Books.Select(b => new Book()
+                {
+                    Name = b.Name,
+                    NormalizedName = b.Name.ToUpperInvariant()
+                }).ToHashSet()
+            };
+
         public CourseUnique GetCourseUnique(SchoolUnique schoolUnique) => new(schoolUnique, this.Code);
 
-        
         [JsonProperty(PropertyName = "code")]
         public short Code { get; }
 
