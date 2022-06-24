@@ -1,4 +1,5 @@
-﻿using Phoenix.DataHandle.DataEntry.Models.Uniques;
+﻿using Microsoft.EntityFrameworkCore;
+using Phoenix.DataHandle.DataEntry.Models.Uniques;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using System.Linq.Expressions;
@@ -42,6 +43,32 @@ namespace Phoenix.DataHandle.Repositories
                 throw new ArgumentNullException(nameof(schoolUnique));
 
             return FindUniqueAsync(schoolUnique.Code, cancellationToken);
+        }
+
+        #endregion
+
+        #region Update
+
+        // Always update SchoolSetting with School
+
+        public override Task<School> UpdateAsync(School model,
+            CancellationToken cancellationToken = default)
+        {
+            if (model is not null && model.SchoolSetting is not null)
+                this.DbContext.Entry(model.SchoolSetting).State = EntityState.Modified;
+
+            return base.UpdateAsync(model!, cancellationToken);
+        }
+
+        public override Task<IEnumerable<School>> UpdateRangeAsync(IEnumerable<School> models,
+            CancellationToken cancellationToken = default)
+        {
+            if (models is not null)
+                foreach (var model in models)
+                    if (model.SchoolSetting is not null)
+                        this.DbContext.Entry(model.SchoolSetting).State = EntityState.Modified;
+
+            return base.UpdateRangeAsync(models!, cancellationToken);
         }
 
         #endregion

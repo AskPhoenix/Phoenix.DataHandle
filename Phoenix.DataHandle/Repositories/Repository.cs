@@ -124,7 +124,10 @@ namespace Phoenix.DataHandle.Repositories
             if (models is null)
                 throw new ArgumentNullException(nameof(models));
 
-            return models.Select(m => UpdatePrepare(m));
+            foreach (var model in models)
+                UpdatePrepare(model);
+
+            return models;
         }
 
         public virtual async Task<TModel> UpdateAsync(TModel model,
@@ -140,13 +143,14 @@ namespace Phoenix.DataHandle.Repositories
         public virtual async Task<IEnumerable<TModel>> UpdateRangeAsync(IEnumerable<TModel> models,
             CancellationToken cancellationToken = default)
         {
-            var updatedModels = UpdateRangePrepare(models);
-            if (!updatedModels.Any())
+            UpdateRangePrepare(models);
+
+            if (!models.Any())
                 return Enumerable.Empty<TModel>();
 
             await this.DbContext.SaveChangesAsync(cancellationToken);
 
-            return updatedModels;
+            return models;
         }
         #endregion
 
