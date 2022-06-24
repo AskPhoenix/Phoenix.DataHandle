@@ -96,6 +96,17 @@ namespace Phoenix.DataHandle.DataEntry.Models
             course.UpdatedAt = courseFrom.UpdatedAt;
             course.ObviatedAt = courseFrom.ObviatedAt;
 
+            if (courseFrom.Books.Any())
+                foreach (var book in course.Books)
+                    if (courseFrom.Books.Any(b => b.NormalizedName == book.NormalizedName))
+                    {
+                        var bookFrom = courseFrom.Books.Single(b => b.NormalizedName == book.NormalizedName);
+                    
+                        book.Id = bookFrom.Id;
+                        book.CreatedAt = bookFrom.CreatedAt;
+                        book.UpdatedAt = bookFrom.UpdatedAt;
+                    }
+            
             return course;
         }
 
