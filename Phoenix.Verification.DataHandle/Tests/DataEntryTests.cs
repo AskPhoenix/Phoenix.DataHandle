@@ -67,14 +67,18 @@ namespace Phoenix.Verification.DataHandle.Tests
 
             var schoolPosts = await WPClientWrapper.GetPostsAsync(PostCategory.SchoolInformation);
 
-            // TODO: Test when WP import is updated to use the school code in the post title
-
-            return;
-
             var filteredSchoolPosts = schoolPosts.FilterPostsForSchool(new SchoolUnique(1));
+            int ps = filteredSchoolPosts.Count();
 
             Assert.Single(filteredSchoolPosts);
             Assert.Equal(new SchoolUnique(1), new SchoolUnique(filteredSchoolPosts.Single().GetTitle()));
+
+            var coursePosts = await WPClientWrapper.GetPostsAsync(PostCategory.Course);
+
+            var filteredCoursePosts = coursePosts.FilterPostsForSchool(new SchoolUnique(1));
+            int pc = filteredCoursePosts.Count();
+
+            var courseUqs = filteredCoursePosts.Select(p => new CourseUnique(p.GetTitle()));
         }
 
         private async Task<TAcf> AcfTestAsync<TAcf>(PostCategory cat)

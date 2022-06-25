@@ -10,13 +10,13 @@
             if (string.IsNullOrEmpty(postTitle))
                 throw new ArgumentNullException(nameof(postTitle));
 
-            postTitle = postTitle.ToUpper();
+            string businessTitle = postTitle.ToUpper().Split('_').First();
 
-            if (!PostExtensions.BusinessUQRgx.IsMatch(postTitle))
+            if (!PostExtensions.BusinessUQRgx.IsMatch(businessTitle))
                 throw new ArgumentException("Post title is not well formed.");
 
-            this.BusinessType = (BusinessType)postTitle.First();
-            this.Code = int.Parse(postTitle[PostExtensions.BusinessCodePos..]);
+            this.BusinessType = (BusinessType)businessTitle.First();
+            this.Code = int.Parse(businessTitle[PostExtensions.BusinessCodePos..]);
         }
 
         public BusinessUnique(int code, char businessChar)
