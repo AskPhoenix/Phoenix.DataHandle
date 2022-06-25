@@ -54,17 +54,17 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.TimeZone = timezone;
             this.Country = country;
             this.PhoneCountryCode = phone_country_code;
+
+            this.PrimaryLocale = CultureInfo.GetCultures(CultureTypes.NeutralCultures).
+                First(c => c.EnglishName.Equals(this.PrimaryLanguage, StringComparison.InvariantCultureIgnoreCase)).
+                TwoLetterISOLanguageName;
+            this.SecondaryLocale = CultureInfo.GetCultures(CultureTypes.NeutralCultures).
+                First(c => c.EnglishName.Equals(this.SecondaryLanguage, StringComparison.InvariantCultureIgnoreCase)).
+                TwoLetterISOLanguageName;
         }
 
         public School ToSchool()
         {
-            var primary_locale = CultureInfo.GetCultures(CultureTypes.NeutralCultures).
-                First(c => c.EnglishName.Equals(this.PrimaryLanguage, StringComparison.InvariantCultureIgnoreCase)).
-                TwoLetterISOLanguageName;
-            var secondary_locale = CultureInfo.GetCultures(CultureTypes.NeutralCultures).
-                First(c => c.EnglishName.Equals(this.SecondaryLanguage, StringComparison.InvariantCultureIgnoreCase)).
-                TwoLetterISOLanguageName;
-
             return new()
             {
                 Code = this.Code,
@@ -78,9 +78,9 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 {
                     Country = this.Country,
                     PrimaryLanguage = this.PrimaryLanguage,
-                    PrimaryLocale = primary_locale,
+                    PrimaryLocale = this.PrimaryLocale,
                     SecondaryLanguage = this.SecondaryLanguage,
-                    SecondaryLocale = secondary_locale,
+                    SecondaryLocale = this.SecondaryLocale,
                     TimeZone = this.TimeZone,
                     PhoneCountryCode = this.PhoneCountryCode
                 }
@@ -92,16 +92,25 @@ namespace Phoenix.DataHandle.DataEntry.Models
             if (schoolFrom is null)
                 throw new ArgumentNullException(nameof(schoolFrom));
 
-            var school = this.ToSchool();
+            schoolFrom.Code = this.Code;
+            schoolFrom.Name = this.Name;
+            schoolFrom.Slug = this.Slug;
+            schoolFrom.City = this.City;
+            schoolFrom.AddressLine = this.AddressLine;
+            schoolFrom.Description = this.Description;
 
-            school.Id = schoolFrom.Id;
-            school.CreatedAt = schoolFrom.CreatedAt;
-            school.UpdatedAt = schoolFrom.UpdatedAt;
-            school.ObviatedAt = schoolFrom.ObviatedAt;
+            if (schoolFrom.SchoolSetting is not null)
+            {
+                schoolFrom.SchoolSetting.Country = this.Country;
+                schoolFrom.SchoolSetting.PrimaryLanguage = this.PrimaryLanguage;
+                schoolFrom.SchoolSetting.PrimaryLocale = this.PrimaryLocale;
+                schoolFrom.SchoolSetting.SecondaryLanguage = this.SecondaryLanguage;
+                schoolFrom.SchoolSetting.SecondaryLocale = this.SecondaryLocale;
+                schoolFrom.SchoolSetting.TimeZone = this.TimeZone;
+                schoolFrom.SchoolSetting.PhoneCountryCode = this.PhoneCountryCode;
+            }
 
-            school.SchoolSetting.SchoolId = schoolFrom.Id;
-
-            return school;
+            return schoolFrom;
         }
 
         public SchoolUnique GetSchoolUnique() => new(this.Code);
@@ -138,6 +147,12 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         [JsonProperty(PropertyName = "phone_country_code")]
         public string PhoneCountryCode { get; } = null!;
+
+        [JsonIgnore]
+        public string PrimaryLocale { get; }
+
+        [JsonIgnore]
+        public string SecondaryLocale { get; }
 
         [JsonIgnore]
         public ISchoolSetting SchoolSetting { get; } = null!;

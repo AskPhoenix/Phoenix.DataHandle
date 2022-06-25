@@ -53,6 +53,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.EndTimeString = end_time;
         }
 
+        // TODO: Review
         public Schedule ToSchedule(int courseId, int? classroomSchoolId = null)
         {
             Schedule schedule = new()
@@ -75,6 +76,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
             return schedule;
         }
 
+        // TODO: Review
         public Schedule ToSchedule(Schedule scheduleFrom)
         {
             if (scheduleFrom is null)

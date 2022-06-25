@@ -74,13 +74,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 Group = this.Group,
                 Comments = this.Comments,
                 FirstDate = this.FirstDate,
-                LastDate = this.LastDate,
-
-                Books = this.Books.Select(b => new Book()
-                {
-                    Name = b.Name,
-                    NormalizedName = b.Name.ToUpperInvariant()
-                }).ToHashSet()
+                LastDate = this.LastDate
             };
         }
 
@@ -89,25 +83,25 @@ namespace Phoenix.DataHandle.DataEntry.Models
             if (courseFrom is null)
                 throw new ArgumentNullException(nameof(courseFrom));
 
-            var course = this.ToCourse(courseFrom.SchoolId);
+            courseFrom.Code = this.Code;
+            courseFrom.Name = this.Name;
+            courseFrom.SubCourse = this.SubCourse;
+            courseFrom.Level = this.Level;
+            courseFrom.Group = this.Group;
+            courseFrom.Comments = this.Comments;
+            courseFrom.FirstDate = this.FirstDate;
+            courseFrom.LastDate = this.LastDate;
 
-            course.Id = courseFrom.Id;
-            course.CreatedAt = courseFrom.CreatedAt;
-            course.UpdatedAt = courseFrom.UpdatedAt;
-            course.ObviatedAt = courseFrom.ObviatedAt;
+            return courseFrom;
+        }
 
-            if (courseFrom.Books.Any())
-                foreach (var book in course.Books)
-                    if (courseFrom.Books.Any(b => b.NormalizedName == book.NormalizedName))
-                    {
-                        var bookFrom = courseFrom.Books.Single(b => b.NormalizedName == book.NormalizedName);
-                    
-                        book.Id = bookFrom.Id;
-                        book.CreatedAt = bookFrom.CreatedAt;
-                        book.UpdatedAt = bookFrom.UpdatedAt;
-                    }
+        public HashSet<Book> GetBooks()
+        {
+            var books = this.Books.Cast<Book>().ToHashSet();
+            foreach (var book in books)
+                book.Normalize();
             
-            return course;
+            return books;
         }
 
         public CourseUnique GetCourseUnique(SchoolUnique schoolUnique) => new(schoolUnique, this.Code);
