@@ -22,7 +22,7 @@ namespace Phoenix.DataHandle.Main.Models
         public static Func<string, string> NormFunc => s => s.ToUpperInvariant();
         public void Normalize()
         {
-            this.NormalizedName = Book.NormFunc(this.NormalizedName);
+            this.NormalizedName = Book.NormFunc(this.Name);
         }
     }
 
@@ -49,7 +49,7 @@ namespace Phoenix.DataHandle.Main.Models
         public static Func<string, string> NormFunc => s => s.ToUpperInvariant();
         public void Normalize()
         {
-            this.NormalizedName = Classroom.NormFunc(this.NormalizedName);
+            this.NormalizedName = Classroom.NormFunc(this.Name);
         }
     }
 
