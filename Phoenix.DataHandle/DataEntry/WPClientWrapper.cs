@@ -261,5 +261,15 @@ namespace Phoenix.DataHandle.DataEntry
         {
             return await GetAcfAsync<ClientAcf>(post);
         }
+
+        public static async Task<bool> DeletePostAsync(int postId)
+        {
+            return await Client.Posts.DeleteAsync(postId);
+        }
+
+        public static async Task<bool> DeletePostAsync(Post post)
+        {
+            return await DeletePostAsync(post.Id);
+        }
     }
 }

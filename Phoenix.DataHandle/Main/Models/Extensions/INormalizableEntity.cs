@@ -1,7 +1,8 @@
 ﻿namespace Phoenix.DataHandle.Main.Models.Extensions
 {
-    public interface INormalizableEntity : IModelEntity
+    public interface INormalizableEntity<TNormalizableEntity> : IModelEntity
+        where TNormalizableEntity : class, IModelEntity
     {
-        void Normalize();
+        TNormalizableEntity Normalize();
     }
 }

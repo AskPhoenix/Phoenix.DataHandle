@@ -12,11 +12,11 @@ namespace Phoenix.DataHandle.DataEntry.Models
     {
         private SchoolAcf()
         {
-            this.Classrooms = new List<IClassroom>();
-            this.Courses = new List<ICourse>();
-            this.Broadcasts = new List<IBroadcast>();
-            this.SchoolConnections = new List<ISchoolConnection>();
-            this.Users = new List<IUser>();
+            this.Classrooms = Enumerable.Empty<IClassroom>();
+            this.Courses = Enumerable.Empty<ICourse>();
+            this.Broadcasts = Enumerable.Empty<IBroadcast>();
+            this.SchoolConnections = Enumerable.Empty<ISchoolConnection>();
+            this.Users = Enumerable.Empty<IUser>();
         }
 
         [JsonConstructor]
@@ -61,6 +61,17 @@ namespace Phoenix.DataHandle.DataEntry.Models
             this.SecondaryLocale = CultureInfo.GetCultures(CultureTypes.NeutralCultures).
                 First(c => c.EnglishName.Equals(this.SecondaryLanguage, StringComparison.InvariantCultureIgnoreCase)).
                 TwoLetterISOLanguageName;
+
+            this.SchoolSetting = new()
+            {
+                Country = this.Country,
+                PrimaryLanguage = this.PrimaryLanguage,
+                PrimaryLocale = this.PrimaryLocale,
+                SecondaryLanguage = this.SecondaryLanguage,
+                SecondaryLocale = this.SecondaryLocale,
+                TimeZone = this.TimeZone,
+                PhoneCountryCode = this.PhoneCountryCode
+            };
         }
 
         public School ToSchool()
@@ -74,43 +85,34 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 AddressLine = this.AddressLine,
                 Description = this.Description,
 
-                SchoolSetting = new()
-                {
-                    Country = this.Country,
-                    PrimaryLanguage = this.PrimaryLanguage,
-                    PrimaryLocale = this.PrimaryLocale,
-                    SecondaryLanguage = this.SecondaryLanguage,
-                    SecondaryLocale = this.SecondaryLocale,
-                    TimeZone = this.TimeZone,
-                    PhoneCountryCode = this.PhoneCountryCode
-                }
+                SchoolSetting = this.SchoolSetting
             };
         }
 
-        public School ToSchool(School schoolFrom)
+        public School ToSchool(School schoolToUpdate)
         {
-            if (schoolFrom is null)
-                throw new ArgumentNullException(nameof(schoolFrom));
+            if (schoolToUpdate is null)
+                throw new ArgumentNullException(nameof(schoolToUpdate));
 
-            schoolFrom.Code = this.Code;
-            schoolFrom.Name = this.Name;
-            schoolFrom.Slug = this.Slug;
-            schoolFrom.City = this.City;
-            schoolFrom.AddressLine = this.AddressLine;
-            schoolFrom.Description = this.Description;
+            schoolToUpdate.Code = this.Code;
+            schoolToUpdate.Name = this.Name;
+            schoolToUpdate.Slug = this.Slug;
+            schoolToUpdate.City = this.City;
+            schoolToUpdate.AddressLine = this.AddressLine;
+            schoolToUpdate.Description = this.Description;
 
-            if (schoolFrom.SchoolSetting is not null)
+            if (schoolToUpdate.SchoolSetting is not null)
             {
-                schoolFrom.SchoolSetting.Country = this.Country;
-                schoolFrom.SchoolSetting.PrimaryLanguage = this.PrimaryLanguage;
-                schoolFrom.SchoolSetting.PrimaryLocale = this.PrimaryLocale;
-                schoolFrom.SchoolSetting.SecondaryLanguage = this.SecondaryLanguage;
-                schoolFrom.SchoolSetting.SecondaryLocale = this.SecondaryLocale;
-                schoolFrom.SchoolSetting.TimeZone = this.TimeZone;
-                schoolFrom.SchoolSetting.PhoneCountryCode = this.PhoneCountryCode;
+                schoolToUpdate.SchoolSetting.Country = this.Country;
+                schoolToUpdate.SchoolSetting.PrimaryLanguage = this.PrimaryLanguage;
+                schoolToUpdate.SchoolSetting.PrimaryLocale = this.PrimaryLocale;
+                schoolToUpdate.SchoolSetting.SecondaryLanguage = this.SecondaryLanguage;
+                schoolToUpdate.SchoolSetting.SecondaryLocale = this.SecondaryLocale;
+                schoolToUpdate.SchoolSetting.TimeZone = this.TimeZone;
+                schoolToUpdate.SchoolSetting.PhoneCountryCode = this.PhoneCountryCode;
             }
 
-            return schoolFrom;
+            return schoolToUpdate;
         }
 
         public SchoolUnique GetSchoolUnique() => new(this.Code);
@@ -149,13 +151,15 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public string PhoneCountryCode { get; } = null!;
 
         [JsonIgnore]
-        public string PrimaryLocale { get; }
+        public string PrimaryLocale { get; } = null!;
 
         [JsonIgnore]
-        public string SecondaryLocale { get; }
+        public string SecondaryLocale { get; } = null!;
 
         [JsonIgnore]
-        public ISchoolSetting SchoolSetting { get; } = null!;
+        public SchoolSetting SchoolSetting { get; } = null!;
+
+        ISchoolSetting ISchool.SchoolSetting => this.SchoolSetting;
 
 
         [JsonIgnore]

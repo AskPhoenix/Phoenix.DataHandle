@@ -12,7 +12,7 @@ namespace Phoenix.DataHandle.Main.Models
         }
     }
 
-    public partial class Book : IBook, INormalizableEntity
+    public partial class Book : IBook, INormalizableEntity<Book>
     {
         IEnumerable<IExercise> IBook.Exercises => this.Exercises;
         IEnumerable<IMaterial> IBook.Materials => this.Materials;
@@ -20,9 +20,11 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ICourse> IBook.Courses => this.Courses;
 
         public static Func<string, string> NormFunc => s => s.ToUpperInvariant();
-        public void Normalize()
+        public Book Normalize()
         {
             this.NormalizedName = Book.NormFunc(this.Name);
+            
+            return this;
         }
     }
 
@@ -39,7 +41,7 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ICourse> IBroadcast.Courses => this.Courses;
     }
 
-    public partial class Classroom : IClassroom, IObviableModelEntity, INormalizableEntity
+    public partial class Classroom : IClassroom, IObviableModelEntity, INormalizableEntity<Classroom>
     {
         ISchool IClassroom.School => this.School;
 
@@ -47,9 +49,11 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ISchedule> IClassroom.Schedules => this.Schedules;
 
         public static Func<string, string> NormFunc => s => s.ToUpperInvariant();
-        public void Normalize()
+        public Classroom Normalize()
         {
             this.NormalizedName = Classroom.NormFunc(this.Name);
+
+            return this;
         }
     }
 

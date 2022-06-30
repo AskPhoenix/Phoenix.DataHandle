@@ -13,7 +13,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         private ScheduleAcf()
         {
-            this.Lectures = new List<ILecture>();
+            this.Lectures = Enumerable.Empty<ILecture>();
         }
 
         [JsonConstructor]
@@ -37,76 +37,44 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
             this.StartTime = CalendarExtensions.ParseExact(start_time, TimeFormat);
             this.EndTime = CalendarExtensions.ParseExact(end_time, TimeFormat);
-
-            if (!string.IsNullOrWhiteSpace(classroom))
-            {
-                this.Classroom = new Classroom
-                {
-                    Name = classroom.Trim().ToTitleCase()
-                };
-
-                this.ClassroomName = this.Classroom.Name;
-            }
-
+    
+            this.ClassroomName = classroom?.Trim().ToTitleCase();
+            if (!string.IsNullOrWhiteSpace(ClassroomName))
+                this.Classroom = new Classroom() { Name = this.ClassroomName }.Normalize();
+            
             this.DayString = day;
             this.StartTimeString = start_time;
             this.EndTimeString = end_time;
         }
 
-        // TODO: Review
-        public Schedule ToSchedule(int courseId, int? classroomSchoolId = null)
+        public Schedule ToSchedule(int courseId, int? classroomId)
         {
-            Schedule schedule = new()
+            return new()
             {
                 CourseId = courseId,
                 DayOfWeek = this.DayOfWeek,
                 StartTime = this.StartTime,
                 EndTime = this.EndTime,
-                Comments = this.Comments
+                Comments = this.Comments,
+
+                ClassroomId = classroomId
             };
-
-            if (this.Classroom is not null && classroomSchoolId is not null)
-                schedule.Classroom = new()
-                {
-                    SchoolId = classroomSchoolId.Value,
-                    Name = this.ClassroomName,
-                    NormalizedName = this.ClassroomName.ToUpperInvariant()
-                };
-
-            return schedule;
         }
 
-        // TODO: Review
-        public Schedule ToSchedule(Schedule scheduleFrom)
+        public Schedule ToSchedule(Schedule scheduleToUpdate, int courseId, int? classroomId)
         {
-            if (scheduleFrom is null)
-                throw new ArgumentNullException(nameof(scheduleFrom));
+            if (scheduleToUpdate is null)
+                throw new ArgumentNullException(nameof(scheduleToUpdate));
 
-            var schedule = this.ToSchedule(scheduleFrom.CourseId, scheduleFrom.ClassroomId);
+            scheduleToUpdate.CourseId = courseId;
+            scheduleToUpdate.DayOfWeek = this.DayOfWeek;
+            scheduleToUpdate.StartTime = this.StartTime;
+            scheduleToUpdate.EndTime = this.EndTime;
+            scheduleToUpdate.Comments = this.Comments;
 
-            schedule.Id = scheduleFrom.Id;
-            schedule.CreatedAt = scheduleFrom.CreatedAt;
-            schedule.UpdatedAt = scheduleFrom.UpdatedAt;
-            schedule.ObviatedAt = scheduleFrom.ObviatedAt;
+            scheduleToUpdate.ClassroomId = classroomId;
 
-            if (schedule.Classroom is not null)
-            {
-                schedule.ClassroomId = scheduleFrom.ClassroomId;
-
-                if (scheduleFrom.Classroom is null)
-                    throw new ArgumentNullException(nameof(scheduleFrom.Classroom));
-                else
-                {
-                    schedule.Classroom.Id = scheduleFrom.Classroom.Id;
-                    schedule.Classroom.CreatedAt = scheduleFrom.Classroom.CreatedAt;
-                    schedule.Classroom.UpdatedAt = scheduleFrom.Classroom.UpdatedAt;
-                    schedule.Classroom.ObviatedAt = scheduleFrom.Classroom.ObviatedAt;
-                }
-            }
-            else
-                schedule.ClassroomId = null;
-
-            return schedule;
+            return scheduleToUpdate;
         }
 
         [JsonProperty(PropertyName = "course_code")]
@@ -122,13 +90,13 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public string EndTimeString { get; } = null!;
 
         [JsonProperty(PropertyName = "classroom")]
-        public string ClassroomName { get; } = null!;
+        public string? ClassroomName { get; }
 
         [JsonProperty(PropertyName = "comments")]
         public string? Comments { get; }
         
         [JsonIgnore]
-        public IClassroom Classroom { get; } = null!;
+        public Classroom Classroom { get; } = null!;
 
         [JsonIgnore]
         public DayOfWeek DayOfWeek { get; }
@@ -139,6 +107,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         [JsonIgnore]
         public DateTime EndTime { get; private set; }
 
+        IClassroom ISchedule.Classroom => this.Classroom;
 
         [JsonIgnore]
         public ICourse Course { get; } = null!;

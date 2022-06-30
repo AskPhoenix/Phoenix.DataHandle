@@ -39,7 +39,7 @@
 
         public override string ToString()
         {
-            return this.SchoolUnique.ToString() + "_Course" + Code;
+            return this.SchoolUnique.ToString() + "_Course-" + Code;
         }
     }
 }

@@ -13,13 +13,13 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         private CourseAcf()
         {
-            this.Books = new List<IBook>();
+            this.Books = new HashSet<Book>();
 
-            this.Grades = new List<IGrade>();
-            this.Lectures = new List<ILecture>();
-            this.Schedules = new List<ISchedule>();
-            this.Users = new List<IUser>();
-            this.Broadcasts = new List<IBroadcast>();
+            this.Grades = Enumerable.Empty<IGrade>();
+            this.Lectures = Enumerable.Empty<ILecture>();
+            this.Schedules = Enumerable.Empty<ISchedule>();
+            this.Users = Enumerable.Empty<IUser>();
+            this.Broadcasts = Enumerable.Empty<IBroadcast>();
         }
 
         [JsonConstructor]
@@ -54,15 +54,15 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 .Split(',')
                 .Select(s => s.Trim())
                 .Distinct()
-                .Select(b => (IBook) new Book() { Name = b })
-                .ToList();
+                .Select(b => new Book() { Name = b }.Normalize())
+                .ToHashSet();
 
             this.BooksString = books;
             this.FirstDateString = first_date;
             this.LastDateString = last_date;
         }
 
-        public Course ToCourse(int schoolId)
+        public Course ToCourse(int schoolId, IEnumerable<Book> booksFinal)
         {
             return new()
             {
@@ -74,34 +74,39 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 Group = this.Group,
                 Comments = this.Comments,
                 FirstDate = this.FirstDate,
-                LastDate = this.LastDate
+                LastDate = this.LastDate,
+
+                Books = booksFinal.ToHashSet()
             };
         }
 
-        public Course ToCourse(Course courseFrom)
+        public Course ToCourse(Course courseToUpdate, int schoolId, IEnumerable<Book> booksFinal)
         {
-            if (courseFrom is null)
-                throw new ArgumentNullException(nameof(courseFrom));
+            if (courseToUpdate is null)
+                throw new ArgumentNullException(nameof(courseToUpdate));
 
-            courseFrom.Code = this.Code;
-            courseFrom.Name = this.Name;
-            courseFrom.SubCourse = this.SubCourse;
-            courseFrom.Level = this.Level;
-            courseFrom.Group = this.Group;
-            courseFrom.Comments = this.Comments;
-            courseFrom.FirstDate = this.FirstDate;
-            courseFrom.LastDate = this.LastDate;
+            courseToUpdate.SchoolId = schoolId;
+            courseToUpdate.Code = this.Code;
+            courseToUpdate.Name = this.Name;
+            courseToUpdate.SubCourse = this.SubCourse;
+            courseToUpdate.Level = this.Level;
+            courseToUpdate.Group = this.Group;
+            courseToUpdate.Comments = this.Comments;
+            courseToUpdate.FirstDate = this.FirstDate;
+            courseToUpdate.LastDate = this.LastDate;
 
-            return courseFrom;
-        }
+            if (booksFinal is not null)
+            {
+                foreach (var bookFinal in booksFinal)
+                    if (!courseToUpdate.Books.Any(b => b.Id == bookFinal.Id))
+                        courseToUpdate.Books.Add(bookFinal);
 
-        public HashSet<Book> GetBooks()
-        {
-            var books = this.Books.Cast<Book>().ToHashSet();
-            foreach (var book in books)
-                book.Normalize();
-            
-            return books;
+                foreach (var bookInitial in courseToUpdate.Books)
+                    if (!booksFinal.Any(b => b.Id == bookInitial.Id))
+                        courseToUpdate.Books.Remove(bookInitial);
+            }
+
+            return courseToUpdate;
         }
 
         public CourseUnique GetCourseUnique(SchoolUnique schoolUnique) => new(schoolUnique, this.Code);
@@ -140,7 +145,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public DateTime LastDate { get; private set; }
 
         [JsonIgnore]
-        public List<IBook> Books { get; }
+        public HashSet<Book> Books { get; }
 
 
         [JsonIgnore]

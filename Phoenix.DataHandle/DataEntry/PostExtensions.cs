@@ -9,7 +9,7 @@ namespace Phoenix.DataHandle.DataEntry
         private const string businessUQRgxStr = @"^[SP][0-9]+";
 
         public static readonly Regex BusinessUQRgx = new(businessUQRgxStr);
-        public static readonly Regex CourseUQRgx = new(businessUQRgxStr + @"_Course[0-9]+");
+        public static readonly Regex CourseUQRgx = new(businessUQRgxStr + @"_Course-[0-9]+");
 
         public static readonly int BusinessCodePos = 1;
         public static readonly int CourseCodePos = 6;

@@ -52,6 +52,21 @@ namespace Phoenix.Verification.DataHandle.Tests
         }
 
         [Fact]
+        public async void DeletePostsAsync()
+        {
+            await AuthenticationTestAsync();
+
+            var posts = await WPClientWrapper.GetPostsAsync(PostCategory.Schedule);
+
+            foreach (var post in posts)
+                await WPClientWrapper.DeletePostAsync(post);
+
+            posts = await WPClientWrapper.GetPostsAsync(PostCategory.Schedule);
+
+            Assert.Empty(posts);
+        }
+
+        [Fact]
         public async void PostsTestAsync()
         {
             await AuthenticationTestAsync();
@@ -96,15 +111,13 @@ namespace Phoenix.Verification.DataHandle.Tests
 
             JsonUtilities.SaveToFile(acf, OutDirName, cat.ToString());
 
-            // TODO: Test when WP import is updated to use the school code in the post title
-
-            return acf;
-
             var posts2 = await WPClientWrapper.GetPostsPageAsync(1, cat, new SchoolUnique(1));
             Assert.Single(posts2);
 
             var acf2 = await WPClientWrapper.GetAcfAsync<TAcf>(posts2.Single());
             Assert.NotNull(acf2);
+
+            return acf2;
         }
 
         [Fact]
@@ -117,7 +130,7 @@ namespace Phoenix.Verification.DataHandle.Tests
         public async void CourseAcfTestAsync()
         {
             var acf = await AcfTestAsync<CourseAcf>(PostCategory.Course);
-            var books = acf.GetBooks();
+            var books = acf.Books;
         }
 
         [Fact]

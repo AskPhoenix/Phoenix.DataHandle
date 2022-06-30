@@ -62,8 +62,8 @@ namespace Phoenix.DataHandle.Repositories
 
             model.CreatedAt = DateTime.UtcNow;
 
-            if (typeof(TModel) is INormalizableEntity)
-                ((INormalizableEntity)model).Normalize();
+            if (typeof(TModel) is INormalizableEntity<TModel>)
+                ((INormalizableEntity<TModel>)model).Normalize();
 
             return model;
         }
@@ -111,8 +111,8 @@ namespace Phoenix.DataHandle.Repositories
 
             model.UpdatedAt = DateTime.UtcNow;
 
-            if (typeof(TModel) is INormalizableEntity)
-                ((INormalizableEntity)model).Normalize();
+            if (typeof(TModel) is INormalizableEntity<TModel>)
+                ((INormalizableEntity<TModel>)model).Normalize();
 
             this.DbContext.Entry(model).State = EntityState.Modified;
 
