@@ -5,7 +5,5 @@
         string UserName { get; }
         string? Email { get; }
         string PhoneNumber { get; }
-
-        IUser User { get; }
     }
 }

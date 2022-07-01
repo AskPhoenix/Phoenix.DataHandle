@@ -155,12 +155,9 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class User : IUser, IObviableModelEntity
     {
-        //public virtual ApplicationUser AspNetUser { get; set; } = null!;
         public string FullName => this.BuildFullName();
 
         int IModelEntity.Id => this.AspNetUserId;
-
-        //IAspNetUser IUser.AspNetUser => this.AspNetUser;
 
         IEnumerable<IBotFeedback> IUser.BotFeedbacks => this.BotFeedbacks;
         IEnumerable<IBroadcast> IUser.Broadcasts => this.Broadcasts;

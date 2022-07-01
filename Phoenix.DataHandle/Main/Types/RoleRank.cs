@@ -1,4 +1,6 @@
 ﻿using Phoenix.Language.Types;
+using System.ComponentModel;
+
 namespace Phoenix.DataHandle.Main.Types
 {
     public enum RoleRank
@@ -53,6 +55,19 @@ namespace Phoenix.DataHandle.Main.Types
         public static RoleRank[] StaffAndBackendRoleRanks => AllRoleRanks.Where(rr => rr.IsStaffOrBackend()).ToArray();
         public static RoleRank[] ActiveRoleRanks => AllRoleRanks.Where(rr => rr.IsActive()).ToArray();
 
+        public static string ToNormalizedString(this RoleRank me)
+        {
+            return me switch
+            {
+                RoleRank.SchoolAdmin => "SCHOOL_ADMIN",
+                RoleRank.SchoolOwner => "SCHOOL_OWNER",
+                RoleRank.SchoolTester => "SCHOOL_TESTER",
+                RoleRank.SuperTester => "SUPER_TESTER",
+                RoleRank.SuperAdmin => "SUPER_ADMIN",
+                _ => me.ToString().ToUpper()
+            };
+        }
+
         public static string ToFriendlyString(this RoleRank me)
         {
             return me switch
@@ -81,7 +96,7 @@ namespace Phoenix.DataHandle.Main.Types
         public static RoleRank ToRoleRank(this string me)
         {
             return AllRoleRanks
-                .SingleOrDefault(rr => string.Equals(rr.ToString(), me, StringComparison.OrdinalIgnoreCase));
+                .SingleOrDefault(rr => string.Equals(rr.ToString(), me.Replace("_", ""), StringComparison.OrdinalIgnoreCase));
         }
 
         public static bool TryToRoleRank(this string me, out RoleRank roleRank)

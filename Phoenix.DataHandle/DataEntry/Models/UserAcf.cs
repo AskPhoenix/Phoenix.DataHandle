@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
-using Phoenix.DataHandle.Identity;
+using Phoenix.DataHandle.DataEntry.Models.Uniques;
 using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Main.Types;
 using Phoenix.DataHandle.Utilities;
 using System.Globalization;
@@ -12,17 +13,17 @@ namespace Phoenix.DataHandle.DataEntry.Models
         private UserAcf()
         {
             this.CourseCodes = new List<short>();
+            this.Courses = new HashSet<Course>();
+            this.Schools = new HashSet<School>();
 
-            this.BotFeedbacks = new List<IBotFeedback>();
-            this.Broadcasts = new List<IBroadcast>();
-            this.Grades = new List<IGrade>();
-            this.OneTimeCodes = new List<IOneTimeCode>();
-            this.UserConnections = new List<IUserConnection>();
-            this.Children = new List<IUser>();
-            this.Courses = new List<ICourse>();
-            this.Lectures = new List<ILecture>();
-            this.Parents = new List<IUser>();
-            this.Schools = new List<ISchool>();
+            this.BotFeedbacks = Enumerable.Empty<IBotFeedback>();
+            this.Broadcasts = Enumerable.Empty<IBroadcast>();
+            this.Grades = Enumerable.Empty<IGrade>();
+            this.OneTimeCodes = Enumerable.Empty<IOneTimeCode>();
+            this.UserConnections = Enumerable.Empty<IUserConnection>();
+            this.Children = Enumerable.Empty<IUser>();
+            this.Lectures = Enumerable.Empty<ILecture>();
+            this.Parents = Enumerable.Empty<IUser>();
         }
 
         public UserAcf(string fullName, string phone, int dependenceOrder)
@@ -30,23 +31,20 @@ namespace Phoenix.DataHandle.DataEntry.Models
         {
             if (string.IsNullOrWhiteSpace(fullName))
                 throw new ArgumentNullException(nameof(fullName));
+            if (string.IsNullOrWhiteSpace(phone))
+                throw new ArgumentNullException(nameof(phone));
 
             this.FullName = fullName.ToTitleCase();
             this.FirstName = this.ResolveFirstName();
             this.LastName = this.ResolveLastName();
 
-            this.AspNetUser = new ApplicationUser
-            {
-                PhoneNumber = phone
-            };
-
-            this.PhoneString = this.AspNetUser.PhoneNumber;
+            this.PhoneString = phone;
 
             if (dependenceOrder < 0)
                 throw new ArgumentOutOfRangeException(nameof(DependenceOrder));
             if (this.IsSelfDetermined && dependenceOrder != 0)
                 throw new InvalidOperationException(
-                    $"Cannot set {nameof(DependenceOrder)} to a non-zero value for a self-setermined user.");
+                    $"Cannot set {nameof(DependenceOrder)} to a non-zero value for a self-determined user.");
 
             this.DependenceOrder = dependenceOrder;
         }
@@ -65,6 +63,38 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
                 this.CourseCodesString = courseCodes;
             }
+        }
+
+        public User ToUser(int aspNetUserId)
+        {
+            return new()
+            {
+                AspNetUserId = aspNetUserId,
+                FirstName = this.FirstName,
+                LastName = this.LastName,
+                DependenceOrder = this.DependenceOrder,
+                IsSelfDetermined = this.IsSelfDetermined,
+                HasAcceptedTerms = false
+            };
+        }
+
+        public User ToUser(User userToUpdate, int aspNetUserId)
+        {
+            if (userToUpdate is null)
+                throw new ArgumentNullException(nameof(userToUpdate));
+
+            userToUpdate.AspNetUserId = aspNetUserId;
+            userToUpdate.FirstName = this.FirstName;
+            userToUpdate.LastName = this.LastName;
+            userToUpdate.DependenceOrder = this.DependenceOrder;
+            userToUpdate.IsSelfDetermined = this.IsSelfDetermined;
+
+            return userToUpdate;
+        }
+
+        public string GenerateUserName(SchoolUnique schoolUq)
+        {
+            return $"{schoolUq}__P{this.PhoneString}__O{this.DependenceOrder}";
         }
 
         [JsonIgnore]
@@ -94,10 +124,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
         [JsonIgnore]
         public List<short> CourseCodes { get; }
 
-
-        [JsonIgnore]
-        public IAspNetUser AspNetUser { get; } = null!;
-
         [JsonIgnore]
         public IEnumerable<IBotFeedback> BotFeedbacks { get; }
 
@@ -118,7 +144,9 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public IEnumerable<IUser> Children { get; }
 
         [JsonIgnore]
-        public IEnumerable<ICourse> Courses { get; }
+        public HashSet<Course> Courses { get; }
+
+        IEnumerable<ICourse> IUser.Courses => this.Courses;
 
         [JsonIgnore]
         public IEnumerable<ILecture> Lectures { get; }
@@ -127,6 +155,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public IEnumerable<IUser> Parents { get; }
 
         [JsonIgnore]
-        public IEnumerable<ISchool> Schools { get; }
+        public HashSet<School> Schools { get; }
+
+        IEnumerable<ISchool> IUser.Schools => this.Schools;
     }
 }

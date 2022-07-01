@@ -1,6 +1,5 @@
-﻿using Phoenix.DataHandle.Main.Entities;
+﻿using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models;
-using Phoenix.DataHandle.Utilities;
 
 namespace Phoenix.DataHandle.Repositories
 {
@@ -15,7 +14,8 @@ namespace Phoenix.DataHandle.Repositories
 
         public bool IsValid(User user)
         {
-            return user.IsSelfDetermined && user.DependenceOrder != 0;
+            return (user.IsSelfDetermined && user.DependenceOrder == 0)
+                ||(!user.IsSelfDetermined && user.DependenceOrder > 0);
         }
 
         public void CheckIfValid(User user)
@@ -29,6 +29,17 @@ namespace Phoenix.DataHandle.Repositories
         {
             foreach (var user in users)
                 CheckIfValid(user);
+        }
+
+        #endregion
+
+        #region Find
+
+        public new Task<User?> FindPrimaryAsync(int aspNetUserId,
+            CancellationToken cancellationToken = default)
+        {
+            return Find()
+                .SingleOrDefaultAsync(a => a.AspNetUserId == aspNetUserId, cancellationToken);
         }
 
         #endregion

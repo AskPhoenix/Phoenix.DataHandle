@@ -56,12 +56,12 @@ namespace Phoenix.Verification.DataHandle.Tests
         {
             await AuthenticationTestAsync();
 
-            var posts = await WPClientWrapper.GetPostsAsync(PostCategory.Schedule);
+            var posts = await WPClientWrapper.GetPostsAsync(PostCategory.Personnel);
 
             foreach (var post in posts)
                 await WPClientWrapper.DeletePostAsync(post);
 
-            posts = await WPClientWrapper.GetPostsAsync(PostCategory.Schedule);
+            posts = await WPClientWrapper.GetPostsAsync(PostCategory.Personnel);
 
             Assert.Empty(posts);
         }

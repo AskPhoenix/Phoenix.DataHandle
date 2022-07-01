@@ -98,11 +98,11 @@ namespace Phoenix.DataHandle.DataEntry.Models
             if (booksFinal is not null)
             {
                 foreach (var bookFinal in booksFinal)
-                    if (!courseToUpdate.Books.Any(b => b.Id == bookFinal.Id))
+                    if (!courseToUpdate.Books.Contains(bookFinal))
                         courseToUpdate.Books.Add(bookFinal);
 
                 foreach (var bookInitial in courseToUpdate.Books)
-                    if (!booksFinal.Any(b => b.Id == bookInitial.Id))
+                    if (!booksFinal.Contains(bookInitial))
                         courseToUpdate.Books.Remove(bookInitial);
             }
 

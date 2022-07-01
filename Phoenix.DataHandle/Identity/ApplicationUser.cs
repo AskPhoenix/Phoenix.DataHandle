@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Phoenix.DataHandle.Main.Entities;
-using Phoenix.DataHandle.Main.Models;
 using System.Security.Cryptography;
 
 namespace Phoenix.DataHandle.Identity
@@ -16,18 +15,17 @@ namespace Phoenix.DataHandle.Identity
             UserRoles = new HashSet<ApplicationUserRole>();
         }
 
-        public virtual User User { get; set; } = null!;
-        IUser IAspNetUser.User => User;
-
         public virtual ICollection<ApplicationUserClaim> Claims { get; set; }
         public virtual ICollection<ApplicationUserLogin> Logins { get; set; }
         public virtual ICollection<ApplicationUserToken> Tokens { get; set; }
         public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
 
-        public void Normalize()
+        public ApplicationUser Normalize()
         {
             this.NormalizedEmail = this.Email?.ToUpperInvariant();
             this.NormalizedUserName = this.UserName?.ToUpperInvariant();
+
+            return this;
         }
 
         public string GetHashSignature()

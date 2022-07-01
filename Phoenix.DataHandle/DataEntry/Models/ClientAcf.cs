@@ -46,7 +46,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
             // Cannot set Dependance Order here
         }
 
-
         [JsonProperty(PropertyName = "student_full_name")]
         public string StudentFullName => FullName;
 
