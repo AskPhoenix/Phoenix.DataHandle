@@ -24,6 +24,8 @@ namespace Phoenix.DataHandle.Identity
         {
         }
 
+        #region Find
+
         public Task<ApplicationUser?> FindByPhoneNumberAsync(string phoneNumber,
             CancellationToken cancellationToken = default)
         {
@@ -36,6 +38,10 @@ namespace Phoenix.DataHandle.Identity
             return this.Store.FindByProviderKeyAsync(provider, key, cancellationToken);
         }
 
+        #endregion
+
+        #region Get Roles
+
         public async Task<IList<RoleRank>> GetRoleRanksAsync(ApplicationUser user)
         {
             return (await this.GetRolesAsync(user)).Select(rn => rn.ToRoleRank()).ToList();
@@ -46,12 +52,36 @@ namespace Phoenix.DataHandle.Identity
             return (await this.GetRoleRanksAsync(user)).Select(rr => rr.ToNormalizedString()).ToList();
         }
 
-        public async Task<IdentityResult> RemoveFromAllRolesButOneAsync(ApplicationUser user, string role)
+        #endregion
+
+        #region Remove From Roles
+
+        public async Task<IdentityResult> RemoveFromAllButOneRoleAsync(ApplicationUser user, string role)
         {
             var roles = await this.GetNormRolesAsync(user);
 
             return await this.RemoveFromRolesAsync(user,
                 roles.Where(rn => !string.Equals(rn, role, StringComparison.OrdinalIgnoreCase)));
         }
+
+        public async Task<IdentityResult> RemoveFromAllButClientRolesAsync(ApplicationUser user)
+        {
+            var nonClientRoles = (await this.GetRoleRanksAsync(user))
+                .Where(rr => !rr.IsClient())
+                .Select(rr => rr.ToNormalizedString());
+
+            return await this.RemoveFromRolesAsync(user, nonClientRoles);
+        }
+
+        public async Task<IdentityResult> RemoveFromAllButPersonnelRolesAsync(ApplicationUser user)
+        {
+            var nonPersonnelRoles = (await this.GetRoleRanksAsync(user))
+                .Where(rr => !rr.IsStaffOrBackend())
+                .Select(rr => rr.ToNormalizedString());
+
+            return await this.RemoveFromRolesAsync(user, nonPersonnelRoles);
+        }
+
+        #endregion
     }
 }
