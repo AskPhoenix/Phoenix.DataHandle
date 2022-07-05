@@ -19,13 +19,26 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public ClientAcf(string student_full_name, string? course_codes, string needs_parent_authorization,
             string? student_phone, string? parent1_full_name, string? parent1_phone, 
             string? parent2_full_name, string? parent2_phone, int dependenceOrder)
-            : base(student_full_name,
-                  student_phone ?? parent1_phone ?? parent2_phone ?? throw new InvalidOperationException("There must be at least one phone number for a student or their parents."),
-                  dependenceOrder,
-                  course_codes)
+            : base(student_full_name, null!, dependenceOrder, course_codes)
         {
             if (string.IsNullOrWhiteSpace(needs_parent_authorization))
                 throw new ArgumentNullException(nameof(needs_parent_authorization));
+
+            if (string.IsNullOrWhiteSpace(student_phone))
+                student_phone = null;
+            if (string.IsNullOrWhiteSpace(parent1_phone))
+                parent1_phone = null;
+            if (string.IsNullOrWhiteSpace(parent2_phone))
+                parent2_phone = null;
+
+            if (student_phone is null && parent1_phone is null && parent2_phone is null)
+                throw new InvalidOperationException(
+                    "There must be at least one phone number for a student or their parents.");
+
+            // If student has no phone, then the StudentPhoneString is null and the PhoneString
+            // takes the phone of the first available parent
+            this.PhoneString = student_phone ?? parent1_phone ?? parent2_phone!;
+            this.StudentPhoneString = student_phone;
 
             if (!string.IsNullOrWhiteSpace(parent1_full_name) && !string.IsNullOrWhiteSpace(parent1_phone))
                 this.Parent1 = new ClientAcf(parent1_full_name, parent1_phone);
@@ -53,7 +66,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public string NeedsParentAuthorization { get; } = null!;
 
         [JsonProperty(PropertyName = "student_phone")]
-        public string StudentPhoneString => PhoneString;
+        public string? StudentPhoneString { get; }
 
         [JsonProperty(PropertyName = "parent1_full_name")]
         public string? Parent1FullName => HasParent1 ? Parent1!.FullName : null;

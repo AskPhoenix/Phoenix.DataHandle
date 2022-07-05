@@ -31,8 +31,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         {
             if (string.IsNullOrWhiteSpace(fullName))
                 throw new ArgumentNullException(nameof(fullName));
-            if (string.IsNullOrWhiteSpace(phone))
-                throw new ArgumentNullException(nameof(phone));
+            // Nullability of phone argument is checked in the derived constructors
 
             this.FullName = fullName.ToTitleCase();
             this.FirstName = this.ResolveFirstName();
@@ -107,7 +106,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public string FullName { get; } = null!;
 
         [JsonProperty(PropertyName = "phone")]
-        public string PhoneString { get; } = null!;
+        public string PhoneString { get; protected set; } = null!;
 
         [JsonProperty(PropertyName = "course_codes")]
         public string CourseCodesString { get; } = string.Empty;
