@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 namespace Phoenix.DataHandle.Repositories
 {
     public abstract class ConnectionRepository<TConnectionModel> : Repository<TConnectionModel>
-        where TConnectionModel : class, IConnectionEntity, new()
+        where TConnectionModel : class, IConnectionEntity<TConnectionModel>, new()
     {
         private const string InvalidRegisterMsg = "{0} Channel Key {1} is already assigned to another tenant.";
         private const string InvalidConnectionMsg = "{0} Channel Key {1} is not assigned to any tenant.";
