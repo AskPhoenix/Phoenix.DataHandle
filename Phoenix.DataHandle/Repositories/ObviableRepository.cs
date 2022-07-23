@@ -6,10 +6,26 @@ namespace Phoenix.DataHandle.Repositories
     public abstract class ObviableRepository<TObviableModel> : Repository<TObviableModel> 
         where TObviableModel : class, IObviableModelEntity
     {
+        public bool NonObviatedOnly { get; set; }
+
         public ObviableRepository(DbContext dbContext)
             : base(dbContext)
         {
         }
+
+        #region Find
+
+        public new IQueryable<TObviableModel> Find()
+        {
+            var q = base.Find();
+
+            if (this.NonObviatedOnly)
+                return q.Where(m => !m.IsObviated);
+
+            return q;
+        }
+
+        #endregion
 
         #region Obviate
 
