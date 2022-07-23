@@ -2,6 +2,7 @@
 using Phoenix.DataHandle.Base;
 using Phoenix.DataHandle.Base.Entities;
 using Phoenix.DataHandle.DataEntry.Entities;
+using Phoenix.DataHandle.DataEntry.Types.Uniques;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Main.Types;
 using Phoenix.DataHandle.Utilities;
@@ -83,10 +84,10 @@ namespace Phoenix.DataHandle.DataEntry.Models
             return userToUpdate;
         }
 
-        //public string GenerateUserName(SchoolUnique schoolUq)
-        //{
-        //    return $"{schoolUq}__P{this.PhoneString}__O{this.DependenceOrder}";
-        //}
+        public string GenerateUserName(SchoolUnique schoolUq)
+        {
+            return this.GenerateUserName(schoolUq.Code, this.PhoneString);
+        }
 
         [JsonIgnore]
         public string FirstName { get; } = null!;
