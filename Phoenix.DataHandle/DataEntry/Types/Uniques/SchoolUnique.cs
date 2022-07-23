@@ -1,6 +1,6 @@
 ﻿using Phoenix.DataHandle.DataEntry.Types;
 
-namespace Phoenix.DataHandle.DataEntry.Models.Uniques
+namespace Phoenix.DataHandle.DataEntry.Types.Uniques
 {
     public class SchoolUnique : BusinessUnique
     {

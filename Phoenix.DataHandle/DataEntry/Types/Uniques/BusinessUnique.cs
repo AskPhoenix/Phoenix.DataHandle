@@ -1,12 +1,12 @@
 ﻿using Phoenix.DataHandle.DataEntry.Types;
 
-namespace Phoenix.DataHandle.DataEntry.Models.Uniques
+namespace Phoenix.DataHandle.DataEntry.Types.Uniques
 {
     public class BusinessUnique
     {
         public int Code { get; }
         public BusinessType BusinessType { get; }
-        
+
         public BusinessUnique(string postTitle)
         {
             if (string.IsNullOrEmpty(postTitle))
@@ -17,14 +17,14 @@ namespace Phoenix.DataHandle.DataEntry.Models.Uniques
             if (!PostExtensions.BusinessUQRgx.IsMatch(businessTitle))
                 throw new ArgumentException("Post title is not well formed.");
 
-            this.BusinessType = (BusinessType)businessTitle.First();
-            this.Code = int.Parse(businessTitle[PostExtensions.BusinessCodePos..]);
+            BusinessType = (BusinessType)businessTitle.First();
+            Code = int.Parse(businessTitle[PostExtensions.BusinessCodePos..]);
         }
 
         public BusinessUnique(int code, char businessChar)
         {
-            this.Code = code;
-            this.BusinessType = (BusinessType)businessChar;
+            Code = code;
+            BusinessType = (BusinessType)businessChar;
         }
 
         public BusinessUnique(int code, BusinessType businessType)
@@ -35,18 +35,18 @@ namespace Phoenix.DataHandle.DataEntry.Models.Uniques
         public override bool Equals(object? other)
         {
             return other is BusinessUnique unique &&
-                   this.Code == unique.Code &&
-                   this.BusinessType == unique.BusinessType;
+                   Code == unique.Code &&
+                   BusinessType == unique.BusinessType;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(this.Code, this.BusinessType);
+            return HashCode.Combine(Code, BusinessType);
         }
 
         public override string ToString()
         {
-            return "" + ((char)this.BusinessType) + this.Code;
+            return "" + (char)BusinessType + Code;
         }
     }
 }

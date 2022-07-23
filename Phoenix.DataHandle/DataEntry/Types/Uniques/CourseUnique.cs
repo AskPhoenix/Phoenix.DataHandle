@@ -1,4 +1,4 @@
-﻿namespace Phoenix.DataHandle.DataEntry.Models.Uniques
+﻿namespace Phoenix.DataHandle.DataEntry.Types.Uniques
 {
     public class CourseUnique
     {
@@ -15,31 +15,31 @@
 
             string[] uqParts = postTitle.Split('_');
 
-            this.SchoolUnique = new(uqParts[0]);
-            this.Code = short.Parse(uqParts[1][PostExtensions.CourseCodePos..]);
+            SchoolUnique = new(uqParts[0]);
+            Code = short.Parse(uqParts[1][PostExtensions.CourseCodePos..]);
         }
 
         public CourseUnique(SchoolUnique schoolUnique, short code)
         {
-            this.SchoolUnique = schoolUnique;
-            this.Code = code;
+            SchoolUnique = schoolUnique;
+            Code = code;
         }
 
         public override bool Equals(object? other)
         {
             return other is CourseUnique courseUnique &&
-                   this.SchoolUnique.Equals(courseUnique.SchoolUnique) &&
-                   this.Code == courseUnique.Code;
+                   SchoolUnique.Equals(courseUnique.SchoolUnique) &&
+                   Code == courseUnique.Code;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(this.SchoolUnique, this.Code);
+            return HashCode.Combine(SchoolUnique, Code);
         }
 
         public override string ToString()
         {
-            return this.SchoolUnique.ToString() + "_Course-" + Code;
+            return SchoolUnique.ToString() + "_Course-" + Code;
         }
     }
 }

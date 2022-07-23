@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using Phoenix.DataHandle.DataEntry.Models;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
-using Phoenix.DataHandle.DataEntry.Models.Uniques;
 using Phoenix.DataHandle.DataEntry.Types;
+using Phoenix.DataHandle.DataEntry.Types.Uniques;
 using WordPressPCL;
 using WordPressPCL.Models;
 using WordPressPCL.Models.Exceptions;
