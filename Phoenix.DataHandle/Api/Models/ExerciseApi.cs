@@ -32,6 +32,30 @@ namespace Phoenix.DataHandle.Api.Models
         {
         }
 
+        public Exercise ToExercise()
+        {
+            return new Exercise()
+            {
+                Id = this.Id,
+                LectureId = this.LectureId,
+                Name = this.Name,
+                BookId = this.BookId,
+                Page = this.Page,
+                Comments = this.Comments
+            };
+        }
+
+        public Exercise ToExercise(Exercise exerciseToUpdate)
+        {
+            exerciseToUpdate.LectureId = this.LectureId;
+            exerciseToUpdate.Name = this.Name;
+            exerciseToUpdate.BookId = this.BookId;
+            exerciseToUpdate.Page = this.Page;
+            exerciseToUpdate.Comments = this.Comments;
+
+            return exerciseToUpdate;
+        }
+
         [JsonProperty(PropertyName = "id")]
         public int Id { get; }
 

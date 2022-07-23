@@ -49,6 +49,34 @@ namespace Phoenix.DataHandle.Api.Models
         {
         }
 
+        public SchoolSetting ToSchoolSetting()
+        {
+            return new SchoolSetting()
+            {
+                SchoolId = this.SchoolId,
+                Country = this.Country,
+                PrimaryLanguage = this.PrimaryLanguage,
+                PrimaryLocale = this.PrimaryLocale,
+                SecondaryLanguage = this.SecondaryLanguage,
+                SecondaryLocale = this.SecondaryLocale,
+                TimeZone = this.TimeZone,
+                PhoneCountryCode = this.PhoneCountryCode
+            };
+        }
+
+        public SchoolSetting ToSchoolSetting(SchoolSetting schoolSettingToUpdate)
+        {
+            schoolSettingToUpdate.Country = this.Country;
+            schoolSettingToUpdate.PrimaryLanguage = this.PrimaryLanguage;
+            schoolSettingToUpdate.PrimaryLocale = this.PrimaryLocale;
+            schoolSettingToUpdate.SecondaryLanguage = this.SecondaryLanguage;
+            schoolSettingToUpdate.SecondaryLocale = this.SecondaryLocale;
+            schoolSettingToUpdate.TimeZone = this.TimeZone;
+            schoolSettingToUpdate.PhoneCountryCode = this.PhoneCountryCode;
+
+            return schoolSettingToUpdate;
+        }
+
         [JsonProperty(PropertyName = "school_id")]
         public int SchoolId { get; }
 

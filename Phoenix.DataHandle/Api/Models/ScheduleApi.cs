@@ -32,6 +32,32 @@ namespace Phoenix.DataHandle.Api.Models
         {
         }
 
+        public Schedule ToSchedule()
+        {
+            return new Schedule()
+            {
+                Id = this.Id,
+                CourseId = this.CourseId,
+                ClassroomId = this.ClassroomId,
+                DayOfWeek = this.DayOfWeek,
+                StartTime = this.StartTime,
+                EndTime = this.EndTime,
+                Comments = this.Comments
+            };
+        }
+
+        public Schedule ToSchedule(Schedule scheduleToUpdate)
+        {
+            scheduleToUpdate.CourseId = this.CourseId;
+            scheduleToUpdate.ClassroomId = this.ClassroomId;
+            scheduleToUpdate.DayOfWeek = this.DayOfWeek;
+            scheduleToUpdate.StartTime = this.StartTime;
+            scheduleToUpdate.EndTime = this.EndTime;
+            scheduleToUpdate.Comments = this.Comments;
+
+            return scheduleToUpdate;
+        }
+
         [JsonProperty(PropertyName = "id")]
         public int Id { get; }
 

@@ -29,6 +29,30 @@ namespace Phoenix.DataHandle.Api.Models
         {
         }
 
+        public Material ToMaterial()
+        {
+            return new Material()
+            {
+                Id = this.Id,
+                ExamId = this.ExamId,
+                BookId = this.BookId,
+                Chapter = this.Chapter,
+                Section = this.Section,
+                Comments = this.Comments
+            };
+        }
+
+        public Material ToMaterial(Material materialToUpdate)
+        {
+            materialToUpdate.ExamId = this.ExamId;
+            materialToUpdate.BookId = this.BookId;
+            materialToUpdate.Chapter = this.Chapter;
+            materialToUpdate.Section = this.Section;
+            materialToUpdate.Comments = this.Comments;
+
+            return materialToUpdate;
+        }
+
         [JsonProperty(PropertyName = "id")]
         public int Id { get; }
 

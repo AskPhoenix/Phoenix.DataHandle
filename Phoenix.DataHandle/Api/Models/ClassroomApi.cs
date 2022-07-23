@@ -32,6 +32,25 @@ namespace Phoenix.DataHandle.Api.Models
             SchoolId = classroom.SchoolId;
         }
 
+        public Classroom ToClassroom()
+        {
+            return new Classroom()
+            {
+                Id = this.Id,
+                SchoolId = this.SchoolId,
+                Name = this.Name,
+                Comments = this.Comments
+            }.Normalize();
+        }
+
+        public Classroom ToClassroom(Classroom classroomToUpdate)
+        {
+            classroomToUpdate.Name = this.Name;
+            classroomToUpdate.Comments = this.Comments;
+
+            return classroomToUpdate.Normalize();
+        }
+
         [JsonProperty(PropertyName = "id")]
         public int Id { get; }
 

@@ -37,6 +37,42 @@ namespace Phoenix.DataHandle.Api.Models
         {
         }
 
+        public Lecture ToLecture()
+        {
+            return new Lecture()
+            {
+                Id = this.Id,
+                CourseId = this.CourseId,
+                ClassroomId = this.ClassroomId,
+                ScheduleId = this.ScheduleId,
+                StartDateTime = this.StartDateTime,
+                EndDateTime = this.EndDateTime,
+                OnlineMeetingLink = this.OnlineMeetingLink,
+                Occasion = this.Occasion,
+                AttendancesNoted = this.AttendancesNoted,
+                IsCancelled = this.IsCancelled,
+                ReplacementLectureId = this.ReplacementLectureId,
+                Comments = this.Comments
+            };
+        }
+
+        public Lecture ToLecture(Lecture lectureToUpdate)
+        {
+            lectureToUpdate.CourseId = this.CourseId;
+            lectureToUpdate.ClassroomId = this.ClassroomId;
+            lectureToUpdate.ScheduleId = this.ScheduleId;
+            lectureToUpdate.StartDateTime = this.StartDateTime;
+            lectureToUpdate.EndDateTime = this.EndDateTime;
+            lectureToUpdate.OnlineMeetingLink = this.OnlineMeetingLink;
+            lectureToUpdate.Occasion = this.Occasion;
+            lectureToUpdate.AttendancesNoted = this.AttendancesNoted;
+            lectureToUpdate.IsCancelled = this.IsCancelled;
+            lectureToUpdate.ReplacementLectureId = this.ReplacementLectureId;
+            lectureToUpdate.Comments = this.Comments;
+
+            return lectureToUpdate;
+        }
+
         [JsonProperty(PropertyName = "id")]
         public int Id { get; }
 

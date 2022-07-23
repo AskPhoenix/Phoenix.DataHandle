@@ -42,6 +42,37 @@ namespace Phoenix.DataHandle.Api.Models
         {
         }
 
+        public Course ToCourse()
+        {
+            return new Course()
+            {
+                Id = this.Id,
+                Code = this.Code,
+                SchoolId = this.SchoolId,
+                Name = this.Name,
+                SubCourse = this.SubCourse,
+                Level = this.Level,
+                Group = this.Group,
+                Comments = this.Comments,
+                FirstDate = this.FirstDate,
+                LastDate = this.LastDate
+            };
+        }
+
+        public Course ToCourse(Course courseToUpdate)
+        {
+            courseToUpdate.Code = this.Code;
+            courseToUpdate.Name = this.Name;
+            courseToUpdate.SubCourse = this.SubCourse;
+            courseToUpdate.Level = this.Level;
+            courseToUpdate.Group = this.Group;
+            courseToUpdate.Comments = this.Comments;
+            courseToUpdate.FirstDate = this.FirstDate;
+            courseToUpdate.LastDate = this.LastDate;
+
+            return courseToUpdate;
+        }
+
         [JsonProperty(PropertyName = "id")]
         public int Id { get; }
 

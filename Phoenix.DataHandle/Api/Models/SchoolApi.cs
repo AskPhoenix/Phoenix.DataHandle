@@ -44,6 +44,32 @@ namespace Phoenix.DataHandle.Api.Models
         {
         }
 
+        public School ToSchool()
+        {
+            return new School()
+            {
+                Id = this.Id,
+                Code = this.Code,
+                Name = this.Name,
+                Slug = this.Slug,
+                City = this.City,
+                AddressLine = this.AddressLine,
+                Description = this.Description
+            };
+        }
+
+        public School ToSchool(School schoolToUpdate)
+        {
+            schoolToUpdate.Code = this.Code;
+            schoolToUpdate.Name = this.Name;
+            schoolToUpdate.Slug = this.Slug;
+            schoolToUpdate.City = this.City;
+            schoolToUpdate.AddressLine = this.AddressLine;
+            schoolToUpdate.Description = this.Description;
+
+            return schoolToUpdate;
+        }
+
         [JsonProperty(PropertyName = "id")]
         public int Id { get; }
 

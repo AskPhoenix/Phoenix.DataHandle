@@ -27,6 +27,26 @@ namespace Phoenix.DataHandle.Api.Models
         {
         }
 
+        public Exam ToExam()
+        {
+            return new Exam()
+            {
+                Id = this.Id,
+                LectureId = this.LectureId,
+                Name = this.Name,
+                Comments = this.Comments
+            };
+        }
+
+        public Exam ToExam(Exam examToUpdate)
+        {
+            examToUpdate.LectureId = this.LectureId;
+            examToUpdate.Name = this.Name;
+            examToUpdate.Comments = this.Comments;
+
+            return examToUpdate;
+        }
+
         [JsonProperty(PropertyName = "id")]
         public int Id { get; }
 

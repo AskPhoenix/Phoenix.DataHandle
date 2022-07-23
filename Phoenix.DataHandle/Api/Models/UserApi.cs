@@ -38,6 +38,28 @@ namespace Phoenix.DataHandle.Api.Models
         {
         }
 
+        public User ToUser()
+        {
+            return new User()
+            {
+                AspNetUserId = this.Id,
+                FirstName = this.FirstName,
+                LastName = this.LastName,
+                IsSelfDetermined = this.IsSelfDetermined,
+                DependenceOrder = this.DependenceOrder
+            };
+        }
+
+        public User ToUser(User userToUpdate)
+        {
+            userToUpdate.FirstName = this.FirstName;
+            userToUpdate.LastName = this.LastName;
+            userToUpdate.IsSelfDetermined = this.IsSelfDetermined;
+            userToUpdate.DependenceOrder = this.DependenceOrder;
+
+            return userToUpdate;
+        }
+
         [JsonProperty(PropertyName = "id")]
         public int Id { get; }
 

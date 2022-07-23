@@ -30,6 +30,26 @@ namespace Phoenix.DataHandle.Api.Models
         {
         }
 
+        public Book ToBook()
+        {
+            return new Book()
+            {
+                Id = this.Id,
+                Name = this.Name,
+                Publisher = this.Publisher,
+                Comments = this.Comments
+            }.Normalize();
+        }
+
+        public Book ToBook(Book bookToUpdate)
+        {
+            bookToUpdate.Name = this.Name;
+            bookToUpdate.Publisher = this.Publisher;
+            bookToUpdate.Comments = this.Comments;
+
+            return bookToUpdate.Normalize();
+        }
+
         [JsonProperty(PropertyName = "id")]
         public int Id { get; }
 

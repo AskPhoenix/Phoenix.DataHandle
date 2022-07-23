@@ -32,6 +32,34 @@ namespace Phoenix.DataHandle.Api.Models
         {
         }
 
+        public Grade ToGrade()
+        {
+            return new Grade()
+            {
+                Id = Id,
+                StudentId = StudentId,
+                CourseId = CourseId,
+                ExamId = ExamId,
+                ExerciseId = ExerciseId,
+                Score = Score,
+                Topic = Topic,
+                Justification = Justification
+            };
+        }
+
+        public Grade ToGrade(Grade gradeToUpdate)
+        {
+            gradeToUpdate.StudentId = this.StudentId;
+            gradeToUpdate.CourseId = this.CourseId;
+            gradeToUpdate.ExamId = this.ExamId;
+            gradeToUpdate.ExerciseId = this.ExerciseId;
+            gradeToUpdate.Score = this.Score;
+            gradeToUpdate.Topic = this.Topic;
+            gradeToUpdate.Justification = this.Justification;
+
+            return gradeToUpdate;
+        }
+
         [JsonProperty(PropertyName = "id")]
         public int Id { get; }
 

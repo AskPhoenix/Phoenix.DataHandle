@@ -36,6 +36,26 @@ namespace Phoenix.DataHandle.Api.Models
         {
         }
 
+        public ApplicationUser ToAppUser()
+        {
+            return new ApplicationUser()
+            {
+                Id = this.Id,
+                UserName = this.UserName,
+                Email = this.Email,
+                PhoneNumber = this.PhoneNumber
+            }.Normalize();
+        }
+
+        public ApplicationUser ToAppUser(ApplicationUser appUserToUpdate)
+        {
+            appUserToUpdate.UserName = this.UserName;
+            appUserToUpdate.Email = this.Email;
+            appUserToUpdate.PhoneNumber = this.PhoneNumber;
+
+            return appUserToUpdate.Normalize();
+        }
+
         [JsonProperty(PropertyName = "id")]
         public int Id { get; }
 
