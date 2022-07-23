@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
-using Phoenix.DataHandle.DataEntry.Types.Uniques;
-using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Base;
+using Phoenix.DataHandle.Base.Entities;
+using Phoenix.DataHandle.DataEntry.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Main.Types;
 using Phoenix.DataHandle.Utilities;
@@ -8,22 +9,13 @@ using System.Globalization;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
-    public abstract class UserAcf : IUser
+    public abstract class UserAcf : IUserAcf
     {
         private UserAcf()
         {
             this.CourseCodes = new List<short>();
             this.Courses = new HashSet<Course>();
             this.Schools = new HashSet<School>();
-
-            this.BotFeedbacks = Enumerable.Empty<IBotFeedback>();
-            this.Broadcasts = Enumerable.Empty<IBroadcast>();
-            this.Grades = Enumerable.Empty<IGrade>();
-            this.OneTimeCodes = Enumerable.Empty<IOneTimeCode>();
-            this.UserConnections = Enumerable.Empty<IUserConnection>();
-            this.Children = Enumerable.Empty<IUser>();
-            this.Lectures = Enumerable.Empty<ILecture>();
-            this.Parents = Enumerable.Empty<IUser>();
         }
 
         public UserAcf(string fullName, string phone, int dependenceOrder)
@@ -91,10 +83,10 @@ namespace Phoenix.DataHandle.DataEntry.Models
             return userToUpdate;
         }
 
-        public string GenerateUserName(SchoolUnique schoolUq)
-        {
-            return $"{schoolUq}__P{this.PhoneString}__O{this.DependenceOrder}";
-        }
+        //public string GenerateUserName(SchoolUnique schoolUq)
+        //{
+        //    return $"{schoolUq}__P{this.PhoneString}__O{this.DependenceOrder}";
+        //}
 
         [JsonIgnore]
         public string FirstName { get; } = null!;
@@ -105,57 +97,35 @@ namespace Phoenix.DataHandle.DataEntry.Models
         [JsonProperty(PropertyName = "full_name")]
         public string FullName { get; } = null!;
 
-        [JsonProperty(PropertyName = "phone")]
-        public string PhoneString { get; protected set; } = null!;
-
-        [JsonProperty(PropertyName = "course_codes")]
-        public string CourseCodesString { get; } = string.Empty;
-
-        [JsonIgnore]
-        public RoleRank Role { get; protected set; }
-
         [JsonIgnore]
         public bool IsSelfDetermined { get; protected set; }
 
         [JsonIgnore]
         public int DependenceOrder { get; set; }
 
+
+        [JsonProperty(PropertyName = "phone")]
+        public string PhoneString { get; protected set; } = null!;
+
+        [JsonProperty(PropertyName = "course_codes")]
+        public string CourseCodesString { get; } = string.Empty;
+
+
+        [JsonIgnore]
+        public RoleRank Role { get; protected set; }
+
+
         [JsonIgnore]
         public List<short> CourseCodes { get; }
 
         [JsonIgnore]
-        public IEnumerable<IBotFeedback> BotFeedbacks { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IBroadcast> Broadcasts { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IGrade> Grades { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IOneTimeCode> OneTimeCodes { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IUserConnection> UserConnections { get; set; }
-
-
-        [JsonIgnore]
-        public IEnumerable<IUser> Children { get; }
-
-        [JsonIgnore]
         public HashSet<Course> Courses { get; }
 
-        IEnumerable<ICourse> IUser.Courses => this.Courses;
-
-        [JsonIgnore]
-        public IEnumerable<ILecture> Lectures { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IUser> Parents { get; }
+        IEnumerable<ICourseBase> IUserAcf.Courses => this.Courses;
 
         [JsonIgnore]
         public HashSet<School> Schools { get; }
 
-        IEnumerable<ISchool> IUser.Schools => this.Schools;
+        IEnumerable<ISchoolBase> IUserAcf.Schools => this.Schools;
     }
 }

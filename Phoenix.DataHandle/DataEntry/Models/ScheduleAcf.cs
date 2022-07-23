@@ -1,25 +1,20 @@
 ﻿using Newtonsoft.Json;
+using Phoenix.DataHandle.Base.Entities;
+using Phoenix.DataHandle.DataEntry.Entities;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
-using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
 using System.Globalization;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
-    public class ScheduleAcf : IModelAcf, ISchedule
+    public class ScheduleAcf : IModelAcf, IScheduleAcf
     {
         private const string TimeFormat = "H:m";
-
-        private ScheduleAcf()
-        {
-            this.Lectures = Enumerable.Empty<ILecture>();
-        }
 
         [JsonConstructor]
         public ScheduleAcf(short course_code, string? classroom, string day,
             string start_time, string end_time, string? comments)
-            : this()
         {
             if (string.IsNullOrWhiteSpace(day))
                 throw new ArgumentNullException(nameof(day));
@@ -94,10 +89,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         [JsonProperty(PropertyName = "comments")]
         public string? Comments { get; }
-        
-        [JsonIgnore]
-        public Classroom Classroom { get; } = null!;
 
+        
         [JsonIgnore]
         public DayOfWeek DayOfWeek { get; }
 
@@ -107,12 +100,10 @@ namespace Phoenix.DataHandle.DataEntry.Models
         [JsonIgnore]
         public DateTime EndTime { get; private set; }
 
-        IClassroom ISchedule.Classroom => this.Classroom;
 
         [JsonIgnore]
-        public ICourse Course { get; } = null!;
+        public Classroom Classroom { get; } = null!;
 
-        [JsonIgnore]
-        public IEnumerable<ILecture> Lectures { get; set; }
+        IClassroomBase IScheduleAcf.Classroom => this.Classroom;
     }
 }

@@ -1,29 +1,20 @@
 ﻿using Newtonsoft.Json;
+using Phoenix.DataHandle.Base.Entities;
+using Phoenix.DataHandle.DataEntry.Entities;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
 using Phoenix.DataHandle.DataEntry.Types.Uniques;
-using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
 using System.Globalization;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
-    public class SchoolAcf : IModelAcf, ISchool
+    public class SchoolAcf : IModelAcf, ISchoolAcf
     {
-        private SchoolAcf()
-        {
-            this.Classrooms = Enumerable.Empty<IClassroom>();
-            this.Courses = Enumerable.Empty<ICourse>();
-            this.Broadcasts = Enumerable.Empty<IBroadcast>();
-            this.SchoolConnections = Enumerable.Empty<ISchoolConnection>();
-            this.Users = Enumerable.Empty<IUser>();
-        }
-
         [JsonConstructor]
         public SchoolAcf(int? code, string name, string? slug, string city, string address, string? comments,
             string primary_language, string secondary_language, string timezone, string country,
             string phone_country_code)
-            : this()
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
@@ -117,6 +108,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         public SchoolUnique GetSchoolUnique() => new(this.Code);
 
+
         [JsonIgnore]
         public int Code { get; internal set; }
 
@@ -125,9 +117,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         [JsonProperty(PropertyName = "slug")]
         public string Slug { get; } = null!;
-
-        [JsonProperty(PropertyName = "primary_language")]
-        public string PrimaryLanguage { get; } = null!;
 
         [JsonProperty(PropertyName = "city")]
         public string City { get; } = null!;
@@ -138,43 +127,32 @@ namespace Phoenix.DataHandle.DataEntry.Models
         [JsonProperty(PropertyName = "comments")]
         public string? Description { get; }
 
-        [JsonProperty(PropertyName = "secondary_language")]
-        public string SecondaryLanguage { get; } = null!;
-
-        [JsonProperty(PropertyName = "timezone")]
-        public string TimeZone { get; } = null!;
 
         [JsonProperty(PropertyName = "country")]
         public string Country { get; } = null!;
 
-        [JsonProperty(PropertyName = "phone_country_code")]
-        public string PhoneCountryCode { get; } = null!;
+        [JsonProperty(PropertyName = "primary_language")]
+        public string PrimaryLanguage { get; } = null!;
 
         [JsonIgnore]
         public string PrimaryLocale { get; } = null!;
 
+        [JsonProperty(PropertyName = "secondary_language")]
+        public string SecondaryLanguage { get; } = null!;
+
         [JsonIgnore]
         public string SecondaryLocale { get; } = null!;
+
+        [JsonProperty(PropertyName = "timezone")]
+        public string TimeZone { get; } = null!;
+
+        [JsonProperty(PropertyName = "phone_country_code")]
+        public string PhoneCountryCode { get; } = null!;
+
 
         [JsonIgnore]
         public SchoolSetting SchoolSetting { get; } = null!;
 
-        ISchoolSetting ISchool.SchoolSetting => this.SchoolSetting;
-
-
-        [JsonIgnore]
-        public IEnumerable<IBroadcast> Broadcasts { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IClassroom> Classrooms { get; }
-
-        [JsonIgnore]
-        public IEnumerable<ICourse> Courses { get; }
-
-        [JsonIgnore]
-        public IEnumerable<ISchoolConnection> SchoolConnections { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IUser> Users { get; }
+        ISchoolSettingBase ISchoolAcf.SchoolSetting => this.SchoolSetting;
     }
 }

@@ -1,25 +1,20 @@
 ﻿using Newtonsoft.Json;
+using Phoenix.DataHandle.Base.Entities;
+using Phoenix.DataHandle.DataEntry.Entities;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
 using Phoenix.DataHandle.DataEntry.Types.Uniques;
-using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Utilities;
 
 namespace Phoenix.DataHandle.DataEntry.Models
 {
-    public class CourseAcf : IModelAcf, ICourse
+    public class CourseAcf : IModelAcf, ICourseAcf
     {
         private const string DateFormat = "d/M/yyyy";
 
         private CourseAcf()
         {
             this.Books = new HashSet<Book>();
-
-            this.Grades = Enumerable.Empty<IGrade>();
-            this.Lectures = Enumerable.Empty<ILecture>();
-            this.Schedules = Enumerable.Empty<ISchedule>();
-            this.Users = Enumerable.Empty<IUser>();
-            this.Broadcasts = Enumerable.Empty<IBroadcast>();
         }
 
         [JsonConstructor]
@@ -111,6 +106,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         public CourseUnique GetCourseUnique(SchoolUnique schoolUnique) => new(schoolUnique, this.Code);
 
+
         [JsonProperty(PropertyName = "code")]
         public short Code { get; }
 
@@ -126,8 +122,8 @@ namespace Phoenix.DataHandle.DataEntry.Models
         [JsonProperty(PropertyName = "group")]
         public string Group { get; } = null!;
 
-        [JsonProperty(PropertyName = "books")]
-        public string BooksString { get; } = null!;
+        [JsonProperty(PropertyName = "comments")]
+        public string? Comments { get; }
 
         [JsonProperty(PropertyName = "first_date")]
         public string FirstDateString { get; } = null!;
@@ -135,8 +131,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
         [JsonProperty(PropertyName = "last_date")]
         public string LastDateString { get; } = null!;
 
-        [JsonProperty(PropertyName = "comments")]
-        public string? Comments { get; }
 
         [JsonIgnore]
         public DateTime FirstDate { get; private set; }
@@ -144,28 +138,13 @@ namespace Phoenix.DataHandle.DataEntry.Models
         [JsonIgnore]
         public DateTime LastDate { get; private set; }
 
+
+        [JsonProperty(PropertyName = "books")]
+        public string BooksString { get; } = null!;
+
         [JsonIgnore]
         public HashSet<Book> Books { get; }
 
-
-        [JsonIgnore]
-        public ISchool School { get; } = null!;
-
-        [JsonIgnore]
-        public IEnumerable<IGrade> Grades { get; }
-
-        [JsonIgnore]
-        public IEnumerable<ILecture> Lectures { get; set; }
-
-        [JsonIgnore]
-        public IEnumerable<ISchedule> Schedules { get; set; }
-
-        IEnumerable<IBook> ICourse.Books => this.Books;
-
-        [JsonIgnore]
-        public IEnumerable<IUser> Users { get; set; }
-
-        [JsonIgnore]
-        public IEnumerable<IBroadcast> Broadcasts { get; }
+        IEnumerable<IBookBase> ICourseAcf.Books => this.Books;
     }
 }
