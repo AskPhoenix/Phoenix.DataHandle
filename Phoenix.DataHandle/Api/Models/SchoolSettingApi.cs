@@ -1,14 +1,15 @@
 ﻿using Newtonsoft.Json;
+using Phoenix.DataHandle.Api.Entities;
 using Phoenix.DataHandle.Api.Models.Extensions;
-using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Base;
 using Phoenix.DataHandle.Main.Models;
 
-namespace Phoenix.DataHandle.Api.Models.Main
+namespace Phoenix.DataHandle.Api.Models
 {
-    public class SchoolSettingApi : ISchoolSetting, IModelApi
+    public class SchoolSettingApi : ISchoolSettingApi, IModelApi
     {
         [JsonConstructor]
-        public SchoolSettingApi(int id, string country, string primaryLanguage, string primaryLocale,
+        public SchoolSettingApi(int schoolId, string country, string primaryLanguage, string primaryLocale,
             string secondaryLanguage, string secondaryLocale, string timeZone, string phoneCode)
         {
             if (string.IsNullOrWhiteSpace(country))
@@ -26,7 +27,7 @@ namespace Phoenix.DataHandle.Api.Models.Main
             if (string.IsNullOrWhiteSpace(phoneCode))
                 throw new ArgumentNullException(nameof(phoneCode));
 
-            this.Id = id;
+            this.SchoolId = schoolId;
             this.Country = country;
             this.PrimaryLanguage = primaryLanguage;
             this.PrimaryLocale = primaryLocale;
@@ -36,16 +37,23 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.PhoneCountryCode = phoneCode;
         }
 
-        public SchoolSettingApi(ISchoolSetting schoolSetting)
-            : this(0, schoolSetting.Country, schoolSetting.PrimaryLanguage, schoolSetting.PrimaryLocale,
-                  schoolSetting.SecondaryLanguage, schoolSetting.SecondaryLocale, schoolSetting.TimeZone, schoolSetting.PhoneCountryCode)
+        public SchoolSettingApi(int schoolId, ISchoolSettingBase schoolSetting)
+            : this(schoolId, schoolSetting.Country, schoolSetting.PrimaryLanguage, schoolSetting.PrimaryLocale,
+                  schoolSetting.SecondaryLanguage, schoolSetting.SecondaryLocale, schoolSetting.TimeZone,
+                  schoolSetting.PhoneCountryCode)
         {
-            if (schoolSetting is SchoolSetting schoolSetting1)
-                this.Id = schoolSetting1.SchoolId;
         }
 
-        [JsonProperty(PropertyName = "id")]
-        public int Id { get; }
+        public SchoolSettingApi(SchoolSetting schoolSetting)
+            : this(schoolSetting.SchoolId, schoolSetting)
+        {
+        }
+
+        [JsonProperty(PropertyName = "school_id")]
+        public int SchoolId { get; }
+
+        [JsonIgnore]
+        public int Id => this.SchoolId;
 
         [JsonProperty(PropertyName = "country")]
         public string Country { get; } = null!;
@@ -67,8 +75,5 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         [JsonProperty(PropertyName = "phone_code")]
         public string PhoneCountryCode { get; } = null!;
-
-        [JsonIgnore]
-        public ISchool School { get; } = null!;
     }
 }

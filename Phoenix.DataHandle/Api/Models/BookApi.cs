@@ -1,22 +1,15 @@
 ﻿using Newtonsoft.Json;
+using Phoenix.DataHandle.Api.Entities;
 using Phoenix.DataHandle.Api.Models.Extensions;
-using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Base;
 using Phoenix.DataHandle.Main.Models;
 
-namespace Phoenix.DataHandle.Api.Models.Main
+namespace Phoenix.DataHandle.Api.Models
 {
-    public class BookApi : IBook, IModelApi
+    public class BookApi : IBookApi, IModelApi
     {
-        private BookApi()
-        {
-            this.Courses = new List<ICourse>();
-            this.Exercises = new List<IExercise>();
-            this.Materials = new List<IMaterial>();
-        }
-
         [JsonConstructor]
         public BookApi(int id, string name, string? publisher, string? comments)
-            : this()
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
@@ -27,11 +20,14 @@ namespace Phoenix.DataHandle.Api.Models.Main
             this.Comments = comments;
         }
 
-        public BookApi(IBook book)
-            : this(0, book.Name, book.Publisher, book.Comments)
+        public BookApi(int id, IBookBase book)
+            : this(id, book.Name, book.Publisher, book.Comments)
         {
-            if (book is Book book1)
-                this.Id = book1.Id;
+        }
+
+        public BookApi(Book book)
+            : this(book.Id, book)
+        {
         }
 
         [JsonProperty(PropertyName = "id")]
@@ -45,15 +41,5 @@ namespace Phoenix.DataHandle.Api.Models.Main
 
         [JsonProperty(PropertyName = "comments")]
         public string? Comments { get; }
-
-
-        [JsonIgnore]
-        public IEnumerable<ICourse> Courses { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IExercise> Exercises { get; }
-
-        [JsonIgnore]
-        public IEnumerable<IMaterial> Materials { get; }
     }
 }
