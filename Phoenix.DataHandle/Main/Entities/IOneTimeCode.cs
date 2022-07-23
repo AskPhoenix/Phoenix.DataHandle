@@ -1,13 +1,9 @@
-﻿using Phoenix.DataHandle.Main.Types;
+﻿using Phoenix.DataHandle.Base;
 
 namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IOneTimeCode
+    public interface IOneTimeCode : IOneTimeCodeBase
     {
-        string Token { get; }
-        OneTimeCodePurpose Purpose { get; }
-        DateTime ExpiresAt { get; }
-
         IUser User { get; }
     }
 }

@@ -1,14 +1,9 @@
-﻿namespace Phoenix.DataHandle.Main.Entities
+﻿using Phoenix.DataHandle.Base;
+
+namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface ISchool
+    public interface ISchool : ISchoolBase
     {
-        int Code { get; }
-        string Name { get; }
-        string Slug { get; }
-        string City { get; }
-        string AddressLine { get; }
-        string? Description { get; }
-        
         ISchoolSetting SchoolSetting { get; }
         IEnumerable<IBroadcast> Broadcasts { get; }
         IEnumerable<IClassroom> Classrooms { get; }

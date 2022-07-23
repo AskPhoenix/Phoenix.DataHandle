@@ -1,13 +1,11 @@
-﻿namespace Phoenix.DataHandle.Main.Entities
+﻿using Phoenix.DataHandle.Base;
+
+namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface ISchedule
+    public interface ISchedule : IScheduleBase
     {
         ICourse Course { get; }
         IClassroom? Classroom { get; }
-        DayOfWeek DayOfWeek { get; }
-        DateTime StartTime { get; }
-        DateTime EndTime { get; }
-        string? Comments { get; }
 
         IEnumerable<ILecture> Lectures { get; }
     }

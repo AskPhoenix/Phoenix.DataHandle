@@ -1,9 +1,9 @@
-﻿namespace Phoenix.DataHandle.Main.Entities
+﻿using Phoenix.DataHandle.Base;
+
+namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IAspNetUser
+    public interface IAspNetUser : IAspNetUserBase
     {
-        string UserName { get; }
-        string? Email { get; }
-        string PhoneNumber { get; }
+
     }
 }

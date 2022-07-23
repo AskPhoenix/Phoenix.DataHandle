@@ -1,13 +1,9 @@
-﻿using Phoenix.DataHandle.Main.Types;
+﻿using Phoenix.DataHandle.Base;
 
 namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IBotFeedback
+    public interface IBotFeedback : IBotFeedbackBase
     {
         IUser Author { get; }
-        bool AskTriggered { get; }
-        BotFeedbackCategory Category { get; }
-        short? Rating { get; }
-        string? Comment { get; }
     }
 }

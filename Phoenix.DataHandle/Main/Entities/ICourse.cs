@@ -1,16 +1,10 @@
-﻿namespace Phoenix.DataHandle.Main.Entities
+﻿using Phoenix.DataHandle.Base;
+
+namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface ICourse
+    public interface ICourse : ICourseBase
     {
-        short Code { get; }
         ISchool School { get; }
-        string Name { get; }
-        string? SubCourse { get; }
-        string Level { get; }
-        string Group { get; }
-        string? Comments { get; }
-        DateTime FirstDate { get; }
-        DateTime LastDate { get; }
 
         IEnumerable<IGrade> Grades { get; }
         IEnumerable<ILecture> Lectures { get; }

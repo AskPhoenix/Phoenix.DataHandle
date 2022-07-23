@@ -1,10 +1,9 @@
-﻿namespace Phoenix.DataHandle.Main.Entities
+﻿using Phoenix.DataHandle.Base;
+
+namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IUserConnection
+    public interface IUserConnection : IUserConnectionBase
     {
         IUser Tenant { get; }
-        string Channel { get; }
-        string ChannelKey { get; }
-        string ChannelDisplayName { get; }
     }
 }

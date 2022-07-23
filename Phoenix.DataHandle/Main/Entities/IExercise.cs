@@ -1,13 +1,12 @@
-﻿namespace Phoenix.DataHandle.Main.Entities
+﻿using Phoenix.DataHandle.Base;
+
+namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IExercise
+    public interface IExercise : IExerciseBase
     {
         ILecture Lecture { get; }
-        string Name { get; }
         IBook? Book { get; }
-        string? Page { get; }
-        string? Comments { get; }
-
+        
         IEnumerable<IGrade> Grades { get; }
     }
 }

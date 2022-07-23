@@ -1,11 +1,9 @@
-﻿namespace Phoenix.DataHandle.Main.Entities
-{
-    public interface IBook
-    {
-        string Name { get; }
-        string? Publisher { get; }
-        string? Comments { get; }
+﻿using Phoenix.DataHandle.Base;
 
+namespace Phoenix.DataHandle.Main.Entities
+{
+    public interface IBook : IBookBase
+    {
         IEnumerable<IExercise> Exercises { get; }
         IEnumerable<IMaterial> Materials { get; }
         

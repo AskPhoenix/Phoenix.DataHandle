@@ -1,18 +1,11 @@
-﻿using Phoenix.DataHandle.Main.Types;
+﻿using Phoenix.DataHandle.Base;
 
 namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IBroadcast
+    public interface IBroadcast : IBroadcastBase
     {
         ISchool School { get; }
         IUser Author { get; }
-        string Message { get; }
-        DateTime ScheduledFor { get; }
-        Daypart Daypart { get; }
-        BroadcastAudience Audience { get; }
-        BroadcastVisibility Visibility { get; }
-        BroadcastStatus Status { get; }
-        DateTime? SentAt { get; }
 
         IEnumerable<ICourse> Courses { get; }
     }

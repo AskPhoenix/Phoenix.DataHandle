@@ -1,11 +1,10 @@
-﻿namespace Phoenix.DataHandle.Main.Entities
+﻿using Phoenix.DataHandle.Base;
+
+namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IMaterial
+    public interface IMaterial : IMaterialBase
     {
         IExam Exam { get; }
         IBook? Book { get; }
-        string? Chapter { get; }
-        string? Section { get; }
-        string? Comments { get; }
     }
 }

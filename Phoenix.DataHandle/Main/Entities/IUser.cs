@@ -1,13 +1,9 @@
-﻿namespace Phoenix.DataHandle.Main.Entities
-{
-    public interface IUser
-    {
-        string FirstName { get; }
-        string LastName { get; }
-        string FullName { get; }
-        bool IsSelfDetermined { get; }
-        int DependenceOrder { get; }
+﻿using Phoenix.DataHandle.Base;
 
+namespace Phoenix.DataHandle.Main.Entities
+{
+    public interface IUser : IUserBase
+    {
         IEnumerable<IBotFeedback> BotFeedbacks { get; }
         IEnumerable<IBroadcast> Broadcasts { get; }
         IEnumerable<IGrade> Grades { get; }

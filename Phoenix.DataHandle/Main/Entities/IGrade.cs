@@ -1,13 +1,12 @@
-﻿namespace Phoenix.DataHandle.Main.Entities
+﻿using Phoenix.DataHandle.Base;
+
+namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IGrade
+    public interface IGrade : IGradeBase
     {
         IUser Student { get; }
         ICourse? Course { get; }
         IExam? Exam { get; }
         IExercise? Exercise { get; }
-        decimal Score { get; }
-        string? Topic { get; }
-        string? Justification { get; }
     }
 }

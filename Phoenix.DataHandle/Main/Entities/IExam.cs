@@ -1,11 +1,11 @@
-﻿namespace Phoenix.DataHandle.Main.Entities
+﻿using Phoenix.DataHandle.Base;
+
+namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IExam
+    public interface IExam : IExamBase
     {
         ILecture Lecture { get; }
-        string? Name { get; }
-        string? Comments { get; }
-
+        
         IEnumerable<IGrade> Grades { get; }
         IEnumerable<IMaterial> Materials { get; }
     }
