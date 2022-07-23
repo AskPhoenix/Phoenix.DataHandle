@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Phoenix.DataHandle.Api.Models.Main;
+using Phoenix.DataHandle.Api.Models;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.Verification.Base;
 using Phoenix.Verification.Utilities;
@@ -59,7 +59,7 @@ namespace Phoenix.Verification.DataHandle.Tests
                     NormalizedName = "TAXI"
                 };
 
-            var classroomApi = new ClassroomApi(classroom, include: true);
+            var classroomApi = new ClassroomApi(classroom);
 
             JsonUtilities.SaveToFile(classroomApi, OutDirName, nameof(classroom));
             var classroomApi2 = JsonUtilities.ReadFromFile<ClassroomApi>(OutDirName, nameof(classroom));
@@ -85,7 +85,7 @@ namespace Phoenix.Verification.DataHandle.Tests
                     Level = "B1"
                 };
 
-            var courseApi = new CourseApi(course, include: true);
+            var courseApi = new CourseApi(course);
 
             JsonUtilities.SaveToFile(courseApi, OutDirName, nameof(course));
             var courseApi2 = JsonUtilities.ReadFromFile<CourseApi>(OutDirName, nameof(course));
@@ -104,7 +104,7 @@ namespace Phoenix.Verification.DataHandle.Tests
                     Comments = "Kati"
                 };
 
-            var examApi = new ExamApi(exam, include: true);
+            var examApi = new ExamApi(exam);
 
             JsonUtilities.SaveToFile(examApi, OutDirName, nameof(exam));
             var examApi2 = JsonUtilities.ReadFromFile<ExamApi>(OutDirName, nameof(exam));
@@ -124,7 +124,7 @@ namespace Phoenix.Verification.DataHandle.Tests
                     Comments = "Sxolio"
                 };
 
-            var exerciseApi = new ExerciseApi(exercise, include: true);
+            var exerciseApi = new ExerciseApi(exercise);
 
             JsonUtilities.SaveToFile(exerciseApi, OutDirName, nameof(exercise));
             var exerciseApi2 = JsonUtilities.ReadFromFile<ExerciseApi>(OutDirName, nameof(exercise));
@@ -145,7 +145,7 @@ namespace Phoenix.Verification.DataHandle.Tests
                     Topic = "B' Trimino"
                 };
 
-            var gradeApi = new GradeApi(grade, include: true);
+            var gradeApi = new GradeApi(grade);
 
             JsonUtilities.SaveToFile(gradeApi, OutDirName, nameof(grade));
             var exerciseApi2 = JsonUtilities.ReadFromFile<GradeApi>(OutDirName, nameof(grade));
@@ -166,7 +166,7 @@ namespace Phoenix.Verification.DataHandle.Tests
                     EndDateTime = DateTime.Now.AddHours(2)
                 };
 
-            var lectureApi = new LectureApi(lecture, include: true);
+            var lectureApi = new LectureApi(lecture);
 
             JsonUtilities.SaveToFile(lectureApi, OutDirName, nameof(lecture));
             var lectureApi2 = JsonUtilities.ReadFromFile<LectureApi>(OutDirName, nameof(lecture));
@@ -185,7 +185,7 @@ namespace Phoenix.Verification.DataHandle.Tests
                     Comments = "Yli"
                 };
 
-            var materialApi = new MaterialApi(material, include: true);
+            var materialApi = new MaterialApi(material);
 
             JsonUtilities.SaveToFile(materialApi, OutDirName, nameof(material));
             var materialApi2 = JsonUtilities.ReadFromFile<LectureApi>(OutDirName, nameof(material));
@@ -204,7 +204,7 @@ namespace Phoenix.Verification.DataHandle.Tests
                     EndTime = DateTime.Now.AddHours(2)
                 };
 
-            var scheduleApi = new ScheduleApi(schedule, include: true);
+            var scheduleApi = new ScheduleApi(schedule);
 
             JsonUtilities.SaveToFile(scheduleApi, OutDirName, nameof(schedule));
             var scheduleApi2 = JsonUtilities.ReadFromFile<ScheduleApi>(OutDirName, nameof(schedule));
@@ -235,7 +235,7 @@ namespace Phoenix.Verification.DataHandle.Tests
                     }
                 };
 
-            var schoolApi = new SchoolApi(school, include: true);
+            var schoolApi = new SchoolApi(school);
 
             JsonUtilities.SaveToFile(schoolApi, OutDirName, nameof(school));
             var schoolApi2 = JsonUtilities.ReadFromFile<SchoolApi>(OutDirName, nameof(school));
