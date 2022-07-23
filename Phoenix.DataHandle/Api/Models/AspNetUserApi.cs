@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.Api.Entities;
 using Phoenix.DataHandle.Api.Models.Extensions;
-using Phoenix.DataHandle.Base;
+using Phoenix.DataHandle.Base.Entities;
 using Phoenix.DataHandle.Identity;
 using Phoenix.DataHandle.Main.Models;
 

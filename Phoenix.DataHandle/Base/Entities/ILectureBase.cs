@@ -1,6 +1,6 @@
 ﻿using Phoenix.DataHandle.Main.Types;
 
-namespace Phoenix.DataHandle.Base
+namespace Phoenix.DataHandle.Base.Entities
 {
     public interface ILectureBase
     {

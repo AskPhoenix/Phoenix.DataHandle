@@ -1,4 +1,4 @@
-﻿namespace Phoenix.DataHandle.Base
+﻿namespace Phoenix.DataHandle.Base.Entities
 {
     public interface IAspNetUserBase
     {
