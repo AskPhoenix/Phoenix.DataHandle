@@ -1,5 +1,5 @@
-﻿using Phoenix.DataHandle.DataEntry.Types.Uniques;
-using Phoenix.DataHandle.Main.Entities;
+﻿using Phoenix.DataHandle.Base.Entities;
+using Phoenix.DataHandle.DataEntry.Types.Uniques;
 using Phoenix.DataHandle.Main.Models;
 using System.Linq.Expressions;
 
@@ -41,7 +41,7 @@ namespace Phoenix.DataHandle.Repositories
                 cancellationToken);
         }
 
-        public Task<Course?> FindUniqueAsync(int schoolId, ICourse course,
+        public Task<Course?> FindUniqueAsync(int schoolId, ICourseBase course,
             CancellationToken cancellationToken = default)
         {
             if (course is null)

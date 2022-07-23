@@ -1,4 +1,4 @@
-﻿using Phoenix.DataHandle.Main.Entities;
+﻿using Phoenix.DataHandle.Base.Entities;
 using Phoenix.DataHandle.Main.Models;
 using System.Linq.Expressions;
 
@@ -33,7 +33,7 @@ namespace Phoenix.DataHandle.Repositories
                 cancellationToken);
         }
 
-        public Task<Schedule?> FindUniqueAsync(int courseId, ISchedule schedule,
+        public Task<Schedule?> FindUniqueAsync(int courseId, IScheduleBase schedule,
             CancellationToken cancellationToken = default)
         {
             if (schedule is null)

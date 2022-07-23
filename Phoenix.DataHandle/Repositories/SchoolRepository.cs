@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Phoenix.DataHandle.Base.Entities;
 using Phoenix.DataHandle.DataEntry.Types.Uniques;
-using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models;
 using System.Linq.Expressions;
 
@@ -33,7 +33,7 @@ namespace Phoenix.DataHandle.Repositories
             return FindUniqueAsync(GetUniqueExpression(schoolCode), cancellationToken);
         }
 
-        public Task<School?> FindUniqueAsync(ISchool school,
+        public Task<School?> FindUniqueAsync(ISchoolBase school,
             CancellationToken cancellationToken = default)
         {
             if (school is null)

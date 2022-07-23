@@ -1,4 +1,4 @@
-﻿using Phoenix.DataHandle.Main.Entities;
+﻿using Phoenix.DataHandle.Base.Entities;
 using Phoenix.DataHandle.Main.Models;
 using System.Linq.Expressions;
 
@@ -29,7 +29,7 @@ namespace Phoenix.DataHandle.Repositories
                 cancellationToken);
         }
 
-        public Task<Book?> FindUniqueAsync(IBook book,
+        public Task<Book?> FindUniqueAsync(IBookBase book,
             CancellationToken cancellationToken = default)
         {
             if (book is null)

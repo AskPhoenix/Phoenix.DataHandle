@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Phoenix.DataHandle.Main.Entities;
+using Phoenix.DataHandle.Base.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Main.Types;
 using System.Linq.Expressions;
@@ -35,7 +35,7 @@ namespace Phoenix.DataHandle.Repositories
                 cancellationToken);
         }
 
-        public Task<Lecture?> FindUniqueAsync(int courseId, ILecture lecture,
+        public Task<Lecture?> FindUniqueAsync(int courseId, ILectureBase lecture,
             CancellationToken cancellationToken = default)
         {
             if (lecture is null)
