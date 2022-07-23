@@ -1,4 +1,6 @@
-﻿namespace Phoenix.DataHandle.DataEntry.Models.Uniques
+﻿using Phoenix.DataHandle.DataEntry.Types;
+
+namespace Phoenix.DataHandle.DataEntry.Models.Uniques
 {
     public class BusinessUnique
     {

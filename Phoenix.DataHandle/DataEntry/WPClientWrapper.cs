@@ -2,6 +2,7 @@
 using Phoenix.DataHandle.DataEntry.Models;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
 using Phoenix.DataHandle.DataEntry.Models.Uniques;
+using Phoenix.DataHandle.DataEntry.Types;
 using WordPressPCL;
 using WordPressPCL.Models;
 using WordPressPCL.Models.Exceptions;

@@ -1,4 +1,4 @@
-﻿namespace Phoenix.DataHandle.DataEntry
+﻿namespace Phoenix.DataHandle.DataEntry.Types
 {
     public enum BusinessType
     {

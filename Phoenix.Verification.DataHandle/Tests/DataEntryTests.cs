@@ -2,6 +2,7 @@
 using Phoenix.DataHandle.DataEntry.Models;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
 using Phoenix.DataHandle.DataEntry.Models.Uniques;
+using Phoenix.DataHandle.DataEntry.Types;
 using Phoenix.Verification.Base;
 using Phoenix.Verification.Utilities;
 using Xunit;
