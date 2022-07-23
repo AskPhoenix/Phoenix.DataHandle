@@ -14,6 +14,12 @@ namespace Phoenix.DataHandle.Repositories
             Include(s => s.SchoolSetting);
         }
 
+        public SchoolRepository(PhoenixContext dbContext, bool nonObviatedOnly)
+            : base(dbContext, nonObviatedOnly)
+        {
+            Include(s => s.SchoolSetting);
+        }
+
         public static Expression<Func<School, bool>> GetUniqueExpression(int schoolCode)
         {
             return s => s.Code == schoolCode;

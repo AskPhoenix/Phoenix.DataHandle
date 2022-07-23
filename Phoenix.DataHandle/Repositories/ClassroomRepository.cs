@@ -12,6 +12,11 @@ namespace Phoenix.DataHandle.Repositories
         {
         }
 
+        public ClassroomRepository(PhoenixContext phoenixContext, bool nonObviatedOnly)
+            : base(phoenixContext, nonObviatedOnly)
+        {
+        }
+
         public static Expression<Func<Classroom, bool>> GetUniqueExpression(
             int schoolId, string classroomName)
         {

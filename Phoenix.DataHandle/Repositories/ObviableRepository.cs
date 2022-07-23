@@ -13,6 +13,12 @@ namespace Phoenix.DataHandle.Repositories
         {
         }
 
+        public ObviableRepository(DbContext dbContext, bool nonObviatedOnly)
+            : this(dbContext)
+        {
+            this.NonObviatedOnly = nonObviatedOnly;
+        }
+
         #region Find
 
         public new IQueryable<TObviableModel> Find()

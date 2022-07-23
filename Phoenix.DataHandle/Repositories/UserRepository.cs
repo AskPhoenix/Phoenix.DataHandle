@@ -10,6 +10,11 @@ namespace Phoenix.DataHandle.Repositories
         {
         }
 
+        public UserRepository(PhoenixContext dbContext, bool nonObviatedOnly)
+            : base(dbContext, nonObviatedOnly)
+        {
+        }
+
         #region Validate
 
         public bool IsValid(User user)

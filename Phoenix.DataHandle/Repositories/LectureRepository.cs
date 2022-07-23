@@ -15,6 +15,11 @@ namespace Phoenix.DataHandle.Repositories
         { 
         }
 
+        public LectureRepository(PhoenixContext phoenixContext, bool nonObviatedOnly)
+            : base(phoenixContext, nonObviatedOnly)
+        {
+        }
+
         public static Expression<Func<Lecture, bool>> GetUniqueExpression(
             int courseId, DateTimeOffset startDateTime)
         {

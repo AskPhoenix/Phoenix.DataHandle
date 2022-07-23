@@ -11,6 +11,11 @@ namespace Phoenix.DataHandle.Repositories
         {
         }
 
+        public ScheduleRepository(PhoenixContext dbContext, bool nonObviatedOnly)
+            : base(dbContext, nonObviatedOnly)
+        {
+        }
+
         public static Expression<Func<Schedule, bool>> GetUniqueExpression(
             int courseId, DayOfWeek dayOfWeek, DateTime startTime)
         {
