@@ -26,7 +26,7 @@ namespace Phoenix.DataHandle.Repositories
             var q = base.Find();
 
             if (this.NonObviatedOnly)
-                return q.Where(m => !m.IsObviated);
+                return q.Where(m => m.ObviatedAt == null);
 
             return q;
         }

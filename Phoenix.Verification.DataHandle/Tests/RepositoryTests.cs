@@ -7,7 +7,7 @@ namespace Phoenix.Verification.DataHandle.Tests
 {
     public class RepositoryTests : ContextTestsBase
     {
-        // TODO: Create Tests after filling the DB
+        // TODO: Create Tests
 
         public RepositoryTests()
             : base()
@@ -17,7 +17,7 @@ namespace Phoenix.Verification.DataHandle.Tests
         [Fact]
         public async void FetchSchools()
         {
-            var schoolRepo = new SchoolRepository(_phoenixContext);
+            var schoolRepo = new SchoolRepository(_phoenixContext, true);
 
             await schoolRepo.Find().ToListAsync();
         }
