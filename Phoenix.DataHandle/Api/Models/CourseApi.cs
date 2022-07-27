@@ -13,11 +13,11 @@ namespace Phoenix.DataHandle.Api.Models
             string level, string group, string? comments, DateTime firstDate, DateTime lastDate)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException(nameof(name));
+                name = null!;
             if (string.IsNullOrWhiteSpace(level))
-                throw new ArgumentNullException(nameof(level));
+                level = null!;
             if (string.IsNullOrWhiteSpace(group))
-                throw new ArgumentNullException(nameof(group));
+                group = null!;
 
             this.Id = id;
             this.Code = code;
@@ -27,8 +27,8 @@ namespace Phoenix.DataHandle.Api.Models
             this.Level = level;
             this.Group = group;
             this.Comments = comments;
-            this.FirstDate = firstDate;
-            this.LastDate = lastDate;
+            this.FirstDate = firstDate.Date;
+            this.LastDate = lastDate.Date;
         }
 
         public CourseApi(int id, int schoolId, ICourseBase course)
@@ -73,34 +73,34 @@ namespace Phoenix.DataHandle.Api.Models
             return courseToUpdate;
         }
 
-        [JsonProperty(PropertyName = "id")]
+        [JsonProperty("id")]
         public int Id { get; }
 
-        [JsonProperty(PropertyName = "code")]
+        [JsonProperty("code")]
         public short Code { get; }
 
-        [JsonProperty(PropertyName = "school_id")]
+        [JsonProperty("school_id", Required = Required.Always)]
         public int SchoolId { get; }
 
-        [JsonProperty(PropertyName = "name")]
+        [JsonProperty("name", Required = Required.Always)]
         public string Name { get; } = null!;
 
-        [JsonProperty(PropertyName = "subcourse")]
+        [JsonProperty("subcourse")]
         public string? SubCourse { get; }
 
-        [JsonProperty(PropertyName = "level")]
+        [JsonProperty("level", Required = Required.Always)]
         public string Level { get; } = null!;
 
-        [JsonProperty(PropertyName = "group")]
+        [JsonProperty("group", Required = Required.Always)]
         public string Group { get; } = null!;
 
-        [JsonProperty(PropertyName = "comments")]
+        [JsonProperty("comments")]
         public string? Comments { get; }
 
-        [JsonProperty(PropertyName = "first_date")]
+        [JsonProperty("first_date", Required = Required.Always)]
         public DateTime FirstDate { get; }
 
-        [JsonProperty(PropertyName = "last_date")]
+        [JsonProperty("last_date", Required = Required.Always)]
         public DateTime LastDate { get; }
     }
 }
