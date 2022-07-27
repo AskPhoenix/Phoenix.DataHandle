@@ -1,5 +1,4 @@
 ﻿using Phoenix.Language.Types;
-using System.ComponentModel;
 
 namespace Phoenix.DataHandle.Main.Types
 {
