@@ -1,15 +1,13 @@
-﻿namespace Phoenix.DataHandle.Main.Models.Extensions
+﻿using Phoenix.DataHandle.Base.Entities;
+
+namespace Phoenix.DataHandle.Main.Models.Extensions
 {
-    public interface IConnectionEntity<TNormalizableEntity> : IModelEntity, INormalizableEntity<TNormalizableEntity>
-        where TNormalizableEntity : class, IModelEntity
+    public interface IConnectionEntity : IModelEntity, IConnectionBase
     {
         int TenantId { get; set; }
-        string Channel { get; set; }
-        string ChannelKey { get; set; }
-        string ChannelDisplayName { get; set; }
-        DateTime? ActivatedAt { get; set; }
-        bool IsActive => ActivatedAt.HasValue;
-
-        public static Func<string, string> NormFunc => s => s.ToUpperInvariant();
+        new string Channel { get; set; }
+        new string ChannelKey { get; set; }
+        new string ChannelDisplayName { get; set; }
+        new DateTime? ActivatedAt { get; set; }
     }
 }

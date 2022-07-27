@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 namespace Phoenix.DataHandle.Repositories
 {
     public abstract class ConnectionRepository<TConnectionModel> : Repository<TConnectionModel>
-        where TConnectionModel : class, IConnectionEntity<TConnectionModel>, new()
+        where TConnectionModel : class, IConnectionEntity, new()
     {
         private const string InvalidRegisterMsg = "{0} Channel Key {1} is already assigned to another tenant.";
         private const string InvalidConnectionMsg = "{0} Channel Key {1} is not assigned to any tenant.";
@@ -116,21 +116,23 @@ namespace Phoenix.DataHandle.Repositories
             return connections.Select(l => DisconnectPrepare(l));
         }
 
-        public async Task<TConnectionModel?> DisconnectAsync(
-            TConnectionModel? connection,
+        public async Task<TConnectionModel> DisconnectAsync(
+            TConnectionModel connection,
             CancellationToken cancellationToken = default)
         {
-            if (connection is null)
-                return null;
-
             return await UpdateAsync(DisconnectPrepare(connection), cancellationToken);
         }
 
-        public async Task<TConnectionModel?> DisconnectAsync(
+        public async Task<TConnectionModel> DisconnectAsync(
             ChannelProvider channelProvider, string channelKey,
             CancellationToken cancellationToken = default)
         {
             var connection = await FindUniqueAsync(channelProvider, channelKey, cancellationToken);
+            
+            if (connection is null)
+                throw new InvalidOperationException(
+                    string.Format(InvalidConnectionMsg, channelProvider.ToFriendlyString(), channelKey));
+
             return await DisconnectAsync(connection, cancellationToken);
         }
 

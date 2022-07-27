@@ -128,16 +128,9 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<ILecture> ISchedule.Lectures => this.Lectures;
     }
 
-    public partial class SchoolConnection : ISchoolConnection, IConnectionEntity<SchoolConnection>
+    public partial class SchoolConnection : ISchoolConnection, IConnectionEntity
     {
         ISchool ISchoolConnection.Tenant => this.Tenant;
-
-        public SchoolConnection Normalize()
-        {
-            this.Channel = IConnectionEntity<SchoolConnection>.NormFunc(this.Channel);
-
-            return this;
-        }
     }
 
     public partial class School : ISchool, IObviableModelEntity
@@ -156,16 +149,9 @@ namespace Phoenix.DataHandle.Main.Models
         ISchool ISchoolSetting.School => this.School;
     }
 
-    public partial class UserConnection : IUserConnection, IConnectionEntity<UserConnection>
+    public partial class UserConnection : IUserConnection, IConnectionEntity
     {
         IUser IUserConnection.Tenant => this.Tenant;
-
-        public UserConnection Normalize()
-        {
-            this.Channel = IConnectionEntity<UserConnection>.NormFunc(this.Channel);
-
-            return this;
-        }
     }
 
     public partial class User : IUser, IObviableModelEntity

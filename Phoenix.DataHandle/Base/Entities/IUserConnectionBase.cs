@@ -1,9 +1,7 @@
 ﻿namespace Phoenix.DataHandle.Base.Entities
 {
-    public interface IUserConnectionBase
+    public interface IUserConnectionBase : IConnectionBase
     {
-        string Channel { get; }
-        string ChannelKey { get; }
-        string ChannelDisplayName { get; }
+
     }
 }
