@@ -37,6 +37,13 @@ namespace Phoenix.DataHandle.Api
             return isAuth;
         }
 
+        protected School? FindSchool(int schoolId)
+        {
+            return this.PhoenixUser?
+                .Schools
+                .SingleOrDefault(s => s.Id == schoolId);
+        }
+
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
