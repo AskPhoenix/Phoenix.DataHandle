@@ -3,44 +3,51 @@ using Phoenix.DataHandle.Api.Entities;
 using Phoenix.DataHandle.Api.Models.Extensions;
 using Phoenix.DataHandle.Base.Entities;
 using Phoenix.DataHandle.Main.Models;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace Phoenix.DataHandle.Api.Models
 {
     public class SchoolSettingApi : ISchoolSettingApi, IModelApi
     {
         [JsonConstructor]
-        public SchoolSettingApi(int schoolId, string country, string primaryLanguage, string primaryLocale,
-            string secondaryLanguage, string secondaryLocale, string timeZone, string phoneCode)
+        public SchoolSettingApi(int schoolId, string country, string primaryLocale,
+            string secondaryLocale, string timeZone, string phoneCountryCode)
         {
             if (string.IsNullOrWhiteSpace(country))
-                throw new ArgumentNullException(nameof(country));
-            if (string.IsNullOrWhiteSpace(primaryLanguage))
-                throw new ArgumentNullException(nameof(primaryLanguage));
-            if (string.IsNullOrWhiteSpace(primaryLocale))
-                throw new ArgumentNullException(nameof(primaryLocale));
-            if (string.IsNullOrWhiteSpace(secondaryLanguage))
-                throw new ArgumentNullException(nameof(secondaryLanguage));
-            if (string.IsNullOrWhiteSpace(secondaryLocale))
-                throw new ArgumentNullException(nameof(secondaryLocale));
+                country = null!;
             if (string.IsNullOrWhiteSpace(timeZone))
-                throw new ArgumentNullException(nameof(timeZone));
-            if (string.IsNullOrWhiteSpace(phoneCode))
-                throw new ArgumentNullException(nameof(phoneCode));
-
+                timeZone = null!;
+            
             this.SchoolId = schoolId;
             this.Country = country;
-            this.PrimaryLanguage = primaryLanguage;
-            this.PrimaryLocale = primaryLocale;
-            this.SecondaryLanguage = secondaryLanguage;
-            this.SecondaryLocale = secondaryLocale;
-            this.TimeZone = timeZone;
-            this.PhoneCountryCode = phoneCode;
+            this.PhoneCountryCode = phoneCountryCode;
+
+            try
+            {
+                this.PrimaryLanguage = CultureInfo.GetCultureInfo(primaryLocale).EnglishName;
+                this.PrimaryLocale = primaryLocale;
+            }
+            catch (CultureNotFoundException) { }
+
+            try
+            {
+                this.SecondaryLanguage = CultureInfo.GetCultureInfo(secondaryLocale).EnglishName;
+                this.SecondaryLocale = secondaryLocale;
+            }
+            catch (CultureNotFoundException) { }
+
+            try
+            {
+                TimeZoneInfo.FindSystemTimeZoneById(timeZone);
+                this.TimeZone = timeZone;
+            }
+            catch (TimeZoneNotFoundException) { }
         }
 
         public SchoolSettingApi(int schoolId, ISchoolSettingBase schoolSetting)
-            : this(schoolId, schoolSetting.Country, schoolSetting.PrimaryLanguage, schoolSetting.PrimaryLocale,
-                  schoolSetting.SecondaryLanguage, schoolSetting.SecondaryLocale, schoolSetting.TimeZone,
-                  schoolSetting.PhoneCountryCode)
+            : this(schoolId, schoolSetting.Country, schoolSetting.PrimaryLocale,
+                  schoolSetting.SecondaryLocale, schoolSetting.TimeZone, schoolSetting.PhoneCountryCode)
         {
         }
 
@@ -77,31 +84,34 @@ namespace Phoenix.DataHandle.Api.Models
             return schoolSettingToUpdate;
         }
 
-        [JsonProperty(PropertyName = "school_id")]
+        [JsonProperty("school_id", Required = Required.DisallowNull)]
         public int SchoolId { get; }
 
         [JsonIgnore]
         public int Id => this.SchoolId;
 
-        [JsonProperty(PropertyName = "country")]
-        public string Country { get; } = null!;
+        [JsonProperty("country", Required = Required.Always)]
+        public string Country { get; }
 
-        [JsonProperty(PropertyName = "primary_language")]
+        [JsonProperty("primary_language")]
         public string PrimaryLanguage { get; } = null!;
 
-        [JsonProperty(PropertyName = "primary_locale")]
+        [RegularExpression("^[a-z]{2}-[A-Z]{2}$")]
+        [JsonProperty("primary_locale", Required = Required.Always)]
         public string PrimaryLocale { get; } = null!;
 
-        [JsonProperty(PropertyName = "secondary_language")]
+        [JsonProperty("secondary_language")]
         public string SecondaryLanguage { get; } = null!;
 
-        [JsonProperty(PropertyName = "secondary_locale")]
+        [RegularExpression("^[a-z]{2}-[A-Z]{2}$")]
+        [JsonProperty("secondary_locale", Required = Required.Always)]
         public string SecondaryLocale { get; } = null!;
 
-        [JsonProperty(PropertyName = "time_zone")]
+        [JsonProperty("time_zone", Required = Required.Always)]
         public string TimeZone { get; } = null!;
 
-        [JsonProperty(PropertyName = "phone_code")]
-        public string PhoneCountryCode { get; } = null!;
+        [RegularExpression("^\\+\\d{1,3}$")]
+        [JsonProperty("phone_country_code", Required = Required.Always)]
+        public string PhoneCountryCode { get; }
     }
 }

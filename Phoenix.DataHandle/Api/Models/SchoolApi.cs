@@ -9,26 +9,26 @@ namespace Phoenix.DataHandle.Api.Models
     public class SchoolApi : ISchoolApi, IModelApi
     {
         [JsonConstructor]
-        public SchoolApi(int id, int code, string name, string slug, string city, string address,
+        public SchoolApi(int id, int code, string name, string slug, string city, string addressLine,
             string? description, SchoolSettingApi schoolSetting)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException(nameof(name));
+                name = null!;
             if (string.IsNullOrWhiteSpace(slug))
-                throw new ArgumentNullException(nameof(slug));
+                slug = null!;
             if (string.IsNullOrWhiteSpace(city))
-                throw new ArgumentNullException(nameof(city));
-            if (string.IsNullOrWhiteSpace(address))
-                throw new ArgumentNullException(nameof(address));
+                city = null!;
+            if (string.IsNullOrWhiteSpace(addressLine))
+                addressLine = null!;
             if (schoolSetting is null)
-                throw new ArgumentNullException(nameof(schoolSetting));
+                schoolSetting = null!;
 
             this.Id = id;
             this.Code = code;
             this.Name = name;
             this.Slug = slug;
             this.City = city;
-            this.AddressLine = address;
+            this.AddressLine = addressLine;
             this.Description = description;
             this.SchoolSetting = schoolSetting;
         }
@@ -54,45 +54,51 @@ namespace Phoenix.DataHandle.Api.Models
                 Slug = this.Slug,
                 City = this.City,
                 AddressLine = this.AddressLine,
-                Description = this.Description
+                Description = this.Description,
+
+                SchoolSetting = this.SchoolSetting.ToSchoolSetting()
             };
         }
 
         public School ToSchool(School schoolToUpdate)
         {
-            schoolToUpdate.Code = this.Code;
             schoolToUpdate.Name = this.Name;
             schoolToUpdate.Slug = this.Slug;
             schoolToUpdate.City = this.City;
             schoolToUpdate.AddressLine = this.AddressLine;
             schoolToUpdate.Description = this.Description;
 
+            if (schoolToUpdate.SchoolSetting is not null)
+                schoolToUpdate.SchoolSetting = this.SchoolSetting.ToSchoolSetting(schoolToUpdate.SchoolSetting);
+
             return schoolToUpdate;
         }
 
-        [JsonProperty(PropertyName = "id")]
+        // TODO: Annotate all API Models
+
+        [JsonProperty("id", Required = Required.DisallowNull)]
         public int Id { get; }
 
-        [JsonProperty(PropertyName = "code")]
+        [JsonProperty("code", Required = Required.DisallowNull)]
         public int Code { get; }
 
-        [JsonProperty(PropertyName = "name")]
-        public string Name { get; } = null!;
+        [JsonProperty("name", Required = Required.Always)]
+        public string Name { get; }
 
-        [JsonProperty(PropertyName = "slug")]
-        public string Slug { get; } = null!;
+        [JsonProperty("slug", Required = Required.Always)]
+        public string Slug { get; }
 
-        [JsonProperty(PropertyName = "city")]
-        public string City { get; } = null!;
+        [JsonProperty("city", Required = Required.Always)]
+        public string City { get; }
 
-        [JsonProperty(PropertyName = "address")]
-        public string AddressLine { get; } = null!;
+        [JsonProperty("address", Required = Required.Always)]
+        public string AddressLine { get; }
 
-        [JsonProperty(PropertyName = "description")]
+        [JsonProperty("description", Required = Required.Always)]
         public string? Description { get; }
 
-        [JsonProperty(PropertyName = "school_settings")]
-        public SchoolSettingApi SchoolSetting { get; } = null!;
+        [JsonProperty("school_settings", Required = Required.Always)]
+        public SchoolSettingApi SchoolSetting { get; }
 
         ISchoolSettingApi ISchoolApi.SchoolSetting => this.SchoolSetting;
     }

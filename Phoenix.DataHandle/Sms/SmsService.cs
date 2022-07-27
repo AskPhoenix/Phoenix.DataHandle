@@ -29,6 +29,8 @@ namespace Phoenix.DataHandle.Sms
 
         public void Send(string destination, string body)
         {
+            // TODO: Verify phone number according to E.164 standard: ^\+[1-9]\d{1,14}$
+
             if (string.IsNullOrEmpty(destination))
                 throw new ArgumentNullException(nameof(destination));
             if (string.IsNullOrEmpty(body))

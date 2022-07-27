@@ -226,12 +226,10 @@ namespace Phoenix.Verification.DataHandle.Tests
                     SchoolSetting = new SchoolSetting
                     {
                         Country = "Ellada",
-                        PhoneCountryCode = "0030",
-                        PrimaryLanguage = "Greek",
-                        PrimaryLocale = "el-GR",
-                        SecondaryLanguage = "English",
-                        SecondaryLocale = "en-US",
-                        TimeZone = "Eastern European Time"
+                        PhoneCountryCode = "+30",
+                        PrimaryLocale = "en",
+                        SecondaryLocale = "el",
+                        TimeZone = "GTB Standard Time"
                     }
                 };
 
