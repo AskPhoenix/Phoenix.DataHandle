@@ -76,10 +76,10 @@ namespace Phoenix.DataHandle.Api.Models
 
         // TODO: Annotate all API Models
 
-        [JsonProperty("id", Required = Required.DisallowNull)]
+        [JsonProperty("id")]
         public int Id { get; }
 
-        [JsonProperty("code", Required = Required.DisallowNull)]
+        [JsonProperty("code")]
         public int Code { get; }
 
         [JsonProperty("name", Required = Required.Always)]

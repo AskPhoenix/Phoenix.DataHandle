@@ -84,7 +84,7 @@ namespace Phoenix.DataHandle.Api.Models
             return schoolSettingToUpdate;
         }
 
-        [JsonProperty("school_id", Required = Required.DisallowNull)]
+        [JsonProperty("school_id")]
         public int SchoolId { get; }
 
         [JsonIgnore]
