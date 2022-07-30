@@ -58,25 +58,25 @@ namespace Phoenix.DataHandle.Api.Models
             return scheduleToUpdate;
         }
 
-        [JsonProperty(PropertyName = "id")]
+        [JsonProperty("id")]
         public int Id { get; }
 
-        [JsonProperty(PropertyName = "course_id")]
+        [JsonProperty("course_id", Required = Required.Always)]
         public int CourseId { get; }
 
-        [JsonProperty(PropertyName = "classroom_id")]
+        [JsonProperty("classroom_id")]
         public int? ClassroomId { get; }
 
-        [JsonProperty(PropertyName = "day_of_week")]
+        [JsonProperty("day_of_week", Required = Required.Always)]
         public DayOfWeek DayOfWeek { get; }
 
-        [JsonProperty(PropertyName = "start_time")]
+        [JsonProperty("start_time", Required = Required.Always)]
         public DateTime StartTime { get; }
 
-        [JsonProperty(PropertyName = "end_time")]
+        [JsonProperty("end_time", Required = Required.Always)]
         public DateTime EndTime { get; }
 
-        [JsonProperty(PropertyName = "comments")]
+        [JsonProperty("comments")]
         public string? Comments { get; }
     }
 }

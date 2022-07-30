@@ -51,16 +51,16 @@ namespace Phoenix.DataHandle.Api.Models
             return classroomToUpdate.Normalize();
         }
 
-        [JsonProperty(PropertyName = "id")]
+        [JsonProperty("id")]
         public int Id { get; }
 
-        [JsonProperty(PropertyName = "school_id")]
+        [JsonProperty("school_id", Required = Required.Always)]
         public int SchoolId { get; }
 
-        [JsonProperty(PropertyName = "name")]
+        [JsonProperty("name", Required = Required.Always)]
         public string Name { get; } = null!;
 
-        [JsonProperty(PropertyName = "comments")]
+        [JsonProperty("comments")]
         public string? Comments { get; }
     }
 }

@@ -94,7 +94,7 @@ namespace Phoenix.DataHandle.Api.Models
         [JsonProperty("address", Required = Required.Always)]
         public string AddressLine { get; }
 
-        [JsonProperty("description", Required = Required.Always)]
+        [JsonProperty("description")]
         public string? Description { get; }
 
         [JsonProperty("school_settings", Required = Required.Always)]

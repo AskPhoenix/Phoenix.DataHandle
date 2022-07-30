@@ -50,16 +50,16 @@ namespace Phoenix.DataHandle.Api.Models
             return bookToUpdate.Normalize();
         }
 
-        [JsonProperty(PropertyName = "id")]
+        [JsonProperty("id")]
         public int Id { get; }
 
-        [JsonProperty(PropertyName = "name")]
+        [JsonProperty("name", Required = Required.Always)]
         public string Name { get; } = null!;
 
-        [JsonProperty(PropertyName = "publisher")]
+        [JsonProperty("publisher")]
         public string? Publisher { get; }
 
-        [JsonProperty(PropertyName = "comments")]
+        [JsonProperty("comments")]
         public string? Comments { get; }
     }
 }

@@ -73,40 +73,40 @@ namespace Phoenix.DataHandle.Api.Models
             return lectureToUpdate;
         }
 
-        [JsonProperty(PropertyName = "id")]
+        [JsonProperty("id")]
         public int Id { get; }
 
-        [JsonProperty(PropertyName = "course_id")]
+        [JsonProperty("course_id", Required = Required.Always)]
         public int CourseId { get; }
 
-        [JsonProperty(PropertyName = "classroom_id")]
+        [JsonProperty("classroom_id")]
         public int? ClassroomId { get; }
 
-        [JsonProperty(PropertyName = "schedule_id")]
+        [JsonProperty("schedule_id")]
         public int? ScheduleId { get; }
 
-        [JsonProperty(PropertyName = "start_datetime")]
+        [JsonProperty("start_datetime", Required = Required.Always)]
         public DateTimeOffset StartDateTime { get; }
 
-        [JsonProperty(PropertyName = "end_datetime")]
+        [JsonProperty("end_datetime", Required = Required.Always)]
         public DateTimeOffset EndDateTime { get; }
 
-        [JsonProperty(PropertyName = "online_meeting_link")]
+        [JsonProperty("online_meeting_link")]
         public string? OnlineMeetingLink { get; }
 
-        [JsonProperty(PropertyName = "occasion")]
+        [JsonProperty("occasion")]
         public LectureOccasion Occasion { get; }
 
-        [JsonProperty(PropertyName = "attendances_noted")]
+        [JsonProperty("attendances_noted", Required = Required.Always)]
         public bool AttendancesNoted { get; }
 
-        [JsonProperty(PropertyName = "is_cancelled")]
+        [JsonProperty("is_cancelled", Required = Required.Always)]
         public bool IsCancelled { get; }
 
-        [JsonProperty(PropertyName = "replacement_lecture_id")]
+        [JsonProperty("replacement_lecture_id")]
         public int? ReplacementLectureId { get; }
 
-        [JsonProperty(PropertyName = "comments")]
+        [JsonProperty("comments")]
         public string? Comments { get; }
     }
 }
