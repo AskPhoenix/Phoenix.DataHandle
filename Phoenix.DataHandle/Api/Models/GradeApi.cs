@@ -60,28 +60,28 @@ namespace Phoenix.DataHandle.Api.Models
             return gradeToUpdate;
         }
 
-        [JsonProperty(PropertyName = "id")]
+        [JsonProperty("id")]
         public int Id { get; }
 
-        [JsonProperty(PropertyName = "student_id")]
+        [JsonProperty("student_id", Required = Required.Always)]
         public int StudentId { get; }
 
-        [JsonProperty(PropertyName = "course_id")]
+        [JsonProperty("course_id")]
         public int? CourseId { get; }
 
-        [JsonProperty(PropertyName = "exam_id")]
+        [JsonProperty("exam_id")]
         public int? ExamId { get; }
 
-        [JsonProperty(PropertyName = "exercise_id")]
+        [JsonProperty("exercise_id")]
         public int? ExerciseId { get; }
 
-        [JsonProperty(PropertyName = "score")]
+        [JsonProperty("score", Required = Required.Always)]
         public decimal Score { get; }
 
-        [JsonProperty(PropertyName = "topic")]
+        [JsonProperty("topic")]
         public string? Topic { get; }
 
-        [JsonProperty(PropertyName = "justification")]
+        [JsonProperty("justification")]
         public string? Justification { get; }
     }
 }

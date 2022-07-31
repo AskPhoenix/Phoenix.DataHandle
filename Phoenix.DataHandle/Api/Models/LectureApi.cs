@@ -30,11 +30,14 @@ namespace Phoenix.DataHandle.Api.Models
                   lecture.StartDateTime, lecture.EndDateTime, lecture.OnlineMeetingLink,
                   lecture.AttendancesNoted, lecture.Comments)
         {
+            this.Occasion = lecture.Occasion;
+            this.IsCancelled = lecture.IsCancelled;
         }
 
         public LectureApi(Lecture lecture)
             : this(lecture.Id, lecture.CourseId, lecture.ClassroomId, lecture.ScheduleId, lecture)
         {
+            this.ReplacementLectureId = lecture.ReplacementLectureId;
         }
 
         public Lecture ToLecture()
@@ -48,10 +51,7 @@ namespace Phoenix.DataHandle.Api.Models
                 StartDateTime = this.StartDateTime,
                 EndDateTime = this.EndDateTime,
                 OnlineMeetingLink = this.OnlineMeetingLink,
-                Occasion = this.Occasion,
                 AttendancesNoted = this.AttendancesNoted,
-                IsCancelled = this.IsCancelled,
-                ReplacementLectureId = this.ReplacementLectureId,
                 Comments = this.Comments
             };
         }
@@ -64,10 +64,7 @@ namespace Phoenix.DataHandle.Api.Models
             lectureToUpdate.StartDateTime = this.StartDateTime;
             lectureToUpdate.EndDateTime = this.EndDateTime;
             lectureToUpdate.OnlineMeetingLink = this.OnlineMeetingLink;
-            lectureToUpdate.Occasion = this.Occasion;
             lectureToUpdate.AttendancesNoted = this.AttendancesNoted;
-            lectureToUpdate.IsCancelled = this.IsCancelled;
-            lectureToUpdate.ReplacementLectureId = this.ReplacementLectureId;
             lectureToUpdate.Comments = this.Comments;
 
             return lectureToUpdate;
@@ -100,7 +97,7 @@ namespace Phoenix.DataHandle.Api.Models
         [JsonProperty("attendances_noted", Required = Required.Always)]
         public bool AttendancesNoted { get; }
 
-        [JsonProperty("is_cancelled", Required = Required.Always)]
+        [JsonProperty("is_cancelled")]
         public bool IsCancelled { get; }
 
         [JsonProperty("replacement_lecture_id")]

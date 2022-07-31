@@ -9,28 +9,26 @@ namespace Phoenix.DataHandle.Api.Models
     public class UserApi : IUserApi, IModelApi
     {
         [JsonConstructor]
-        public UserApi(int id, string firstName, string lastName, string fullName,
-            bool isSelfDetermined, int dependenceOrder)
+        public UserApi(int id, string firstName, string lastName, string fullName, bool isSelfDetermined)
         {
             if (string.IsNullOrWhiteSpace(firstName))
-                throw new ArgumentNullException(nameof(firstName));
+                firstName = null!;
             if (string.IsNullOrWhiteSpace(lastName))
-                throw new ArgumentNullException(nameof(lastName));
+                lastName = null!;
             if (string.IsNullOrWhiteSpace(fullName))
-                throw new ArgumentNullException(nameof(fullName));
+                fullName = null!;
 
             this.Id = id;
             this.FirstName = firstName;
             this.LastName = lastName;
             this.FullName = fullName;
             this.IsSelfDetermined = isSelfDetermined;
-            this.DependenceOrder = dependenceOrder;
         }
 
         public UserApi(int id, IUserBase user)
-            : this(id, user.FirstName, user.LastName, user.FullName,
-                  user.IsSelfDetermined, user.DependenceOrder)
+            : this(id, user.FirstName, user.LastName, user.FullName, user.IsSelfDetermined)
         {
+            this.DependenceOrder = user.DependenceOrder;
         }
 
         public UserApi(User user)
@@ -60,22 +58,22 @@ namespace Phoenix.DataHandle.Api.Models
             return userToUpdate;
         }
 
-        [JsonProperty(PropertyName = "id")]
+        [JsonProperty("id")]
         public int Id { get; }
 
-        [JsonProperty(PropertyName = "first_name")]
+        [JsonProperty("first_name", Required = Required.Always)]
         public string FirstName { get; } = null!;
 
-        [JsonProperty(PropertyName = "last_name")]
+        [JsonProperty("last_name", Required = Required.Always)]
         public string LastName { get; } = null!;
 
-        [JsonProperty(PropertyName = "full_name")]
+        [JsonProperty("full_name", Required = Required.Always)]
         public string FullName { get; } = null!;
 
-        [JsonProperty(PropertyName = "is_self_determined")]
+        [JsonProperty("is_self_determined", Required = Required.Always)]
         public bool IsSelfDetermined { get; }
 
-        [JsonProperty(PropertyName = "dependance_order")]
+        [JsonProperty("dependance_order")]
         public int DependenceOrder { get; }
     }
 }

@@ -53,22 +53,22 @@ namespace Phoenix.DataHandle.Api.Models
             return materialToUpdate;
         }
 
-        [JsonProperty(PropertyName = "id")]
+        [JsonProperty("id")]
         public int Id { get; }
 
-        [JsonProperty(PropertyName = "exam_id")]
+        [JsonProperty("exam_id", Required = Required.Always)]
         public int ExamId { get; }
 
-        [JsonProperty(PropertyName = "book_id")]
+        [JsonProperty("book_id")]
         public int? BookId { get; }
 
-        [JsonProperty(PropertyName = "chapter")]
+        [JsonProperty("chapter")]
         public string? Chapter { get; }
 
-        [JsonProperty(PropertyName = "section")]
+        [JsonProperty("section")]
         public string? Section { get; }
 
-        [JsonProperty(PropertyName = "comments")]
+        [JsonProperty("comments")]
         public string? Comments { get; }
     }
 }

@@ -21,11 +21,11 @@ namespace Phoenix.DataHandle.Api.Models
             : this()
         {
             if (string.IsNullOrWhiteSpace(username))
-                throw new ArgumentNullException(nameof(username));
+                username = null!;
             if (string.IsNullOrWhiteSpace(phoneNumber))
-                throw new ArgumentNullException(nameof(phoneNumber));
+                phoneNumber = null!;
             if (user is null)
-                throw new ArgumentNullException(nameof(user));
+                user = null!;
 
             this.Id = id;
             this.UserName = username;
@@ -68,22 +68,22 @@ namespace Phoenix.DataHandle.Api.Models
             return appUserToUpdate.Normalize();
         }
 
-        [JsonProperty(PropertyName = "id")]
+        [JsonProperty("id")]
         public int Id { get; }
 
-        [JsonProperty(PropertyName = "username")]
+        [JsonProperty("username", Required = Required.Always)]
         public string UserName { get; } = null!;
 
-        [JsonProperty(PropertyName = "email")]
+        [JsonProperty("email")]
         public string? Email { get; }
 
-        [JsonProperty(PropertyName = "phone_number")]
+        [JsonProperty("phone_number", Required = Required.Always)]
         public string PhoneNumber { get; } = null!;
 
-        [JsonProperty(PropertyName = "user_info")]
+        [JsonProperty("user_info", Required = Required.Always)]
         public UserApi User { get; } = null!;
 
-        [JsonProperty("roles")]
+        [JsonProperty("roles", Required = Required.Always)]
         public List<string> Roles { get; }
 
         IUserApi IAspNetUserApi.User => this.User;

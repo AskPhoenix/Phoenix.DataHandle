@@ -12,7 +12,7 @@ namespace Phoenix.DataHandle.Api.Models
         public ClassroomApi(int id, int schoolId, string name, string? comments)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException(nameof(name));
+                name = null!;
 
             this.Id = id;
             this.SchoolId = schoolId;

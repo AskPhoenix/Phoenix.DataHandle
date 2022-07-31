@@ -12,7 +12,7 @@ namespace Phoenix.DataHandle.Api.Models
         public BookApi(int id, string name, string? publisher, string? comments)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException(nameof(name));
+                name = null!;
 
             this.Id = id;
             this.Name = name;

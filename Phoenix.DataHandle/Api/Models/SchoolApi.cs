@@ -74,8 +74,6 @@ namespace Phoenix.DataHandle.Api.Models
             return schoolToUpdate;
         }
 
-        // TODO: Annotate all API Models
-
         [JsonProperty("id")]
         public int Id { get; }
 

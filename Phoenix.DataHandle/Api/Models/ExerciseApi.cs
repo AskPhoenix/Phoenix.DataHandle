@@ -12,7 +12,7 @@ namespace Phoenix.DataHandle.Api.Models
         public ExerciseApi(int id, int lectureId, string name, int? bookId, string? page, string? comments)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException(nameof(name));
+                name = null!;
 
             this.Id = id;
             this.LectureId = lectureId;
@@ -56,22 +56,22 @@ namespace Phoenix.DataHandle.Api.Models
             return exerciseToUpdate;
         }
 
-        [JsonProperty(PropertyName = "id")]
+        [JsonProperty("id")]
         public int Id { get; }
 
-        [JsonProperty(PropertyName = "lecture_id")]
+        [JsonProperty("lecture_id", Required = Required.Always)]
         public int LectureId { get; }
 
-        [JsonProperty(PropertyName = "name")]
+        [JsonProperty("name", Required = Required.Always)]
         public string Name { get; } = null!;
 
-        [JsonProperty(PropertyName = "book_id")]
+        [JsonProperty("book_id")]
         public int? BookId { get; }
 
-        [JsonProperty(PropertyName = "page")]
+        [JsonProperty("page")]
         public string? Page { get; }
 
-        [JsonProperty(PropertyName = "comments")]
+        [JsonProperty("comments")]
         public string? Comments { get; }
     }
 }

@@ -47,16 +47,16 @@ namespace Phoenix.DataHandle.Api.Models
             return examToUpdate;
         }
 
-        [JsonProperty(PropertyName = "id")]
+        [JsonProperty("id")]
         public int Id { get; }
 
-        [JsonProperty(PropertyName = "lecture_id")]
+        [JsonProperty("lecture_id", Required = Required.Always)]
         public int LectureId { get; }
 
-        [JsonProperty(PropertyName = "name")]
+        [JsonProperty("name")]
         public string? Name { get; }
 
-        [JsonProperty(PropertyName = "comments")]
+        [JsonProperty("comments")]
         public string? Comments { get; }
     }
 }

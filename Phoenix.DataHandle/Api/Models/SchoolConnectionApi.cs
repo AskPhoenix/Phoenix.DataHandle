@@ -32,6 +32,7 @@ namespace Phoenix.DataHandle.Api.Models
         public SchoolConnectionApi(int id, int tenantId, ISchoolConnectionBase schoolConnection)
             : this(id, tenantId, schoolConnection.Channel, schoolConnection.ChannelKey)
         {
+            this.ActivatedAt = schoolConnection.ActivatedAt;
         }
 
         public SchoolConnectionApi(SchoolConnection schoolConnection)
@@ -78,10 +79,10 @@ namespace Phoenix.DataHandle.Api.Models
         [JsonIgnore]
         public string ChannelDisplayName { get; } = null!;
 
-        [JsonProperty("activated_at", Required = Required.AllowNull)]
+        [JsonProperty("activated_at")]
         public DateTime? ActivatedAt { get; }
 
-        [JsonProperty("is_active", Required = Required.Always)]
+        [JsonProperty("is_active")]
         public bool IsActive => (this as ISchoolConnectionApi).IsActive;
 
 
