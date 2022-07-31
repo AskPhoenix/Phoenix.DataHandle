@@ -2,7 +2,7 @@
 
 namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IAspNetUser : IAspNetUserBase
+    public interface IApplicationUser : IApplicationUserBase
     {
 
     }

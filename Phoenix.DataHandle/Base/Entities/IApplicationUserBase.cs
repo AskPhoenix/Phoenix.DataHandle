@@ -1,6 +1,6 @@
 ﻿namespace Phoenix.DataHandle.Base.Entities
 {
-    public interface IAspNetUserBase
+    public interface IApplicationUserBase
     {
         string UserName { get; }
         string? Email { get; }

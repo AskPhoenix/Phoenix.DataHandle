@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace Phoenix.DataHandle.Identity
 {
-    public class ApplicationUser : IdentityUser<int>, IAspNetUser
+    public class ApplicationUser : IdentityUser<int>, IApplicationUser
     {
         public ApplicationUser()
             : base()

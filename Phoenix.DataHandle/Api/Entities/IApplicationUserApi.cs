@@ -2,7 +2,7 @@
 
 namespace Phoenix.DataHandle.Api.Entities
 {
-    public interface IAspNetUserApi : IAspNetUserBase
+    public interface IApplicationUserApi : IApplicationUserBase
     {
         IUserApi User { get; }
     }

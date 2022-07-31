@@ -8,15 +8,15 @@ using Phoenix.DataHandle.Main.Types;
 
 namespace Phoenix.DataHandle.Api.Models
 {
-    public class AspNetUserApi : IAspNetUserApi, IModelApi
+    public class ApplicationUserApi : IApplicationUserApi, IModelApi
     {
-        private AspNetUserApi()
+        private ApplicationUserApi()
         {
             this.Roles = new string[1] { RoleRank.None.ToNormalizedString() }.ToList();
         }
 
         [JsonConstructor]
-        public AspNetUserApi(int id, string username, string? email, string phoneNumber,
+        public ApplicationUserApi(int id, string username, string? email, string phoneNumber,
             UserApi user, List<string>? roles = null)
             : this()
         {
@@ -37,13 +37,13 @@ namespace Phoenix.DataHandle.Api.Models
                 this.Roles = roles;
         }
 
-        public AspNetUserApi(int id, IUserBase user, IAspNetUserBase aspNetUser, List<string>? roles = null)
+        public ApplicationUserApi(int id, IUserBase user, IApplicationUserBase aspNetUser, List<string>? roles = null)
             : this(id, aspNetUser.UserName, aspNetUser.Email, aspNetUser.PhoneNumber,
                   new(id, user), roles)
         {
         }
 
-        public AspNetUserApi(User user, ApplicationUser appUser, List<string>? roles = null)
+        public ApplicationUserApi(User user, ApplicationUser appUser, List<string>? roles = null)
             : this(appUser.Id, user, appUser, roles)
         {
         }
@@ -86,6 +86,6 @@ namespace Phoenix.DataHandle.Api.Models
         [JsonProperty("roles", Required = Required.Always)]
         public List<string> Roles { get; }
 
-        IUserApi IAspNetUserApi.User => this.User;
+        IUserApi IApplicationUserApi.User => this.User;
     }
 }
