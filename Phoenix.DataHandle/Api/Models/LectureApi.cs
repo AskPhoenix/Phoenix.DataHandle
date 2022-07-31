@@ -20,9 +20,12 @@ namespace Phoenix.DataHandle.Api.Models
             this.ScheduleId = scheduleId;
             this.StartDateTime = startDateTime;
             this.EndDateTime = endDateTime;
-            this.OnlineMeetingLink = onlineMeetingLink;
             this.AttendancesNoted = attendancesNoted;
             this.Comments = comments;
+
+            if (!string.IsNullOrWhiteSpace(onlineMeetingLink))
+                if (Uri.TryCreate(onlineMeetingLink, UriKind.Absolute, out Uri? link))
+                    this.OnlineMeetingLink = link.ToString();
         }
 
         public LectureApi(int id, int courseId, int? classroomId, int? scheduleId, ILectureBase lecture)
