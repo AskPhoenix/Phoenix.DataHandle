@@ -16,19 +16,16 @@ namespace Phoenix.DataHandle.Api.Models
         }
 
         [JsonConstructor]
-        public ApplicationUserApi(int id, string username, string? email, string phoneNumber,
-            UserApi user, List<string>? roles = null)
+        public ApplicationUserApi(int id, string? email, string phoneNumber, UserApi user,
+            List<string>? roles = null)
             : this()
         {
-            if (string.IsNullOrWhiteSpace(username))
-                username = null!;
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 phoneNumber = null!;
             if (user is null)
                 user = null!;
 
             this.Id = id;
-            this.UserName = username;
             this.Email = email;
             this.PhoneNumber = phoneNumber;
             this.User = user;
@@ -38,9 +35,10 @@ namespace Phoenix.DataHandle.Api.Models
         }
 
         public ApplicationUserApi(int id, IUserBase user, IApplicationUserBase aspNetUser, List<string>? roles = null)
-            : this(id, aspNetUser.UserName, aspNetUser.Email, aspNetUser.PhoneNumber,
+            : this(id, aspNetUser.Email, aspNetUser.PhoneNumber,
                   new(id, user), roles)
         {
+            this.UserName = aspNetUser.UserName;
         }
 
         public ApplicationUserApi(User user, ApplicationUser appUser, List<string>? roles = null)
@@ -71,7 +69,7 @@ namespace Phoenix.DataHandle.Api.Models
         [JsonProperty("id")]
         public int Id { get; }
 
-        [JsonProperty("username", Required = Required.Always)]
+        [JsonProperty("username")]
         public string UserName { get; } = null!;
 
         [JsonProperty("email")]
