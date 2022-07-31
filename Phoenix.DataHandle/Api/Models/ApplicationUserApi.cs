@@ -10,15 +10,8 @@ namespace Phoenix.DataHandle.Api.Models
 {
     public class ApplicationUserApi : IApplicationUserApi, IModelApi
     {
-        private ApplicationUserApi()
-        {
-            this.Roles = new string[1] { RoleRank.None.ToNormalizedString() }.ToList();
-        }
-
         [JsonConstructor]
-        public ApplicationUserApi(int id, string? email, string phoneNumber, UserApi user,
-            List<string>? roles = null)
-            : this()
+        public ApplicationUserApi(int id, string? email, string phoneNumber, UserApi user)
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 phoneNumber = null!;
@@ -30,19 +23,21 @@ namespace Phoenix.DataHandle.Api.Models
             this.PhoneNumber = phoneNumber;
             this.User = user;
 
-            if (roles is not null && roles.Any())
-                this.Roles = roles;
+            this.Roles = new string[1] { RoleRank.None.ToNormalizedString() }.ToList();
         }
 
-        public ApplicationUserApi(int id, IUserBase user, IApplicationUserBase aspNetUser, List<string>? roles = null)
-            : this(id, aspNetUser.Email, aspNetUser.PhoneNumber,
-                  new(id, user), roles)
+        public ApplicationUserApi(int id, IUserBase user, IApplicationUserBase aspNetUser,
+            List<RoleRank>? roleRanks = null)
+            : this(id, aspNetUser.Email, aspNetUser.PhoneNumber, new(id, user))
         {
+            if (roleRanks is not null)
+                this.Roles = roleRanks.Select(rr => rr.ToNormalizedString()).ToList();
+
             this.UserName = aspNetUser.UserName;
         }
 
-        public ApplicationUserApi(User user, ApplicationUser appUser, List<string>? roles = null)
-            : this(appUser.Id, user, appUser, roles)
+        public ApplicationUserApi(User user, ApplicationUser appUser, List<RoleRank>? roleRanks = null)
+            : this(appUser.Id, user, appUser, roleRanks)
         {
         }
 
@@ -81,7 +76,7 @@ namespace Phoenix.DataHandle.Api.Models
         [JsonProperty("user_info", Required = Required.Always)]
         public UserApi User { get; } = null!;
 
-        [JsonProperty("roles", Required = Required.Always)]
+        [JsonProperty("roles")]
         public List<string> Roles { get; }
 
         IUserApi IApplicationUserApi.User => this.User;
