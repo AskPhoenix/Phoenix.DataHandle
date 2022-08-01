@@ -7,4 +7,17 @@ namespace Phoenix.DataHandle.Api.Types
         Student = RoleRank.Student - RoleHierarchy.ClientRolesBase,
         Parent = RoleRank.Parent - RoleHierarchy.ClientRolesBase
     }
+
+    public static class ClientRoleRankApiExtensions
+    {
+        public static RoleRank ConvertToRoleRank(ClientRoleRankApi clientRoleRank)
+        {
+            var roleRank = (RoleRank)(clientRoleRank + RoleHierarchy.ClientRolesBase);
+
+            if (!roleRank.IsClient())
+                return RoleRank.None;
+
+            return roleRank;
+        }
+    }
 }

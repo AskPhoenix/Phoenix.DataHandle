@@ -9,4 +9,17 @@ namespace Phoenix.DataHandle.Api.Types
         SchoolAdmin = RoleRank.SchoolAdmin - RoleHierarchy.StaffRolesBase,
         SchoolOwner = RoleRank.SchoolOwner - RoleHierarchy.StaffRolesBase
     }
+
+    public static class PersonnelRoleRankApiExtensions
+    {
+        public static RoleRank ConvertToRoleRank(PersonnelRoleRankApi personnelRoleRank)
+        {
+            var roleRank = (RoleRank)(personnelRoleRank + RoleHierarchy.StaffRolesBase);
+
+            if (!roleRank.IsStaff())
+                return RoleRank.None;
+
+            return roleRank;
+        }
+    }
 }
