@@ -4,6 +4,6 @@
     {
         string UserName { get; }
         string? Email { get; }
-        string PhoneNumber { get; }
+        string? PhoneNumber { get; }
     }
 }

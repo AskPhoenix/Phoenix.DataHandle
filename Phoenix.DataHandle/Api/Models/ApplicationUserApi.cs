@@ -11,10 +11,8 @@ namespace Phoenix.DataHandle.Api.Models
     public class ApplicationUserApi : IApplicationUserApi, IModelApi
     {
         [JsonConstructor]
-        public ApplicationUserApi(int id, string? email, string phoneNumber, UserApi user)
+        public ApplicationUserApi(int id, string? email, string? phoneNumber, UserApi user)
         {
-            if (string.IsNullOrWhiteSpace(phoneNumber))
-                phoneNumber = null!;
             if (user is null)
                 user = null!;
 
@@ -70,8 +68,8 @@ namespace Phoenix.DataHandle.Api.Models
         [JsonProperty("email")]
         public string? Email { get; }
 
-        [JsonProperty("phone_number", Required = Required.Always)]
-        public string PhoneNumber { get; } = null!;
+        [JsonProperty("phone_number")]
+        public string? PhoneNumber { get; }
 
         [JsonProperty("user_info", Required = Required.Always)]
         public UserApi User { get; } = null!;
