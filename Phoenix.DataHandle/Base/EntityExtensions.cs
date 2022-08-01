@@ -46,12 +46,19 @@ namespace Phoenix.DataHandle.Base
             return me.FirstName + " " + me.LastName;
         }
 
-        public static string GenerateUserName(this IUserBase me, int schoolCode, string linkedPhone)
+        public static string GenerateUserName(this IUserBase me,
+            IEnumerable<int> schoolCodes, string linkedPhone)
+        {
+            return GenerateUserName(schoolCodes, linkedPhone, me.DependenceOrder);
+        }
+
+        public static string GenerateUserName(
+            IEnumerable<int> schoolCodes, string linkedPhone, int dependenceOrder)
         {
             if (string.IsNullOrWhiteSpace(linkedPhone))
                 throw new ArgumentNullException(nameof(linkedPhone));
 
-            return $"S{schoolCode}_P{linkedPhone}_O{me.DependenceOrder}";
+            return $"S{string.Join('_', schoolCodes)}__P{linkedPhone}__O{dependenceOrder}";
         }
     }
 }

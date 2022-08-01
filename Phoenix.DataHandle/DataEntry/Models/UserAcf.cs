@@ -86,7 +86,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         public string GenerateUserName(SchoolUnique schoolUq)
         {
-            return this.GenerateUserName(schoolUq.Code, this.PhoneString);
+            return this.GenerateUserName(new int[1] { schoolUq.Code }, this.PhoneString);
         }
 
         [JsonIgnore]
