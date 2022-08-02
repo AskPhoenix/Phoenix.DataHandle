@@ -418,8 +418,6 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasIndex(e => new { e.Channel, e.ChannelKey }, "IX_SchoolConnections")
                     .IsUnique();
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.ActivatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Channel).HasMaxLength(128);
@@ -444,25 +442,17 @@ namespace Phoenix.DataHandle.Main.Models
 
                 entity.Property(e => e.SchoolId).ValueGeneratedNever();
 
-                entity.Property(e => e.Country)
-                    .HasMaxLength(16)
-                    .IsFixedLength();
+                entity.Property(e => e.Country).HasMaxLength(64);
 
-                entity.Property(e => e.PhoneCountryCode)
-                    .HasMaxLength(8)
-                    .IsFixedLength();
+                entity.Property(e => e.PhoneCountryCode).HasMaxLength(4);
 
                 entity.Property(e => e.PrimaryLanguage).HasMaxLength(64);
 
-                entity.Property(e => e.PrimaryLocale)
-                    .HasMaxLength(8)
-                    .IsFixedLength();
+                entity.Property(e => e.PrimaryLocale).HasMaxLength(5);
 
                 entity.Property(e => e.SecondaryLanguage).HasMaxLength(64);
 
-                entity.Property(e => e.SecondaryLocale)
-                    .HasMaxLength(8)
-                    .IsFixedLength();
+                entity.Property(e => e.SecondaryLocale).HasMaxLength(5);
 
                 entity.Property(e => e.TimeZone).HasMaxLength(64);
 
