@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Api.Models;
 using Phoenix.DataHandle.Main.Models;
-using Phoenix.Verification.Base;
 using Phoenix.Verification.Utilities;
-using Xunit;
 
 namespace Phoenix.Verification.DataHandle.Tests
 {

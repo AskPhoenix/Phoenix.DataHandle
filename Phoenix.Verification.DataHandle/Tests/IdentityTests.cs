@@ -1,7 +1,5 @@
 using Phoenix.DataHandle.Identity;
 using Phoenix.DataHandle.Main.Types;
-using Phoenix.Verification.Base;
-using Xunit;
 
 namespace Phoenix.Verification.DataHandle.Tests
 {

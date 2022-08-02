@@ -1,11 +1,9 @@
 ﻿using Phoenix.DataHandle.DataEntry;
 using Phoenix.DataHandle.DataEntry.Models;
 using Phoenix.DataHandle.DataEntry.Models.Extensions;
-using Phoenix.DataHandle.DataEntry.Types.Uniques;
 using Phoenix.DataHandle.DataEntry.Types;
-using Phoenix.Verification.Base;
+using Phoenix.DataHandle.DataEntry.Types.Uniques;
 using Phoenix.Verification.Utilities;
-using Xunit;
 
 namespace Phoenix.Verification.DataHandle.Tests
 {
