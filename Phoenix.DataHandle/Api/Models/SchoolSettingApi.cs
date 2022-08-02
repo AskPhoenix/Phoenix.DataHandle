@@ -11,7 +11,7 @@ namespace Phoenix.DataHandle.Api.Models
     public class SchoolSettingApi : ISchoolSettingApi, IModelApi
     {
         [JsonConstructor]
-        public SchoolSettingApi(int schoolId, string country, string primaryLocale,
+        public SchoolSettingApi(string country, string primaryLocale,
             string secondaryLocale, string timeZone, string phoneCountryCode)
         {
             if (string.IsNullOrWhiteSpace(country))
@@ -19,7 +19,7 @@ namespace Phoenix.DataHandle.Api.Models
             if (string.IsNullOrWhiteSpace(timeZone))
                 timeZone = null!;
             
-            this.SchoolId = schoolId;
+            this.SchoolId = 0;
             this.Country = country;
             this.PhoneCountryCode = phoneCountryCode;
 
@@ -45,15 +45,16 @@ namespace Phoenix.DataHandle.Api.Models
             catch (TimeZoneNotFoundException) { }
         }
 
-        public SchoolSettingApi(int schoolId, ISchoolSettingBase schoolSetting)
-            : this(schoolId, schoolSetting.Country, schoolSetting.PrimaryLocale,
+        public SchoolSettingApi(ISchoolSettingBase schoolSetting)
+            : this(schoolSetting.Country, schoolSetting.PrimaryLocale,
                   schoolSetting.SecondaryLocale, schoolSetting.TimeZone, schoolSetting.PhoneCountryCode)
         {
         }
 
         public SchoolSettingApi(SchoolSetting schoolSetting)
-            : this(schoolSetting.SchoolId, schoolSetting)
+            : this((ISchoolSettingApi)schoolSetting)
         {
+            this.SchoolId = schoolSetting.SchoolId;
         }
 
         public SchoolSetting ToSchoolSetting()

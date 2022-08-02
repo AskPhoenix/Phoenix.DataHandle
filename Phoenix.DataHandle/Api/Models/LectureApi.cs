@@ -10,11 +10,11 @@ namespace Phoenix.DataHandle.Api.Models
     public class LectureApi : ILectureApi, IModelApi
     {
         [JsonConstructor]
-        public LectureApi(int id, int courseId, int? classroomId, int? scheduleId,
+        public LectureApi(int courseId, int? classroomId, int? scheduleId,
             DateTimeOffset startDateTime, DateTimeOffset endDateTime, string? onlineMeetingLink,
             bool attendancesNoted, string? comments)
         {
-            this.Id = id;
+            this.Id = 0;
             this.CourseId = courseId;
             this.ClassroomId = classroomId;
             this.ScheduleId = scheduleId;
@@ -28,8 +28,8 @@ namespace Phoenix.DataHandle.Api.Models
                     this.OnlineMeetingLink = link.ToString();
         }
 
-        public LectureApi(int id, int courseId, int? classroomId, int? scheduleId, ILectureBase lecture)
-            : this(id, courseId, classroomId, scheduleId,
+        public LectureApi(int courseId, int? classroomId, int? scheduleId, ILectureBase lecture)
+            : this(courseId, classroomId, scheduleId,
                   lecture.StartDateTime, lecture.EndDateTime, lecture.OnlineMeetingLink,
                   lecture.AttendancesNoted, lecture.Comments)
         {
@@ -38,8 +38,9 @@ namespace Phoenix.DataHandle.Api.Models
         }
 
         public LectureApi(Lecture lecture)
-            : this(lecture.Id, lecture.CourseId, lecture.ClassroomId, lecture.ScheduleId, lecture)
+            : this(lecture.CourseId, lecture.ClassroomId, lecture.ScheduleId, lecture)
         {
+            this.Id = lecture.Id;
             this.ReplacementLectureId = lecture.ReplacementLectureId;
         }
 

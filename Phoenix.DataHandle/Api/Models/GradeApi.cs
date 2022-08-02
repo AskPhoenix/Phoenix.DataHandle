@@ -9,10 +9,10 @@ namespace Phoenix.DataHandle.Api.Models
     public class GradeApi : IGradeApi, IModelApi
     {
         [JsonConstructor]
-        public GradeApi(int id, int studentId, int? courseId, int? examId, int? exerciseId,
+        public GradeApi(int studentId, int? courseId, int? examId, int? exerciseId,
             decimal score, string? topic, string? justification)
         {
-            this.Id = id;
+            this.Id = 0;
             this.StudentId = studentId;
             this.CourseId = courseId;
             this.ExamId = examId;
@@ -22,14 +22,15 @@ namespace Phoenix.DataHandle.Api.Models
             this.Justification = justification;
         }
 
-        public GradeApi(int id, int studentId, int? courseId, int? examId, int? exerciseId, IGradeBase grade)
-            : this(id, studentId, courseId, examId, exerciseId, grade.Score, grade.Topic, grade.Justification)
+        public GradeApi(int studentId, int? courseId, int? examId, int? exerciseId, IGradeBase grade)
+            : this(studentId, courseId, examId, exerciseId, grade.Score, grade.Topic, grade.Justification)
         {
         }
 
         public GradeApi(Grade grade)
-            : this(grade.Id, grade.StudentId, grade.CourseId, grade.ExamId, grade.ExerciseId, grade)
+            : this(grade.StudentId, grade.CourseId, grade.ExamId, grade.ExerciseId, grade)
         {
+            this.Id = grade.Id;
         }
 
         public Grade ToGrade()

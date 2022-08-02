@@ -9,25 +9,26 @@ namespace Phoenix.DataHandle.Api.Models
     public class BookApi : IBookApi, IModelApi
     {
         [JsonConstructor]
-        public BookApi(int id, string name, string? publisher, string? comments)
+        public BookApi(string name, string? publisher, string? comments)
         {
             if (string.IsNullOrWhiteSpace(name))
                 name = null!;
 
-            this.Id = id;
+            this.Id = 0;
             this.Name = name;
             this.Publisher = publisher;
             this.Comments = comments;
         }
 
-        public BookApi(int id, IBookBase book)
-            : this(id, book.Name, book.Publisher, book.Comments)
+        public BookApi(IBookBase book)
+            : this(book.Name, book.Publisher, book.Comments)
         {
         }
 
         public BookApi(Book book)
-            : this(book.Id, book)
+            : this((IBookBase)book)
         {
+            this.Id = book.Id;
         }
 
         public Book ToBook()

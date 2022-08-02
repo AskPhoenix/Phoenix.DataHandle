@@ -9,9 +9,9 @@ namespace Phoenix.DataHandle.Api.Models
     public class MaterialApi : IMaterialApi, IModelApi
     {
         [JsonConstructor]
-        public MaterialApi(int id, int examId, int? bookId, string? chapter, string? section, string? comments)
+        public MaterialApi(int examId, int? bookId, string? chapter, string? section, string? comments)
         {
-            this.Id = id;
+            this.Id = 0;
             this.ExamId = examId;
             this.BookId = bookId;
             this.Chapter = chapter;
@@ -19,14 +19,15 @@ namespace Phoenix.DataHandle.Api.Models
             this.Comments = comments;
         }
 
-        public MaterialApi(int id, int examId, int? bookId, IMaterialBase material)
-            : this(id, examId, bookId, material.Chapter, material.Section, material.Comments)
+        public MaterialApi(int examId, int? bookId, IMaterialBase material)
+            : this(examId, bookId, material.Chapter, material.Section, material.Comments)
         {
         }
 
         public MaterialApi(Material material)
-            : this(material.Id, material.ExamId, material.BookId, material)
+            : this(material.ExamId, material.BookId, material)
         {
+            this.Id = material.Id;
         }
 
         public Material ToMaterial()

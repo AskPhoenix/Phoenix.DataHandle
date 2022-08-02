@@ -9,7 +9,7 @@ namespace Phoenix.DataHandle.Api.Models
     public class UserApi : IUserApi, IModelApi
     {
         [JsonConstructor]
-        public UserApi(int id, string firstName, string lastName, string fullName, bool isSelfDetermined)
+        public UserApi(string firstName, string lastName, string fullName, bool isSelfDetermined)
         {
             if (string.IsNullOrWhiteSpace(firstName))
                 firstName = null!;
@@ -18,22 +18,23 @@ namespace Phoenix.DataHandle.Api.Models
             if (string.IsNullOrWhiteSpace(fullName))
                 fullName = null!;
 
-            this.Id = id;
+            this.Id = 0;
             this.FirstName = firstName;
             this.LastName = lastName;
             this.FullName = fullName;
             this.IsSelfDetermined = isSelfDetermined;
         }
 
-        public UserApi(int id, IUserBase user)
-            : this(id, user.FirstName, user.LastName, user.FullName, user.IsSelfDetermined)
+        public UserApi(IUserBase user)
+            : this(user.FirstName, user.LastName, user.FullName, user.IsSelfDetermined)
         {
             this.DependenceOrder = user.DependenceOrder;
         }
 
         public UserApi(User user)
-            : this(user.AspNetUserId, user)
+            : this((IUserBase)user)
         {
+            this.Id = user.AspNetUserId;
         }
 
         public User ToUser()

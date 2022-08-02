@@ -11,12 +11,12 @@ namespace Phoenix.DataHandle.Api.Models
     public class ApplicationUserApi : IApplicationUserApi, IModelApi
     {
         [JsonConstructor]
-        public ApplicationUserApi(int id, string? email, string? phoneNumber, UserApi user)
+        public ApplicationUserApi(string? email, string? phoneNumber, UserApi user)
         {
             if (user is null)
                 user = null!;
 
-            this.Id = id;
+            this.Id = 0;
             this.Email = email;
             this.PhoneNumber = phoneNumber;
             this.User = user;
@@ -24,9 +24,9 @@ namespace Phoenix.DataHandle.Api.Models
             this.Roles = new string[1] { RoleRank.None.ToNormalizedString() }.ToList();
         }
 
-        public ApplicationUserApi(int id, IUserBase user, IApplicationUserBase aspNetUser,
+        public ApplicationUserApi(IUserBase user, IApplicationUserBase aspNetUser,
             List<RoleRank>? roleRanks = null)
-            : this(id, aspNetUser.Email, aspNetUser.PhoneNumber, new(id, user))
+            : this(aspNetUser.Email, aspNetUser.PhoneNumber, new(user))
         {
             if (roleRanks is not null)
                 this.Roles = roleRanks.Select(rr => rr.ToNormalizedString()).ToList();
@@ -35,8 +35,9 @@ namespace Phoenix.DataHandle.Api.Models
         }
 
         public ApplicationUserApi(User user, ApplicationUser appUser, List<RoleRank>? roleRanks = null)
-            : this(appUser.Id, user, appUser, roleRanks)
+            : this((IUserBase)user, (IApplicationUserBase)appUser, roleRanks)
         {
+            this.Id = appUser.Id;
         }
 
         public ApplicationUser ToAppUser()
