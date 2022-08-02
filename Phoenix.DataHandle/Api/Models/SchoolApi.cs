@@ -9,7 +9,7 @@ namespace Phoenix.DataHandle.Api.Models
     public class SchoolApi : ISchoolApi, IModelApi
     {
         [JsonConstructor]
-        public SchoolApi(string name, string slug, string city, string addressLine,
+        public SchoolApi(int id, int code, string name, string slug, string city, string addressLine,
             string? description, SchoolSettingApi schoolSetting)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -23,8 +23,8 @@ namespace Phoenix.DataHandle.Api.Models
             if (schoolSetting is null)
                 schoolSetting = null!;
 
-            this.Id = 0;
-            this.Code = 0;
+            this.Id = id;
+            this.Code = code;
             this.Name = name;
             this.Slug = slug;
             this.City = city;
@@ -33,17 +33,15 @@ namespace Phoenix.DataHandle.Api.Models
             this.SchoolSetting = schoolSetting;
         }
 
-        public SchoolApi(ISchoolSettingBase schoolSetting, ISchoolBase school)
-            : this(school.Name, school.Slug, school.City, school.AddressLine,
-                  school.Description, new(schoolSetting))
+        public SchoolApi(int id, ISchoolSettingBase schoolSetting, ISchoolBase school)
+            : this(id, school.Code, school.Name, school.Slug, school.City, school.AddressLine,
+                  school.Description, new(id, schoolSetting))
         {
-            this.Code = school.Code;
         }
 
         public SchoolApi(School school)
-            : this(school.SchoolSetting, school)
+            : this(school.Id, school.SchoolSetting, school)
         {
-            this.Id = school.Id;
         }
 
         public School ToSchool()

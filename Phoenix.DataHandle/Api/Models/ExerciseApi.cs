@@ -9,12 +9,12 @@ namespace Phoenix.DataHandle.Api.Models
     public class ExerciseApi : IExerciseApi, IModelApi
     {
         [JsonConstructor]
-        public ExerciseApi(int lectureId, string name, int? bookId, string? page, string? comments)
+        public ExerciseApi(int id, int lectureId, string name, int? bookId, string? page, string? comments)
         {
             if (string.IsNullOrWhiteSpace(name))
                 name = null!;
 
-            this.Id = 0;
+            this.Id = id;
             this.LectureId = lectureId;
             this.Name = name;
             this.BookId = bookId;
@@ -22,15 +22,14 @@ namespace Phoenix.DataHandle.Api.Models
             this.Comments = comments;
         }
 
-        public ExerciseApi(int lectureId, int? bookId, IExerciseBase exercise)
-            : this(lectureId, exercise.Name, bookId, exercise.Page, exercise.Comments)
+        public ExerciseApi(int id, int lectureId, int? bookId, IExerciseBase exercise)
+            : this(id, lectureId, exercise.Name, bookId, exercise.Page, exercise.Comments)
         {
         }
 
         public ExerciseApi(Exercise exercise)
-            : this(exercise.LectureId, exercise.BookId, exercise)
+            : this(exercise.Id, exercise.LectureId, exercise.BookId, exercise)
         {
-            this.Id = exercise.Id;
         }
 
         public Exercise ToExercise()

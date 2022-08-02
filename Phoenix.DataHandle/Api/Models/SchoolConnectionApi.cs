@@ -10,14 +10,14 @@ namespace Phoenix.DataHandle.Api.Models
     public class SchoolConnectionApi : ISchoolConnectionApi, IModelApi
     {
         [JsonConstructor]
-        public SchoolConnectionApi(int tenantId, string channel, string channelKey)
+        public SchoolConnectionApi(int id, int tenantId, string channel, string channelKey)
         {
             if (string.IsNullOrWhiteSpace(channel))
                 channel = null!;
             if (string.IsNullOrWhiteSpace(channelKey))
                 channelKey = null!;
 
-            this.Id = 0;
+            this.Id = id;
             this.TenantId = tenantId;
             this.ChannelKey = channelKey;
 
@@ -29,16 +29,15 @@ namespace Phoenix.DataHandle.Api.Models
             }
         }
 
-        public SchoolConnectionApi(int tenantId, ISchoolConnectionBase schoolConnection)
-            : this(tenantId, schoolConnection.Channel, schoolConnection.ChannelKey)
+        public SchoolConnectionApi(int id, int tenantId, ISchoolConnectionBase schoolConnection)
+            : this(id, tenantId, schoolConnection.Channel, schoolConnection.ChannelKey)
         {
             this.ActivatedAt = schoolConnection.ActivatedAt;
         }
 
         public SchoolConnectionApi(SchoolConnection schoolConnection)
-            : this(schoolConnection.TenantId, schoolConnection)
+            : this(schoolConnection.Id, schoolConnection.TenantId, schoolConnection)
         {
-            this.Id = schoolConnection.Id;
         }
 
         public SchoolConnection ToSchoolConnection()

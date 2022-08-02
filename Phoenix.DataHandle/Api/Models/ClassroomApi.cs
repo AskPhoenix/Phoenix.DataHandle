@@ -9,26 +9,27 @@ namespace Phoenix.DataHandle.Api.Models
     public class ClassroomApi : IClassroomApi, IModelApi
     {
         [JsonConstructor]
-        public ClassroomApi(int schoolId, string name, string? comments)
+        public ClassroomApi(int id, int schoolId, string name, string? comments)
         {
             if (string.IsNullOrWhiteSpace(name))
                 name = null!;
 
-            this.Id = 0;
+            this.Id = id;
             this.SchoolId = schoolId;
             this.Name = name;
             this.Comments = comments;
         }
 
-        public ClassroomApi(int schoolId, IClassroomBase classroom)
-            : this(schoolId, classroom.Name, classroom.Comments)
+        public ClassroomApi(int id, int schoolId, IClassroomBase classroom)
+            : this(id, schoolId, classroom.Name, classroom.Comments)
         {
         }
 
         public ClassroomApi(Classroom classroom)
-            : this(classroom.SchoolId, classroom)
+            : this(0, 0, classroom)
         {
-            this.Id = classroom.Id;
+            Id = classroom.Id;
+            SchoolId = classroom.SchoolId;
         }
 
         public Classroom ToClassroom()

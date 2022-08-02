@@ -9,7 +9,7 @@ namespace Phoenix.DataHandle.Api.Models
     public class CourseApi : ICourseApi, IModelApi
     {
         [JsonConstructor]
-        public CourseApi(int schoolId, string name, string? subcourse,
+        public CourseApi(int id, short code, int schoolId, string name, string? subcourse,
             string level, string group, string? comments, DateTime firstDate, DateTime lastDate)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -19,8 +19,8 @@ namespace Phoenix.DataHandle.Api.Models
             if (string.IsNullOrWhiteSpace(group))
                 group = null!;
 
-            this.Id = 0;
-            this.Code = 0;
+            this.Id = id;
+            this.Code = code;
             this.SchoolId = schoolId;
             this.Name = name;
             this.SubCourse = subcourse;
@@ -31,17 +31,15 @@ namespace Phoenix.DataHandle.Api.Models
             this.LastDate = lastDate.Date;
         }
 
-        public CourseApi(int schoolId, ICourseBase course)
-            : this(schoolId, course.Name, course.SubCourse,
+        public CourseApi(int id, int schoolId, ICourseBase course)
+            : this(id, course.Code, schoolId, course.Name, course.SubCourse,
                   course.Level, course.Group, course.Comments, course.FirstDate, course.LastDate)
         {
-            this.Code = course.Code;
         }
 
         public CourseApi(Course course)
-            : this(course.SchoolId, course)
+            : this(course.Id, course.SchoolId, course)
         {
-            this.Id = course.Id;
         }
 
         public Course ToCourse()
@@ -63,6 +61,7 @@ namespace Phoenix.DataHandle.Api.Models
 
         public Course ToCourse(Course courseToUpdate)
         {
+            courseToUpdate.Code = this.Code;
             courseToUpdate.Name = this.Name;
             courseToUpdate.SubCourse = this.SubCourse;
             courseToUpdate.Level = this.Level;

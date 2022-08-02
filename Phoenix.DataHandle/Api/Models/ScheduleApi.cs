@@ -9,10 +9,10 @@ namespace Phoenix.DataHandle.Api.Models
     public class ScheduleApi : IScheduleApi, IModelApi
     {
         [JsonConstructor]
-        public ScheduleApi(int courseId, int? classroomId, DayOfWeek dayOfWeek,
+        public ScheduleApi(int id, int courseId, int? classroomId, DayOfWeek dayOfWeek,
             DateTime startTime, DateTime endTime, string? comments)
         {
-            this.Id = 0;
+            this.Id = id;
             this.CourseId = courseId;
             this.ClassroomId = classroomId;
             this.DayOfWeek = dayOfWeek;
@@ -21,16 +21,15 @@ namespace Phoenix.DataHandle.Api.Models
             this.Comments = comments;
         }
 
-        public ScheduleApi(int courseId, int? classroomId, IScheduleBase schedule)
-            : this(courseId, classroomId, schedule.DayOfWeek,
+        public ScheduleApi(int id, int courseId, int? classroomId, IScheduleBase schedule)
+            : this(id, courseId, classroomId, schedule.DayOfWeek,
                   schedule.StartTime, schedule.EndTime, schedule.Comments)
         {
         }
 
         public ScheduleApi(Schedule schedule)
-            : this(schedule.CourseId, schedule.ClassroomId, schedule)
+            : this(schedule.Id, schedule.CourseId, schedule.ClassroomId, schedule)
         {
-            this.Id = schedule.Id;
         }
 
         public Schedule ToSchedule()

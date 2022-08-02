@@ -9,23 +9,22 @@ namespace Phoenix.DataHandle.Api.Models
     public class ExamApi : IExamApi, IModelApi
     {
         [JsonConstructor]
-        public ExamApi(int lectureId, string? name, string? comments)
+        public ExamApi(int id, int lectureId, string? name, string? comments)
         {
-            this.Id = 0;
+            this.Id = id;
             this.LectureId = lectureId;
             this.Name = name;
             this.Comments = comments;
         }
 
-        public ExamApi(int lectureId, IExamBase exam)
-            : this(lectureId, exam.Name, exam.Comments)
+        public ExamApi(int id, int lectureId, IExamBase exam)
+            : this(id, lectureId, exam.Name, exam.Comments)
         {
         }
 
         public ExamApi(Exam exam)
-            : this(exam.LectureId, exam)
+            : this(exam.Id, exam.LectureId, exam)
         {
-            this.Id = exam.Id;
         }
 
         public Exam ToExam()
