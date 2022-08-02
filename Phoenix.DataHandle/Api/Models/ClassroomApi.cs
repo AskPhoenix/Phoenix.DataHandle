@@ -26,10 +26,8 @@ namespace Phoenix.DataHandle.Api.Models
         }
 
         public ClassroomApi(Classroom classroom)
-            : this(0, 0, classroom)
+            : this(classroom.Id, classroom.SchoolId, classroom)
         {
-            Id = classroom.Id;
-            SchoolId = classroom.SchoolId;
         }
 
         public Classroom ToClassroom()

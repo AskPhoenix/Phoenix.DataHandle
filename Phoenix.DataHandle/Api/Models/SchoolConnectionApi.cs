@@ -64,7 +64,7 @@ namespace Phoenix.DataHandle.Api.Models
         }
 
 
-        [JsonProperty("id", Required = Required.DisallowNull)]
+        [JsonProperty("id")]
         public int Id { get; }
 
         [JsonProperty("school_id", Required = Required.Always)]
@@ -83,7 +83,7 @@ namespace Phoenix.DataHandle.Api.Models
         public DateTime? ActivatedAt { get; }
 
         [JsonProperty("is_active")]
-        public bool IsActive => (this as ISchoolConnectionApi).IsActive;
+        public bool IsActive => this.ActivatedAt.HasValue;
 
 
         [JsonIgnore]
