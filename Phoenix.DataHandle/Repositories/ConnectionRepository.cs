@@ -66,7 +66,12 @@ namespace Phoenix.DataHandle.Repositories
             if (activate && !connection.IsActive)
             {
                 connection.ActivatedAt = DateTime.UtcNow;
+                return await UpdateAsync(connection, cancellationToken);
+            }
 
+            if (!activate && connection.IsActive)
+            {
+                connection.ActivatedAt = null;
                 return await UpdateAsync(connection, cancellationToken);
             }
 
