@@ -4,6 +4,6 @@ namespace Phoenix.DataHandle.Main.Entities
 {
     public interface IBotFeedback : IBotFeedbackBase
     {
-        IUser Author { get; }
+        IUser? Author { get; }
     }
 }

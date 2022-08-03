@@ -9,7 +9,7 @@
 
         public int Id { get; set; }
         public int SchoolId { get; set; }
-        public int AuthorId { get; set; }
+        public int? AuthorId { get; set; }
         public string Message { get; set; } = null!;
         public DateTime ScheduledFor { get; set; }
         public Types.Daypart Daypart { get; set; }
@@ -20,7 +20,7 @@
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual User Author { get; set; } = null!;
+        public virtual User? Author { get; set; } = null!;
         public virtual School School { get; set; } = null!;
 
         public virtual ICollection<Course> Courses { get; set; }

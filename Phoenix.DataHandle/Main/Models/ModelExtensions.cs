@@ -31,13 +31,13 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class BotFeedback : IBotFeedback, IModelEntity
     {
-        IUser IBotFeedback.Author => this.Author;
+        IUser? IBotFeedback.Author => this.Author;
     }
 
     public partial class Broadcast : IBroadcast, IModelEntity
     {
         ISchool IBroadcast.School => this.School;
-        IUser IBroadcast.Author => this.Author;
+        IUser? IBroadcast.Author => this.Author;
 
         IEnumerable<ICourse> IBroadcast.Courses => this.Courses;
     }
