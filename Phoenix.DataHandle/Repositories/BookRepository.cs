@@ -13,31 +13,31 @@ namespace Phoenix.DataHandle.Repositories
         {
         }
 
-        public static Expression<Func<Book, bool>> GetUniqueExpression(string bookName)
+        public static Expression<Func<Book, bool>> GetUniqueExpression(int schoolId, string bookName)
         {
             if (string.IsNullOrWhiteSpace(bookName))
                 throw new ArgumentNullException(nameof(bookName));
 
             string normName = Book.NormFunc(bookName);
-            return b => b.NormalizedName == normName;
+            return b => b.SchoolId == schoolId && b.NormalizedName == normName;
         }
 
         #region Find Unique
 
-        public Task<Book?> FindUniqueAsync(string name,
+        public Task<Book?> FindUniqueAsync(int schoolId, string name,
             CancellationToken cancellationToken = default)
         {
-            return FindUniqueAsync(GetUniqueExpression(name),
+            return FindUniqueAsync(GetUniqueExpression(schoolId, name),
                 cancellationToken);
         }
 
-        public Task<Book?> FindUniqueAsync(IBookBase book,
+        public Task<Book?> FindUniqueAsync(int schoolId, IBookBase book,
             CancellationToken cancellationToken = default)
         {
             if (book is null)
                 throw new ArgumentNullException(nameof(book));
 
-            return FindUniqueAsync(book.Name,
+            return FindUniqueAsync(schoolId, book.Name,
                 cancellationToken);
         }
 

@@ -55,7 +55,7 @@ namespace Phoenix.DataHandle.Api.Models
         [JsonProperty("id")]
         public int Id { get; }
 
-        [JsonProperty("school_id")]
+        [JsonProperty("school_id", Required = Required.Always)]
         public int SchoolId { get; }
 
         [JsonProperty("name", Required = Required.Always)]

@@ -91,6 +91,7 @@ namespace Phoenix.DataHandle.Repositories
         public async Task CascadeOnDeleteAsync(School school,
             CancellationToken cancellationToken = default)
         {
+            await new BookRepository(DbContext).DeleteRangeAsync(school.Books, cancellationToken);
             await new BroadcastRepository(DbContext).DeleteRangeAsync(school.Broadcasts, cancellationToken);
             await new ClassroomRepository(DbContext).DeleteRangeAsync(school.Classrooms, cancellationToken);
             await new CourseRepository(DbContext).DeleteRangeAsync(school.Courses, cancellationToken);
@@ -100,6 +101,8 @@ namespace Phoenix.DataHandle.Repositories
         public async Task CascadeRangeOnDeleteAsync(IEnumerable<School> schools,
             CancellationToken cancellationToken = default)
         {
+            await new BookRepository(DbContext).DeleteRangeAsync(schools.SelectMany(s => s.Books),
+                cancellationToken);
             await new BroadcastRepository(DbContext).DeleteRangeAsync(schools.SelectMany(s => s.Broadcasts),
                 cancellationToken);
             await new ClassroomRepository(DbContext).DeleteRangeAsync(schools.SelectMany(s => s.Classrooms),
