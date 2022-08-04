@@ -2,11 +2,13 @@
 using Phoenix.DataHandle.Base.Entities;
 using Phoenix.DataHandle.DataEntry.Types.Uniques;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Repositories.Extensions;
 using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public sealed class SchoolRepository : ObviableRepository<School>
+    public sealed class SchoolRepository : ObviableRepository<School>,
+        ISetNullDeleteRule<School>, ICascadeDeleteRule<School>
     {
         public SchoolRepository(PhoenixContext dbContext) 
             : base(dbContext) 
@@ -75,6 +77,37 @@ namespace Phoenix.DataHandle.Repositories
                         this.DbContext.Entry(model.SchoolSetting).State = EntityState.Modified;
 
             return base.UpdateRangeAsync(models!, cancellationToken);
+        }
+
+        #endregion
+
+        #region Delete
+
+        public void SetNullOnDelete(School school)
+        {
+            school.Users.Clear();
+        }
+
+        public async Task CascadeOnDeleteAsync(School school,
+            CancellationToken cancellationToken = default)
+        {
+            await new BroadcastRepository(DbContext).DeleteRangeAsync(school.Broadcasts, cancellationToken);
+            await new ClassroomRepository(DbContext).DeleteRangeAsync(school.Classrooms, cancellationToken);
+            await new CourseRepository(DbContext).DeleteRangeAsync(school.Courses, cancellationToken);
+            await new SchoolConnectionRepository(DbContext).DeleteRangeAsync(school.SchoolConnections, cancellationToken);
+        }
+
+        public async Task CascadeRangeOnDeleteAsync(IEnumerable<School> schools,
+            CancellationToken cancellationToken = default)
+        {
+            await new BroadcastRepository(DbContext).DeleteRangeAsync(schools.SelectMany(s => s.Broadcasts),
+                cancellationToken);
+            await new ClassroomRepository(DbContext).DeleteRangeAsync(schools.SelectMany(s => s.Classrooms),
+                cancellationToken);
+            await new CourseRepository(DbContext).DeleteRangeAsync(schools.SelectMany(s => s.Courses),
+                cancellationToken);
+            await new SchoolConnectionRepository(DbContext).DeleteRangeAsync(schools.SelectMany(s => s.SchoolConnections),
+                cancellationToken);
         }
 
         #endregion

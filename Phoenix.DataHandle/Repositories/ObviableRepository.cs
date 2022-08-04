@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Main.Models.Extensions;
 
 namespace Phoenix.DataHandle.Repositories
@@ -8,12 +9,12 @@ namespace Phoenix.DataHandle.Repositories
     {
         public bool NonObviatedOnly { get; set; }
 
-        public ObviableRepository(DbContext dbContext)
+        public ObviableRepository(PhoenixContext dbContext)
             : base(dbContext)
         {
         }
 
-        public ObviableRepository(DbContext dbContext, bool nonObviatedOnly)
+        public ObviableRepository(PhoenixContext dbContext, bool nonObviatedOnly)
             : this(dbContext)
         {
             this.NonObviatedOnly = nonObviatedOnly;

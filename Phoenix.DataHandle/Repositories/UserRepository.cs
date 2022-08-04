@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Repositories.Extensions;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public sealed class UserRepository : ObviableRepository<User>
+    public sealed class UserRepository : ObviableRepository<User>,
+        ISetNullDeleteRule<User>, ICascadeDeleteRule<User>
     {
         public UserRepository(PhoenixContext dbContext) 
             : base(dbContext)
@@ -81,6 +83,40 @@ namespace Phoenix.DataHandle.Repositories
         {
             CheckRangeIfValid(users);
             return base.UpdateRangeAsync(users, cancellationToken);
+        }
+
+        #endregion
+
+        #region Delete
+
+        public void SetNullOnDelete(User user)
+        {
+            user.Lectures.Clear();
+            user.BotFeedbacks.Clear();
+            user.Broadcasts.Clear();
+            user.Courses.Clear();
+            user.Children.Clear();
+            user.Parents.Clear();
+            user.Schools.Clear();
+        }
+
+        public async Task CascadeOnDeleteAsync(User user,
+            CancellationToken cancellationToken = default)
+        {
+            await new GradeRepository(DbContext).DeleteRangeAsync(user.Grades, cancellationToken);
+            await new OneTimeCodeRepository(DbContext).DeleteRangeAsync(user.OneTimeCodes, cancellationToken);
+            await new UserConnectionRepository(DbContext).DeleteRangeAsync(user.UserConnections, cancellationToken);
+        }
+
+        public async Task CascadeRangeOnDeleteAsync(IEnumerable<User> users,
+            CancellationToken cancellationToken = default)
+        {
+            await new GradeRepository(DbContext).DeleteRangeAsync(users.SelectMany(u => u.Grades),
+                cancellationToken);
+            await new OneTimeCodeRepository(DbContext).DeleteRangeAsync(users.SelectMany(u => u.OneTimeCodes),
+                cancellationToken);
+            await new UserConnectionRepository(DbContext).DeleteRangeAsync(users.SelectMany(u => u.UserConnections),
+                cancellationToken);
         }
 
         #endregion

@@ -1,11 +1,13 @@
 ﻿using Phoenix.DataHandle.Base.Entities;
 using Phoenix.DataHandle.DataEntry.Types.Uniques;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Repositories.Extensions;
 using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public sealed class ClassroomRepository : ObviableRepository<Classroom>
+    public sealed class ClassroomRepository : ObviableRepository<Classroom>,
+        ISetNullDeleteRule<Classroom>
     {
         public ClassroomRepository(PhoenixContext phoenixContext)
             : base(phoenixContext)
@@ -73,6 +75,16 @@ namespace Phoenix.DataHandle.Repositories
 
             return FindUniqueAsync(schoolUq, classroom.Name,
                 cancellationToken);
+        }
+
+        #endregion
+
+        #region Delete
+
+        public void SetNullOnDelete(Classroom classroom)
+        {
+            classroom.Lectures.Clear();
+            classroom.Schedules.Clear();
         }
 
         #endregion

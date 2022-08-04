@@ -1,10 +1,12 @@
 ﻿using Phoenix.DataHandle.Base.Entities;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Repositories.Extensions;
 using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public sealed class BookRepository : Repository<Book>
+    public sealed class BookRepository : Repository<Book>,
+        ISetNullDeleteRule<Book>
     {
         public BookRepository(PhoenixContext phoenixContext)
             : base(phoenixContext)
@@ -37,6 +39,17 @@ namespace Phoenix.DataHandle.Repositories
 
             return FindUniqueAsync(book.Name,
                 cancellationToken);
+        }
+
+        #endregion
+
+        #region Delete
+
+        public void SetNullOnDelete(Book book)
+        {
+            book.Courses.Clear();
+            book.Exercises.Clear();
+            book.Materials.Clear();
         }
 
         #endregion

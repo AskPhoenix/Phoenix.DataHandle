@@ -70,7 +70,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Author)
                     .WithMany(p => p.BotFeedbacks)
                     .HasForeignKey(d => d.AuthorId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_BotFeedback_Users");
             });
 
@@ -93,21 +93,21 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Author)
                     .WithMany(p => p.Broadcasts)
                     .HasForeignKey(d => d.AuthorId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Broadcasts_Users");
 
                 entity.HasOne(d => d.School)
                     .WithMany(p => p.Broadcasts)
                     .HasForeignKey(d => d.SchoolId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Broadcasts_Schools");
 
                 entity.HasMany(d => d.Courses)
                     .WithMany(p => p.Broadcasts)
                     .UsingEntity<Dictionary<string, object>>(
                         "BroadcastCourse",
-                        l => l.HasOne<Course>().WithMany().HasForeignKey("CourseId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_BroadcastCourses_Courses"),
-                        r => r.HasOne<Broadcast>().WithMany().HasForeignKey("BroadcastId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_BroadcastCourses_Broadcasts"),
+                        l => l.HasOne<Course>().WithMany().HasForeignKey("CourseId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_BroadcastCourses_Courses"),
+                        r => r.HasOne<Broadcast>().WithMany().HasForeignKey("BroadcastId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_BroadcastCourses_Broadcasts"),
                         j =>
                         {
                             j.HasKey("BroadcastId", "CourseId");
@@ -138,6 +138,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.School)
                     .WithMany(p => p.Classrooms)
                     .HasForeignKey(d => d.SchoolId)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Classrooms_Schools");
             });
 
@@ -167,14 +168,15 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.School)
                     .WithMany(p => p.Courses)
                     .HasForeignKey(d => d.SchoolId)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Courses_Schools");
 
                 entity.HasMany(d => d.Books)
                     .WithMany(p => p.Courses)
                     .UsingEntity<Dictionary<string, object>>(
                         "CourseBook",
-                        l => l.HasOne<Book>().WithMany().HasForeignKey("BookId").HasConstraintName("FK_CourseBooks_Books"),
-                        r => r.HasOne<Course>().WithMany().HasForeignKey("CourseId").HasConstraintName("FK_CourseBooks_Courses"),
+                        l => l.HasOne<Book>().WithMany().HasForeignKey("BookId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_CourseBooks_Books"),
+                        r => r.HasOne<Course>().WithMany().HasForeignKey("CourseId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_CourseBooks_Courses"),
                         j =>
                         {
                             j.HasKey("CourseId", "BookId");
@@ -200,6 +202,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Lecture)
                     .WithMany(p => p.Exams)
                     .HasForeignKey(d => d.LectureId)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Exams_Lectures");
             });
 
@@ -220,12 +223,13 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Book)
                     .WithMany(p => p.Exercises)
                     .HasForeignKey(d => d.BookId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Exercises_Books");
 
                 entity.HasOne(d => d.Lecture)
                     .WithMany(p => p.Exercises)
                     .HasForeignKey(d => d.LectureId)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Exercises_Lectures");
             });
 
@@ -252,22 +256,25 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Grades)
                     .HasForeignKey(d => d.CourseId)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Grades_Courses");
 
                 entity.HasOne(d => d.Exam)
                     .WithMany(p => p.Grades)
                     .HasForeignKey(d => d.ExamId)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Grades_Exams");
 
                 entity.HasOne(d => d.Exercise)
                     .WithMany(p => p.Grades)
                     .HasForeignKey(d => d.ExerciseId)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Grades_Exercises");
 
                 entity.HasOne(d => d.Student)
                     .WithMany(p => p.Grades)
                     .HasForeignKey(d => d.StudentId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Grades_Users");
             });
 
@@ -295,22 +302,25 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Classroom)
                     .WithMany(p => p.Lectures)
                     .HasForeignKey(d => d.ClassroomId)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Lectures_Classrooms");
 
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Lectures)
                     .HasForeignKey(d => d.CourseId)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Lectures_Courses");
 
                 entity.HasOne(d => d.ReplacementLecture)
                     .WithMany(p => p.InverseReplacementLecture)
                     .HasForeignKey(d => d.ReplacementLectureId)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Lectures_Lectures");
 
                 entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.Lectures)
                     .HasForeignKey(d => d.ScheduleId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Lectures_Schedules");
             });
 
@@ -331,12 +341,13 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Book)
                     .WithMany(p => p.Materials)
                     .HasForeignKey(d => d.BookId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Materials_Books");
 
                 entity.HasOne(d => d.Exam)
                     .WithMany(p => p.Materials)
                     .HasForeignKey(d => d.ExamId)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Materials_Exams");
             });
 
@@ -357,7 +368,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.OneTimeCodes)
                     .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_OneTimeCodes_Users");
             });
 
@@ -383,13 +394,13 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Classroom)
                     .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.ClassroomId)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Schedules_Classrooms");
 
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Schedules)
                     .HasForeignKey(d => d.CourseId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Schedules_Courses");
             });
 
@@ -431,7 +442,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Tenant)
                     .WithMany(p => p.SchoolConnections)
                     .HasForeignKey(d => d.TenantId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_SchoolConnections_Schools");
             });
 
@@ -459,6 +470,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.School)
                     .WithOne(p => p.SchoolSetting)
                     .HasForeignKey<SchoolSetting>(d => d.SchoolId)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_SchoolSettings_Schools");
             });
 
@@ -485,8 +497,8 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.Parents)
                     .UsingEntity<Dictionary<string, object>>(
                         "Parenthood",
-                        l => l.HasOne<User>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Child"),
-                        r => r.HasOne<User>().WithMany().HasForeignKey("ParentId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Parent"),
+                        l => l.HasOne<User>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_Parenthoods_Users_Child"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("ParentId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_Parenthoods_Users_Parent"),
                         j =>
                         {
                             j.HasKey("ParentId", "ChildId");
@@ -502,8 +514,8 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.Users)
                     .UsingEntity<Dictionary<string, object>>(
                         "CourseUser",
-                        l => l.HasOne<Course>().WithMany().HasForeignKey("CourseId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_CourseUsers_Courses"),
-                        r => r.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_CourseUsers_Users"),
+                        l => l.HasOne<Course>().WithMany().HasForeignKey("CourseId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_CourseUsers_Courses"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_CourseUsers_Users"),
                         j =>
                         {
                             j.HasKey("UserId", "CourseId");
@@ -519,8 +531,8 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.Attendees)
                     .UsingEntity<Dictionary<string, object>>(
                         "Attendance",
-                        l => l.HasOne<Lecture>().WithMany().HasForeignKey("LectureId").HasConstraintName("FK_Attendances_Lectures"),
-                        r => r.HasOne<User>().WithMany().HasForeignKey("AttendeeId").HasConstraintName("FK_Attendances_Users"),
+                        l => l.HasOne<Lecture>().WithMany().HasForeignKey("LectureId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_Attendances_Lectures"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("AttendeeId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_Attendances_Users"),
                         j =>
                         {
                             j.HasKey("AttendeeId", "LectureId");
@@ -534,8 +546,8 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.Children)
                     .UsingEntity<Dictionary<string, object>>(
                         "Parenthood",
-                        l => l.HasOne<User>().WithMany().HasForeignKey("ParentId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Parent"),
-                        r => r.HasOne<User>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK_Parenthoods_Users_Child"),
+                        l => l.HasOne<User>().WithMany().HasForeignKey("ParentId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_Parenthoods_Users_Parent"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("ChildId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_Parenthoods_Users_Child"),
                         j =>
                         {
                             j.HasKey("ParentId", "ChildId");
@@ -551,8 +563,8 @@ namespace Phoenix.DataHandle.Main.Models
                     .WithMany(p => p.Users)
                     .UsingEntity<Dictionary<string, object>>(
                         "SchoolUser",
-                        l => l.HasOne<School>().WithMany().HasForeignKey("SchoolId").HasConstraintName("FK_SchoolUsers_Schools"),
-                        r => r.HasOne<User>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_SchoolUsers_Users"),
+                        l => l.HasOne<School>().WithMany().HasForeignKey("SchoolId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_SchoolUsers_Schools"),
+                        r => r.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_SchoolUsers_Users"),
                         j =>
                         {
                             j.HasKey("UserId", "SchoolId");
@@ -583,7 +595,7 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.HasOne(d => d.Tenant)
                     .WithMany(p => p.UserConnections)
                     .HasForeignKey(d => d.TenantId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_UserConnections_Users");
             });
 

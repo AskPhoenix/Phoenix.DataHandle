@@ -2,11 +2,13 @@
 using Phoenix.DataHandle.Base.Entities;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Main.Types;
+using Phoenix.DataHandle.Repositories.Extensions;
 using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public sealed class LectureRepository : ObviableRepository<Lecture>
+    public sealed class LectureRepository : ObviableRepository<Lecture>,
+        ISetNullDeleteRule<Lecture>, ICascadeDeleteRule<Lecture>
     {
         public bool SearchNonCancelledOnly { get; set; } = true;
 
@@ -128,6 +130,32 @@ namespace Phoenix.DataHandle.Repositories
 
             return lectures.OrderBy(l => (l.StartDateTime - reference).Duration())
                 .Take(max);
+        }
+
+        #endregion
+
+        #region Delete
+
+        public void SetNullOnDelete(Lecture lecture)
+        {
+            lecture.Attendees.Clear();
+            // TODO: Check if needs to set InverseLecture to null
+        }
+
+        public async Task CascadeOnDeleteAsync(Lecture lecture,
+            CancellationToken cancellationToken = default)
+        {
+            await new ExamRepository(DbContext).DeleteRangeAsync(lecture.Exams, cancellationToken);
+            await new ExerciseRepository(DbContext).DeleteRangeAsync(lecture.Exercises, cancellationToken);
+        }
+
+        public async Task CascadeRangeOnDeleteAsync(IEnumerable<Lecture> lectures,
+            CancellationToken cancellationToken = default)
+        {
+            await new ExamRepository(DbContext).DeleteRangeAsync(lectures.SelectMany(l => l.Exams),
+                cancellationToken);
+            await new ExerciseRepository(DbContext).DeleteRangeAsync(lectures.SelectMany(l => l.Exercises),
+                cancellationToken);
         }
 
         #endregion

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Main.Models.Extensions;
+using Phoenix.DataHandle.Repositories.Extensions;
 using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.Repositories
@@ -7,11 +9,11 @@ namespace Phoenix.DataHandle.Repositories
     public abstract class Repository<TModel> : IDisposable
         where TModel : class, IModelEntity
     {
-        protected DbContext DbContext { get; }
+        protected PhoenixContext DbContext { get; }
         protected DbSet<TModel> Set => this.DbContext.Set<TModel>();
         protected ICollection<Func<IQueryable<TModel>, IQueryable<TModel>>> Includes { get; }
 
-        public Repository(DbContext dbContext)
+        public Repository(PhoenixContext dbContext)
         {
             this.DbContext = dbContext;
             this.Includes = new List<Func<IQueryable<TModel>, IQueryable<TModel>>>();
@@ -156,10 +158,18 @@ namespace Phoenix.DataHandle.Repositories
 
         #region Delete
 
-        private TModel DeletePrepare(TModel model)
+        private async Task<TModel> DeletePrepareAsync(TModel model,
+            CancellationToken cancellationToken = default)
         {
             if (model is null)
                 throw new ArgumentNullException(nameof(model));
+
+            if (this is ISetNullDeleteRule<TModel> setNullRuleRepository)
+                setNullRuleRepository.SetNullOnDelete(model);
+
+            if (this is ICascadeDeleteRule<TModel> cascadeRuleRepository)
+                await cascadeRuleRepository.CascadeOnDeleteAsync(model, cancellationToken);
+                
 
             // This is included here because there is no async remove method
             this.Set.Remove(model);
@@ -167,32 +177,42 @@ namespace Phoenix.DataHandle.Repositories
             return model;
         }
 
-        private IEnumerable<TModel> DeleteRangePrepare(IEnumerable<TModel> models)
+        private async Task<IEnumerable<TModel>> DeleteRangePrepareAsync(IEnumerable<TModel> models,
+            CancellationToken cancellationToken = default)
         {
             if (models is null)
                 throw new ArgumentNullException(nameof(models));
             if (!models.Any())
                 return Enumerable.Empty<TModel>();
 
+            if (this is ISetNullDeleteRule<TModel> setNullRuleRepository)
+                for (int i = 0; i < models.Count(); i++)
+                    setNullRuleRepository.SetNullOnDelete(models.ElementAt(i));
+
+            if (this is ICascadeDeleteRule<TModel> cascadeRuleRepository)
+                await cascadeRuleRepository.CascadeRangeOnDeleteAsync(models, cancellationToken);
+
             this.Set.RemoveRange(models);
 
             return models;
         }
 
-        private IEnumerable<TModel> DeleteRangePrepare(IEnumerable<int> ids)
+        private async Task<IEnumerable<TModel>> DeleteRangePrepareAsync(IEnumerable<int> ids,
+            CancellationToken cancellationToken = default)
         {
             if (ids is null)
                 throw new ArgumentNullException(nameof(ids));
             if (!ids.Any())
                 return Enumerable.Empty<TModel>();
 
-            return DeleteRangePrepare(Find().Where(m => ids.Contains(m.Id)));
+            return await DeleteRangePrepareAsync(Find().Where(m => ids.Contains(m.Id)),
+                cancellationToken);
         }
 
         public virtual async Task<TModel> DeleteAsync(TModel model,
             CancellationToken cancellationToken = default)
         {
-            DeletePrepare(model);
+            await DeletePrepareAsync(model, cancellationToken);
 
             await this.DbContext.SaveChangesAsync(cancellationToken);
 
@@ -212,17 +232,18 @@ namespace Phoenix.DataHandle.Repositories
         public virtual async Task<IEnumerable<TModel>> DeleteRangeAsync(IEnumerable<TModel> models,
             CancellationToken cancellationToken = default)
         {
-            DeleteRangePrepare(models);
+             await DeleteRangePrepareAsync(models, cancellationToken);
 
             await this.DbContext.SaveChangesAsync(cancellationToken);
 
             return models;
         }
 
-        public virtual Task<IEnumerable<TModel>> DeleteRangeAsync(IEnumerable<int> ids,
+        public virtual async Task<IEnumerable<TModel>> DeleteRangeAsync(IEnumerable<int> ids,
             CancellationToken cancellationToken = default)
         {
-            return DeleteRangeAsync(DeleteRangePrepare(ids), cancellationToken);
+            return await DeleteRangeAsync(await DeleteRangePrepareAsync(ids, cancellationToken),
+                cancellationToken);
         }
 
         #endregion

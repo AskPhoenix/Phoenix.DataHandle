@@ -1,10 +1,12 @@
 ﻿using Phoenix.DataHandle.Base.Entities;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Repositories.Extensions;
 using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public sealed class ScheduleRepository : ObviableRepository<Schedule>
+    public sealed class ScheduleRepository : ObviableRepository<Schedule>,
+        ICascadeDeleteRule<Schedule>
     {
         public ScheduleRepository(PhoenixContext dbContext)
             : base(dbContext) 
@@ -57,6 +59,23 @@ namespace Phoenix.DataHandle.Repositories
                 schedules = schedules.Where(s => s.ClassroomId == classroomId);
 
             return schedules;
+        }
+
+        #endregion
+
+        #region Delete
+
+        public async Task CascadeOnDeleteAsync(Schedule schedule,
+            CancellationToken cancellationToken = default)
+        {
+            await new LectureRepository(DbContext).DeleteRangeAsync(schedule.Lectures, cancellationToken);
+        }
+
+        public async Task CascadeRangeOnDeleteAsync(IEnumerable<Schedule> schedules,
+            CancellationToken cancellationToken = default)
+        {
+            await new LectureRepository(DbContext).DeleteRangeAsync(schedules.SelectMany(s => s.Lectures),
+                cancellationToken);
         }
 
         #endregion
