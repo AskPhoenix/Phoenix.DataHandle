@@ -24,7 +24,7 @@ namespace Phoenix.DataHandle.Api
         {
             _logger = logger;
             _userManager = userManager;
-            _userRepository = new(phoenixContext, nonObviatedOnly: true);
+            _userRepository = new(phoenixContext, nonObviatedOnly: false);
         }
 
         protected bool CheckUserAuth()
@@ -37,10 +37,15 @@ namespace Phoenix.DataHandle.Api
             return isAuth;
         }
 
-        protected School? FindSchool(int schoolId)
+        protected IEnumerable<School>? FindSchools(bool nonObviatedOnly = true)
         {
-            return this.PhoenixUser?
-                .Schools
+            return this.PhoenixUser?.Schools
+                .Where(s => !nonObviatedOnly || (!s.ObviatedAt.HasValue && nonObviatedOnly));
+        }
+
+        protected School? FindSchool(int schoolId, bool nonObviatedOnly = true)
+        {
+            return this.FindSchools(nonObviatedOnly)?
                 .SingleOrDefault(s => s.Id == schoolId);
         }
 
@@ -64,6 +69,11 @@ namespace Phoenix.DataHandle.Api
                 .FindByNameAsync(userClaims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
             this.PhoenixUser = await _userRepository.FindPrimaryAsync(this.AppUser.Id);
+            if (this.PhoenixUser?.ObviatedAt.HasValue ?? false)
+            {
+                this.PhoenixUser = null;
+                this.AppUser = null;
+            }
             
             _logger.LogInformation("User with ID {Id} is authorized", this.AppUser.Id);
 
