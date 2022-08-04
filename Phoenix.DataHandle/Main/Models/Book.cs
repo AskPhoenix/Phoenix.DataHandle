@@ -10,6 +10,7 @@
         }
 
         public int Id { get; set; }
+        public int SchoolId { get; set; }
         public string Name { get; set; } = null!;
         public string NormalizedName { get; set; } = null!;
         public string? Publisher { get; set; }
@@ -17,6 +18,7 @@
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
+        public virtual School School { get; set; } = null!;
         public virtual ICollection<Exercise> Exercises { get; set; }
         public virtual ICollection<Material> Materials { get; set; }
 

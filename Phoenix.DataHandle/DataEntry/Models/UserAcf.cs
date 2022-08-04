@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.Base;
-using Phoenix.DataHandle.Base.Entities;
 using Phoenix.DataHandle.DataEntry.Entities;
 using Phoenix.DataHandle.DataEntry.Types.Uniques;
 using Phoenix.DataHandle.Main.Models;
@@ -15,8 +14,6 @@ namespace Phoenix.DataHandle.DataEntry.Models
         private UserAcf()
         {
             this.CourseCodes = new List<short>();
-            this.Courses = new HashSet<Course>();
-            this.Schools = new HashSet<School>();
         }
 
         public UserAcf(string fullName, string phone, int dependenceOrder)
@@ -118,15 +115,5 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
         [JsonIgnore]
         public List<short> CourseCodes { get; }
-
-        [JsonIgnore]
-        public HashSet<Course> Courses { get; }
-
-        IEnumerable<ICourseBase> IUserAcf.Courses => this.Courses;
-
-        [JsonIgnore]
-        public HashSet<School> Schools { get; }
-
-        IEnumerable<ISchoolBase> IUserAcf.Schools => this.Schools;
     }
 }

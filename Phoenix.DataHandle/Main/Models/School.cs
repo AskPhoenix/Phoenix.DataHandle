@@ -4,6 +4,7 @@
     {
         public School()
         {
+            Books = new HashSet<Book>();
             Broadcasts = new HashSet<Broadcast>();
             Classrooms = new HashSet<Classroom>();
             Courses = new HashSet<Course>();
@@ -23,6 +24,7 @@
         public DateTime? ObviatedAt { get; set; }
         
         public virtual SchoolSetting SchoolSetting { get; set; } = null!;
+        public virtual ICollection<Book> Books { get; set; }
         public virtual ICollection<Broadcast> Broadcasts { get; set; }
         public virtual ICollection<Classroom> Classrooms { get; set; }
         public virtual ICollection<Course> Courses { get; set; }

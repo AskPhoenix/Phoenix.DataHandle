@@ -45,6 +45,9 @@ namespace Phoenix.DataHandle.Main.Models
             {
                 entity.HasIndex(e => e.NormalizedName, "IX_Books_NormalizedName");
 
+                entity.HasIndex(e => new { e.SchoolId, e.NormalizedName }, "IX_Books_School_NormalizedName")
+                .IsUnique();
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(256);
@@ -54,6 +57,12 @@ namespace Phoenix.DataHandle.Main.Models
                 entity.Property(e => e.Publisher).HasMaxLength(256);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.School)
+                    .WithMany(p => p.Books)
+                    .HasForeignKey(d => d.SchoolId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_Books_Schools");
             });
 
             modelBuilder.Entity<BotFeedback>(entity =>

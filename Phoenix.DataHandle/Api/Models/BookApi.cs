@@ -9,24 +9,25 @@ namespace Phoenix.DataHandle.Api.Models
     public class BookApi : IBookApi, IModelApi
     {
         [JsonConstructor]
-        public BookApi(int id, string name, string? publisher, string? comments)
+        public BookApi(int id, int schoolId, string name, string? publisher, string? comments)
         {
             if (string.IsNullOrWhiteSpace(name))
                 name = null!;
 
             this.Id = id;
+            this.SchoolId = schoolId;
             this.Name = name;
             this.Publisher = publisher;
             this.Comments = comments;
         }
 
-        public BookApi(int id, IBookBase book)
-            : this(id, book.Name, book.Publisher, book.Comments)
+        public BookApi(int id, int schoolId, IBookBase book)
+            : this(id, schoolId, book.Name, book.Publisher, book.Comments)
         {
         }
 
         public BookApi(Book book)
-            : this(book.Id, book)
+            : this(book.Id, book.SchoolId, book)
         {
         }
 
@@ -35,6 +36,7 @@ namespace Phoenix.DataHandle.Api.Models
             return new Book()
             {
                 Id = this.Id,
+                SchoolId = this.SchoolId,
                 Name = this.Name,
                 Publisher = this.Publisher,
                 Comments = this.Comments
@@ -52,6 +54,9 @@ namespace Phoenix.DataHandle.Api.Models
 
         [JsonProperty("id")]
         public int Id { get; }
+
+        [JsonProperty("school_id")]
+        public int SchoolId { get; }
 
         [JsonProperty("name", Required = Required.Always)]
         public string Name { get; } = null!;

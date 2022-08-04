@@ -71,7 +71,13 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 FirstDate = this.FirstDate,
                 LastDate = this.LastDate,
 
-                Books = booksFinal.ToHashSet()
+                Books = booksFinal.Select(
+                    b => new Book()
+                    {
+                        SchoolId = schoolId,
+                        Name = b.Name
+                    }.Normalize())
+                .ToHashSet()
             };
         }
 
@@ -92,12 +98,19 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
             if (booksFinal is not null)
             {
-                foreach (var bookFinal in booksFinal)
+                var books = booksFinal.Select(
+                b => new Book()
+                {
+                    SchoolId = schoolId,
+                    Name = b.Name
+                }.Normalize());
+
+                foreach (var bookFinal in books)
                     if (!courseToUpdate.Books.Contains(bookFinal))
                         courseToUpdate.Books.Add(bookFinal);
 
                 foreach (var bookInitial in courseToUpdate.Books)
-                    if (!booksFinal.Contains(bookInitial))
+                    if (!books.Contains(bookInitial))
                         courseToUpdate.Books.Remove(bookInitial);
             }
 

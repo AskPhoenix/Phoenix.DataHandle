@@ -15,12 +15,14 @@ namespace Phoenix.DataHandle.Main.Models
 
     public partial class Book : IBook, INormalizableEntity<Book>
     {
+        ISchool IBook.School => this.School;
         IEnumerable<IExercise> IBook.Exercises => this.Exercises;
         IEnumerable<IMaterial> IBook.Materials => this.Materials;
         
         IEnumerable<ICourse> IBook.Courses => this.Courses;
 
         public static Func<string, string> NormFunc => s => s.ToUpperInvariant();
+
         public Book Normalize()
         {
             this.NormalizedName = Book.NormFunc(this.Name);
@@ -136,6 +138,7 @@ namespace Phoenix.DataHandle.Main.Models
     public partial class School : ISchool, IObviableModelEntity
     {
         ISchoolSetting ISchool.SchoolSetting => this.SchoolSetting;
+        IEnumerable<IBook> ISchool.Books => this.Books;
         IEnumerable<IBroadcast> ISchool.Broadcasts => this.Broadcasts;
         IEnumerable<IClassroom> ISchool.Classrooms => this.Classrooms;
         IEnumerable<ICourse> ISchool.Courses => this.Courses;
