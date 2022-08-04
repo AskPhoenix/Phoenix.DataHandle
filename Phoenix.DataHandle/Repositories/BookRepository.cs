@@ -22,27 +22,6 @@ namespace Phoenix.DataHandle.Repositories
             return b => b.NormalizedName == normName;
         }
 
-        #region Find Unique
-
-        public Task<Book?> FindUniqueAsync(string name,
-            CancellationToken cancellationToken = default)
-        {
-            return FindUniqueAsync(GetUniqueExpression(name),
-                cancellationToken);
-        }
-
-        public Task<Book?> FindUniqueAsync(IBookBase book,
-            CancellationToken cancellationToken = default)
-        {
-            if (book is null)
-                throw new ArgumentNullException(nameof(book));
-
-            return FindUniqueAsync(book.Name,
-                cancellationToken);
-        }
-
-        #endregion
-
         #region Delete
 
         public void SetNullOnDelete(Book book)

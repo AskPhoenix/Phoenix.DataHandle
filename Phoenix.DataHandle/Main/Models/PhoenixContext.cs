@@ -43,8 +43,7 @@ namespace Phoenix.DataHandle.Main.Models
         {
             modelBuilder.Entity<Book>(entity =>
             {
-                entity.HasIndex(e => e.NormalizedName, "IX_Books_NormalizedName")
-                    .IsUnique();
+                entity.HasIndex(e => e.NormalizedName, "IX_Books_NormalizedName");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
