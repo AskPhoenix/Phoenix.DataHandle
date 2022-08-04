@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Phoenix.DataHandle.Main.Models;
+﻿using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Main.Models.Extensions;
 
 namespace Phoenix.DataHandle.Repositories

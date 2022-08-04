@@ -89,6 +89,16 @@ namespace Phoenix.DataHandle.Repositories
 
         #region Delete
 
+        public override async Task<User> DeleteAsync(int id,
+            CancellationToken cancellationToken = default)
+        {
+            User? toRemove = await FindPrimaryAsync(id, cancellationToken);
+            if (toRemove is null)
+                throw new InvalidOperationException($"There is no entry with id {id}.");
+
+            return await DeleteAsync(toRemove, cancellationToken);
+        }
+
         public void SetNullOnDelete(User user)
         {
             user.Lectures.Clear();

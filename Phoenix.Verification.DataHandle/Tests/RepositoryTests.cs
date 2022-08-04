@@ -21,13 +21,30 @@ namespace Phoenix.Verification.DataHandle.Tests
         }
 
         [Fact]
+        public async void FetchUser()
+        {
+            var userRepo = new UserRepository(_phoenixContext, nonObviatedOnly: true);
+            
+            var user = await userRepo.FindPrimaryAsync(26);
+        }
+
+        [Fact]
+        public async void UpdateUser()
+        {
+            var userRepo = new UserRepository(_phoenixContext, nonObviatedOnly: true);
+
+            var user = await userRepo.FindPrimaryAsync(26);
+            user = await userRepo.UpdateAsync(user);
+        }
+
+        [Fact]
         public async void DeleteBook()
         {
             var bookRepository = new BookRepository(_phoenixContext);
 
-            await bookRepository.DeleteAsync(9);
+            await bookRepository.DeleteAsync(10);
 
-            await bookRepository.DeleteRangeAsync(new int[2] { 7, 8 });
+            await bookRepository.DeleteRangeAsync(new int[2] { 11, 12 });
         }
 
         [Fact]
@@ -43,7 +60,15 @@ namespace Phoenix.Verification.DataHandle.Tests
         {
             var userRepository = new UserRepository(_phoenixContext);
 
-            await userRepository.DeleteAsync(26);
+            await userRepository.DeleteAsync(25);
+        }
+
+        [Fact]
+        public async void DeleteSchool()
+        {
+            var schoolRepository = new SchoolRepository(_phoenixContext);
+
+            await schoolRepository.DeleteAsync(2);
         }
     }
 }
