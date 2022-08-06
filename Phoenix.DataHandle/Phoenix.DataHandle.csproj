@@ -25,17 +25,16 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.*">
+      <!-- Needed for 'dotnet ef' command to create the SQL script for the DB -->
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Nexmo.Csharp.Client" Version="5.2.*" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.*" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.*" />
     <PackageReference Include="Phoenix.Language" Version="3.0.0-alpha.*" />
     <PackageReference Include="WordPressPCL" Version="2.0.*" />
   </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="Migrations\Identity\" />
-  </ItemGroup>
-
 
 </Project>

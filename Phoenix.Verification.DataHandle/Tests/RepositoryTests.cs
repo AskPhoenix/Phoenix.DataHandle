@@ -34,7 +34,7 @@ namespace Phoenix.Verification.DataHandle.Tests
             var userRepo = new UserRepository(_phoenixContext, nonObviatedOnly: true);
 
             var user = await userRepo.FindPrimaryAsync(26);
-            user = await userRepo.UpdateAsync(user);
+            user = await userRepo.UpdateAsync(user!);
         }
 
         [Fact]
