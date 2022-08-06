@@ -73,6 +73,11 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IUser> ICourse.Users => this.Users;
     }
 
+    public partial class DevRegistration : IDevRegistration, IModelEntity
+    {
+        IUser? IDevRegistration.Developer => this.Developer;
+    }
+
     public partial class Exam : IExam, IModelEntity
     {
         ILecture IExam.Lecture => this.Lecture;

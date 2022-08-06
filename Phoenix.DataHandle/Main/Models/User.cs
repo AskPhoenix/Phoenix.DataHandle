@@ -28,6 +28,7 @@
 
         public virtual ICollection<BotFeedback> BotFeedbacks { get; set; }
         public virtual ICollection<Broadcast> Broadcasts { get; set; }
+        public virtual ICollection<DevRegistration> DevRegistrations { get; set; }
         public virtual ICollection<Grade> Grades { get; set; }
         public virtual ICollection<OneTimeCode> OneTimeCodes { get; set; }
         public virtual ICollection<UserConnection> UserConnections { get; set; }

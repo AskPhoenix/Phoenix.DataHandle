@@ -18,6 +18,7 @@ namespace Phoenix.DataHandle.Main.Models
         public virtual DbSet<Broadcast> Broadcasts { get; set; } = null!;
         public virtual DbSet<Classroom> Classrooms { get; set; } = null!;
         public virtual DbSet<Course> Courses { get; set; } = null!;
+        public virtual DbSet<DevRegistration> DevRegistrations { get; set; } = null!;
         public virtual DbSet<Exam> Exams { get; set; } = null!;
         public virtual DbSet<Exercise> Exercises { get; set; } = null!;
         public virtual DbSet<Grade> Grades { get; set; } = null!;
@@ -195,6 +196,21 @@ namespace Phoenix.DataHandle.Main.Models
 
                             j.HasIndex(new[] { "CourseId" }, "IX_CourseBooks_Course");
                         });
+            });
+
+            modelBuilder.Entity<DevRegistration>(entity =>
+            {
+                entity.HasIndex(e => e.Email, "IX_DevRegistrations_Email");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Developer)
+                    .WithMany(p => p.DevRegistrations)
+                    .HasForeignKey(d => d.DeveloperId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_DevRegistrations_Users");
             });
 
             modelBuilder.Entity<Exam>(entity =>

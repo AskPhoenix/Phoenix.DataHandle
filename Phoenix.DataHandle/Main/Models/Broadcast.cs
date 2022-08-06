@@ -20,7 +20,7 @@
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual User? Author { get; set; } = null!;
+        public virtual User? Author { get; set; }
         public virtual School School { get; set; } = null!;
 
         public virtual ICollection<Course> Courses { get; set; }

@@ -105,6 +105,7 @@ namespace Phoenix.DataHandle.Repositories
             user.BotFeedbacks.Clear();
             user.Broadcasts.Clear();
             user.Courses.Clear();
+            user.DevRegistrations.Clear();
             user.Children.Clear();
             user.Parents.Clear();
             user.Schools.Clear();
