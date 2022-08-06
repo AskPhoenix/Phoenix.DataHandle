@@ -70,5 +70,12 @@ namespace Phoenix.Verification.DataHandle.Tests
 
             await schoolRepository.DeleteAsync(2);
         }
+
+        [Fact]
+        public async void FetchDevRegistration()
+        {
+            var devRegistrationRepository = new DevRegistrationRepository(_phoenixContext);
+            var devReg = await devRegistrationRepository.FindUniqueAsync("tspyrou@askphoenix.gr");
+        }
     }
 }

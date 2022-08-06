@@ -12,7 +12,7 @@
         public static ChannelProvider ToChannelProvider(this string me)
         {
             return Enum.GetValues<ChannelProvider>()
-                .SingleOrDefault(cp => string.Equals(cp.ToString(), me, StringComparison.OrdinalIgnoreCase));
+                .SingleOrDefault(cp => cp.ToString().Equals(me, StringComparison.OrdinalIgnoreCase));
         }
 
         public static bool TryToChannelProvider(this string me, out ChannelProvider channelProvider)
@@ -20,7 +20,7 @@
             channelProvider = me.ToChannelProvider();
 
             return Enum.GetValues<ChannelProvider>()
-                .Any(cp => string.Equals(cp.ToString(), me, StringComparison.OrdinalIgnoreCase));
+                .Any(cp => cp.ToString().Equals(me, StringComparison.OrdinalIgnoreCase));
         }
 
         public static string ToFriendlyString(this ChannelProvider me)

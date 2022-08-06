@@ -13,7 +13,7 @@
         public static Tense ToTense(this string me)
         {
             return Enum.GetValues<Tense>()
-                    .SingleOrDefault(t => string.Equals(t.ToString(), me, StringComparison.OrdinalIgnoreCase));
+                    .SingleOrDefault(t => t.ToString().Equals(me, StringComparison.OrdinalIgnoreCase));
         }
 
         public static bool TryToTense(this string me, out Tense tense)
@@ -21,7 +21,7 @@
             tense = me.ToTense();
 
             return Enum.GetValues<Tense>()
-                .Any(t => string.Equals(t.ToString(), me, StringComparison.OrdinalIgnoreCase));
+                .Any(t => t.ToString().Equals(me, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

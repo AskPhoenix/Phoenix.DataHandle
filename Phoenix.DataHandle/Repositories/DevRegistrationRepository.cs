@@ -15,7 +15,7 @@ namespace Phoenix.DataHandle.Repositories
             if (string.IsNullOrWhiteSpace(email))
                 throw new ArgumentNullException(nameof(email));
 
-            return dr => dr.Email.Equals(email, StringComparison.OrdinalIgnoreCase);
+            return dr => dr.Email.Equals(email);
         }
 
         #region Find Unique
