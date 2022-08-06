@@ -5,22 +5,27 @@ namespace Phoenix.DataHandle.Senders
 {
     public class SmsSender
     {
-        public string From { get; set; }
+        public string From { get; set; } = "AskPhoenix";
 
         private readonly VonageClient _senderClient;
 
-        public SmsSender(string apiKey, string apiSecret, string from = "AskPhoenix")
+        public SmsSender(string apiKey, string apiSecret)
         {
             if (string.IsNullOrEmpty(apiKey))
                 throw new ArgumentNullException(nameof(apiKey));
             if (string.IsNullOrEmpty(apiSecret))
                 throw new ArgumentNullException(nameof(apiSecret));
+            
+            _senderClient = new(Credentials.FromApiKeyAndSecret(apiKey, apiSecret));
+        }
+
+        public SmsSender(string apiKey, string apiSecret, string from)
+            : this(apiKey, apiSecret)
+        {
             if (string.IsNullOrEmpty(from))
                 throw new ArgumentNullException(nameof(from));
 
             this.From = from;
-
-            _senderClient = new(Credentials.FromApiKeyAndSecret(apiKey, apiSecret));
         }
 
         public async Task SendAsync(string to, string content)
