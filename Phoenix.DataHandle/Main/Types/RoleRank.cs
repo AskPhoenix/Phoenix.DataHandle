@@ -19,6 +19,7 @@ namespace Phoenix.DataHandle.Main.Types
 
         // Backend roles
         SchoolTester = RoleHierarchy.BackendRolesBase,  // School backend role
+        SchoolDeveloper,
         SuperTester = RoleHierarchy.SuperRolesBase,     // Super backend roles
         SuperAdmin
     }
@@ -58,12 +59,13 @@ namespace Phoenix.DataHandle.Main.Types
         {
             return me switch
             {
-                RoleRank.SchoolAdmin => "SCHOOL_ADMIN",
-                RoleRank.SchoolOwner => "SCHOOL_OWNER",
-                RoleRank.SchoolTester => "SCHOOL_TESTER",
-                RoleRank.SuperTester => "SUPER_TESTER",
-                RoleRank.SuperAdmin => "SUPER_ADMIN",
-                _ => me.ToString().ToUpper()
+                RoleRank.SchoolAdmin        => "SCHOOL_ADMIN",
+                RoleRank.SchoolOwner        => "SCHOOL_OWNER",
+                RoleRank.SchoolTester       => "SCHOOL_TESTER",
+                RoleRank.SchoolDeveloper    => "SCHOOL_DEV",
+                RoleRank.SuperTester        => "SUPER_TESTER",
+                RoleRank.SuperAdmin         => "SUPER_ADMIN",
+                _                           => me.ToString().ToUpper()
             };
         }
 
@@ -71,16 +73,17 @@ namespace Phoenix.DataHandle.Main.Types
         {
             return me switch
             {
-                RoleRank.Student        => RoleRankResources.Student,
-                RoleRank.Parent         => RoleRankResources.Parent,
-                RoleRank.Teacher        => RoleRankResources.Teacher,
-                RoleRank.Secretary      => RoleRankResources.Secretary,
-                RoleRank.SchoolAdmin    => RoleRankResources.SchoolAdmin,
-                RoleRank.SchoolOwner    => RoleRankResources.SchoolOwner,
-                RoleRank.SchoolTester   => RoleRankResources.SchoolTester,
-                RoleRank.SuperTester    => RoleRankResources.SuperTester,
-                RoleRank.SuperAdmin     => RoleRankResources.SuperAdmin,
-                _                       => string.Empty
+                RoleRank.Student            => RoleRankResources.Student,
+                RoleRank.Parent             => RoleRankResources.Parent,
+                RoleRank.Teacher            => RoleRankResources.Teacher,
+                RoleRank.Secretary          => RoleRankResources.Secretary,
+                RoleRank.SchoolAdmin        => RoleRankResources.SchoolAdmin,
+                RoleRank.SchoolOwner        => RoleRankResources.SchoolOwner,
+                RoleRank.SchoolTester       => RoleRankResources.SchoolTester,
+                RoleRank.SchoolDeveloper    => RoleRankResources.SchoolDeveloper,
+                RoleRank.SuperTester        => RoleRankResources.SuperTester,
+                RoleRank.SuperAdmin         => RoleRankResources.SuperAdmin,
+                _                           => string.Empty
             };
         }
 
@@ -95,7 +98,7 @@ namespace Phoenix.DataHandle.Main.Types
         public static RoleRank ToRoleRank(this string me)
         {
             return AllRoleRanks
-                .SingleOrDefault(rr => string.Equals(rr.ToString(), me.Replace("_", ""), StringComparison.OrdinalIgnoreCase));
+                .SingleOrDefault(rr => rr.ToString().Equals(me.Replace("_", ""), StringComparison.OrdinalIgnoreCase));
         }
 
         public static bool TryToRoleRank(this string me, out RoleRank roleRank)
@@ -103,7 +106,7 @@ namespace Phoenix.DataHandle.Main.Types
             roleRank = me.ToRoleRank();
 
             return AllRoleRanks
-                .Any(rr => string.Equals(rr.ToString(), me, StringComparison.OrdinalIgnoreCase));
+                .Any(rr => rr.ToString().Equals(me, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
