@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Phoenix.DataHandle.Api.Entities;
 using Phoenix.DataHandle.Api.Models.Extensions;
+using Phoenix.DataHandle.Base;
 using Phoenix.DataHandle.Base.Entities;
 using Phoenix.DataHandle.Main.Models;
 
@@ -9,24 +10,22 @@ namespace Phoenix.DataHandle.Api.Models
     public class UserApi : IUserApi, IModelApi
     {
         [JsonConstructor]
-        public UserApi(int id, string firstName, string lastName, string fullName, bool isSelfDetermined)
+        public UserApi(int id, string firstName, string lastName, bool isSelfDetermined)
         {
             if (string.IsNullOrWhiteSpace(firstName))
                 firstName = null!;
             if (string.IsNullOrWhiteSpace(lastName))
                 lastName = null!;
-            if (string.IsNullOrWhiteSpace(fullName))
-                fullName = null!;
-
+            
             this.Id = id;
             this.FirstName = firstName;
             this.LastName = lastName;
-            this.FullName = fullName;
+            this.FullName = this.BuildFullName();
             this.IsSelfDetermined = isSelfDetermined;
         }
 
         public UserApi(int id, IUserBase user)
-            : this(id, user.FirstName, user.LastName, user.FullName, user.IsSelfDetermined)
+            : this(id, user.FirstName, user.LastName, user.IsSelfDetermined)
         {
             this.DependenceOrder = user.DependenceOrder;
         }
@@ -67,7 +66,7 @@ namespace Phoenix.DataHandle.Api.Models
         [JsonProperty("last_name", Required = Required.Always)]
         public string LastName { get; } = null!;
 
-        [JsonProperty("full_name", Required = Required.Always)]
+        [JsonProperty("full_name")]
         public string FullName { get; } = null!;
 
         [JsonProperty("is_self_determined", Required = Required.Always)]
