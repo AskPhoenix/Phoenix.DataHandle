@@ -11,7 +11,7 @@
   <PropertyGroup>
     <PackageId>Phoenix.DataHandle</PackageId>
     <Product>Phoenix.DataHandle</Product>
-    <Version>3.0.0-beta1.104</Version>
+    <Version>3.0.0-beta1.105</Version>
     <Authors>AskPhoenix</Authors>
     <Company>AskPhoenix</Company>
     <PackageDescription>A library for handling the backend of AskPhoenix</PackageDescription>
@@ -21,6 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.*">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -29,11 +30,13 @@
       <!-- Needed for 'dotnet ef' command to create the SQL script for the DB -->
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
-    <PackageReference Include="Nexmo.Csharp.Client" Version="5.2.*" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.*" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.*" />
     <PackageReference Include="Phoenix.Language" Version="3.0.0-alpha.*" />
+    <PackageReference Include="SendGrid" Version="9.28.*" />
+    <PackageReference Include="Vonage" Version="6.0.*" />
     <PackageReference Include="WordPressPCL" Version="2.0.*" />
   </ItemGroup>
 
