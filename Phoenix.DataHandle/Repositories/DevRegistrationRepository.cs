@@ -1,4 +1,5 @@
 ﻿using Phoenix.DataHandle.Main.Models;
+using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.Repositories
 {
@@ -9,14 +10,21 @@ namespace Phoenix.DataHandle.Repositories
         {
         }
 
-        #region Search
-
-        public IQueryable<DevRegistration> Search(string email)
+        public static Expression<Func<DevRegistration, bool>> GetUniqueExpression(string email)
         {
-            if (email is null)
+            if (string.IsNullOrWhiteSpace(email))
                 throw new ArgumentNullException(nameof(email));
 
-            return this.Find().Where(dr => dr.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+            return dr => dr.Email.Equals(email, StringComparison.OrdinalIgnoreCase);
+        }
+
+        #region Find Unique
+
+        public Task<DevRegistration?> FindUniqueAsync(string email,
+            CancellationToken cancellationToken = default)
+        {
+            return FindUniqueAsync(GetUniqueExpression(email),
+                cancellationToken);
         }
 
         #endregion
