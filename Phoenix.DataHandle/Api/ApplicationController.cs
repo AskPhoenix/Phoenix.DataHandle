@@ -67,12 +67,18 @@ namespace Phoenix.DataHandle.Api
 
             this.AppUser = await _userManager
                 .FindByNameAsync(userClaims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            if (this.AppUser is null)
+            {
+                _logger.LogInformation("No user found with the specified username");
+                return;
+            }
 
             this.PhoenixUser = await _userRepository.FindPrimaryAsync(this.AppUser.Id);
             if (this.PhoenixUser?.ObviatedAt.HasValue ?? false)
             {
                 this.PhoenixUser = null;
                 this.AppUser = null;
+                return;
             }
             
             _logger.LogInformation("User with ID {Id} is authorized", this.AppUser.Id);

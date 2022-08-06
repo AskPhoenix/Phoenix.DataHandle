@@ -6,6 +6,7 @@
         {
             BotFeedbacks = new HashSet<BotFeedback>();
             Broadcasts = new HashSet<Broadcast>();
+            DevRegistrations = new HashSet<DevRegistration>();
             Grades = new HashSet<Grade>();
             OneTimeCodes = new HashSet<OneTimeCode>();
             UserConnections = new HashSet<UserConnection>();
