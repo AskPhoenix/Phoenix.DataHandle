@@ -55,6 +55,8 @@ namespace Phoenix.DataHandle.Api
             if (identity is null)
             {
                 _logger.LogInformation("No Identity is provided");
+
+                await base.OnActionExecutionAsync(context, next);
                 return;
             }
 
@@ -62,6 +64,8 @@ namespace Phoenix.DataHandle.Api
             if (!userClaims.Any(c => c.Type == ClaimTypes.NameIdentifier))
             {
                 _logger.LogInformation("No claim for username found in the Identity");
+
+                await base.OnActionExecutionAsync(context, next);
                 return;
             }
 
@@ -70,6 +74,8 @@ namespace Phoenix.DataHandle.Api
             if (this.AppUser is null)
             {
                 _logger.LogInformation("No user found with the specified username");
+
+                await base.OnActionExecutionAsync(context, next);
                 return;
             }
 
@@ -78,12 +84,15 @@ namespace Phoenix.DataHandle.Api
             {
                 this.PhoenixUser = null;
                 this.AppUser = null;
+
+                await base.OnActionExecutionAsync(context, next);
                 return;
             }
             
             _logger.LogInformation("User with ID {Id} is authorized", this.AppUser.Id);
 
             await base.OnActionExecutionAsync(context, next);
+            return;
         }
     }
 }
