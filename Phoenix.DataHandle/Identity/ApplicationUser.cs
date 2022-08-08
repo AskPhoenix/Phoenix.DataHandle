@@ -20,10 +20,12 @@ namespace Phoenix.DataHandle.Identity
         public virtual ICollection<ApplicationUserToken> Tokens { get; set; }
         public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
 
+        public static Func<string?, string?> NormFunc => s => s?.ToUpperInvariant();
+
         public ApplicationUser Normalize()
         {
-            this.NormalizedEmail = this.Email?.ToUpperInvariant();
-            this.NormalizedUserName = this.UserName?.ToUpperInvariant();
+            this.NormalizedEmail = NormFunc(this.Email);
+            this.NormalizedUserName = NormFunc(this.UserName);
 
             return this;
         }
