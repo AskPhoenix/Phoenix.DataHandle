@@ -5,7 +5,7 @@ namespace Phoenix.DataHandle.Senders
 {
     public class EmailSender
     {
-        public EmailAddress FromAddress { get; set; } = new("it@askphoenix", "AskPhoenix");
+        public EmailAddress FromAddress { get; set; } = new("it@askphoenix.gr", "AskPhoenix");
 
         private readonly SendGridClient _senderClient;
 
