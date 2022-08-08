@@ -27,7 +27,7 @@ namespace Phoenix.DataHandle.Senders
         }
 
         public async Task<Response> SendAsync(
-            string to, string subject, string? plainTextContent, string? htmlContent)
+            string to, string subject, string? plainTextContent = null, string? htmlContent = null)
         {
             if (string.IsNullOrEmpty(to))
                 throw new ArgumentNullException(nameof(to));
