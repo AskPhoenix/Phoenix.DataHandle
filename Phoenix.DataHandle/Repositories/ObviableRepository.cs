@@ -53,7 +53,10 @@ namespace Phoenix.DataHandle.Repositories
             if (obviableModels is null)
                 throw new ArgumentNullException(nameof(obviableModels));
 
-            return obviableModels.Select(m => ObviatePrepare(m));
+            foreach (var obviableModel in obviableModels)
+                ObviatePrepare(obviableModel);
+
+            return obviableModels;
         }
 
         public Task<TObviableModel> ObviateAsync(TObviableModel obviableModel,
@@ -87,7 +90,10 @@ namespace Phoenix.DataHandle.Repositories
             if (obviableModels is null)
                 throw new ArgumentNullException(nameof(obviableModels));
 
-            return obviableModels.Select(m => RestorePrepare(m));
+            foreach (var obviableModel in obviableModels)
+                RestorePrepare(obviableModel);
+
+            return obviableModels;
         }
 
         public async Task<TObviableModel> RestoreAsync(TObviableModel obviableModel,
@@ -106,9 +112,20 @@ namespace Phoenix.DataHandle.Repositories
 
         #region Delete
 
-        public Task DeleteAllObviatedAsync(CancellationToken cancellationToken = default)
+        public Task DeleteAllObviatedAsync(
+            CancellationToken cancellationToken = default)
         {
             return DeleteRangeAsync(Find().Where(m => m.IsObviated), cancellationToken);
+        }
+
+        public Task DeleteAllObviatedAsync(int daysObviated,
+            CancellationToken cancellationToken = default)
+        {
+            var toDelete = Find()
+                .Where(m => m.IsObviated)
+                .Where(m => m.ObviatedAt <= DateTime.UtcNow.AddDays(-daysObviated));
+
+            return DeleteRangeAsync(toDelete, cancellationToken);
         }
 
         #endregion

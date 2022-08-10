@@ -71,13 +71,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 FirstDate = this.FirstDate,
                 LastDate = this.LastDate,
 
-                Books = booksFinal.Select(
-                    b => new Book()
-                    {
-                        SchoolId = schoolId,
-                        Name = b.Name
-                    }.Normalize())
-                .ToHashSet()
+                Books = booksFinal.ToHashSet()
             };
         }
 
@@ -98,23 +92,24 @@ namespace Phoenix.DataHandle.DataEntry.Models
 
             if (booksFinal is not null)
             {
-                var books = booksFinal.Select(
-                b => new Book()
-                {
-                    SchoolId = schoolId,
-                    Name = b.Name
-                }.Normalize());
-
-                foreach (var bookFinal in books)
+                foreach (var bookFinal in booksFinal)
                     if (!courseToUpdate.Books.Contains(bookFinal))
                         courseToUpdate.Books.Add(bookFinal);
 
                 foreach (var bookInitial in courseToUpdate.Books)
-                    if (!books.Contains(bookInitial))
+                    if (!booksFinal.Contains(bookInitial))
                         courseToUpdate.Books.Remove(bookInitial);
             }
 
             return courseToUpdate;
+        }
+
+        public HashSet<Book> GetBooks(int schoolId)
+        {
+            foreach (var book in this.Books)
+                book.SchoolId = schoolId;
+
+            return this.Books;
         }
 
         public CourseUnique GetCourseUnique(SchoolUnique schoolUnique) => new(schoolUnique, this.Code);
@@ -156,7 +151,7 @@ namespace Phoenix.DataHandle.DataEntry.Models
         public string BooksString { get; } = null!;
 
         [JsonIgnore]
-        public HashSet<Book> Books { get; }
+        private HashSet<Book> Books { get; }
 
         IEnumerable<IBookBase> ICourseAcf.Books => this.Books;
     }

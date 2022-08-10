@@ -118,7 +118,10 @@ namespace Phoenix.DataHandle.Repositories
             if (connections is null)
                 throw new ArgumentNullException(nameof(connections));
 
-            return connections.Select(l => DisconnectPrepare(l));
+            foreach (var connection in connections)
+                DisconnectPrepare(connection);
+
+            return connections;
         }
 
         public async Task<TConnectionModel> DisconnectAsync(

@@ -129,7 +129,7 @@ namespace Phoenix.Verification.DataHandle.Tests
         public async void CourseAcfTestAsync()
         {
             var acf = await AcfTestAsync<CourseAcf>(PostCategory.Course);
-            var books = acf.Books;
+            var books = acf.GetBooks(1);
         }
 
         [Fact]

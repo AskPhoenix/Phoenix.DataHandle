@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Repositories;
 
 namespace Phoenix.Verification.DataHandle.Tests
@@ -76,6 +77,43 @@ namespace Phoenix.Verification.DataHandle.Tests
         {
             var devRegistrationRepository = new DevRegistrationRepository(_phoenixContext);
             var devReg = await devRegistrationRepository.FindUniqueAsync("tspyrou@askphoenix.gr");
+        }
+
+        [Fact]
+        public async void CreateRangeCourse()
+        {
+            var courseRepository = new CourseRepository(_phoenixContext);
+
+            var courses = new List<Course>(2)
+            {
+                new()
+                {
+                    SchoolId = 1,
+                    Code = 1,
+                    Name = "A Course",
+                    SubCourse = "Sub",
+                    Level = "B2",
+                    Group = "1",
+                    Comments = null,
+                    FirstDate = new DateTime(2021, 9, 1),
+                    LastDate = new DateTime(2022, 9, 30)
+                },
+
+                new()
+                {
+                    SchoolId = 1,
+                    Code = 2,
+                    Name = "Another Course",
+                    SubCourse = "Sub",
+                    Level = "B2",
+                    Group = "2",
+                    Comments = null,
+                    FirstDate = new DateTime(2021, 9, 1),
+                    LastDate = new DateTime(2022, 9, 30)
+                }
+            };
+
+            await courseRepository.CreateRangeAsync(courses);
         }
     }
 }

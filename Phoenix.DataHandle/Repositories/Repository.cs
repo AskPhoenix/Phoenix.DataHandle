@@ -75,7 +75,10 @@ namespace Phoenix.DataHandle.Repositories
             if (models is null)
                 throw new ArgumentNullException(nameof(models));
 
-            return models.Select(m => CreatePrepare(m));
+            foreach (var model in models)
+                CreatePrepare(model);
+
+            return models;
         }
 
         public virtual async Task<TModel> CreateAsync(TModel model,
