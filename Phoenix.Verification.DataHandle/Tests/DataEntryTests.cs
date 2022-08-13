@@ -96,7 +96,7 @@ namespace Phoenix.Verification.DataHandle.Tests
         }
 
         private async Task<TAcf> AcfTestAsync<TAcf>(PostCategory cat)
-            where TAcf : IModelAcf
+            where TAcf : class, IModelAcf
         {
             await AuthenticationTestAsync();
 

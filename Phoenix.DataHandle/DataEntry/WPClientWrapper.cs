@@ -200,65 +200,68 @@ namespace Phoenix.DataHandle.DataEntry
             return await Client.CustomRequest.GetAsync<T>(route, Embed, AlwaysUseAuthentication);
         }
 
-        public static async Task<TModelACF> GetAcfAsync<TModelACF>(int postId)
-            where TModelACF : IModelAcf
+        public static async Task<TModelAcf?> GetAcfAsync<TModelAcf>(int postId)
+            where TModelAcf : class, IModelAcf
         {
             string route = AcfPostsPath + $"/{postId}";
             var response = await GetCustomAsync<JObject>(route);
 
-            return response.GetValue("acf").ToObject<TModelACF>();
+            return response.GetValue("acf")?.ToObject<TModelAcf>();
         }
 
-        public static async Task<TModelACF> GetAcfAsync<TModelACF>(Post post)
-            where TModelACF : IModelAcf
+        public static async Task<TModelAcf?> GetAcfAsync<TModelAcf>(Post post)
+            where TModelAcf : class, IModelAcf
         {
-            return await GetAcfAsync<TModelACF>(post.Id);
+            return await GetAcfAsync<TModelAcf>(post.Id);
         }
 
-        public static async Task<SchoolAcf> GetSchoolAcfAsync(Post post)
+        public static async Task<SchoolAcf?> GetSchoolAcfAsync(Post post)
         {
-            SchoolAcf schoolAcf = await GetAcfAsync<SchoolAcf>(post);
+            var schoolAcf = await GetAcfAsync<SchoolAcf>(post);
+            if (schoolAcf is null)
+                return null;
+
             schoolAcf.Code = new SchoolUnique(post.GetTitle()).Code;
 
             return schoolAcf;
         }
 
-        public static async Task<CourseAcf> GetCourseAcfAsync(int postId)
+        public static async Task<CourseAcf?> GetCourseAcfAsync(int postId)
         {
             return await GetAcfAsync<CourseAcf>(postId);
         }
 
-        public static async Task<CourseAcf> GetCourseAcfAsync(Post post)
+        public static async Task<CourseAcf?> GetCourseAcfAsync(Post post)
         {
             return await GetAcfAsync<CourseAcf>(post);
         }
 
-        public static async Task<ScheduleAcf> GetScheduleAcfAsync(int postId)
+        public static async Task<ScheduleAcf?> GetScheduleAcfAsync(int postId)
         {
             return await GetAcfAsync<ScheduleAcf>(postId);
         }
 
-        public static async Task<ScheduleAcf> GetScheduleAcfAsync(Post post)
+        public static async Task<ScheduleAcf?> GetScheduleAcfAsync(Post post)
         {
             return await GetAcfAsync<ScheduleAcf>(post);
         }
 
-        public static async Task<PersonnelAcf> GetPersonnelAcfAsync(int postId)
+        public static async Task<PersonnelAcf?> GetPersonnelAcfAsync(int postId)
         {
             return await GetAcfAsync<PersonnelAcf>(postId);
         }
 
-        public static async Task<PersonnelAcf> GetPersonnelAcfAsync(Post post)
+        public static async Task<PersonnelAcf?> GetPersonnelAcfAsync(Post post)
         {
             return await GetAcfAsync<PersonnelAcf>(post);
         }
 
-        public static async Task<ClientAcf> GetClientAcfAsync(int postId)
+        public static async Task<ClientAcf?> GetClientAcfAsync(int postId)
         {
             return await GetAcfAsync<ClientAcf>(postId);
         }
 
-        public static async Task<ClientAcf> GetClientAcfAsync(Post post)
+        public static async Task<ClientAcf?> GetClientAcfAsync(Post post)
         {
             return await GetAcfAsync<ClientAcf>(post);
         }

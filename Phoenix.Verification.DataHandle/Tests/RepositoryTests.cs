@@ -6,8 +6,6 @@ namespace Phoenix.Verification.DataHandle.Tests
 {
     public class RepositoryTests : ContextTestsBase
     {
-        // TODO: Create Tests
-
         public RepositoryTests()
             : base()
         {
