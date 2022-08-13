@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using Microsoft.Extensions.Options;
+using System.Globalization;
+using System.Xml.Linq;
 
 namespace Phoenix.DataHandle.Utilities
 {
@@ -17,6 +19,12 @@ namespace Phoenix.DataHandle.Utilities
             return TimeZoneInfo.FindSystemTimeZoneById(timeZone).GetUtcOffset(dateTime);
         }
 
+        public static DateTimeOffset TimeZoneNow(string timeZone)
+        {
+            var offset = CalculateTimeZoneOffset(timeZone, DateTime.UtcNow);
+            return DateTimeOffset.UtcNow.ToOffset(offset);
+        }
+
         public static DateTimeOffset SetOffsetFromTimeZone(this DateTimeOffset dateTimeOffset, string timeZone)
         {
             DateTime dt = dateTimeOffset.DateTime;
@@ -25,7 +33,7 @@ namespace Phoenix.DataHandle.Utilities
 
         public static DateTimeOffset ParseExact(string input, string format, string timeZone)
         {
-            var dateTime = CalendarExtensions.ParseExact(input, format);
+            var dateTime = ParseExact(input, format);
             return new DateTimeOffset(dateTime, CalculateTimeZoneOffset(timeZone, dateTime));
         }
 
