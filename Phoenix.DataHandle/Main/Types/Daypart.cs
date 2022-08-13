@@ -1,4 +1,4 @@
-﻿using Phoenix.Language.Types;
+﻿using Phoenix.Language.Types.Daypart;
 
 namespace Phoenix.DataHandle.Main.Types
 {

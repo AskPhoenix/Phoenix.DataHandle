@@ -1,4 +1,4 @@
-﻿using Phoenix.Language.Types;
+﻿using Phoenix.Language.Types.BroadcastVisibility;
 
 namespace Phoenix.DataHandle.Main.Types
 {

@@ -1,4 +1,4 @@
-﻿using Phoenix.Language.Types;
+﻿using Phoenix.Language.Types.RoleRank;
 
 namespace Phoenix.DataHandle.Main.Types
 {
