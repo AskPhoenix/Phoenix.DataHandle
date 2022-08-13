@@ -25,7 +25,7 @@ namespace Phoenix.DataHandle.Api.Models
             {
                 this.ChannelProvider = channelProvider;
                 this.Channel = channelProvider.ToString();
-                this.ChannelDisplayName = channelProvider.ToFriendlyString();
+                this.ChannelDisplayName = channelProvider.ToString();
             }
         }
 

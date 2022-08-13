@@ -18,7 +18,6 @@ namespace Phoenix.DataHandle.Main.Types
         {
             return me switch
             {
-                //Daypart.Never       => DaypartResources.Never,
                 Daypart.Now         => DaypartResources.Now,
                 Daypart.Morning     => DaypartResources.Morning,
                 Daypart.Midday      => DaypartResources.Midday,

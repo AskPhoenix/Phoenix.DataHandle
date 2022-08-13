@@ -52,7 +52,7 @@ namespace Phoenix.DataHandle.Repositories
                     TenantId = tenantId,
                     Channel = channelProvider.ToString(),
                     ChannelKey = channelKey,
-                    ChannelDisplayName = channelProvider.ToFriendlyString(),
+                    ChannelDisplayName = channelProvider.ToString(),
                     ActivatedAt = activate ? DateTime.UtcNow : null
                 };
 
@@ -61,7 +61,7 @@ namespace Phoenix.DataHandle.Repositories
 
             if (connection.TenantId != tenantId)
                 throw new InvalidOperationException(
-                    string.Format(InvalidRegisterMsg, channelProvider.ToFriendlyString(), channelKey));
+                    string.Format(InvalidRegisterMsg, channelProvider.ToString(), channelKey));
 
             if (activate && !connection.IsActive)
             {
@@ -90,7 +90,7 @@ namespace Phoenix.DataHandle.Repositories
 
             if (connection is null)
                 throw new InvalidOperationException(
-                    string.Format(InvalidConnectionMsg, channelProvider.ToFriendlyString(), channelKey));
+                    string.Format(InvalidConnectionMsg, channelProvider.ToString(), channelKey));
 
             // Update ActivatedAt every time the tenant is connected
             connection.ActivatedAt = DateTime.UtcNow;
@@ -139,7 +139,7 @@ namespace Phoenix.DataHandle.Repositories
             
             if (connection is null)
                 throw new InvalidOperationException(
-                    string.Format(InvalidConnectionMsg, channelProvider.ToFriendlyString(), channelKey));
+                    string.Format(InvalidConnectionMsg, channelProvider.ToString(), channelKey));
 
             return await DisconnectAsync(connection, cancellationToken);
         }

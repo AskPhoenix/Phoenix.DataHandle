@@ -9,28 +9,19 @@
 
     public static class ChannelProviderExtensions
     {
+        private static bool ChannelProviderPredicate(ChannelProvider cp, string str) =>
+            cp.ToString().Equals(str, StringComparison.OrdinalIgnoreCase);
+
         public static ChannelProvider ToChannelProvider(this string me)
         {
-            return Enum.GetValues<ChannelProvider>()
-                .SingleOrDefault(cp => cp.ToString().Equals(me, StringComparison.OrdinalIgnoreCase));
+            return Enum.GetValues<ChannelProvider>().SingleOrDefault(cp => ChannelProviderPredicate(cp, me));
         }
 
         public static bool TryToChannelProvider(this string me, out ChannelProvider channelProvider)
         {
             channelProvider = me.ToChannelProvider();
 
-            return Enum.GetValues<ChannelProvider>()
-                .Any(cp => cp.ToString().Equals(me, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public static string ToFriendlyString(this ChannelProvider me)
-        {
-            return me switch
-            {
-                ChannelProvider.Facebook    => "Facebook",
-                ChannelProvider.Emulator    => "Emulator",
-                _                           => string.Empty
-            };
+            return Enum.GetValues<ChannelProvider>().Any(cp => ChannelProviderPredicate(cp, me));
         }
     }
 }

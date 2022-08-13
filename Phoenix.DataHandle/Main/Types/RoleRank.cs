@@ -1,4 +1,5 @@
-﻿using Phoenix.Language.Types.RoleRank;
+﻿using Phoenix.DataHandle.Utilities;
+using Phoenix.Language.Types.RoleRank;
 
 namespace Phoenix.DataHandle.Main.Types
 {
@@ -95,18 +96,21 @@ namespace Phoenix.DataHandle.Main.Types
                 .ToArray();
         }
 
+        private static bool RoleRankPredicate(RoleRank rr, string str) =>
+            rr.ToString().Equals(str, StringComparison.OrdinalIgnoreCase) ||
+            rr.ToFriendlyString().ToUnaccented().Equals(str.ToUnaccented(), StringComparison.OrdinalIgnoreCase) ||
+            rr.ToNormalizedString().Equals(str, StringComparison.OrdinalIgnoreCase);
+
         public static RoleRank ToRoleRank(this string me)
         {
-            return AllRoleRanks
-                .SingleOrDefault(rr => rr.ToString().Equals(me.Replace("_", ""), StringComparison.OrdinalIgnoreCase));
+            return AllRoleRanks.SingleOrDefault(rr => RoleRankPredicate(rr, me.Replace("_", "")));
         }
 
         public static bool TryToRoleRank(this string me, out RoleRank roleRank)
         {
             roleRank = me.ToRoleRank();
 
-            return AllRoleRanks
-                .Any(rr => rr.ToString().Equals(me, StringComparison.OrdinalIgnoreCase));
+            return AllRoleRanks.Any(rr => RoleRankPredicate(rr, me.Replace("_", "")));
         }
     }
 }
