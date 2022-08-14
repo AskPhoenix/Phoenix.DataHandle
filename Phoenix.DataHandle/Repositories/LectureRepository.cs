@@ -11,6 +11,7 @@ namespace Phoenix.DataHandle.Repositories
         ISetNullDeleteRule<Lecture>, ICascadeDeleteRule<Lecture>
     {
         public bool SearchNonCancelledOnly { get; set; } = true;
+        public bool SearchWithExamsOnly { get; set; } = false;
 
         public LectureRepository(PhoenixContext phoenixContext)
             : base(phoenixContext) 
@@ -51,9 +52,21 @@ namespace Phoenix.DataHandle.Repositories
 
         #region Search
 
-        public IQueryable<Lecture> Search(int? courseId = null, int? classroomId = null, int? scheduleId = null)
+        private IQueryable<Lecture> Search()
         {
             var lectures = Find();
+
+            if (SearchNonCancelledOnly)
+                lectures = lectures.Where(l => !l.IsCancelled);
+            if (SearchWithExamsOnly)
+                lectures = lectures.Where(l => l.Exams.Any());
+
+            return lectures;
+        }
+
+        public IQueryable<Lecture> Search(int? courseId = null, int? classroomId = null, int? scheduleId = null)
+        {
+            var lectures = Search();
 
             if (courseId.HasValue)
                 lectures = lectures.Where(l => l.CourseId == courseId);
@@ -62,55 +75,35 @@ namespace Phoenix.DataHandle.Repositories
             if (scheduleId.HasValue)
                 lectures = lectures.Where(l => l.ScheduleId == scheduleId);
 
-            if (SearchNonCancelledOnly)
-                lectures = lectures.Where(l => !l.IsCancelled);
-
             return lectures;
         }
 
-        public IQueryable<Lecture> Search(int courseId, DateTime day)
+        public IQueryable<Lecture> Search(int courseId, DateTime date)
         {
-            var lectures = Find().
-                Where(l => l.CourseId == courseId && l.StartDateTime.Date == day);
-
-            if (SearchNonCancelledOnly)
-                lectures = lectures.Where(l => !l.IsCancelled);
-
-            return lectures;
+            return Search(new[] { courseId }, date);
         }
 
-        // This is not a wrapper of Search for each course
-        public IQueryable<Lecture> Search(int[] courseIds, DateTime day)
+        public IQueryable<Lecture> Search(int[] courseIds, DateTime date)
         {
-            if (courseIds == null)
+            if (courseIds is null)
                 throw new ArgumentNullException(nameof(courseIds));
 
-            var lectures = Find().
-                Where(l => courseIds.Contains(l.CourseId) && l.StartDateTime.Date == day);
-
-            if (SearchNonCancelledOnly)
-                lectures = lectures.Where(l => !l.IsCancelled);
-
-            return lectures;
+            return Search().Where(l => courseIds.Contains(l.CourseId) && l.StartDateTime.Date == date.Date);
         }
 
         public IQueryable<Lecture> Search(int courseId, Tense tense,
             DateTimeOffset reference, int max = 5)
         {
-            var lectures = Find().
-                Where(l => l.CourseId == courseId);
-
-            return SearchClosest(lectures, tense, reference, max);
+            return Search(new[] { courseId }, tense, reference, max);
         }
 
-        // This is not a wrapper of Search for each course
         public IQueryable<Lecture> Search(int[] courseIds, Tense tense,
             DateTimeOffset reference, int max = 5)
         {
             if (courseIds is null)
                 throw new ArgumentNullException(nameof(courseIds));
 
-            var lectures = Find().
+            var lectures = Search().
                 Where(l => courseIds.Contains(l.CourseId));
 
             return SearchClosest(lectures, tense, reference, max);
@@ -125,11 +118,7 @@ namespace Phoenix.DataHandle.Repositories
             else if (tense == Tense.Future)
                 lectures = lectures.Where(l => l.StartDateTime >= reference);
 
-            if (SearchNonCancelledOnly)
-                lectures = lectures.Where(l => !l.IsCancelled);
-
-            return lectures.OrderBy(l => (l.StartDateTime - reference).Duration())
-                .Take(max);
+            return lectures.OrderBy(l => (l.StartDateTime - reference).Duration()).Take(max);
         }
 
         #endregion
