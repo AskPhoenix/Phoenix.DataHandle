@@ -71,6 +71,16 @@ namespace Phoenix.DataHandle.Main.Models
         IEnumerable<IBook> ICourse.Books => this.Books;
         IEnumerable<IBroadcast> ICourse.Broadcasts => this.Broadcasts;
         IEnumerable<IUser> ICourse.Users => this.Users;
+
+        public string GetNameWithSubcourse()
+        {
+            return this.Name + (this.SubCourse != null ? $" - {this.SubCourse}" : "");
+        }
+
+        public string GetFullName()
+        {
+            return this.GetNameWithSubcourse() + " ~ " + this.Group;
+        }
     }
 
     public partial class DevRegistration : IDevRegistration, IModelEntity
