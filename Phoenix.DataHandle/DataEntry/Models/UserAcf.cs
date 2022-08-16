@@ -81,9 +81,26 @@ namespace Phoenix.DataHandle.DataEntry.Models
             return userToUpdate;
         }
 
-        public string GenerateUserName(SchoolUnique schoolUq)
+        public string GenerateUserName(SchoolUnique schoolUq, string phoneCountryCode)
         {
-            return this.GenerateUserName(new int[1] { schoolUq.Code }, this.PhoneString);
+            return this.GenerateUserName(new int[1] { schoolUq.Code },
+                PrependPhoneCountryCode(this.PhoneString, phoneCountryCode)!);
+        }
+
+        public static string? PrependPhoneCountryCode(string? phone, string phoneCountryCode)
+        {
+            if (string.IsNullOrEmpty(phone))
+                return null;
+
+            string trimmedPhone = phone.TrimStart('0', '+');
+
+            if (trimmedPhone.StartsWith(phoneCountryCode.TrimStart('0', '+')))
+                return "+" + trimmedPhone;
+
+            if (!phone.Equals(trimmedPhone))
+                return phone;
+
+            return phoneCountryCode + phone;
         }
 
         [JsonIgnore]
