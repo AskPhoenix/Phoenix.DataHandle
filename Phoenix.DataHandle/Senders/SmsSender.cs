@@ -1,4 +1,5 @@
-﻿using Vonage;
+﻿using System.Text.RegularExpressions;
+using Vonage;
 using Vonage.Request;
 
 namespace Phoenix.DataHandle.Senders
@@ -35,9 +36,10 @@ namespace Phoenix.DataHandle.Senders
             if (string.IsNullOrEmpty(content))
                 throw new ArgumentNullException(nameof(content));
 
-            // TODO: Verify phone number according to E.164 standard: ^\+[1-9]\d{1,14}$
-            if (!to.All(d => char.IsDigit(d) || d == '+'))
-                throw new ArgumentException($"{nameof(to)} is not a valid phone number.");
+            // Verify phone number according to E.164 standard
+            if (!new Regex(@"^\+\d{1,15}$").IsMatch(to))
+                throw new ArgumentException($"{nameof(to)} is not a valid phone number. " +
+                    "Try prepending the phone country code.");
 
             var response = await _senderClient.SmsClient.SendAnSmsAsync(new Vonage.Messaging.SendSmsRequest()
             {
