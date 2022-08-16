@@ -10,7 +10,8 @@ namespace Phoenix.DataHandle.Api.Models
     public class SchoolConnectionApi : ISchoolConnectionApi, IModelApi
     {
         [JsonConstructor]
-        public SchoolConnectionApi(int id, int tenantId, string channel, string channelKey)
+        public SchoolConnectionApi(int id, int tenantId, string channel,
+            string channelKey, string? channelToken)
         {
             if (string.IsNullOrWhiteSpace(channel))
                 channel = null!;
@@ -20,17 +21,18 @@ namespace Phoenix.DataHandle.Api.Models
             this.Id = id;
             this.TenantId = tenantId;
             this.ChannelKey = channelKey;
+            this.ChannelToken = channelToken;
 
             if (channel.TryToChannelProvider(out ChannelProvider channelProvider))
             {
                 this.ChannelProvider = channelProvider;
                 this.Channel = channelProvider.ToString();
-                this.ChannelDisplayName = channelProvider.ToString();
             }
         }
 
         public SchoolConnectionApi(int id, int tenantId, ISchoolConnectionBase schoolConnection)
-            : this(id, tenantId, schoolConnection.Channel, schoolConnection.ChannelKey)
+            : this(id, tenantId, schoolConnection.Channel,
+                  schoolConnection.ChannelKey, schoolConnection.ChannelToken)
         {
             this.ActivatedAt = schoolConnection.ActivatedAt;
         }
@@ -48,7 +50,7 @@ namespace Phoenix.DataHandle.Api.Models
                 TenantId = this.TenantId,
                 Channel = this.Channel,
                 ChannelKey = this.ChannelKey,
-                ChannelDisplayName = this.ChannelDisplayName,
+                ChannelToken = this.ChannelToken,
                 ActivatedAt = this.ActivatedAt
             };
         }
@@ -57,7 +59,7 @@ namespace Phoenix.DataHandle.Api.Models
         {
             schoolConnectionToUpdate.Channel = this.Channel;
             schoolConnectionToUpdate.ChannelKey = this.ChannelKey;
-            schoolConnectionToUpdate.ChannelDisplayName = this.ChannelDisplayName;
+            schoolConnectionToUpdate.ChannelToken = this.ChannelToken;
             schoolConnectionToUpdate.ActivatedAt = this.ActivatedAt;
 
             return schoolConnectionToUpdate;
@@ -77,7 +79,7 @@ namespace Phoenix.DataHandle.Api.Models
         public string ChannelKey { get; }
 
         [JsonIgnore]
-        public string ChannelDisplayName { get; } = null!;
+        public string? ChannelToken { get; }
 
         [JsonProperty("activated_at")]
         public DateTime? ActivatedAt { get; }

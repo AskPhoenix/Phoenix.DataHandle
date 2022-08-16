@@ -7,7 +7,6 @@ namespace Phoenix.DataHandle.Main.Models.Extensions
         int TenantId { get; set; }
         new string Channel { get; set; }
         new string ChannelKey { get; set; }
-        new string ChannelDisplayName { get; set; }
         new DateTime? ActivatedAt { get; set; }
     }
 }

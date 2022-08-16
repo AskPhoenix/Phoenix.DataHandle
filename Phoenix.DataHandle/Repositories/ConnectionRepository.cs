@@ -52,7 +52,6 @@ namespace Phoenix.DataHandle.Repositories
                     TenantId = tenantId,
                     Channel = channelProvider.ToString(),
                     ChannelKey = channelKey,
-                    ChannelDisplayName = channelProvider.ToString(),
                     ActivatedAt = activate ? DateTime.UtcNow : null
                 };
 
