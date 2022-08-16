@@ -2,14 +2,10 @@
 {
     public partial class Broadcast
     {
-        public Broadcast()
-        {
-            Courses = new HashSet<Course>();
-        }
-
         public int Id { get; set; }
         public int SchoolId { get; set; }
         public int? AuthorId { get; set; }
+        public int? CourseId { get; set; }
         public string Message { get; set; } = null!;
         public DateTime ScheduledFor { get; set; }
         public Types.Daypart Daypart { get; set; }
@@ -22,7 +18,6 @@
 
         public virtual User? Author { get; set; }
         public virtual School School { get; set; } = null!;
-
-        public virtual ICollection<Course> Courses { get; set; }
+        public virtual Course Course { get; set; } = null!;
     }
 }

@@ -40,8 +40,7 @@ namespace Phoenix.DataHandle.Main.Models
     {
         ISchool IBroadcast.School => this.School;
         IUser? IBroadcast.Author => this.Author;
-
-        IEnumerable<ICourse> IBroadcast.Courses => this.Courses;
+        ICourse? IBroadcast.Course => this.Course;
     }
 
     public partial class Classroom : IClassroom, IObviableModelEntity, INormalizableEntity<Classroom>

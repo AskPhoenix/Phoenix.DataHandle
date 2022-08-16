@@ -6,7 +6,6 @@ namespace Phoenix.DataHandle.Main.Entities
     {
         ISchool School { get; }
         IUser? Author { get; }
-
-        IEnumerable<ICourse> Courses { get; }
+        ICourse? Course { get; }
     }
 }

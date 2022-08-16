@@ -1,12 +1,10 @@
 ﻿using Phoenix.DataHandle.DataEntry.Types.Uniques;
 using Phoenix.DataHandle.Main.Models;
 using Phoenix.DataHandle.Main.Types;
-using Phoenix.DataHandle.Repositories.Extensions;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public sealed class BroadcastRepository : Repository<Broadcast>,
-        ISetNullDeleteRule<Broadcast>
+    public sealed class BroadcastRepository : Repository<Broadcast>
     {
         public BroadcastRepository(PhoenixContext phoenixContext)
             : base(phoenixContext)
@@ -39,15 +37,6 @@ namespace Phoenix.DataHandle.Repositories
         public IQueryable<Broadcast> Search(DateTime scheduledFor, Daypart daypart)
         {
             return Find().Where(b => b.ScheduledFor.Date == scheduledFor.Date && b.Daypart == daypart);
-        }
-
-        #endregion
-
-        #region Delete
-
-        public void SetNullOnDelete(Broadcast broadcast)
-        {
-            broadcast.Courses.Clear();
         }
 
         #endregion

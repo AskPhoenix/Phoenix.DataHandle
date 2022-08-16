@@ -111,22 +111,11 @@ namespace Phoenix.DataHandle.Main.Models
                     .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("FK_Broadcasts_Schools");
 
-                entity.HasMany(d => d.Courses)
+                entity.HasOne(d => d.Course)
                     .WithMany(p => p.Broadcasts)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "BroadcastCourse",
-                        l => l.HasOne<Course>().WithMany().HasForeignKey("CourseId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_BroadcastCourses_Courses"),
-                        r => r.HasOne<Broadcast>().WithMany().HasForeignKey("BroadcastId").OnDelete(DeleteBehavior.NoAction).HasConstraintName("FK_BroadcastCourses_Broadcasts"),
-                        j =>
-                        {
-                            j.HasKey("BroadcastId", "CourseId");
-
-                            j.ToTable("BroadcastCourses");
-
-                            j.HasIndex(new[] { "BroadcastId" }, "IX_BroadcastCourses_Broadcast");
-
-                            j.HasIndex(new[] { "CourseId" }, "IX_BroadcastCourses_Course");
-                        });
+                    .HasForeignKey(d => d.CourseId)
+                    .OnDelete(DeleteBehavior.NoAction)
+                    .HasConstraintName("FK_Broadcasts_Courses");
             });
 
             modelBuilder.Entity<Classroom>(entity =>

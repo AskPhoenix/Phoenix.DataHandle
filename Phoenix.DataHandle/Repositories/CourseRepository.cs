@@ -66,7 +66,6 @@ namespace Phoenix.DataHandle.Repositories
 
         public void SetNullOnDelete(Course course)
         {
-            course.Broadcasts.Clear();
             course.Books.Clear();
             course.Users.Clear();
             course.Grades.Clear();
@@ -75,6 +74,7 @@ namespace Phoenix.DataHandle.Repositories
         public async Task CascadeOnDeleteAsync(Course course,
             CancellationToken cancellationToken = default)
         {
+            await new BroadcastRepository(DbContext).DeleteRangeAsync(course.Broadcasts, cancellationToken);
             await new LectureRepository(DbContext).DeleteRangeAsync(course.Lectures, cancellationToken);
             await new ScheduleRepository(DbContext).DeleteRangeAsync(course.Schedules, cancellationToken);
         }
@@ -82,6 +82,8 @@ namespace Phoenix.DataHandle.Repositories
         public async Task CascadeRangeOnDeleteAsync(IEnumerable<Course> courses,
             CancellationToken cancellationToken = default)
         {
+            await new BroadcastRepository(DbContext).DeleteRangeAsync(courses.SelectMany(c => c.Broadcasts),
+                cancellationToken);
             await new LectureRepository(DbContext).DeleteRangeAsync(courses.SelectMany(c => c.Lectures),
                 cancellationToken);
             await new ScheduleRepository(DbContext).DeleteRangeAsync(courses.SelectMany(c => c.Schedules),

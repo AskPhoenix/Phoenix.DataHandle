@@ -27,12 +27,12 @@
         public DateTime? ObviatedAt { get; set; }
 
         public virtual School School { get; set; } = null!;
+        public virtual ICollection<Broadcast> Broadcasts { get; set; }
         public virtual ICollection<Grade> Grades { get; set; }
         public virtual ICollection<Lecture> Lectures { get; set; }
         public virtual ICollection<Schedule> Schedules { get; set; }
 
         public virtual ICollection<Book> Books { get; set; }
-        public virtual ICollection<Broadcast> Broadcasts { get; set; }
         public virtual ICollection<User> Users { get; set; }
     }
 }
