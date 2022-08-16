@@ -40,7 +40,7 @@ namespace Phoenix.DataHandle.Repositories
             if (obviableModel is null)
                 throw new ArgumentNullException(nameof(obviableModel));
 
-            if (obviableModel.IsObviated)
+            if (obviableModel.ObviatedAt.HasValue)
                 return obviableModel;
 
             obviableModel.ObviatedAt = DateTime.UtcNow;
@@ -115,14 +115,14 @@ namespace Phoenix.DataHandle.Repositories
         public Task DeleteAllObviatedAsync(
             CancellationToken cancellationToken = default)
         {
-            return DeleteRangeAsync(Find().Where(m => m.IsObviated), cancellationToken);
+            return DeleteRangeAsync(Find().Where(m => m.ObviatedAt.HasValue), cancellationToken);
         }
 
         public Task DeleteAllObviatedAsync(int daysObviated,
             CancellationToken cancellationToken = default)
         {
             var toDelete = Find()
-                .Where(m => m.IsObviated)
+                .Where(m => m.ObviatedAt.HasValue)
                 .Where(m => m.ObviatedAt <= DateTime.UtcNow.AddDays(-daysObviated));
 
             return DeleteRangeAsync(toDelete, cancellationToken);

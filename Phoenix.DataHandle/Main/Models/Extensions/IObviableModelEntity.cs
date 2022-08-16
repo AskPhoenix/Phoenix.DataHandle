@@ -3,6 +3,5 @@
     public interface IObviableModelEntity : IModelEntity
     {
         DateTime? ObviatedAt { get; set; }
-        bool IsObviated => ObviatedAt.HasValue;
     }
 }

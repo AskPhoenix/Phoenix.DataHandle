@@ -62,13 +62,13 @@ namespace Phoenix.DataHandle.Repositories
                 throw new InvalidOperationException(
                     string.Format(InvalidRegisterMsg, channelProvider.ToString(), channelKey));
 
-            if (activate && !connection.IsActive)
+            if (activate && !connection.ActivatedAt.HasValue)
             {
                 connection.ActivatedAt = DateTime.UtcNow;
                 return await UpdateAsync(connection, cancellationToken);
             }
 
-            if (!activate && connection.IsActive)
+            if (!activate && connection.ActivatedAt.HasValue)
             {
                 connection.ActivatedAt = null;
                 return await UpdateAsync(connection, cancellationToken);

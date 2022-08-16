@@ -5,6 +5,5 @@
         string Channel { get; }
         string ChannelKey { get; }
         DateTime? ActivatedAt { get; }
-        bool IsActive => ActivatedAt.HasValue;
     }
 }
