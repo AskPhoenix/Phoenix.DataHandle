@@ -87,18 +87,15 @@ namespace Phoenix.DataHandle.DataEntry.Models
                 PrependPhoneCountryCode(this.PhoneString, phoneCountryCode)!);
         }
 
-        public static string? PrependPhoneCountryCode(string? phone, string phoneCountryCode)
+        public static string PrependPhoneCountryCode(string phone, string phoneCountryCode)
         {
-            if (string.IsNullOrEmpty(phone))
-                return null;
-
             string trimmedPhone = phone.TrimStart('0', '+');
 
             if (trimmedPhone.StartsWith(phoneCountryCode.TrimStart('0', '+')))
                 return "+" + trimmedPhone;
 
             if (!phone.Equals(trimmedPhone))
-                return phone;
+                return "+" + trimmedPhone;
 
             return phoneCountryCode + phone;
         }
