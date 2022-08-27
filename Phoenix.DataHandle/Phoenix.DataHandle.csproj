@@ -2,22 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<Version>3.0.0</Version>
+	<Authors>AskPhoenix</Authors>
+	<Company>AskPhoenix</Company>
     <Description>A library for handling the backend of AskPhoenix</Description>
     <Copyright>AskPhoenix 2022</Copyright>
     <PackageProjectUrl>https://www.askphoenix.gr/</PackageProjectUrl>
-    <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <PackageId>Phoenix.DataHandle</PackageId>
-    <Product>Phoenix.DataHandle</Product>
-    <Version>3.0.0-beta1.130</Version>
-    <Authors>AskPhoenix</Authors>
-    <Company>AskPhoenix</Company>
-    <PackageDescription>A library for handling the backend of AskPhoenix</PackageDescription>
-    <RepositoryUrl>https://github.com/AskPhoenix/Phoenix.DataHandle</RepositoryUrl>
-    <Nullable>enable</Nullable>
-	<ImplicitUsings>enable</ImplicitUsings>
+	<RepositoryUrl>https://github.com/AskPhoenix/Phoenix.DataHandle</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
