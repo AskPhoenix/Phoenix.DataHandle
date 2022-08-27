@@ -2,7 +2,8 @@
 
 namespace Phoenix.DataHandle.Identity
 {
-    public sealed class ApplicationUserToken : IdentityUserToken<int>
+    public class ApplicationUserToken : IdentityUserToken<int>
     {
+        public virtual ApplicationUser User { get; set; } = null!;
     }
 }

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Phoenix.DataHandle.Base.Entities;
 
 namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IBotFeedback
+    public interface IBotFeedback : IBotFeedbackBase
     {
-        IAspNetUsers Author { get; }
-        bool AskTriggered { get; set; }
-        string Type { get; set; }
-        short? Rating { get; set; }
-        string Comment { get; set; }
+        IUser? Author { get; }
     }
 }

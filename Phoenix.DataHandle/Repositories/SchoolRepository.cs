@@ -1,58 +1,118 @@
-﻿using System;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using Phoenix.DataHandle.Base.Entities;
+using Phoenix.DataHandle.DataEntry.Types.Uniques;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Repositories.Extensions;
+using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class SchoolRepository : Repository<School>
+    public sealed class SchoolRepository : ObviableRepository<School>,
+        ISetNullDeleteRule<School>, ICascadeDeleteRule<School>
     {
-        public SchoolRepository(PhoenixContext dbContext) : base(dbContext) { }
-
-        public School Update(School tModel, School tModelFrom)
+        public SchoolRepository(PhoenixContext dbContext) 
+            : base(dbContext) 
         {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-            if (tModelFrom == null)
-                throw new ArgumentNullException(nameof(tModelFrom));
-
-            tModel.Name = tModelFrom.Name;
-            tModel.Slug = tModelFrom.Slug;
-            tModel.City = tModelFrom.City;
-            tModel.AddressLine = tModelFrom.AddressLine;
-            tModel.Info = tModelFrom.Info;
-
-            //The columns of the unique keys should not be copied
-
-            if (!string.IsNullOrWhiteSpace(tModelFrom.FacebookPageId))
-                tModel.FacebookPageId = tModelFrom.FacebookPageId;
-
-            return this.Update(tModel);
+            Include(s => s.SchoolSetting);
         }
 
-        public School Update(School tModel, School tModelFrom, SchoolSettings tModel2From)
+        public SchoolRepository(PhoenixContext dbContext, bool nonObviatedOnly)
+            : base(dbContext, nonObviatedOnly)
         {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-            if (tModel2From == null)
-                throw new ArgumentNullException(nameof(tModel2From));
-
-            tModel.SchoolSettings.Language = tModel2From.Language;
-            tModel.SchoolSettings.Locale2 = tModel2From.Locale2;
-            //tModel.SchoolSettings.TimeZone = tModel2From.TimeZone;
-
-            return this.Update(tModel, tModelFrom);
+            Include(s => s.SchoolSetting);
         }
 
-        public IQueryable<Course> FindCourses(int id)
+        public static Expression<Func<School, bool>> GetUniqueExpression(int schoolCode)
         {
-            this.Include(a => a.Course);
-            return this.Find().Where(a => a.Id == id).SelectMany(a => a.Course);
+            return s => s.Code == schoolCode;
         }
 
-        public IQueryable<Classroom> FindClassrooms(int id)
+        #region Find Unique
+
+        public Task<School?> FindUniqueAsync(int schoolCode,
+            CancellationToken cancellationToken = default)
         {
-            this.Include(a => a.Classroom);
-            return this.Find().Where(a => a.Id == id).SelectMany(a => a.Classroom);
+            return FindUniqueAsync(GetUniqueExpression(schoolCode), cancellationToken);
         }
+
+        public Task<School?> FindUniqueAsync(ISchoolBase school,
+            CancellationToken cancellationToken = default)
+        {
+            if (school is null)
+                throw new ArgumentNullException(nameof(school));
+
+            return FindUniqueAsync(school.Code, cancellationToken);
+        }
+
+        public Task<School?> FindUniqueAsync(SchoolUnique schoolUnique,
+            CancellationToken cancellationToken = default)
+        {
+            if (schoolUnique is null)
+                throw new ArgumentNullException(nameof(schoolUnique));
+
+            return FindUniqueAsync(schoolUnique.Code, cancellationToken);
+        }
+
+        #endregion
+
+        #region Update
+
+        // Always update SchoolSetting with School
+
+        public override Task<School> UpdateAsync(School model,
+            CancellationToken cancellationToken = default)
+        {
+            if (model is not null && model.SchoolSetting is not null)
+                this.DbContext.Entry(model.SchoolSetting).State = EntityState.Modified;
+
+            return base.UpdateAsync(model!, cancellationToken);
+        }
+
+        public override Task<IEnumerable<School>> UpdateRangeAsync(IEnumerable<School> models,
+            CancellationToken cancellationToken = default)
+        {
+            if (models is not null)
+                foreach (var model in models)
+                    if (model.SchoolSetting is not null)
+                        this.DbContext.Entry(model.SchoolSetting).State = EntityState.Modified;
+
+            return base.UpdateRangeAsync(models!, cancellationToken);
+        }
+
+        #endregion
+
+        #region Delete
+
+        public void SetNullOnDelete(School school)
+        {
+            school.Users.Clear();
+        }
+
+        public async Task CascadeOnDeleteAsync(School school,
+            CancellationToken cancellationToken = default)
+        {
+            await new BookRepository(DbContext).DeleteRangeAsync(school.Books, cancellationToken);
+            await new BroadcastRepository(DbContext).DeleteRangeAsync(school.Broadcasts, cancellationToken);
+            await new ClassroomRepository(DbContext).DeleteRangeAsync(school.Classrooms, cancellationToken);
+            await new CourseRepository(DbContext).DeleteRangeAsync(school.Courses, cancellationToken);
+            await new SchoolConnectionRepository(DbContext).DeleteRangeAsync(school.SchoolConnections, cancellationToken);
+        }
+
+        public async Task CascadeRangeOnDeleteAsync(IEnumerable<School> schools,
+            CancellationToken cancellationToken = default)
+        {
+            await new BookRepository(DbContext).DeleteRangeAsync(schools.SelectMany(s => s.Books),
+                cancellationToken);
+            await new BroadcastRepository(DbContext).DeleteRangeAsync(schools.SelectMany(s => s.Broadcasts),
+                cancellationToken);
+            await new ClassroomRepository(DbContext).DeleteRangeAsync(schools.SelectMany(s => s.Classrooms),
+                cancellationToken);
+            await new CourseRepository(DbContext).DeleteRangeAsync(schools.SelectMany(s => s.Courses),
+                cancellationToken);
+            await new SchoolConnectionRepository(DbContext).DeleteRangeAsync(schools.SelectMany(s => s.SchoolConnections),
+                cancellationToken);
+        }
+
+        #endregion
     }
 }

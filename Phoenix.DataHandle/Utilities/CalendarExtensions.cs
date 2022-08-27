@@ -1,5 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
 using System.Globalization;
+using System.Xml.Linq;
 
 namespace Phoenix.DataHandle.Utilities
 {
@@ -13,27 +14,43 @@ namespace Phoenix.DataHandle.Utilities
 
         public static int GetWeekOfYearISO8601(DateTimeOffset date) => GetWeekOfYearISO8601(date.DateTime);
 
+        public static TimeSpan CalculateTimeZoneOffset(string timeZone, DateTime dateTime)
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById(timeZone).GetUtcOffset(dateTime);
+        }
+
+        public static DateTimeOffset TimeZoneNow(string timeZone)
+        {
+            var offset = CalculateTimeZoneOffset(timeZone, DateTime.UtcNow);
+            return DateTimeOffset.UtcNow.ToOffset(offset);
+        }
+
+        public static DateTimeOffset SetOffsetFromTimeZone(this DateTimeOffset dateTimeOffset, string timeZone)
+        {
+            DateTime dt = dateTimeOffset.DateTime;
+            return new DateTimeOffset(dt, CalculateTimeZoneOffset(timeZone, dt));
+        }
+
         public static DateTimeOffset ParseExact(string input, string format, string timeZone)
         {
-            if (string.IsNullOrWhiteSpace(timeZone))
-                throw new ArgumentNullException(nameof(timeZone));
+            var dateTime = ParseExact(input, format);
+            return new DateTimeOffset(dateTime, CalculateTimeZoneOffset(timeZone, dateTime));
+        }
 
-            var dateTime = DateTime.ParseExact(input, format, CultureInfo.InvariantCulture);
-            return new DateTimeOffset(dateTime, TimeZoneInfo.FindSystemTimeZoneById(timeZone).GetUtcOffset(dateTime));
+        public static DateTime ParseExact(string input, string format)
+        {
+            return DateTime.ParseExact(input, format, CultureInfo.InvariantCulture);
         }
 
         public static DateTimeOffset ParseTime(string input, string timeZone)
         {
-            if (string.IsNullOrWhiteSpace(timeZone))
-                throw new ArgumentNullException(nameof(timeZone));
-
             var dateTime = DateTime.ParseExact(input, "H:m", CultureInfo.InvariantCulture);
 
             var zeroDate = new DateTime();
             zeroDate = zeroDate.AddHours(dateTime.Hour);
             zeroDate = zeroDate.AddMinutes(dateTime.Minute);
 
-            return new DateTimeOffset(zeroDate, TimeZoneInfo.FindSystemTimeZoneById(timeZone).GetUtcOffset(zeroDate));
+            return new DateTimeOffset(zeroDate, CalculateTimeZoneOffset(timeZone, dateTime));
         }
     }
 }

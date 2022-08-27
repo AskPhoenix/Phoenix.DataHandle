@@ -1,96 +1,95 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using Phoenix.DataHandle.Base.Entities;
+using Phoenix.DataHandle.DataEntry.Types.Uniques;
 using Phoenix.DataHandle.Main.Models;
+using Phoenix.DataHandle.Repositories.Extensions;
+using System.Linq.Expressions;
 
 namespace Phoenix.DataHandle.Repositories
 {
-    public class CourseRepository : Repository<Course>
+    public sealed class CourseRepository : ObviableRepository<Course>,
+        ISetNullDeleteRule<Course>, ICascadeDeleteRule<Course>
     {
-        public CourseRepository(PhoenixContext dbContext) : base(dbContext) { }
-
-        public IQueryable<Course> FindForUser(int userId, bool findForStaff)
+        public CourseRepository(PhoenixContext phoenixContext)
+            : base(phoenixContext)
         {
-            if (findForStaff)
-                return FindForTeacher(userId);
-
-            return FindForStudent(userId);
         }
 
-        public IQueryable<Course> FindForStudent(int studentId)
+        public CourseRepository(PhoenixContext phoenixContext, bool nonObviatedOnly)
+            : base(phoenixContext, nonObviatedOnly)
         {
-            return this.dbContext.Set<StudentCourse>().
-                Include(sc => sc.Course).
-                Where(sc => sc.StudentId == studentId).
-                Select(sc => sc.Course);
         }
 
-        public IQueryable<Course> FindForTeacher(int teacherId)
+        public static Expression<Func<Course, bool>> GetUniqueExpression(
+            int schoolId, short courseCode)
         {
-            return this.dbContext.Set<TeacherCourse>().
-                Include(tc => tc.Course).
-                Where(tc => tc.TeacherId == teacherId).
-                Select(tc => tc.Course);
+            return c => c.SchoolId == schoolId && c.Code == courseCode;
         }
 
-        public Course Update(Course tModel, Course tModelFrom)
+        public static Expression<Func<Course, bool>> GetUniqueExpression(
+            CourseUnique courseUq)
         {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-            if (tModelFrom == null)
-                throw new ArgumentNullException(nameof(tModelFrom));
+            if (courseUq is null)
+                throw new ArgumentNullException(nameof(courseUq));
 
-            //The columns of the unique keys should not be copied
-
-            tModel.Name = tModelFrom.Name;
-            tModel.SubCourse = tModelFrom.SubCourse;
-            tModel.Group = tModelFrom.Group;
-            tModel.Level = tModelFrom.Level;
-            tModel.FirstDate = tModelFrom.FirstDate;
-            tModel.LastDate = tModelFrom.LastDate;
-            tModel.Info = tModelFrom.Info;
-
-            return this.Update(tModel);
+            return c => c.School.Code == courseUq.SchoolUnique.Code && c.Code == courseUq.Code;
         }
 
-        public void LinkBook(Course tModel, int bookId)
-        {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
+        #region Find Unique
 
-            this.dbContext.Set<CourseBook>().Add(new CourseBook() { CourseId = tModel.Id, BookId = bookId });
-            this.dbContext.SaveChanges();
+        public Task<Course?> FindUniqueAsync(int schoolId, short courseCode,
+            CancellationToken cancellationToken = default)
+        {
+            return FindUniqueAsync(GetUniqueExpression(schoolId, courseCode),
+                cancellationToken);
         }
 
-        public void LinkBooks(Course tModel, IEnumerable<int> bookIds, bool deleteAdditionalLinks = false)
+        public Task<Course?> FindUniqueAsync(int schoolId, ICourseBase course,
+            CancellationToken cancellationToken = default)
         {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-            if (bookIds == null)
-                throw new ArgumentNullException(nameof(bookIds));
+            if (course is null)
+                throw new ArgumentNullException(nameof(course));
 
-            var courseBookSet = this.dbContext.Set<CourseBook>();
-
-            var alreadyLinkedBookIds = this.GetLinkedBooks(tModel).Select(b => b.Id);
-            var newBookIdsToLink = bookIds.Where(id => !alreadyLinkedBookIds.Contains(id));
-
-            if (deleteAdditionalLinks)
-            {
-                var courseBooksToRemove = courseBookSet.Where(cb => cb.CourseId == tModel.Id && !bookIds.Contains(cb.BookId));
-                courseBookSet.RemoveRange(courseBooksToRemove);
-            }
-
-            courseBookSet.AddRange(newBookIdsToLink.Select(bId => new CourseBook() { CourseId = tModel.Id, BookId = bId }));
-            this.dbContext.SaveChanges();
+            return FindUniqueAsync(schoolId, course.Code,
+                cancellationToken);
         }
 
-        public IEnumerable<Book> GetLinkedBooks(Course tModel)
+        public Task<Course?> FindUniqueAsync(CourseUnique courseUnique,
+            CancellationToken cancellationToken = default)
         {
-            if (tModel == null)
-                throw new ArgumentNullException(nameof(tModel));
-
-            return this.dbContext.Set<CourseBook>().Include(cb => cb.Book).Where(cb => cb.CourseId == tModel.Id).Select(cb => cb.Book).AsEnumerable();
+            return FindUniqueAsync(GetUniqueExpression(courseUnique),
+                cancellationToken);
         }
+
+        #endregion
+
+        #region Delete
+
+        public void SetNullOnDelete(Course course)
+        {
+            course.Books.Clear();
+            course.Users.Clear();
+            course.Grades.Clear();
+        }
+
+        public async Task CascadeOnDeleteAsync(Course course,
+            CancellationToken cancellationToken = default)
+        {
+            await new BroadcastRepository(DbContext).DeleteRangeAsync(course.Broadcasts, cancellationToken);
+            await new LectureRepository(DbContext).DeleteRangeAsync(course.Lectures, cancellationToken);
+            await new ScheduleRepository(DbContext).DeleteRangeAsync(course.Schedules, cancellationToken);
+        }
+
+        public async Task CascadeRangeOnDeleteAsync(IEnumerable<Course> courses,
+            CancellationToken cancellationToken = default)
+        {
+            await new BroadcastRepository(DbContext).DeleteRangeAsync(courses.SelectMany(c => c.Broadcasts),
+                cancellationToken);
+            await new LectureRepository(DbContext).DeleteRangeAsync(courses.SelectMany(c => c.Lectures),
+                cancellationToken);
+            await new ScheduleRepository(DbContext).DeleteRangeAsync(courses.SelectMany(c => c.Schedules),
+                cancellationToken);
+        }
+
+        #endregion
     }
 }

@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Phoenix.DataHandle.Base.Entities;
 
 namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IClassroom
+    public interface IClassroom : IClassroomBase
     {
         ISchool School { get; }
-        string Name { get; set; }
-        string NormalizedName { get; set; }
-        string Info { get; set; }
 
         IEnumerable<ILecture> Lectures { get; }
         IEnumerable<ISchedule> Schedules { get; }

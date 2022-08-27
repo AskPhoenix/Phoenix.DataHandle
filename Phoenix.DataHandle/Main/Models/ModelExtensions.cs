@@ -1,215 +1,192 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
+﻿using Microsoft.EntityFrameworkCore;
+using Phoenix.DataHandle.Base;
 using Phoenix.DataHandle.Main.Entities;
 using Phoenix.DataHandle.Main.Models.Extensions;
-using Phoenix.DataHandle.Main.Relationships;
 
 namespace Phoenix.DataHandle.Main.Models
 {
-    public partial class AspNetRoles : IAspNetRoles, IModelEntity
+    public partial class PhoenixContext
     {
-        IEnumerable<IAspNetUserRoles> IAspNetRoles.AspNetUserRoles => this.AspNetUserRoles;
-    }
-
-    public partial class AspNetUserLogins : IAspNetUserLogins
-    {
-        IAspNetUsers IAspNetUserLogins.User => this.User;
-    }
-
-    public partial class AspNetUserRoles : IAspNetUserRoles
-    {
-        IAspNetUsers IAspNetUserRoles.User => this.User;
-        IAspNetRoles IAspNetUserRoles.Role => this.Role;
-    }
-
-    public partial class AspNetUsers : IAspNetUsers, IModelEntity
-    {
-        public DateTimeOffset RegisteredAt => this.CreatedAt;
-
-        IUser IAspNetUsers.User => this.User;
-
-        IEnumerable<IAspNetUserLogins> IAspNetUsers.AspNetUserLogins => this.AspNetUserLogins;
-        IEnumerable<IAspNetUserRoles> IAspNetUsers.Roles => this.AspNetUserRoles;
-        IEnumerable<IAttendance> IAspNetUsers.Attendances => this.Attendance;
-        IEnumerable<IParenthood> IAspNetUsers.Children => this.ParenthoodChild;
-        IEnumerable<IParenthood> IAspNetUsers.Parents => this.ParenthoodParent;
-        IEnumerable<IStudentCourse> IAspNetUsers.StudentCourses => this.StudentCourse;
-        IEnumerable<IStudentExam> IAspNetUsers.StudentExams => this.StudentExam;
-        IEnumerable<IStudentExercise> IAspNetUsers.StudentExercises => this.StudentExercise;
-        IEnumerable<ITeacherCourse> IAspNetUsers.TeacherCourses => this.TeacherCourse;
-        IEnumerable<IUserSchool> IAspNetUsers.UserSchools => this.UserSchool;
-
-        public string GetHashSignature()
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
         {
-            byte[] salt = new byte[16];
-            using var pbkdf2 = new Rfc2898DeriveBytes(this.Id + this.PhoneNumber, salt, 10 * 1000, HashAlgorithmName.SHA256);
-            byte[] hash = pbkdf2.GetBytes(32);
-            string savedPasswordHash = Convert.ToBase64String(hash);
-
-            return savedPasswordHash;
-        }
-
-        public bool VerifyHashSignature(string hashSignature)
-        {
-            return hashSignature == this.GetHashSignature();
+            modelBuilder.HasDefaultSchema("Phoenix");
         }
     }
 
-    public partial class Attendance : IAttendance
+    public partial class Book : IBook, INormalizableEntity<Book>
     {
-        IAspNetUsers IAttendance.Student => this.Student;
-        ILecture IAttendance.Lecture => this.Lecture;
-    }
+        ISchool IBook.School => this.School;
+        IEnumerable<IExercise> IBook.Exercises => this.Exercises;
+        IEnumerable<IMaterial> IBook.Materials => this.Materials;
+        
+        IEnumerable<ICourse> IBook.Courses => this.Courses;
 
-    public partial class Book : IBook, IModelEntity
-    {
-        IEnumerable<ICourseBook> IBook.CourseBooks => this.CourseBook;
-        IEnumerable<IExercise> IBook.Exercises => this.Exercise;
-        IEnumerable<IMaterial> IBook.Materials => this.Material;
+        public static Func<string, string> NormFunc => s => s.ToUpperInvariant();
+
+        public Book Normalize()
+        {
+            this.NormalizedName = Book.NormFunc(this.Name);
+            
+            return this;
+        }
     }
 
     public partial class BotFeedback : IBotFeedback, IModelEntity
     {
-        IAspNetUsers IBotFeedback.Author => this.Author;
+        IUser? IBotFeedback.Author => this.Author;
     }
 
     public partial class Broadcast : IBroadcast, IModelEntity
     {
         ISchool IBroadcast.School => this.School;
-        ICourse IBroadcast.Course => this.Course;
-        IAspNetUsers IBroadcast.CreatedByUser => this.CreatedByUser;
+        IUser? IBroadcast.Author => this.Author;
+        ICourse? IBroadcast.Course => this.Course;
     }
 
-    public partial class Classroom : IClassroom, IModelEntity
+    public partial class Classroom : IClassroom, IObviableModelEntity, INormalizableEntity<Classroom>
     {
         ISchool IClassroom.School => this.School;
 
-        IEnumerable<ILecture> IClassroom.Lectures => this.Lecture;
-        IEnumerable<ISchedule> IClassroom.Schedules => this.Schedule;
-    }
+        IEnumerable<ILecture> IClassroom.Lectures => this.Lectures;
+        IEnumerable<ISchedule> IClassroom.Schedules => this.Schedules;
 
-    public partial class Course : ICourse, IModelEntity
-    {
-        ISchool ICourse.School => this.School;
+        public static Func<string, string> NormFunc => s => s.ToUpperInvariant();
+        public Classroom Normalize()
+        {
+            this.NormalizedName = Classroom.NormFunc(this.Name);
 
-        IEnumerable<ICourseBook> ICourse.CourseBooks => this.CourseBook;
-        IEnumerable<ILecture> ICourse.Lectures => this.Lecture;
-        IEnumerable<ISchedule> ICourse.Schedules => this.Schedule;
-        IEnumerable<IStudentCourse> ICourse.StudentCourses => this.StudentCourse;
-        IEnumerable<ITeacherCourse> ICourse.TeacherCourses => this.TeacherCourse;
-
-        public string NameWithSubcourse { 
-            get
-            {
-                string tore = this.Name;
-                if (!string.IsNullOrEmpty(this.SubCourse))
-                    tore += " - " + this.SubCourse;
-
-                return tore;
-            }
+            return this;
         }
     }
 
-    public partial class CourseBook : ICourseBook
+    public partial class Course : ICourse, IObviableModelEntity
     {
-        ICourse ICourseBook.Course => this.Course;
-        IBook ICourseBook.Book => this.Book;
+        ISchool ICourse.School => this.School;
+
+        IEnumerable<IGrade> ICourse.Grades => this.Grades;
+        IEnumerable<ILecture> ICourse.Lectures => this.Lectures;
+        IEnumerable<ISchedule> ICourse.Schedules => this.Schedules;
+
+        IEnumerable<IBook> ICourse.Books => this.Books;
+        IEnumerable<IBroadcast> ICourse.Broadcasts => this.Broadcasts;
+        IEnumerable<IUser> ICourse.Users => this.Users;
+
+        public string GetNameWithSubcourse()
+        {
+            return this.Name + (this.SubCourse != null ? $" - {this.SubCourse}" : "");
+        }
+
+        public string GetFullName()
+        {
+            return this.GetNameWithSubcourse() + " ~ " + this.Group;
+        }
+    }
+
+    public partial class DevRegistration : IDevRegistration, IModelEntity
+    {
+        IUser? IDevRegistration.Developer => this.Developer;
     }
 
     public partial class Exam : IExam, IModelEntity
     {
         ILecture IExam.Lecture => this.Lecture;
-        IEnumerable<IMaterial> IExam.Materials => this.Material;
-        IEnumerable<IStudentExam> IExam.StudentExams => this.StudentExam;
+
+        IEnumerable<IGrade> IExam.Grades => this.Grades;
+        IEnumerable<IMaterial> IExam.Materials => this.Materials;
     }
 
     public partial class Exercise : IExercise, IModelEntity
     {
-        IBook IExercise.Book => this.Book;
         ILecture IExercise.Lecture => this.Lecture;
-        IEnumerable<IStudentExercise> IExercise.StudentExercises => this.StudentExercise;
+        IBook? IExercise.Book => this.Book;
+
+        IEnumerable<IGrade> IExercise.Grades => this.Grades;
     }
 
-    public partial class Lecture : ILecture, IModelEntity
+    public partial class Grade : IGrade, IModelEntity
+    {
+        IUser IGrade.Student => this.Student;
+        ICourse? IGrade.Course => this.Course;
+        IExam? IGrade.Exam => this.Exam;
+        IExercise? IGrade.Exercise => this.Exercise;
+    }
+
+    public partial class Lecture : ILecture, IObviableModelEntity
     {
         ICourse ILecture.Course => this.Course;
-        ISchedule ILecture.Schedule => this.Schedule;
-        IClassroom ILecture.Classroom => this.Classroom;
-        IExam ILecture.Exam => this.Exam;
+        IClassroom? ILecture.Classroom => this.Classroom;
+        ISchedule? ILecture.Schedule => this.Schedule;
+        ILecture? ILecture.ReplacementLecture => this.ReplacementLecture;
 
-        IEnumerable<IAttendance> ILecture.Attendances => this.Attendance;
-        IEnumerable<IExercise> ILecture.Exercises => this.Exercise;
+        IEnumerable<IExam> ILecture.Exams => this.Exams;
+        IEnumerable<IExercise> ILecture.Exercises => this.Exercises;
+        IEnumerable<ILecture> ILecture.InverseReplacementLecture => this.InverseReplacementLecture;
+
+        IEnumerable<IUser> ILecture.Attendees => this.Attendees;
     }
 
     public partial class Material : IMaterial, IModelEntity
     {
         IExam IMaterial.Exam => this.Exam;
-        IBook IMaterial.Book => this.Book;
+        IBook? IMaterial.Book => this.Book;
     }
 
-    public partial class School : ISchool, IModelEntity
+    public partial class OneTimeCode : IOneTimeCode, IModelEntity
     {
-        ISchoolSettings ISchool.SchoolSettings => this.SchoolSettings;
-        IEnumerable<IUserSchool> ISchool.UserSchools => this.UserSchool;
-        IEnumerable<IClassroom> ISchool.Classrooms => this.Classroom;
-        IEnumerable<ICourse> ISchool.Courses => this.Course;
+        IUser IOneTimeCode.User => this.User;
     }
-
-    public partial class SchoolSettings : ISchoolSettings
-    {
-        ISchool ISchoolSettings.School => this.School;
-    }
-
-    public partial class StudentCourse : IStudentCourse
-    {
-        IAspNetUsers IStudentCourse.Student => this.Student;
-        ICourse IStudentCourse.Course => this.Course;
-    }
-
-    public partial class StudentExam : IStudentExam
-    {
-        IAspNetUsers IStudentExam.Student => this.Student;
-        IExam IStudentExam.Exam => this.Exam;
-    }
-
-    public partial class StudentExercise : IStudentExercise
-    {
-        IAspNetUsers IStudentExercise.Student => this.Student;
-        IExercise IStudentExercise.Exercise => this.Exercise;
-    }
-
-    public partial class TeacherCourse : ITeacherCourse
-    {
-        IAspNetUsers ITeacherCourse.Teacher => this.Teacher;
-        ICourse ITeacherCourse.Course => this.Course;
-    }
-
-    public partial class User : IUser
-    {
-        public string FullName => (this.LastName + " " + this.FirstName).Trim();
-        public int Id => this.AspNetUser.Id;
-        IAspNetUsers IUser.AspNetUser => this.AspNetUser;
-    }
-
-    public partial class Parenthood : IParenthood
-    {
-        IAspNetUsers IParenthood.Child => this.Child;
-        IAspNetUsers IParenthood.Parent => this.Parent;
-    }
-
-    public partial class Schedule : ISchedule, IModelEntity
+    
+    public partial class Schedule : ISchedule, IObviableModelEntity
     {
         ICourse ISchedule.Course => this.Course;
-        IClassroom ISchedule.Classroom => this.Classroom;
+        IClassroom? ISchedule.Classroom => this.Classroom;
 
-        IEnumerable<ILecture> ISchedule.Lectures => this.Lecture;
+        IEnumerable<ILecture> ISchedule.Lectures => this.Lectures;
     }
 
-    public partial class UserSchool : IUserSchool
+    public partial class SchoolConnection : ISchoolConnection, IConnectionEntity
     {
-        IAspNetUsers IUserSchool.AspNetUser => this.AspNetUser;
+        ISchool ISchoolConnection.Tenant => this.Tenant;
+    }
 
-        ISchool IUserSchool.School => this.School;
+    public partial class School : ISchool, IObviableModelEntity
+    {
+        ISchoolSetting ISchool.SchoolSetting => this.SchoolSetting;
+        IEnumerable<IBook> ISchool.Books => this.Books;
+        IEnumerable<IBroadcast> ISchool.Broadcasts => this.Broadcasts;
+        IEnumerable<IClassroom> ISchool.Classrooms => this.Classrooms;
+        IEnumerable<ICourse> ISchool.Courses => this.Courses;
+        IEnumerable<ISchoolConnection> ISchool.SchoolConnections => this.SchoolConnections;
+
+        IEnumerable<IUser> ISchool.Users => this.Users;
+    }
+
+    public partial class SchoolSetting : ISchoolSetting
+    {
+        ISchool ISchoolSetting.School => this.School;
+    }
+
+    public partial class UserConnection : IUserConnection, IConnectionEntity
+    {
+        IUser IUserConnection.Tenant => this.Tenant;
+    }
+
+    public partial class User : IUser, IObviableModelEntity
+    {
+        public string FullName => this.BuildFullName();
+
+        int IModelEntity.Id => this.AspNetUserId;
+
+        IEnumerable<IBotFeedback> IUser.BotFeedbacks => this.BotFeedbacks;
+        IEnumerable<IBroadcast> IUser.Broadcasts => this.Broadcasts;
+        IEnumerable<IGrade> IUser.Grades => this.Grades;
+        IEnumerable<IOneTimeCode> IUser.OneTimeCodes => this.OneTimeCodes;
+        IEnumerable<IUserConnection> IUser.UserConnections => this.UserConnections;
+
+        IEnumerable<IUser> IUser.Children => this.Children;
+        IEnumerable<ICourse> IUser.Courses => this.Courses;
+        IEnumerable<ILecture> IUser.Lectures => this.Lectures;
+        IEnumerable<IUser> IUser.Parents => this.Parents;
+        IEnumerable<ISchool> IUser.Schools => this.Schools;
     }
 }

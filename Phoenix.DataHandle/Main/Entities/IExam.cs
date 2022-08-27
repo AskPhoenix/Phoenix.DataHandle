@@ -1,15 +1,12 @@
-﻿using System.Collections.Generic;
-using Phoenix.DataHandle.Main.Relationships;
+﻿using Phoenix.DataHandle.Base.Entities;
 
 namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IExam
+    public interface IExam : IExamBase
     {
         ILecture Lecture { get; }
-        string Name { get; set; }
-        string Comments { get; set; }
-
+        
+        IEnumerable<IGrade> Grades { get; }
         IEnumerable<IMaterial> Materials { get; }
-        IEnumerable<IStudentExam> StudentExams { get; }
     }
 }

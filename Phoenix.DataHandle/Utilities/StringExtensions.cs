@@ -1,40 +1,39 @@
 ﻿using System.Globalization;
+using System.Text;
 
 namespace Phoenix.DataHandle.Utilities
 {
     public static class StringExtensions
     {
-        //TODO: Locale
-        public static string ToTitleCase(this string str, bool ignoreUpperCase = true)
+        public static string ToTitleCase(this string str)
         {
-            if (str is null)
-                return null;
-
-            string tore = new string(str);
             var textInfo = CultureInfo.InvariantCulture.TextInfo;
 
-            if (ignoreUpperCase)
-                tore = tore.ToLowerInvariant();
-
-            //Check if a non-invariant culture solves the problem
-            tore = textInfo.ToTitleCase(tore).Replace("σ ", "ς ").Replace("σ-", "ς-").Replace("σ_", "ς_");
-
-            if (tore.EndsWith('σ'))
-            {
-                char[] toreArr = tore.ToCharArray();
-                toreArr[^1] = 'ς';
-                tore = new string(toreArr);
-            }
-
-            return tore;
+            return textInfo.ToTitleCase(new(str));
         }
 
         public static string Truncate(this string str, int maxLength)
         {
-            if (str is null)
-                return null;
+            return str.Length <= maxLength ? str : str[..maxLength];
+        }
 
-            return str.Length <= maxLength ? str : str.Substring(0, maxLength);
+        public static string ToUnaccented(this string me)
+        {
+            string fullCanonicalDecompositionNormalized = me.Normalize(NormalizationForm.FormD);
+            var unaccented = fullCanonicalDecompositionNormalized
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark);
+
+            return new string(unaccented.ToArray());
+        }
+
+        public static string RemoveEmojis(this string me, bool postTrim = true)
+        {
+            string newMe = new(me.Where(c => !char.IsSurrogate(c) && !char.IsSymbol(c)).ToArray());
+
+            if (postTrim)
+                newMe = newMe.Trim();
+
+            return newMe;
         }
     }
 }

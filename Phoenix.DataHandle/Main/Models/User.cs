@@ -1,22 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-
-// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
-// If you have enabled NRTs for your project, then un-comment the following line:
-// #nullable disable
-
-namespace Phoenix.DataHandle.Main.Models
+﻿namespace Phoenix.DataHandle.Main.Models
 {
     public partial class User
     {
-        public int AspNetUserId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public bool TermsAccepted { get; set; }
-        public bool IsSelfDetermined { get; set; }
-        public string IdentifierCode { get; set; }
-        public DateTimeOffset? IdentifierCodeCreatedAt { get; set; }
+        public User()
+        {
+            BotFeedbacks = new HashSet<BotFeedback>();
+            Broadcasts = new HashSet<Broadcast>();
+            DevRegistrations = new HashSet<DevRegistration>();
+            Grades = new HashSet<Grade>();
+            OneTimeCodes = new HashSet<OneTimeCode>();
+            UserConnections = new HashSet<UserConnection>();
+            Children = new HashSet<User>();
+            Courses = new HashSet<Course>();
+            Lectures = new HashSet<Lecture>();
+            Parents = new HashSet<User>();
+            Schools = new HashSet<School>();
+        }
 
-        public virtual AspNetUsers AspNetUser { get; set; }
+        public int AspNetUserId { get; set; }
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+        public bool IsSelfDetermined { get; set; }
+        public int DependenceOrder { get; set; }
+        public bool HasAcceptedTerms { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? ObviatedAt { get; set; }
+
+        public virtual ICollection<BotFeedback> BotFeedbacks { get; set; }
+        public virtual ICollection<Broadcast> Broadcasts { get; set; }
+        public virtual ICollection<DevRegistration> DevRegistrations { get; set; }
+        public virtual ICollection<Grade> Grades { get; set; }
+        public virtual ICollection<OneTimeCode> OneTimeCodes { get; set; }
+        public virtual ICollection<UserConnection> UserConnections { get; set; }
+
+        public virtual ICollection<User> Children { get; set; }
+        public virtual ICollection<Course> Courses { get; set; }
+        public virtual ICollection<Lecture> Lectures { get; set; }
+        public virtual ICollection<User> Parents { get; set; }
+        public virtual ICollection<School> Schools { get; set; }
     }
 }

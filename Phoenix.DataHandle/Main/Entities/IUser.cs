@@ -1,12 +1,19 @@
-﻿namespace Phoenix.DataHandle.Main.Entities
+﻿using Phoenix.DataHandle.Base.Entities;
+
+namespace Phoenix.DataHandle.Main.Entities
 {
-    public interface IUser
+    public interface IUser : IUserBase
     {
-        IAspNetUsers AspNetUser { get; }
-        string FirstName { get; set; }
-        string LastName { get; set; }
-        string FullName { get; }
-        bool TermsAccepted { get; set; }
-        bool IsSelfDetermined { get; set; }
+        IEnumerable<IBotFeedback> BotFeedbacks { get; }
+        IEnumerable<IBroadcast> Broadcasts { get; }
+        IEnumerable<IGrade> Grades { get; }
+        IEnumerable<IOneTimeCode> OneTimeCodes { get; }
+        IEnumerable<IUserConnection> UserConnections { get; }
+        
+        IEnumerable<IUser> Children { get; }
+        IEnumerable<ICourse> Courses { get; }
+        IEnumerable<ILecture> Lectures { get; }
+        IEnumerable<IUser> Parents { get; }
+        IEnumerable<ISchool> Schools { get; }
     }
 }

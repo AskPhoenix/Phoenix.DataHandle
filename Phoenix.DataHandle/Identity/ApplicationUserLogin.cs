@@ -1,16 +1,9 @@
-﻿using System;
-using Microsoft.AspNetCore.Identity;
-using Phoenix.DataHandle.Main.Entities;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace Phoenix.DataHandle.Identity
 {
-    public sealed class ApplicationUserLogin : IdentityUserLogin<int>, IAspNetUserLogins
+    public class ApplicationUserLogin : IdentityUserLogin<int>
     {
-        public bool IsActive { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset? UpdatedAt { get; set; }
-
-        IAspNetUsers IAspNetUserLogins.User => this.User;
-        public ApplicationUser User { get; set; }
+        public virtual ApplicationUser User { get; set; } = null!;
     }
 }
